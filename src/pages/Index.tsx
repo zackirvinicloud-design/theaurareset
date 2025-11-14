@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { ProtocolNav } from "@/components/ProtocolNav";
-import { ProtocolSearch } from "@/components/ProtocolSearch";
 
 const Index = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -100,11 +99,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Sidebar */}
+      {/* Navigation - Top Right */}
       <ProtocolNav activeSection={activeSection} onNavigate={handleNavigate} />
-      
-      {/* Search Button */}
-      <ProtocolSearch onNavigate={handleNavigate} />
       
       {/* Main Content - with proper mobile spacing for fixed buttons */}
       <div className="lg:ml-64 pb-20">
@@ -117,7 +113,7 @@ const Index = () => {
         />
       </div>
       
-      {/* Download Button - mobile optimized */}
+      {/* Download Button - bottom right */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
