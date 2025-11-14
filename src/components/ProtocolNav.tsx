@@ -65,7 +65,7 @@ export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => 
             <Button
               variant="outline"
               size="icon"
-              className="fixed top-4 right-4 z-50 bg-background shadow-lg h-12 w-12"
+              className="fixed top-4 right-4 z-50 bg-background/60 backdrop-blur-md border-border/40 shadow-lg h-12 w-12 hover:bg-background/80 transition-all"
             >
               <Menu className="h-6 w-6" />
             </Button>
