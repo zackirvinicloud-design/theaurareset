@@ -1,12 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Download, FileText, Printer } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { ProtocolNav } from "@/components/ProtocolNav";
 
@@ -99,11 +91,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation - Top Right */}
-      <ProtocolNav activeSection={activeSection} onNavigate={handleNavigate} />
+      {/* Unified Menu */}
+      <ProtocolNav 
+        activeSection={activeSection} 
+        onNavigate={handleNavigate}
+        onDownloadHTML={handleDownloadHTML}
+        onPrint={handlePrint}
+      />
       
-      {/* Main Content - with proper mobile spacing for fixed buttons */}
-      <div className="lg:ml-64 pb-20">
+      {/* Main Content */}
+      <div className="lg:ml-64">
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
@@ -112,29 +109,6 @@ const Index = () => {
           id="protocol-content"
         />
       </div>
-      
-      {/* Download Button - bottom right */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            size="lg" 
-            className="fixed bottom-4 right-4 shadow-2xl z-50 bg-primary hover:bg-primary/90 print:hidden h-12 w-12 md:h-auto md:w-auto md:px-4"
-          >
-            <Download className="h-5 w-5 md:mr-2" />
-            <span className="hidden md:inline">Download</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 bg-popover z-[60]">
-          <DropdownMenuItem onClick={handleDownloadHTML} className="cursor-pointer">
-            <FileText className="mr-2 h-4 w-4" />
-            Download as HTML
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handlePrint} className="cursor-pointer">
-            <Printer className="mr-2 h-4 w-4" />
-            Print / Save as PDF
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 };
