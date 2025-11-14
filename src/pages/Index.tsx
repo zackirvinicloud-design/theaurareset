@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, Printer } from "lucide-react";
 import {
@@ -8,22 +8,66 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
+import { ProtocolNav } from "@/components/ProtocolNav";
+import { ProtocolSearch } from "@/components/ProtocolSearch";
 
 const Index = () => {
-  const contentRef = useRef<HTMLIFrameElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [activeSection, setActiveSection] = useState("welcome");
+
+  // Set up intersection observer to track active section
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentWindow) return;
+
+    const handleLoad = () => {
+      const iframeDoc = iframe.contentWindow?.document;
+      if (!iframeDoc) return;
+
+      const sections = iframeDoc.querySelectorAll("section[id]");
+      
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+              setActiveSection(entry.target.id);
+            }
+          });
+        },
+        {
+          threshold: [0.3],
+          rootMargin: "-100px 0px -60% 0px",
+        }
+      );
+
+      sections.forEach((section) => observer.observe(section));
+
+      return () => observer.disconnect();
+    };
+
+    iframe.addEventListener("load", handleLoad);
+    return () => iframe.removeEventListener("load", handleLoad);
+  }, []);
+
+  const handleNavigate = (id: string) => {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentWindow) return;
+
+    const iframeDoc = iframe.contentWindow.document;
+    const element = iframeDoc.getElementById(id);
+    
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveSection(id);
+    }
+  };
 
   const handleDownloadHTML = async () => {
     try {
       const response = await fetch('/protocol-original.html');
       const htmlContent = await response.text();
       
-      // Replace "Heavy" in title
-      const modifiedHtml = htmlContent.replace(
-        'The Aura Heavy Reset Protocol',
-        'The Aura Reset Protocol'
-      );
-      
-      const blob = new Blob([modifiedHtml], { type: "text/html" });
+      const blob = new Blob([htmlContent], { type: "text/html" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -45,8 +89,8 @@ const Index = () => {
   };
 
   const handlePrint = () => {
-    if (contentRef.current && contentRef.current.contentWindow) {
-      contentRef.current.contentWindow.print();
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.print();
       toast({
         title: "Print dialog opened",
         description: "You can save as PDF from the print dialog.",
@@ -55,26 +99,36 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
-      <iframe
-        ref={contentRef}
-        src="/protocol-original.html"
-        className="w-full h-screen border-0"
-        title="The Aura Reset Protocol"
-      />
+    <div className="min-h-screen bg-background">
+      {/* Navigation Sidebar */}
+      <ProtocolNav activeSection={activeSection} onNavigate={handleNavigate} />
+      
+      {/* Search Button */}
+      <ProtocolSearch onNavigate={handleNavigate} />
+      
+      {/* Main Content */}
+      <div className="lg:ml-64">
+        <iframe
+          ref={iframeRef}
+          src="/protocol-original.html"
+          className="w-full min-h-screen border-0"
+          title="The Aura Reset Protocol"
+          id="protocol-content"
+        />
+      </div>
       
       {/* Download Button */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
             size="lg" 
-            className="fixed bottom-8 right-8 shadow-2xl z-50 bg-primary hover:bg-primary/90"
+            className="fixed bottom-6 right-6 shadow-2xl z-50 bg-primary hover:bg-primary/90 print:hidden"
           >
             <Download className="mr-2 h-5 w-5" />
-            Download Protocol
+            <span className="hidden sm:inline">Download</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align="end" className="w-56 bg-background z-50">
           <DropdownMenuItem onClick={handleDownloadHTML}>
             <FileText className="mr-2 h-4 w-4" />
             Download as HTML

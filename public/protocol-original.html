@@ -427,6 +427,85 @@
       a:hover {
         color: #14a085;
       }
+
+      /* Mobile Responsive Styles */
+      @media (max-width: 768px) {
+        body {
+          padding: 16px 20px;
+          font-size: 15px;
+        }
+
+        .cover-section {
+          margin: -16px -20px 30px -20px;
+          padding: 40px 20px;
+        }
+
+        .cover-title {
+          font-size: 2em;
+        }
+
+        .cover-subtitle {
+          font-size: 1.1em;
+        }
+
+        .cover-tagline {
+          font-size: 0.95em;
+        }
+
+        .phase-header {
+          font-size: 1.3em;
+          padding: 18px 20px;
+        }
+
+        .day-schedule, .info-box, .warning-box, .success-box {
+          padding: 16px;
+        }
+
+        table {
+          font-size: 0.85em;
+        }
+
+        th, td {
+          padding: 10px 8px;
+        }
+
+        .juice-recipe, .supplement-box {
+          padding: 16px;
+        }
+      }
+
+      /* Print Styles */
+      @media print {
+        body {
+          background: white;
+          max-width: 100%;
+          padding: 20px;
+        }
+
+        .cover-section, .motivation-section {
+          background: #0d7377 !important;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .phase-header, .info-box, .warning-box, .success-box, .tip-box {
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+          page-break-inside: avoid;
+        }
+
+        .day-schedule {
+          page-break-inside: avoid;
+        }
+
+        section {
+          page-break-after: auto;
+        }
+
+        h2 {
+          page-break-after: avoid;
+        }
+      }
     </style>
   </head>
   <body style="">
@@ -436,7 +515,7 @@
       <p class="cover-tagline">Your Day-by-Day Playbook to Total Body Detoxification</p>
     </div>
 
-    <section>
+    <section id="welcome">
       <h2>🌟 Welcome to Your Transformation Journey</h2>
 
       <div class="info-box">
@@ -474,7 +553,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="architecture">
       <h2>🏗️ Understanding Your Protocol Architecture</h2>
 
       <p>
@@ -533,7 +612,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="shopping">
       <h2>🛒 Complete Shopping List</h2>
 
       <div class="info-box">
@@ -920,7 +999,7 @@
       </table>
     </section>
 
-    <section>
+    <section id="28-day">
       <h2>📅 The 28-Day Protocol</h2>
 
       <div class="phase-header phase-1">🛡️ Phase 1: Continuous Liver Support (Days 1-28)</div>
@@ -1036,7 +1115,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="phase-2">
       <div class="phase-header phase-2">🍄 Phase 2: Fungal Pre-Conditioning (Days 1-7)</div>
 
       <p>
@@ -1227,7 +1306,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="phase-3">
       <div class="phase-header phase-3">🎯 Phase 3: The Main Event - Parasite Elimination (Days 8-21)</div>
 
       <p>
@@ -1412,7 +1491,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="phase-4">
       <div class="phase-header phase-4">⚡ Phase 4: The Epilogue - Heavy Metal Detox (Days 22-28)</div>
 
       <p>
@@ -1549,7 +1628,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="quick-ref">
       <h2>📋 Quick Reference Guide</h2>
 
       <div class="info-box">
@@ -1649,7 +1728,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="pillars">
       <h2>🏆 The 5 Pillars of Success</h2>
 
       <p>
@@ -1740,7 +1819,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="troubleshooting">
       <h2>🔧 Troubleshooting Common Issues</h2>
 
       <div class="day-schedule">
@@ -1862,7 +1941,7 @@
       </div>
     </section>
 
-    <section>
+    <section id="maintenance">
       <h2>🔄 Post-Protocol: Maintenance Phase</h2>
 
       <div class="success-box">
@@ -1926,7 +2005,7 @@
       </div>
     </section>
 
-    <section class="motivation-section">
+    <section id="science" class="motivation-section">
       <h2>🌟 The Science of Getting Your Health Back</h2>
 
       <div style="text-align: left; max-width: 700px; margin: 30px auto;">
