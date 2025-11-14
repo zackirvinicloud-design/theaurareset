@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Download, FileText, Printer } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 interface NavSection {
   id: string;
@@ -28,10 +30,22 @@ const sections: NavSection[] = [
 interface ProtocolNavProps {
   activeSection: string;
   onNavigate: (id: string) => void;
+  onDownloadHTML: () => void;
+  onPrint: () => void;
 }
 
-export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => {
+export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint }: ProtocolNavProps) => {
   const [open, setOpen] = useState(false);
+
+  const handleDownload = () => {
+    onDownloadHTML();
+    setOpen(false);
+  };
+
+  const handlePrint = () => {
+    onPrint();
+    setOpen(false);
+  };
 
   const NavContent = () => (
     <nav className="space-y-1">
@@ -72,7 +86,33 @@ export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => 
           </SheetTrigger>
           <SheetContent side="right" className="w-80 overflow-y-auto pt-10">
             <div className="mb-6">
-              <h2 className="font-serif text-2xl font-bold">Contents</h2>
+              <h2 className="font-serif text-2xl font-bold">Menu</h2>
+            </div>
+            
+            {/* Download Options */}
+            <div className="mb-6 space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handleDownload}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Download HTML
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handlePrint}
+              >
+                <Printer className="mr-2 h-4 w-4" />
+                Print / Save as PDF
+              </Button>
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="mb-4">
+              <h3 className="font-serif text-lg font-semibold">Navigation</h3>
             </div>
             <NavContent />
           </SheetContent>
@@ -82,7 +122,33 @@ export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-background border-r overflow-y-auto p-6 z-40">
         <div className="mb-6">
-          <h2 className="font-serif text-xl font-bold">Contents</h2>
+          <h2 className="font-serif text-xl font-bold">Menu</h2>
+        </div>
+        
+        {/* Download Options */}
+        <div className="mb-6 space-y-2">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-sm"
+            onClick={onDownloadHTML}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Download HTML
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full justify-start text-sm"
+            onClick={onPrint}
+          >
+            <Printer className="mr-2 h-4 w-4" />
+            Print / Save PDF
+          </Button>
+        </div>
+
+        <Separator className="my-4" />
+
+        <div className="mb-4">
+          <h3 className="font-serif text-base font-semibold">Navigation</h3>
         </div>
         <NavContent />
       </aside>
