@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavSection {
@@ -14,7 +14,6 @@ const sections: NavSection[] = [
   { id: "welcome", title: "Welcome", emoji: "🌟" },
   { id: "architecture", title: "Protocol Architecture", emoji: "🏗️" },
   { id: "shopping", title: "Shopping List", emoji: "🛒" },
-  { id: "28-day", title: "28-Day Protocol", emoji: "📅" },
   { id: "phase-1", title: "Phase 1: Liver Support", emoji: "🛡️" },
   { id: "phase-2", title: "Phase 2: Fungal", emoji: "🍄" },
   { id: "phase-3", title: "Phase 3: Parasites", emoji: "🎯" },
@@ -59,19 +58,19 @@ export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => 
 
   return (
     <>
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Top Right */}
       <div className="lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
               size="icon"
-              className="fixed top-4 left-4 z-50 bg-background shadow-lg h-12 w-12"
+              className="fixed top-4 right-4 z-50 bg-background shadow-lg h-12 w-12"
             >
               <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 overflow-y-auto pt-10">
+          <SheetContent side="right" className="w-80 overflow-y-auto pt-10">
             <div className="mb-6">
               <h2 className="font-serif text-2xl font-bold">Contents</h2>
             </div>
