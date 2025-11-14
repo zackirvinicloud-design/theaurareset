@@ -26,12 +26,15 @@ export const ProtocolSearch = ({ onNavigate }: ProtocolSearchProps) => {
       return;
     }
 
-    // Get all text content from the page
-    const content = document.getElementById("protocol-content");
+    // Get all text content from the iframe
+    const iframe = document.getElementById("protocol-content") as HTMLIFrameElement;
+    if (!iframe || !iframe.contentWindow) return;
+
+    const content = iframe.contentWindow.document.body;
     if (!content) return;
 
     const results: SearchResult[] = [];
-    const sections = content.querySelectorAll("section");
+    const sections = content.querySelectorAll("section[id]");
     const queryLower = query.toLowerCase();
 
     sections.forEach((section) => {
@@ -77,29 +80,29 @@ export const ProtocolSearch = ({ onNavigate }: ProtocolSearchProps) => {
         <Button
           variant="outline"
           size="icon"
-          className="fixed top-4 right-20 z-50 bg-background shadow-lg lg:right-24"
+          className="fixed top-4 right-20 z-50 bg-background shadow-lg h-12 w-12"
         >
           <Search className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-96">
-        <SheetHeader>
-          <SheetTitle>Search Protocol</SheetTitle>
+      <SheetContent side="right" className="w-full sm:w-[400px] pt-10">
+        <SheetHeader className="mb-6">
+          <SheetTitle className="text-xl">Search Protocol</SheetTitle>
         </SheetHeader>
-        <div className="mt-6 space-y-4">
+        <div className="space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search supplements, recipes, days..."
+              placeholder="Search supplements, recipes..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-9"
+              className="pl-9 h-11"
             />
             {searchQuery && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1 h-8 w-8"
+                className="absolute right-1 top-1 h-9 w-9"
                 onClick={() => {
                   setSearchQuery("");
                   setSearchResults([]);
@@ -110,7 +113,7 @@ export const ProtocolSearch = ({ onNavigate }: ProtocolSearchProps) => {
             )}
           </div>
 
-          <ScrollArea className="h-[calc(100vh-180px)]">
+          <ScrollArea className="h-[calc(100vh-200px)]">
             {searchResults.length === 0 && searchQuery && (
               <p className="text-sm text-muted-foreground text-center py-8">
                 No results found for "{searchQuery}"
@@ -118,7 +121,7 @@ export const ProtocolSearch = ({ onNavigate }: ProtocolSearchProps) => {
             )}
             
             {searchResults.length === 0 && !searchQuery && (
-              <p className="text-sm text-muted-foreground text-center py-8">
+              <p className="text-sm text-muted-foreground text-center py-8 px-4">
                 Search for supplements, recipes, specific days, or any content...
               </p>
             )}
@@ -130,8 +133,8 @@ export const ProtocolSearch = ({ onNavigate }: ProtocolSearchProps) => {
                   onClick={() => handleResultClick(result.id)}
                   className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
                 >
-                  <div className="font-medium text-sm mb-1">{result.section}</div>
-                  <div className="text-xs text-muted-foreground line-clamp-2">
+                  <div className="font-medium text-sm mb-1.5">{result.section}</div>
+                  <div className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {result.context}
                   </div>
                 </button>

@@ -431,46 +431,137 @@
       /* Mobile Responsive Styles */
       @media (max-width: 768px) {
         body {
-          padding: 16px 20px;
+          padding: 24px 16px;
+          font-size: 16px;
+          max-width: 100%;
+        }
+
+        .cover-section {
+          margin: -24px -16px 24px -16px;
+          padding: 32px 16px;
+          border-radius: 0 0 20px 20px;
+        }
+
+        .cover-title {
+          font-size: 1.75em !important;
+          line-height: 1.2;
+          margin-bottom: 12px !important;
+        }
+
+        .cover-title span {
+          font-size: inherit !important;
+        }
+
+        .cover-subtitle {
+          font-size: 1em !important;
+          line-height: 1.4;
+          margin-bottom: 10px !important;
+        }
+
+        .cover-tagline {
+          font-size: 0.9em !important;
+        }
+
+        h2 {
+          font-size: 1.5em !important;
+          margin: 24px 0 16px 0 !important;
+        }
+
+        h3 {
+          font-size: 1.2em !important;
+          margin: 16px 0 12px 0 !important;
+        }
+
+        .phase-header {
+          font-size: 1.2em !important;
+          padding: 16px 14px !important;
+          margin: 24px 0 16px 0 !important;
+        }
+
+        .phase-icon {
+          font-size: 1.3em !important;
+        }
+
+        .day-schedule, .info-box, .warning-box, .success-box, .tip-box {
+          padding: 16px !important;
+          margin: 16px 0 !important;
+          border-radius: 12px !important;
+        }
+
+        .glass {
+          padding: 16px !important;
+          border-radius: 12px !important;
+        }
+
+        table {
+          font-size: 0.8em;
+          display: block;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        th, td {
+          padding: 8px 6px !important;
+          font-size: 0.9em;
+        }
+
+        .juice-recipe, .supplement-box, .shopping-category {
+          padding: 14px !important;
+          margin: 12px 0 !important;
+          font-size: 0.95em;
+        }
+
+        .time-slot {
+          padding: 14px 0 !important;
+        }
+
+        .time-label {
+          font-size: 1em !important;
+          margin-bottom: 8px !important;
+        }
+
+        ul, ol {
+          padding-left: 20px;
+        }
+
+        li {
+          margin-bottom: 8px;
+        }
+
+        .pillar-card {
+          padding: 16px !important;
+          margin: 12px 0 !important;
+        }
+
+        .motivation-section {
+          margin: -24px -16px 0 -16px !important;
+          padding: 32px 16px !important;
+          border-radius: 20px 20px 0 0 !important;
+        }
+      }
+
+      /* Very small mobile devices */
+      @media (max-width: 480px) {
+        body {
+          padding: 16px 12px;
           font-size: 15px;
         }
 
         .cover-section {
-          margin: -16px -20px 30px -20px;
-          padding: 40px 20px;
+          margin: -16px -12px 20px -12px;
+          padding: 24px 12px;
         }
 
         .cover-title {
-          font-size: 2em;
-        }
-
-        .cover-subtitle {
-          font-size: 1.1em;
-        }
-
-        .cover-tagline {
-          font-size: 0.95em;
-        }
-
-        .phase-header {
-          font-size: 1.3em;
-          padding: 18px 20px;
-        }
-
-        .day-schedule, .info-box, .warning-box, .success-box {
-          padding: 16px;
+          font-size: 1.5em !important;
         }
 
         table {
-          font-size: 0.85em;
+          font-size: 0.75em;
         }
 
         th, td {
-          padding: 10px 8px;
-        }
-
-        .juice-recipe, .supplement-box {
-          padding: 16px;
+          padding: 6px 4px !important;
         }
       }
 

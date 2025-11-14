@@ -106,8 +106,8 @@ const Index = () => {
       {/* Search Button */}
       <ProtocolSearch onNavigate={handleNavigate} />
       
-      {/* Main Content */}
-      <div className="lg:ml-64">
+      {/* Main Content - with proper mobile spacing for fixed buttons */}
+      <div className="lg:ml-64 pb-20">
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
@@ -117,23 +117,23 @@ const Index = () => {
         />
       </div>
       
-      {/* Download Button */}
+      {/* Download Button - mobile optimized */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
             size="lg" 
-            className="fixed bottom-6 right-6 shadow-2xl z-50 bg-primary hover:bg-primary/90 print:hidden"
+            className="fixed bottom-4 right-4 shadow-2xl z-50 bg-primary hover:bg-primary/90 print:hidden h-12 w-12 md:h-auto md:w-auto md:px-4"
           >
-            <Download className="mr-2 h-5 w-5" />
-            <span className="hidden sm:inline">Download</span>
+            <Download className="h-5 w-5 md:mr-2" />
+            <span className="hidden md:inline">Download</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 bg-background z-50">
-          <DropdownMenuItem onClick={handleDownloadHTML}>
+        <DropdownMenuContent align="end" className="w-56 bg-popover z-[60]">
+          <DropdownMenuItem onClick={handleDownloadHTML} className="cursor-pointer">
             <FileText className="mr-2 h-4 w-4" />
             Download as HTML
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handlePrint}>
+          <DropdownMenuItem onClick={handlePrint} className="cursor-pointer">
             <Printer className="mr-2 h-4 w-4" />
             Print / Save as PDF
           </DropdownMenuItem>
