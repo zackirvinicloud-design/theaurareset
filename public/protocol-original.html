@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" style=""><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Aura Reset Protocol</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+      /* Apple-style Liquid Glass Design */
+      body {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 32px 80px;
+        position: relative;
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        color: #1d1d1f;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 50%, #f0f4f8 100%);
+        background-attachment: fixed;
+      }
+
+      /* Glassmorphism effect */
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      }
+
+      .cover-section {
+        text-align: center;
+        padding: 80px 40px;
+        background: linear-gradient(135deg, rgba(13, 115, 119, 0.95) 0%, rgba(20, 160, 133, 0.95) 100%);
+        backdrop-filter: blur(30px) saturate(200%);
+        -webkit-backdrop-filter: blur(30px) saturate(200%);
+        color: white;
+        margin: -32px -80px 40px -80px;
+        border-radius: 0 0 32px 32px;
+        box-shadow: 0 20px 60px rgba(13, 115, 119, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cover-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .cover-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.2em;
+        font-weight: 700;
+        margin: 0 0 20px 0;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        letter-spacing: -0.5px;
+        position: relative;
+      }
+
+      .cover-subtitle {
+        font-size: 1.4em;
+        font-weight: 500;
+        margin: 0 0 15px 0;
+        opacity: 0.95;
+        position: relative;
+      }
+
+      .cover-tagline {
+        font-size: 1.1em;
+        font-weight: 300;
+        margin: 0;
+        opacity: 0.9;
+        font-style: italic;
+        position: relative;
+      }
+
+      .phase-header {
+        background: linear-gradient(135deg, rgba(13, 115, 119, 0.9) 0%, rgba(20, 160, 133, 0.9) 100%);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        color: white;
+        padding: 24px 28px;
+        margin: 40px 0 20px 0;
+        border-radius: 20px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8em;
+        font-weight: 600;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 40px rgba(13, 115, 119, 0.25);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .phase-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+        pointer-events: none;
+      }
+
+      .phase-1 {
+        background: linear-gradient(135deg, rgba(13, 115, 119, 0.9) 0%, rgba(20, 160, 133, 0.9) 100%);
+      }
+      .phase-2 {
+        background: linear-gradient(135deg, rgba(39, 174, 96, 0.9) 0%, rgba(46, 204, 113, 0.9) 100%);
+      }
+      .phase-3 {
+        background: linear-gradient(135deg, rgba(255, 140, 66, 0.9) 0%, rgba(255, 107, 53, 0.9) 100%);
+      }
+      .phase-4 {
+        background: linear-gradient(135deg, rgba(142, 68, 173, 0.9) 0%, rgba(155, 89, 182, 0.9) 100%);
+      }
+
+      .info-box {
+        background: rgba(248, 249, 250, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-left: 4px solid #0d7377;
+        padding: 24px;
+        margin: 20px 0;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(13, 115, 119, 0.1);
+        border: 1px solid rgba(13, 115, 119, 0.1);
+      }
+
+      .warning-box {
+        background: rgba(255, 243, 205, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-left: 4px solid #ffc107;
+        padding: 24px;
+        margin: 20px 0;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(255, 193, 7, 0.2);
+        border: 1px solid rgba(255, 193, 7, 0.2);
+      }
+
+      .success-box {
+        background: rgba(212, 237, 218, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-left: 4px solid #28a745;
+        padding: 24px;
+        margin: 20px 0;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(40, 167, 69, 0.2);
+        border: 1px solid rgba(40, 167, 69, 0.2);
+      }
+
+      .tip-box {
+        background: rgba(231, 243, 255, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-left: 4px solid #007bff;
+        padding: 18px;
+        margin: 15px 0;
+        border-radius: 14px;
+        font-size: 0.95em;
+        box-shadow: 0 8px 32px rgba(0, 123, 255, 0.15);
+        border: 1px solid rgba(0, 123, 255, 0.15);
+      }
+
+      .day-schedule {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 28px;
+        margin: 25px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      }
+
+      .time-slot {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 18px 0;
+      }
+
+      .time-slot:last-child {
+        border-bottom: none;
+      }
+
+      .time-label {
+        font-weight: 600;
+        color: #0d7377;
+        margin-bottom: 10px;
+        font-size: 1.05em;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      th,
+      td {
+        padding: 16px 18px;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      th {
+        background: rgba(248, 249, 250, 0.95);
+        backdrop-filter: blur(10px);
+        font-weight: 600;
+        color: #1d1d1f;
+        border-bottom: 2px solid rgba(13, 115, 119, 0.3);
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .shopping-category {
+        background: linear-gradient(135deg, rgba(13, 115, 119, 0.9) 0%, rgba(20, 160, 133, 0.9) 100%);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        color: white;
+        padding: 18px 24px;
+        margin: 30px 0 10px 0;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1.1em;
+        box-shadow: 0 8px 32px rgba(13, 115, 119, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .juice-recipe {
+        background: rgba(241, 248, 255, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(179, 217, 255, 0.3);
+        padding: 20px;
+        margin: 15px 0;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 123, 255, 0.1);
+      }
+
+      .recipe-title {
+        font-weight: 600;
+        color: #0d7377;
+        margin-bottom: 10px;
+        font-size: 1.05em;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: 'Playfair Display', serif;
+        color: #1d1d1f;
+      }
+
+      h1 {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+        color: #0d7377;
+        letter-spacing: -0.5px;
+      }
+
+      h2 {
+        font-size: 2em;
+        font-weight: 600;
+        margin: 50px 0 25px 0;
+        color: #0d7377;
+        border-bottom: none;
+        padding-bottom: 0;
+        letter-spacing: -0.3px;
+        position: relative;
+        padding-left: 20px;
+      }
+
+      h2::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 70%;
+        background: linear-gradient(180deg, #0d7377 0%, #ff8c42 100%);
+        border-radius: 2px;
+      }
+
+      h3 {
+        font-size: 1.4em;
+        font-weight: 500;
+        margin: 30px 0 15px 0;
+        color: #2c3e50;
+      }
+
+      .pillar-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 28px;
+        margin: 20px 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .pillar-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+      }
+
+      .pillar-number {
+        background: linear-gradient(135deg, #0d7377 0%, #14a085 100%);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        box-shadow: 0 4px 15px rgba(13, 115, 119, 0.3);
+      }
+
+      .motivation-section {
+        background: linear-gradient(135deg, rgba(13, 115, 119, 0.95) 0%, rgba(20, 160, 133, 0.95) 100%);
+        backdrop-filter: blur(30px) saturate(200%);
+        -webkit-backdrop-filter: blur(30px) saturate(200%);
+        color: white;
+        padding: 60px 40px;
+        margin: 60px -80px -32px -80px;
+        text-align: center;
+        border-radius: 32px 32px 0 0;
+        box-shadow: 0 -20px 60px rgba(13, 115, 119, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .motivation-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .phase-icon {
+        font-size: 1.5em;
+        margin-right: 12px;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
+
+      ul,
+      ol {
+        padding-left: 25px;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      .checklist {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .checklist li {
+        padding-left: 35px;
+        position: relative;
+        margin-bottom: 12px;
+      }
+
+      .checklist li:before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+        font-size: 1.2em;
+        background: rgba(40, 167, 69, 0.1);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Smooth scrolling and transitions */
+      * {
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      section {
+        margin-bottom: 40px;
+      }
+
+      /* Enhanced link styling */
+      a {
+        color: #0d7377;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      a:hover {
+        color: #14a085;
+      }
+    </style>
+  </head>
+  <body style="">
+    <div class="cover-section">
+      <h1 class="cover-title"><span style="font-size: 48px;">THE AURA RESET PROTOCOL</span></h1>
+      <p class="cover-subtitle">Total Elimination System for Parasites, Heavy Metals, and Fungal Overgrowth</p>
+      <p class="cover-tagline">Your Day-by-Day Playbook to Total Body Detoxification</p>
+    </div>
+
+    <section>
+      <h2>🌟 Welcome to Your Transformation Journey</h2>
+
+      <div class="info-box">
+        <p>
+          <strong>You are about to embark on the most comprehensive detoxification protocol available.</strong> This
+          isn't just another cleanse—it's a scientifically-sequenced elimination system that will systematically remove
+          parasites, heavy metals, and fungal overgrowth from your body. No bs, no 'fluff'&nbsp; - this is for those who want to improve their health dramatically <em>now</em> and ask questions later.</p>
+      </div>
+
+      <p>
+        For too long, you may have felt like something was "off" with your health. Perhaps you've experienced
+        unexplained fatigue, digestive issues, brain fog, or persistent symptoms that conventional medicine couldn't
+        fully address. The truth is, our modern world exposes us to countless toxins, parasites, and pathogens that can
+        accumulate in our bodies over time.
+      </p>
+
+      <p><strong>Today, that changes.</strong></p>
+
+      <p>
+        This protocol has been meticulously designed to work <em>with</em> your body's natural detoxification systems,
+        not against them. You'll eliminate toxins in the correct sequence, support your elimination pathways every step
+        of the way, and emerge feeling cleaner, clearer, and more energetic than you have in years.
+      </p>
+
+      <div class="success-box">
+        <p><strong>What to Expect Over the Next 28 Days:</strong></p>
+        <ul>
+          <li>Systematic elimination of parasites, fungal overgrowth, and heavy metals</li>
+          <li>Increased energy and mental clarity</li>
+          <li>Improved digestion and regular elimination</li>
+          <li>Better sleep and mood stability</li>
+          <li>Clearer skin and overall vitality</li>
+          <li>A profound sense of accomplishment and renewed health</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>🏗️ Understanding Your Protocol Architecture</h2>
+
+      <p>
+        This protocol follows a specific sequence that has been carefully designed to maximize effectiveness while
+        minimizing discomfort. Each phase builds upon the previous one, creating a comprehensive elimination system.
+      </p>
+
+      <div class="phase-header phase-1">
+        <span class="phase-icon">🛡️</span>Phase 1: Continuous Liver Support (Days 1-28)
+      </div>
+      <p>
+        Your liver is the master detoxifier. It processes everything you eliminate, so we support it throughout the
+        entire protocol with specific juices, supplements, and practices.
+      </p>
+
+      <div class="phase-header phase-2">
+        <span class="phase-icon">🍄</span>Phase 2: Fungal Pre-Conditioning (Days 1-7)
+      </div>
+      <p>
+        Fungal overgrowth creates an environment where parasites thrive. We starve and weaken fungal colonies first,
+        making the parasite elimination more effective.
+      </p>
+
+      <div class="phase-header phase-3">
+        <span class="phase-icon">🎯</span>Phase 3: The Main Event - Parasite Elimination (Days 8-21)
+      </div>
+      <p>
+        This is the core of the protocol. We use targeted herbs and foods to eliminate parasites while aggressively
+        supporting your elimination pathways.
+      </p>
+
+      <div class="phase-header phase-4">
+        <span class="phase-icon">⚡</span>Phase 4: The Epilogue - Heavy Metal Detox (Days 22-28)
+      </div>
+      <p>
+        Once parasites are eliminated, we safely chelate heavy metals from deep tissues using natural compounds like
+        chlorella, cilantro, and modified citrus pectin.
+      </p>
+
+      <div class="warning-box">
+        <p><strong>⚠️ Why This Sequence Matters:</strong></p>
+        <ul>
+          <li>Eliminating metals before parasites can redistribute toxins</li>
+          <li>Fungal overgrowth feeds parasites—address the environment first</li>
+          <li>Liver support prevents toxin reabsorption and overwhelm</li>
+          <li>Binders capture and escort toxins out safely throughout all phases</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <p>
+          <strong>🔗 The Critical Role of Binders:</strong> Activated charcoal, bentonite clay, and psyllium husk act
+          like magnets, capturing toxins as they're released and escorting them out of your body. Without binders,
+          toxins can recirculate and cause symptoms. This is why binders are used throughout every phase.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>🛒 Complete Shopping List</h2>
+
+      <div class="info-box">
+        <p>
+          <strong>Shopping Strategy:</strong> You don't need to buy everything at once. This list is organized by when
+          you'll need items. Focus on getting Phase 1 and Phase 2 items before you start, then add Phase 3 items before
+          Day 8, and Phase 4 items before Day 22.
+        </p>
+      </div>
+
+      <div class="shopping-category">🛡️ Phase 1: Liver Support (Days 1-28) - Buy Before Starting</div>
+
+      <h3>Fresh Produce (Buy Weekly)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Week 1 Quantity</th>
+            <th>Total for 28 Days</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Lemons</td>
+            <td>15</td>
+            <td>45+ total</td>
+            <td>Buy fresh weekly, organic preferred</td>
+          </tr>
+          <tr>
+            <td>Beets (medium)</td>
+            <td>6</td>
+            <td>18 total</td>
+            <td>For liver detox juices</td>
+          </tr>
+          <tr>
+            <td>Carrots</td>
+            <td>10</td>
+            <td>30 total</td>
+            <td>Organic, for juicing</td>
+          </tr>
+          <tr>
+            <td>Green Apples</td>
+            <td>10</td>
+            <td>25 total</td>
+            <td>Granny Smith preferred</td>
+          </tr>
+          <tr>
+            <td>Celery</td>
+            <td>2 bunches</td>
+            <td>6 bunches total</td>
+            <td>Fresh weekly</td>
+          </tr>
+          <tr>
+            <td>Kale</td>
+            <td>2 bunches</td>
+            <td>5 bunches total</td>
+            <td>For green juices</td>
+          </tr>
+          <tr>
+            <td>Fresh Ginger Root</td>
+            <td>Large piece (6+ inches)</td>
+            <td>Buy fresh weekly</td>
+            <td>Keep refrigerated</td>
+          </tr>
+          <tr>
+            <td>Fresh Turmeric Root</td>
+            <td>3 inches</td>
+            <td>Buy fresh as needed</td>
+            <td>Or turmeric powder</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Liver Support Supplements (28-Day Supply)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Supplement</th>
+            <th>Dosage</th>
+            <th>Daily Amount</th>
+            <th>When to Take</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Milk Thistle Extract</td>
+            <td>300mg</td>
+            <td>600mg (2x daily)</td>
+            <td>With breakfast &amp; dinner</td>
+          </tr>
+          <tr>
+            <td>NAC (N-Acetyl Cysteine)</td>
+            <td>600mg</td>
+            <td>600mg once daily</td>
+            <td>With lunch</td>
+          </tr>
+          <tr>
+            <td>Alpha-Lipoic Acid</td>
+            <td>300mg</td>
+            <td>300mg once daily</td>
+            <td>With lunch</td>
+          </tr>
+          <tr>
+            <td>Dandelion Root</td>
+            <td>500mg</td>
+            <td>500mg once daily</td>
+            <td>With breakfast</td>
+          </tr>
+          <tr>
+            <td>Artichoke Extract</td>
+            <td>500mg</td>
+            <td>500mg once daily</td>
+            <td>With dinner</td>
+          </tr>
+          <tr>
+            <td>Selenium</td>
+            <td>200mcg</td>
+            <td>200mcg once daily</td>
+            <td>With lunch</td>
+          </tr>
+          <tr>
+            <td>B-Complex (Methylated)</td>
+            <td>As directed</td>
+            <td>Once daily</td>
+            <td>With lunch</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="shopping-category">🍄 Phase 2: Fungal Pre-Conditioning (Days 1-7) - Buy Before Starting</div>
+
+      <h3>Additional Produce</h3>
+      <ul>
+        <li><strong>Garlic:</strong> 4 bulbs (you'll use A LOT of garlic)</li>
+        <li><strong>Onions:</strong> 5 large</li>
+        <li><strong>Leafy Greens:</strong> Spinach, arugula (large quantities)</li>
+        <li>
+          <strong>Cruciferous Vegetables:</strong> Broccoli (2 crowns), cauliflower (1 head), Brussels sprouts (1 lb)
+        </li>
+        <li><strong>Fresh Herbs:</strong> Cilantro (2 bunches), parsley (2 bunches), oregano, thyme, basil</li>
+        <li><strong>Avocados:</strong> 5</li>
+        <li><strong>Asparagus:</strong> 2 bunches</li>
+      </ul>
+
+      <h3>Proteins &amp; Healthy Fats</h3>
+      <ul>
+        <li><strong>Organic Eggs:</strong> 1-2 dozen</li>
+        <li><strong>Wild-Caught Fish:</strong> Salmon, sardines, mackerel, cod (variety for the week)</li>
+        <li><strong>Coconut Oil:</strong> 1 large jar (virgin, cold-pressed)</li>
+        <li><strong>Extra Virgin Olive Oil:</strong> 1 large bottle</li>
+        <li><strong>Raw Nuts &amp; Seeds:</strong> Pumpkin seeds (3 cups), sunflower seeds, almonds</li>
+        <li><strong>Coconut Yogurt:</strong> Unsweetened (2 containers)</li>
+      </ul>
+
+      <h3>Fungal Support Supplements</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Supplement</th>
+            <th>Purpose</th>
+            <th>Daily Dosage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Oregano Oil Capsules</td>
+            <td>Antifungal</td>
+            <td>2-3 capsules, 2x daily</td>
+          </tr>
+          <tr>
+            <td>Caprylic Acid</td>
+            <td>Coconut-derived antifungal</td>
+            <td>1000-1500mg daily</td>
+          </tr>
+          <tr>
+            <td>Pau d'Arco</td>
+            <td>Antifungal tea/capsules</td>
+            <td>As tea or 500mg capsules</td>
+          </tr>
+          <tr>
+            <td>Probiotics</td>
+            <td>Restore healthy gut flora</td>
+            <td>50+ billion CFU daily</td>
+          </tr>
+          <tr>
+            <td>Digestive Enzymes</td>
+            <td>Support digestion</td>
+            <td>With each meal</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="shopping-category">🎯 Phase 3: Parasite Elimination (Days 8-21) - Buy Before Day 8</div>
+
+      <h3>Parasite-Fighting Foods</h3>
+      <ul>
+        <li><strong>Papaya:</strong> 3 whole (for the seeds!)</li>
+        <li><strong>Pineapple:</strong> 2 whole (bromelain enzyme)</li>
+        <li><strong>Pomegranate:</strong> 4 whole</li>
+        <li><strong>Additional Pumpkin Seeds:</strong> 2 more cups raw</li>
+        <li><strong>More Garlic:</strong> 3 additional bulbs</li>
+      </ul>
+
+      <h3>Parasite Formula Supplements</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Supplement</th>
+            <th>Active Compound</th>
+            <th>Peak Dosage (Days 10-14)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Black Walnut Hull Extract</td>
+            <td>Juglone</td>
+            <td>1000mg, 2x daily</td>
+          </tr>
+          <tr>
+            <td>Wormwood</td>
+            <td>Artemisinin</td>
+            <td>300mg, 2x daily</td>
+          </tr>
+          <tr>
+            <td>Clove Capsules</td>
+            <td>Eugenol</td>
+            <td>1000mg, 2x daily</td>
+          </tr>
+          <tr>
+            <td>Berberine Complex</td>
+            <td>Berberine</td>
+            <td>500mg daily</td>
+          </tr>
+          <tr>
+            <td>Grapefruit Seed Extract</td>
+            <td>Citricidal</td>
+            <td>150mg daily</td>
+          </tr>
+          <tr>
+            <td>Diatomaceous Earth</td>
+            <td>Food grade silica</td>
+            <td>1 tsp daily</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="shopping-category">⚡ Phase 4: Heavy Metal Detox (Days 22-28) - Buy Before Day 22</div>
+
+      <h3>Metal-Chelating Foods</h3>
+      <ul>
+        <li><strong>Cilantro:</strong> 4 large bunches (massive amounts needed)</li>
+        <li><strong>Wild Blueberries:</strong> 4 cups (frozen acceptable, must be WILD)</li>
+        <li><strong>Atlantic Dulse Seaweed:</strong> Dried flakes or fresh</li>
+        <li><strong>Bananas:</strong> 7 (for daily heavy metal smoothie)</li>
+        <li><strong>Additional Parsley:</strong> 2 bunches</li>
+      </ul>
+
+      <h3>Heavy Metal Chelation Supplements</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Supplement</th>
+            <th>Mechanism</th>
+            <th>Daily Dosage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Chlorella (Cracked Cell Wall)</td>
+            <td>Binds mercury, lead</td>
+            <td>9000mg (3000mg, 3x daily)</td>
+          </tr>
+          <tr>
+            <td>Spirulina</td>
+            <td>Binds heavy metals</td>
+            <td>4000mg daily</td>
+          </tr>
+          <tr>
+            <td>Modified Citrus Pectin</td>
+            <td>Chelates metals safely</td>
+            <td>4500mg (1500mg, 3x daily)</td>
+          </tr>
+          <tr>
+            <td>Zeolite (Micronized)</td>
+            <td>Ion exchange</td>
+            <td>1600mg daily</td>
+          </tr>
+          <tr>
+            <td>Vitamin C (Liposomal)</td>
+            <td>Antioxidant protection</td>
+            <td>3000mg daily</td>
+          </tr>
+          <tr>
+            <td>Glutathione (Liposomal)</td>
+            <td>Master antioxidant</td>
+            <td>500mg daily</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="shopping-category">🔗 Essential Binders (Days 1-28) - Buy Before Starting</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Binder</th>
+            <th>Primary Use</th>
+            <th>Daily Dosage</th>
+            <th>Timing</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Activated Charcoal (500mg caps)</td>
+            <td>Binds toxins, gases</td>
+            <td>2-4 capsules</td>
+            <td>2 hours from food/supplements</td>
+          </tr>
+          <tr>
+            <td>Bentonite Clay (Food Grade)</td>
+            <td>Binds heavy metals</td>
+            <td>1 tsp in water</td>
+            <td>Between meals</td>
+          </tr>
+          <tr>
+            <td>Psyllium Husk Powder</td>
+            <td>Fiber, bowel cleansing</td>
+            <td>1 heaping tsp</td>
+            <td>Before bed with lots of water</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tip-box">
+        <p>
+          <strong>💡 Shopping Tip:</strong> Buy 2-3 extra bottles of activated charcoal and extra psyllium husk. You'll
+          use more during die-off periods, and it's better to have too much than run out during a critical phase.
+        </p>
+      </div>
+
+      <h3>Essential Equipment</h3>
+      <ul class="checklist">
+        <li><strong>Juicer:</strong> Masticating preferred (preserves enzymes), centrifugal acceptable</li>
+        <li><strong>High-Speed Blender:</strong> For smoothies and breaking down tough greens</li>
+        <li><strong>Glass Storage Containers:</strong> For prepping juices</li>
+        <li><strong>Water Filter:</strong> Removes chlorine, fluoride, heavy metals</li>
+        <li><strong>Tongue Scraper:</strong> Copper or stainless steel</li>
+        <li><strong>Dry Brush:</strong> Natural bristles for lymphatic drainage</li>
+        <li><strong>Epsom Salt:</strong> Multiple bags (2-4 lbs total)</li>
+        <li><strong>Enema Kit:</strong> Optional but highly recommended</li>
+      </ul>
+
+      <h3>Morning Ritual Essentials (Added Based on Your Preference)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Purpose</th>
+            <th>Quality Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Himalayan Pink Salt OR Celtic Sea Salt</td>
+            <td>Sole water preparation</td>
+            <td>Unrefined, mineral-rich</td>
+          </tr>
+          <tr>
+            <td>Aluminum-Free Baking Soda</td>
+            <td>Alkalizing, die-off support</td>
+            <td>Pure sodium bicarbonate</td>
+          </tr>
+          <tr>
+            <td>Raw Apple Cider Vinegar</td>
+            <td>Liver tonic ingredient</td>
+            <td>With mother, unfiltered</td>
+          </tr>
+          <tr>
+            <td>Raw Honey</td>
+            <td>Liver tonic sweetener</td>
+            <td>Manuka preferred</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>📅 The 28-Day Protocol</h2>
+
+      <div class="phase-header phase-1">🛡️ Phase 1: Continuous Liver Support (Days 1-28)</div>
+
+      <p>
+        This foundation runs throughout the <strong>entire protocol</strong>. Your liver processes every toxin you
+        eliminate, so we support it aggressively from Day 1 through Day 28.
+      </p>
+
+      <div class="info-box">
+        <h3>Daily Liver Protocol (Every Single Day)</h3>
+        <p><strong>Morning Ritual Options (Choose One Daily):</strong></p>
+
+        <div class="juice-recipe">
+          <div class="recipe-title">🧂 Option A: Sole Water (Mineral Replenishment)</div>
+          <ul>
+            <li>8-16oz filtered water (room temperature or warm)</li>
+            <li>¼-½ tsp Himalayan pink salt OR Celtic sea salt</li>
+            <li>Juice of ½ lemon</li>
+            <li><strong>Best for:</strong> Fatigue, depletion, low blood pressure, dizziness</li>
+          </ul>
+        </div>
+
+        <div class="juice-recipe">
+          <div class="recipe-title">⚖️ Option B: Baking Soda Alkalizer (Die-Off Support)</div>
+          <ul>
+            <li>8-16oz filtered water (room temperature)</li>
+            <li>¼-½ tsp aluminum-free baking soda</li>
+            <li>Juice of ½ lemon</li>
+            <li><strong>Best for:</strong> Heavy die-off, body aches, nausea, acidic feeling</li>
+          </ul>
+        </div>
+
+        <div class="juice-recipe">
+          <div class="recipe-title">⭐ Option C: Complete Morning Elixir (Maximum Support)</div>
+          <ul>
+            <li>12-16oz filtered water (warm)</li>
+            <li>¼ tsp Himalayan salt</li>
+            <li>¼ tsp aluminum-free baking soda</li>
+            <li>Juice of ½ lemon</li>
+            <li>Optional: ⅛ tsp cayenne pepper</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Liver Support Supplement Schedule</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Supplements</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>With Breakfast</td>
+            <td>Milk Thistle (300mg), Dandelion Root (500mg)</td>
+            <td>Liver detox &amp; regeneration</td>
+          </tr>
+          <tr>
+            <td>With Lunch</td>
+            <td>NAC (600mg), Alpha-Lipoic Acid (300mg), Selenium (200mcg), B-Complex</td>
+            <td>Glutathione production, antioxidant protection</td>
+          </tr>
+          <tr>
+            <td>With Dinner</td>
+            <td>Milk Thistle (300mg), Artichoke Extract (500mg)</td>
+            <td>Evening liver support, bile production</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Daily Juice Rotation (3 Per Day, Every Day)</h3>
+
+      <div class="juice-recipe">
+        <div class="recipe-title">🌅 Morning Liver Juices</div>
+        <ul>
+          <li><strong>Lemon Ginger Kick:</strong> 1 lemon juiced, 1-inch ginger, ⅛ tsp cayenne, ½ cup water</li>
+          <li>
+            <strong>Turmeric Sunrise:</strong> 1 tbsp fresh turmeric, ½ orange, ½ cup pineapple, pinch black pepper
+          </li>
+          <li><strong>Citrus Cleanse:</strong> 1 orange, juice of 1 lemon, ½ cup pineapple, 1-inch ginger</li>
+        </ul>
+      </div>
+
+      <div class="juice-recipe">
+        <div class="recipe-title">☀️ Afternoon Liver Juices</div>
+        <ul>
+          <li><strong>Beet Detox Blend:</strong> 1 medium beet, 1 carrot, 1 apple, ½ inch ginger</li>
+          <li><strong>Liver Shield:</strong> 1 medium beet, 1 carrot, juice of ½ lemon, ½ apple</li>
+          <li>
+            <strong>Liver Love Tonic:</strong> Juice of ½ lemon, 1 tbsp apple cider vinegar, 1 tbsp raw honey, 8oz warm
+            water
+          </li>
+        </ul>
+      </div>
+
+      <div class="juice-recipe">
+        <div class="recipe-title">🌙 Evening Liver Juices</div>
+        <ul>
+          <li><strong>Green Soother:</strong> 2 apples, 2 celery sticks, ½ lemon, 2 kale leaves, 1 handful spinach</li>
+          <li><strong>Minty Greens:</strong> 1 cup spinach, ½ cucumber, 1 green apple, 8 mint leaves</li>
+          <li><strong>Gentle Green Reset:</strong> 1 cup kale, 1 celery stalk, ½ green apple, ½ cucumber</li>
+        </ul>
+      </div>
+
+      <div class="tip-box">
+        <p>
+          <strong>💡 Liver Support Tip:</strong> If you can only manage one juice per day due to time constraints, make
+          it the afternoon beet-based juice. Beets are the #1 liver detoxifier.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="phase-header phase-2">🍄 Phase 2: Fungal Pre-Conditioning (Days 1-7)</div>
+
+      <p>
+        <strong>Objective:</strong> Starve fungal overgrowth, establish elimination pathways, prepare the terrain for
+        parasite elimination.
+      </p>
+
+      <div class="warning-box">
+        <p>
+          <strong>Why Start with Fungus:</strong> Candida and other fungi create an acidic, toxic environment where
+          parasites flourish. By weakening fungal colonies first, we make the parasite elimination phase more effective
+          and reduce overall toxic load.
+        </p>
+      </div>
+
+      <h3>Universal Morning Ritual (Days 1-7)</h3>
+      <div class="time-slot">
+        <div class="time-label">Upon Waking (7:00 AM)</div>
+        <ol>
+          <li>Tongue scraping (removes overnight toxin buildup)</li>
+          <li>Choose your morning elixir (sole water, baking soda, or complete elixir)</li>
+          <li><strong>Wait 20 minutes</strong></li>
+          <li>Take binders: Activated charcoal (2 capsules) OR bentonite clay (1 tsp in water)</li>
+          <li><strong>Wait 30 minutes before eating</strong></li>
+        </ol>
+      </div>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 1: Protocol Initiation</h3>
+
+        <div class="time-slot">
+          <div class="time-label">Morning (7:00 AM)</div>
+          <p>
+            <strong>Morning Elixir:</strong> Sole Water (Option A) - build mineral reserves<br>
+            <strong>Binders:</strong> 2 activated charcoal capsules with 8oz water<br>
+            <strong>Wait:</strong> 30 minutes before eating
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Breakfast (8:00 AM)</div>
+          <p>
+            <strong>Food:</strong> Scrambled eggs (2-3) in coconut oil with sautéed spinach, minced garlic (2 cloves),
+            diced onions. Side of steamed asparagus with olive oil and lemon.
+          </p>
+          <p><strong>Supplements:</strong></p>
+          <ul>
+            <li>Oregano oil (2 capsules), Caprylic acid (1000mg)</li>
+            <li>Probiotic (50 billion CFU), Digestive enzyme</li>
+            <li>Milk thistle (300mg), Dandelion root (500mg)</li>
+          </ul>
+          <p><strong>Tea:</strong> Pau d'arco</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Mid-Morning (10:30 AM)</div>
+          <p><strong>Liver Juice:</strong> Lemon Ginger Kick</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Lunch (12:30 PM)</div>
+          <p>
+            <strong>Food:</strong> Large green salad with cucumber, celery, avocado, raw pumpkin seeds (¼ cup).
+            Wild-caught salmon (4-6oz). Sauerkraut (2 tbsp).
+          </p>
+          <p><strong>Supplements:</strong> NAC (600mg), Alpha-lipoic acid (300mg), Selenium (200mcg), B-complex</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Afternoon (3:00 PM)</div>
+          <p><strong>Liver Juice:</strong> Beet Detox Blend</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Snack (4:00 PM)</div>
+          <p>Raw pumpkin seeds (¼ cup), Celery with almond butter</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Dinner (6:30 PM)</div>
+          <p>
+            <strong>Food:</strong> Grilled white fish with garlic, oregano, thyme. Steamed broccoli and cauliflower with
+            coconut oil. Sautéed leafy greens.
+          </p>
+          <p>
+            <strong>Supplements:</strong> Oregano oil (2 capsules), Digestive enzyme, Milk thistle (300mg), Artichoke
+            extract (500mg)
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Evening (8:00 PM)</div>
+          <p><strong>Liver Juice:</strong> Green Soother</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Before Bed (9:30 PM)</div>
+          <p>
+            <strong>Binders:</strong> Psyllium husk (1 tsp) in 12oz water + additional 8oz water<br>
+            <strong>Tea:</strong> Pau d'arco or ginger
+          </p>
+        </div>
+      </div>
+
+      <div class="success-box">
+        <p><strong>✅ Day 1 Success Markers:</strong></p>
+        <ul class="checklist">
+          <li>Completed morning ritual without nausea</li>
+          <li>Consumed all 3 liver juices</li>
+          <li>Ate generous amounts of garlic and onions</li>
+          <li>Took all supplements on schedule</li>
+          <li>Had at least 1-2 bowel movements</li>
+          <li>Drank 8+ glasses of water</li>
+        </ul>
+      </div>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 2</h3>
+
+        <p>
+          <strong>Morning Elixir:</strong> Rotate to Baking Soda Alkalizer if feeling any digestive upset, otherwise
+          continue Sole Water
+        </p>
+
+        <p><strong>Key Focus:</strong> Increase anti-fungal foods and compounds</p>
+
+        <div class="time-slot">
+          <div class="time-label">Breakfast Changes</div>
+          <p>
+            Coconut yogurt with ground flaxseeds, cinnamon, raw almonds. Side of sautéed greens with garlic and coconut
+            oil.
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Lunch Changes</div>
+          <p>
+            Vegetable soup with bone broth, loads of garlic, onions, turmeric. Optional small portion quinoa with
+            pumpkin seeds.
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Supplement Adjustments</div>
+          <p>Add artichoke extract (500mg) with breakfast in addition to dinner dose.</p>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 3</h3>
+
+        <p><strong>Morning Elixir:</strong> Complete Morning Elixir (salt + baking soda + lemon) if tolerated well</p>
+
+        <p><strong>Key Focus:</strong> Increase intensity, deeper fungal die-off</p>
+
+        <div class="time-slot">
+          <div class="time-label">Supplement Increases</div>
+          <ul>
+            <li>Oregano oil: Increase to 3 capsules, 2x daily</li>
+            <li>Caprylic acid: Increase to 1500mg daily</li>
+          </ul>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Additional Practices</div>
+          <ul>
+            <li>Consider enema if comfortable (greatly helps elimination)</li>
+            <li>Epsom salt bath with essential oils (tea tree, lavender)</li>
+            <li>Increase raw garlic intake (eat 3-4 cloves throughout day)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p>
+          <strong>Days 4-7 Pattern:</strong> Continue the same structure, rotating between Day 1, 2, and 3 meal
+          patterns. Gradually increase oregano oil and garlic intake. By Day 7, you should be taking oregano oil 3
+          capsules twice daily and consuming 4-6 cloves of raw garlic daily.
+        </p>
+      </div>
+
+      <div class="tip-box">
+        <p>
+          <strong>💡 Die-Off Management (Days 3-7):</strong> If you experience fatigue, headaches, or digestive upset,
+          this is normal fungal die-off. Support with extra binders, switch to baking soda morning elixir, and take
+          extra Epsom salt baths.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="phase-header phase-3">🎯 Phase 3: The Main Event - Parasite Elimination (Days 8-21)</div>
+
+      <p>
+        <strong>This is the core of the protocol.</strong> You will continue all liver support and fungal support while
+        adding aggressive parasite-targeting compounds.
+      </p>
+
+      <div class="warning-box">
+        <p>
+          <strong>⚠️ Prepare for The Main Event:</strong> Days 10-17 can involve significant die-off symptoms as
+          parasites are eliminated. This is NORMAL and means the protocol is working. Symptoms may include fatigue, mood
+          changes, digestive changes, skin breakouts, or flu-like symptoms. Support elimination aggressively during this
+          time.
+        </p>
+      </div>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 8: Parasite Protocol Initiation</h3>
+
+        <div class="time-slot">
+          <div class="time-label">Morning (7:00 AM)</div>
+          <p>
+            <strong>Morning Elixir:</strong> Sole Water (build strength for upcoming die-off)<br>
+            <strong>Binders:</strong> Activated charcoal (2 capsules)
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Breakfast (8:00 AM) - PARASITE-FIGHTING BREAKFAST</div>
+          <p>
+            <strong>Food:</strong> Fresh papaya bowl with papaya seeds (chew 1 tbsp seeds thoroughly - they're bitter
+            but powerful). Top with coconut flakes, raw pumpkin seeds (¼ cup), pinch ground cloves. Side: scrambled eggs
+            with garlic and onions.
+          </p>
+          <p><strong>NEW Parasite Supplements:</strong></p>
+          <ul>
+            <li>Black walnut hull extract (500mg)</li>
+            <li>Wormwood (200mg)</li>
+            <li>Clove capsules (500mg)</li>
+          </ul>
+          <p>
+            <strong>Continue:</strong> Oregano oil (2 caps), Caprylic acid (1000mg), Probiotic, Digestive enzyme, Milk
+            thistle (300mg), Dandelion root (500mg)
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Mid-Morning (10:00 AM)</div>
+          <div class="juice-recipe">
+            <div class="recipe-title">🍍 Parasite-Killing Juice: Pineapple Power</div>
+            <ul>
+              <li>1 cup fresh pineapple (bromelain breaks down parasite coating)</li>
+              <li>½ cup papaya</li>
+              <li>Juice of 1 lime</li>
+              <li>1-inch ginger</li>
+              <li>Pinch cayenne</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Lunch (12:30 PM)</div>
+          <p>
+            <strong>Food:</strong> Large salad with raw pumpkin seeds (⅓ cup), minced raw garlic (2 cloves), red onion,
+            sprouts. Grilled wild salmon. Fermented vegetables (3 tbsp).
+          </p>
+          <p><strong>New Supplements:</strong> Berberine (500mg), Grapefruit seed extract (100mg)</p>
+          <p><strong>Continue:</strong> NAC (600mg), Alpha-lipoic acid (300mg), Selenium (200mcg), B-complex</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">2:30 PM - CRITICAL TIMING</div>
+          <p>
+            <strong>Diatomaceous Earth:</strong> 1 tsp in 8oz water (take 2 hours away from food and supplements).
+            Follow with additional 8oz water.
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Dinner (6:30 PM)</div>
+          <p>
+            <strong>Food:</strong> Grass-fed beef or lamb loaded with garlic (4+ cloves), onions, fresh oregano, thyme.
+            Roasted pumpkin cubes. Steamed broccoli. Fermented vegetables.
+          </p>
+          <p><strong>Parasite Formula (REPEAT):</strong> Black walnut (500mg), Wormwood (200mg), Clove (500mg)</p>
+          <p>
+            <strong>Continue:</strong> Oregano oil (2 caps), Digestive enzyme, Milk thistle (300mg), Artichoke extract
+            (500mg)
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Before Bed (9:30 PM)</div>
+          <p>
+            <strong>Heavy Binders:</strong> Psyllium husk (1 heaping tsp) + activated charcoal (2 capsules) with 16oz
+            water
+          </p>
+          <p><strong>Consider:</strong> Enema 2-3x per week during parasite phase (helps eliminate dead parasites)</p>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 9</h3>
+
+        <div class="time-slot">
+          <div class="time-label">Morning Changes</div>
+          <p>
+            <strong>Morning Elixir:</strong> Add ½ tsp diatomaceous earth directly to morning water<br>
+            <strong>Breakfast:</strong> Coconut yogurt with pumpkin seeds, ground cloves, cinnamon + Green smoothie with
+            pumpkin seed oil
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Juice Focus</div>
+          <div class="juice-recipe">
+            <div class="recipe-title">🥬 Green Warrior</div>
+            <ul>
+              <li>1 cup kale</li>
+              <li>1 green apple</li>
+              <li>½ cucumber</li>
+              <li>Large handful cilantro (begins metal chelation preparation)</li>
+              <li>1-inch ginger, juice of ½ lemon</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <h3>🚨 DAYS 10-14: PEAK PARASITE ELIMINATION</h3>
+        <p>
+          <strong>This is the most intense phase.</strong> Parasite die-off may cause significant symptoms. This is
+          NORMAL and means it's working.
+        </p>
+
+        <p><strong>Increased Supplement Dosages:</strong></p>
+        <ul>
+          <li><strong>Black walnut hull:</strong> Increase to 1000mg, 2x daily</li>
+          <li><strong>Wormwood:</strong> Increase to 300mg, 2x daily</li>
+          <li><strong>Clove:</strong> Increase to 1000mg, 2x daily</li>
+          <li><strong>Oregano oil:</strong> 3 capsules, 2x daily</li>
+          <li><strong>Probiotics:</strong> Double to 100 billion CFU daily</li>
+        </ul>
+
+        <p><strong>Daily Practices Days 10-14:</strong></p>
+        <ul class="checklist">
+          <li>Water intake: 12+ glasses daily</li>
+          <li>Dry brushing twice daily</li>
+          <li>Daily Epsom salt baths (2 cups salt, 30 min)</li>
+          <li>Enemas 2-3x this week</li>
+          <li>Extra rest and sleep</li>
+          <li>Gentle movement only</li>
+        </ul>
+      </div>
+
+      <div class="success-box">
+        <p><strong>Emergency Die-Off Protocol (If Symptoms Are Severe):</strong></p>
+        <ol>
+          <li>Drink: 8oz water + ½ tsp baking soda + juice of ½ lemon</li>
+          <li>Wait 30 minutes</li>
+          <li>Take extra binders: Activated charcoal (3 capsules)</li>
+          <li>Drink 16oz water</li>
+          <li>Take immediate Epsom salt + baking soda bath</li>
+          <li>Rest completely</li>
+        </ol>
+      </div>
+
+      <div class="info-box">
+        <p><strong>Days 15-17: Maintenance Parasite Phase</strong></p>
+        <p>
+          Continue high parasite formula dosages. Add Modified Citrus Pectin (1000mg, 2x daily) to begin gentle metal
+          binding. Consider intermittent fasting (14-16 hours overnight) - fasting is hostile to parasites.
+        </p>
+      </div>
+
+      <div class="info-box">
+        <p><strong>Days 18-21: Parasite Protocol Completion</strong></p>
+        <p>
+          Begin reducing parasite formula intensity. Add chlorella gradually (500mg Days 18-19, then 1000mg Days 20-21).
+          Dramatically increase cilantro in all meals and juices to prepare for heavy metal phase.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="phase-header phase-4">⚡ Phase 4: The Epilogue - Heavy Metal Detox (Days 22-28)</div>
+
+      <p>
+        <strong>The final cleanse.</strong> With parasites eliminated and liver pathways flowing, we can safely chelate
+        heavy metals from deep tissues.
+      </p>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 22: Heavy Metal Detox Initiation</h3>
+
+        <div class="time-slot">
+          <div class="time-label">Morning (7:00 AM)</div>
+          <p><strong>Morning Elixir:</strong> Return to Sole Water (minerals help bind and escort metals)</p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Breakfast (8:00 AM) - HEAVY METAL SMOOTHIE</div>
+          <div class="juice-recipe">
+            <div class="recipe-title">🫐 The Heavy Metal Smoothie (Critical Formula)</div>
+            <ul>
+              <li>1 cup wild blueberries (frozen acceptable - must be WILD, not regular)</li>
+              <li>1 ripe banana</li>
+              <li>1-2 cups fresh cilantro (packed)</li>
+              <li>1 tsp spirulina powder</li>
+              <li>1 tsp chlorella powder</li>
+              <li>1 cup coconut water or filtered water</li>
+              <li>Optional: 1 tbsp almond butter</li>
+            </ul>
+          </div>
+
+          <p><strong>Heavy Metal Chelator Supplements:</strong></p>
+          <ul>
+            <li>Chlorella tablets (3000mg)</li>
+            <li>Spirulina (2000mg if not using powder)</li>
+            <li>Modified citrus pectin (1500mg)</li>
+          </ul>
+
+          <p>
+            <strong>Continue:</strong> Milk thistle (300mg), NAC (600mg), Alpha-lipoic acid (300mg), Reduced oregano oil
+            (1 cap), Probiotic, Digestive enzyme
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Mid-Morning (10:30 AM)</div>
+          <div class="juice-recipe">
+            <div class="recipe-title">🌿 Cilantro Detox</div>
+            <ul>
+              <li>2 cups fresh cilantro (packed)</li>
+              <li>2 green apples</li>
+              <li>1 cucumber</li>
+              <li>Juice of 1 lemon</li>
+              <li>1-inch ginger</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Lunch (12:30 PM)</div>
+          <p>
+            <strong>Heavy Metal Detox Salad:</strong> Mixed greens with massive amounts cilantro (1 cup) and parsley (½
+            cup). Add Atlantic dulse seaweed flakes (1 tbsp), cucumber, celery. Wild-caught salmon. Fermented
+            vegetables.
+          </p>
+
+          <p>
+            <strong>Supplements:</strong> Chlorella (3000mg), Zeolite (800mg), Modified citrus pectin (1500mg), Vitamin
+            C (1500mg), Selenium (200mcg), B-complex
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Dinner (6:30 PM)</div>
+          <p>
+            <strong>Cilantro-Heavy Dinner:</strong> Use cilantro and parsley as salad base (2+ cups combined). Grilled
+            wild fish. Roasted vegetables with coconut oil. Sprinkle with dulse flakes.
+          </p>
+
+          <p>
+            <strong>Supplements:</strong> Chlorella (3000mg), Spirulina (2000mg), Modified citrus pectin (1500mg),
+            Glutathione (500mg), Milk thistle (300mg), Artichoke extract (500mg)
+          </p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p><strong>Days 23-28: Intensive Heavy Metal Chelation</strong></p>
+        <p>Continue the exact structure from Day 22. The key is consistency:</p>
+        <ul>
+          <li>
+            <strong>Daily Heavy Metal Smoothie</strong> (wild blueberries, cilantro, spirulina, chlorella, banana)
+          </li>
+          <li><strong>Cilantro in EVERY meal</strong> (2-4 cups total daily)</li>
+          <li><strong>Daily chlorella:</strong> 9000mg total (3000mg, 3x daily)</li>
+          <li><strong>Wild blueberries daily</strong></li>
+          <li><strong>Dulse seaweed daily</strong></li>
+        </ul>
+      </div>
+
+      <div class="success-box">
+        <p><strong>Heavy Metal Detox Practices (Days 22-28):</strong></p>
+        <ul class="checklist">
+          <li>Water intake: 12-15 glasses daily (flush metals through kidneys)</li>
+          <li>Daily Epsom salt baths (critical - pulls metals through skin)</li>
+          <li>Infrared sauna or hot yoga (sweating removes metals)</li>
+          <li>Continue dry brushing twice daily</li>
+          <li>Castor oil pack over liver 3-4x this week</li>
+          <li>Maintain 2-3+ bowel movements daily</li>
+        </ul>
+      </div>
+
+      <div class="day-schedule">
+        <h3>📅 DAY 28: Protocol Completion Ceremony</h3>
+
+        <div class="time-slot">
+          <div class="time-label">Morning Reflection</div>
+          <p>
+            Complete your final Heavy Metal Smoothie. Take a moment to acknowledge what you've accomplished over these
+            28 days.
+          </p>
+        </div>
+
+        <div class="time-slot">
+          <div class="time-label">Evening Completion</div>
+          <p><strong>Final Protocol Elements:</strong></p>
+          <ul>
+            <li>Extra binders (prepare for continued elimination)</li>
+            <li>Long Epsom salt bath (45 minutes)</li>
+            <li>Journal about your experience and progress</li>
+            <li>Plan your maintenance protocol</li>
+            <li>Celebrate your commitment and completion!</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>📋 Quick Reference Guide</h2>
+
+      <div class="info-box">
+        <h3>🌅 Morning Ritual Quick Guide</h3>
+        <p><strong>Every morning, choose ONE:</strong></p>
+        <ol>
+          <li><strong>Sole Water:</strong> ¼-½ tsp salt + ½ lemon + 8-16oz water (for energy, minerals)</li>
+          <li><strong>Baking Soda:</strong> ¼-½ tsp baking soda + ½ lemon + 8-16oz water (for die-off symptoms)</li>
+          <li>
+            <strong>Complete Elixir:</strong> ¼ tsp each salt &amp; baking soda + ½ lemon + 12-16oz water (maximum support)
+          </li>
+        </ol>
+        <p><strong>Always:</strong> Wait 20 min → Take binders → Wait 30 min → Eat breakfast</p>
+      </div>
+
+      <h3>Supplement Schedule At-A-Glance</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Days</th>
+            <th>Key Supplements</th>
+            <th>Focus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Phase 1 (Liver)</td>
+            <td>1-28</td>
+            <td>Milk thistle, NAC, Alpha-lipoic acid, Dandelion, Artichoke</td>
+            <td>Continuous liver support</td>
+          </tr>
+          <tr>
+            <td>Phase 2 (Fungal)</td>
+            <td>1-7</td>
+            <td>Oregano oil, Caprylic acid, Probiotics, Pau d'arco</td>
+            <td>Starve and weaken fungus</td>
+          </tr>
+          <tr>
+            <td>Phase 3 (Parasite)</td>
+            <td>8-21</td>
+            <td>Black walnut, Wormwood, Clove, Berberine, DE</td>
+            <td>Eliminate parasites</td>
+          </tr>
+          <tr>
+            <td>Phase 4 (Metals)</td>
+            <td>22-28</td>
+            <td>Chlorella, Spirulina, MCP, Zeolite, Vitamin C</td>
+            <td>Chelate heavy metals</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Binder Protocol</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Binder</th>
+            <th>Timing</th>
+            <th>Dosage</th>
+            <th>Important Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Activated Charcoal</td>
+            <td>Morning + Before bed</td>
+            <td>2-4 capsules</td>
+            <td>Take 2 hours away from food/supplements. Increase during die-off.</td>
+          </tr>
+          <tr>
+            <td>Bentonite Clay</td>
+            <td>Afternoon (3 PM)</td>
+            <td>1 tsp in water</td>
+            <td>Stir and drink immediately. Follow with extra water.</td>
+          </tr>
+          <tr>
+            <td>Psyllium Husk</td>
+            <td>Before bed</td>
+            <td>1 heaping tsp</td>
+            <td>MUST drink 20oz total water. Creates bulk for elimination.</td>
+          </tr>
+          <tr>
+            <td>Diatomaceous Earth</td>
+            <td>2:30 PM (Days 8-21)</td>
+            <td>1 tsp</td>
+            <td>Parasite phase only. 2 hours from other supplements.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tip-box">
+        <p>
+          <strong>💡 Binder Tip:</strong> If constipated, increase psyllium husk and water. If experiencing severe
+          die-off, add extra activated charcoal doses (2 caps) between meals.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>🏆 The 5 Pillars of Success</h2>
+
+      <p>
+        These five principles will determine your success with this protocol. Master these, and you will achieve
+        complete elimination.
+      </p>
+
+      <div class="pillar-card">
+        <h3><span class="pillar-number">1</span>Elimination is Everything</h3>
+        <p>
+          You <strong>MUST</strong> have 2-3 bowel movements daily. Toxins are leaving through your colon. If they stay
+          trapped, they recirculate and cause symptoms.
+        </p>
+        <p><strong>Action Steps:</strong></p>
+        <ul>
+          <li>Increase binders if elimination is slow</li>
+          <li>Drink more water (12+ glasses daily)</li>
+          <li>Add magnesium citrate (400mg at night) if needed</li>
+          <li>Consider enemas during parasite phase (2-3x per week)</li>
+          <li>Take vitamin C to bowel tolerance if constipated</li>
+        </ul>
+      </div>
+
+      <div class="pillar-card">
+        <h3><span class="pillar-number">2</span>Binders Are Non-Negotiable</h3>
+        <p>
+          Binders capture toxins as they're released and escort them out. Without binders, toxins recirculate through
+          enterohepatic circulation, causing worse symptoms than if you hadn't started the cleanse.
+        </p>
+        <p><strong>Action Steps:</strong></p>
+        <ul>
+          <li>Take binders 2 hours away from food and supplements (they bind everything)</li>
+          <li>Increase binder dosage during die-off symptoms</li>
+          <li>Always drink extra water with binders (16-20oz)</li>
+          <li>Don't skip binders even if feeling good—toxins are still releasing</li>
+          <li>Keep extra activated charcoal on hand for emergencies</li>
+        </ul>
+      </div>
+
+      <div class="pillar-card">
+        <h3><span class="pillar-number">3</span>Liver Support is the Foundation</h3>
+        <p>
+          Your liver processes every single toxin, pathogen, and metabolic waste product. During this protocol, it's
+          working overtime. Support it aggressively or risk overwhelming your detox capacity.
+        </p>
+        <p><strong>Action Steps:</strong></p>
+        <ul>
+          <li>3 liver juices daily—no exceptions (minimum 1 if time-constrained)</li>
+          <li>Take liver supplements twice daily throughout all 28 days</li>
+          <li>Castor oil packs over liver 3-4x per week</li>
+          <li>Avoid alcohol, processed foods, and excess caffeine</li>
+          <li>Support bile flow with bitter foods (arugula, dandelion, artichoke)</li>
+        </ul>
+      </div>
+
+      <div class="pillar-card">
+        <h3><span class="pillar-number">4</span>Die-Off is Normal—Support It</h3>
+        <p>
+          Feeling worse temporarily means it's <em>working</em>. When parasites, fungi, and pathogens die, they release
+          toxins. This is called a Herxheimer reaction or "die-off." It's temporary and manageable.
+        </p>
+        <p><strong>Action Steps:</strong></p>
+        <ul>
+          <li>Expect Days 10-14 to be the most challenging</li>
+          <li>Increase binders during die-off (take 3-4x daily if needed)</li>
+          <li>Switch to baking soda morning elixir for alkalizing support</li>
+          <li>Take daily Epsom salt + baking soda baths (pulls toxins through skin)</li>
+          <li>Rest more, reduce exercise intensity temporarily</li>
+          <li>Stay hydrated (12-15 glasses water during peak die-off)</li>
+          <li>Don't quit—die-off means you're winning</li>
+        </ul>
+      </div>
+
+      <div class="pillar-card">
+        <h3><span class="pillar-number">5</span>Sequence Matters—Trust the Process</h3>
+        <p>
+          This protocol is sequenced for maximum effectiveness and safety. Liver first, fungus second, parasites third,
+          metals last. Don't skip phases or change the order.
+        </p>
+        <p><strong>Action Steps:</strong></p>
+        <ul>
+          <li>Complete the full 7 days of fungal pre-conditioning before adding parasite formula</li>
+          <li>Don't start heavy metal chelation before Day 22</li>
+          <li>Continue liver support throughout all phases</li>
+          <li>Follow supplement dosage increases as directed</li>
+          <li>Trust that each phase prepares you for the next</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>🔧 Troubleshooting Common Issues</h2>
+
+      <div class="day-schedule">
+        <h3>Constipation</h3>
+        <div class="time-slot">
+          <div class="time-label">Immediate Actions:</div>
+          <ul>
+            <li>Increase water intake to 15+ glasses daily</li>
+            <li>Double psyllium husk dose (2 tsp before bed with 24oz water)</li>
+            <li>Add magnesium citrate 400-600mg at night</li>
+            <li>Take vitamin C to bowel tolerance (increase by 1000mg every hour until bowels move)</li>
+            <li>Do enema or consider colonic</li>
+          </ul>
+        </div>
+        <div class="time-slot">
+          <div class="time-label">Ongoing Prevention:</div>
+          <ul>
+            <li>Increase healthy fats (olive oil, avocado, coconut oil)</li>
+            <li>More raw vegetables and salads</li>
+            <li>Morning movement (walking, yoga)</li>
+            <li>Castor oil packs over abdomen</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>Severe Die-Off Symptoms</h3>
+        <div class="time-slot">
+          <div class="time-label">Symptoms May Include:</div>
+          <p>Extreme fatigue, severe headache, body aches, nausea, dizziness, irritability, brain fog</p>
+        </div>
+        <div class="time-slot">
+          <div class="time-label">Emergency Protocol:</div>
+          <ol>
+            <li>Stop all anti-parasitic/antifungal supplements for 24 hours</li>
+            <li>Drink baking soda water (½ tsp in 8oz water) immediately</li>
+            <li>Take activated charcoal (4 capsules) with 20oz water</li>
+            <li>Take immediate Epsom salt bath (2 cups salt, 1 cup baking soda, 30-45 min)</li>
+            <li>Rest completely—sleep if possible</li>
+            <li>Drink 20+ glasses water over next 24 hours</li>
+            <li>Consider enema to flush toxins</li>
+            <li>Resume protocol at 50% dosage the next day, then gradually increase</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>Nausea</h3>
+        <div class="time-slot">
+          <div class="time-label">Solutions:</div>
+          <ul>
+            <li>Take all supplements with food (never on empty stomach)</li>
+            <li>Reduce parasite formula by 50% temporarily</li>
+            <li>Increase ginger intake (fresh ginger tea, ginger juice, crystallized ginger)</li>
+            <li>Switch to smaller, more frequent meals (5-6 per day)</li>
+            <li>Drink peppermint tea between meals</li>
+            <li>Temporarily reduce fat intake if severe</li>
+            <li>Take digestive enzymes with every meal</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>Insomnia / Sleep Disruption</h3>
+        <div class="time-slot">
+          <div class="time-label">Solutions:</div>
+          <ul>
+            <li>Take magnesium glycinate (400-600mg) 1 hour before bed</li>
+            <li>Do Epsom salt bath before bed (magnesium absorbs through skin)</li>
+            <li>Avoid stimulating supplements after 3 PM (oregano oil, some antiparasitics)</li>
+            <li>Drink chamomile or passionflower tea before bed</li>
+            <li>Practice deep breathing or meditation</li>
+            <li>Ensure room is completely dark and cool</li>
+            <li>Consider L-theanine (200mg) before bed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>Low Energy / Extreme Fatigue</h3>
+        <div class="time-slot">
+          <div class="time-label">Understanding:</div>
+          <p>
+            This is common during parasite phase. Your body is using massive energy to eliminate pathogens and heal.
+          </p>
+        </div>
+        <div class="time-slot">
+          <div class="time-label">Support Strategies:</div>
+          <ul>
+            <li>REST MORE—sleep 8-9 hours, take naps</li>
+            <li>Reduce exercise intensity (gentle walks only during Days 10-17)</li>
+            <li>Increase B-complex dosage (take 2x daily if needed)</li>
+            <li>Add extra vitamin C (2000-3000mg daily)</li>
+            <li>Ensure adequate protein and healthy fats at each meal</li>
+            <li>Use sole water (salt + lemon) every morning for adrenal support</li>
+            <li>Don't push through—honor your body's need for rest</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="day-schedule">
+        <h3>Skin Breakouts / Rashes</h3>
+        <div class="time-slot">
+          <div class="time-label">Why This Happens:</div>
+          <p>Skin is your largest detox organ. Toxins are being pushed out through all channels.</p>
+        </div>
+        <div class="time-slot">
+          <div class="time-label">Solutions:</div>
+          <ul>
+            <li>This is GOOD—toxins are leaving</li>
+            <li>Increase binders to capture more toxins internally</li>
+            <li>Daily Epsom salt baths help draw toxins out</li>
+            <li>Dry brushing before shower stimulates lymph and skin elimination</li>
+            <li>Stay hydrated (helps flush through kidneys instead of skin)</li>
+            <li>Apply bentonite clay masks to breakout areas</li>
+            <li>Don't suppress with harsh chemicals—support the process</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🔄 Post-Protocol: Maintenance Phase</h2>
+
+      <div class="success-box">
+        <p>
+          <strong>Congratulations!</strong> You've completed 28 days of intensive detoxification. Now it's time to
+          maintain your progress and prevent re-accumulation.
+        </p>
+      </div>
+
+      <h3>Continue Daily (Indefinitely):</h3>
+      <ul class="checklist">
+        <li>Morning tongue scraping + lemon water (with or without salt)</li>
+        <li>1-2 liver support juices daily (minimum 4-5x per week)</li>
+        <li>Milk thistle and NAC (5 days per week)</li>
+        <li>Daily probiotics (50+ billion CFU)</li>
+        <li>Digestive enzymes with meals</li>
+        <li>Anti-inflammatory, whole foods diet (avoid sugar, processed foods, gluten, dairy)</li>
+        <li>8-10 glasses filtered water daily</li>
+      </ul>
+
+      <h3>Continue Weekly:</h3>
+      <ul class="checklist">
+        <li>Epsom salt baths (2-3x per week)</li>
+        <li>Dry brushing (daily or 5x per week)</li>
+        <li>Fermented foods with meals</li>
+        <li>Raw garlic several times per week</li>
+        <li>Pumpkin seeds regularly (anti-parasitic maintenance)</li>
+      </ul>
+
+      <h3>Continue Monthly:</h3>
+      <ul class="checklist">
+        <li>3-day mini parasite cleanse (oregano oil, garlic, pumpkin seeds, clove tea, wormwood tea)</li>
+        <li>Heavy metal smoothie 3-4x per week (cilantro, wild blueberries, chlorella)</li>
+        <li>Full moon parasite support (parasites are more active during full moon—increase garlic and anti-parasitics)
+        </li>
+      </ul>
+
+      <h3>Repeat Full Protocol:</h3>
+      <div class="info-box">
+        <p><strong>Timing Recommendations:</strong></p>
+        <ul>
+          <li><strong>First year:</strong> Repeat complete 28-day protocol every 6 months</li>
+          <li><strong>Maintenance:</strong> Complete protocol annually at minimum</li>
+          <li><strong>If exposed to parasites:</strong> After international travel, after pet infection, or if symptoms
+            return
+          </li>
+        </ul>
+      </div>
+
+      <h3>Lifestyle Factors for Long-Term Success:</h3>
+      <div class="pillar-card">
+        <ul>
+          <li><strong>Diet:</strong> Emphasize whole foods, minimize sugar (feeds fungus and parasites)</li>
+          <li><strong>Water:</strong> Continue drinking filtered water (avoid recontamination)</li>
+          <li><strong>Stress:</strong> Manage stress (weakens immunity and allows pathogens to thrive)</li>
+          <li><strong>Sleep:</strong> Prioritize 7-9 hours (body detoxifies during deep sleep)</li>
+          <li><strong>Movement:</strong> Regular exercise supports lymphatic drainage</li>
+          <li><strong>Hygiene:</strong> Wash hands thoroughly, especially after handling raw meat or pet waste</li>
+          <li><strong>Pet care:</strong> Deworm pets regularly (most household parasites come from pets)</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="motivation-section">
+      <h2>🌟 The Science of Getting Your Health Back</h2>
+
+      <div style="text-align: left; max-width: 700px; margin: 30px auto;">
+        <h3 style="color: white; border: none; padding: 0;">💭 Think:</h3>
+        <p>
+          Understand <em>why</em> each phase matters. You're not just taking supplements—you're systematically
+          dismantling layers of toxic burden that have accumulated over years or decades.&nbsp;</p>
+
+        <h3 style="color: white; border: none; padding: 0; margin-top: 25px;">🙏 Believe:</h3>
+        <p>
+          Trust that your body knows how to heal when given the right tools. Your liver wants to detoxify. Your immune
+          system wants to eliminate parasites. Your cells want to release heavy metals. These protocols have worked for
+          thousands of people. They will work for you.
+        </p>
+
+        <h3 style="color: white; border: none; padding: 0; margin-top: 25px;">⚡ Act:</h3>
+        <p>
+          Follow the protocol exactly as written. Don't skip steps. Don't improvise until you've completed it once.
+          Don't quit during die-off. This is your practical treatise for elimination. After you have followed it faithfully -nearly religiously - at least once, then you can start to improvise and start personalizing the protocol.</p>
+      </div>
+
+      <div style="border-top: 2px solid rgba(255,255,255,0.3); margin: 40px auto; padding-top: 30px; max-width: 700px;">
+        <p style="font-size: 1.3em; font-weight: 500;">
+          <strong>Everything you need is here.</strong>
+        </p>
+        <p style="font-size: 1.1em;">No more confusion. No more "where do I start?"</p>
+        <p style="font-size: 1.2em; margin-top: 25px;">
+          You start at <strong>Day 1, Phase 1</strong>, with a tongue scraper and lemon water.
+        </p>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.15); padding: 30px; border-radius: 8px; margin-top: 40px;">
+        <p style="font-size: 1.4em; font-weight: 600; margin: 0 0 15px 0;">Now Go Execute.</p>
+        <p style="font-size: 1.1em; margin: 0;">Your body has been waiting for this.</p>
+      </div>
+
+      <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2);">
+        <p style="font-size: 0.9em; opacity: 0.8;">
+          <em>The Aura Reset Protocol</em>
+          © 2025 Aura Reset</p><p style="font-size: 0.9em; opacity: 0.8;"><br></p>
+      </div>
+    </section>
+
+  
+</body></html>
