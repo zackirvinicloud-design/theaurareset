@@ -44,13 +44,13 @@ export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => 
             setOpen(false);
           }}
           className={cn(
-            "w-full text-left px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm",
+            "w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-2 text-sm",
             activeSection === section.id
               ? "bg-primary text-primary-foreground font-medium"
-              : "hover:bg-muted"
+              : "hover:bg-muted text-foreground"
           )}
         >
-          <span>{section.emoji}</span>
+          <span className="text-base">{section.emoji}</span>
           <span className="truncate">{section.title}</span>
         </button>
       ))}
@@ -66,14 +66,14 @@ export const ProtocolNav = ({ activeSection, onNavigate }: ProtocolNavProps) => 
             <Button
               variant="outline"
               size="icon"
-              className="fixed top-4 left-4 z-50 bg-background shadow-lg"
+              className="fixed top-4 left-4 z-50 bg-background shadow-lg h-12 w-12"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 overflow-y-auto">
+          <SheetContent side="left" className="w-80 overflow-y-auto pt-10">
             <div className="mb-6">
-              <h2 className="font-serif text-xl font-bold">Contents</h2>
+              <h2 className="font-serif text-2xl font-bold">Contents</h2>
             </div>
             <NavContent />
           </SheetContent>
