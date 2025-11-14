@@ -72,16 +72,17 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
 
   return (
     <>
-      {/* Mobile Menu - Top Right */}
-      <div className="lg:hidden">
+      {/* Mobile Header Bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-md border-b border-border/40 z-50 flex items-center justify-between px-4">
+        <h1 className="font-serif text-lg font-bold truncate">Aura Reset Protocol</h1>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="fixed top-4 right-4 z-50 bg-background/60 backdrop-blur-md border-border/40 shadow-lg h-12 w-12 hover:bg-background/80 transition-all"
+              className="h-10 w-10 shrink-0"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-80 overflow-y-auto pt-10">

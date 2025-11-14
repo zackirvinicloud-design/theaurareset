@@ -100,7 +100,7 @@ const Index = () => {
       />
       
       {/* Main Content */}
-      <div className="lg:ml-64">
+      <div className="lg:ml-64 pt-14 lg:pt-0">
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
