@@ -42,10 +42,14 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
     let assistantContent = '';
     const assistantMsg = addMessage({ role: 'assistant', content: '' });
 
+    // Build enhanced context with user progress
+    const phaseNames = ['Liver Support', 'Fungal & Viral', 'Parasites', 'Heavy Metals & Mold'];
+    const enhancedContext = `Day ${userProgress.currentDay} of 28, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`;
+
     try {
       await streamChat({
         messages: [...messages, { id: '0', role: 'user', content, timestamp: Date.now() }],
-        context,
+        context: enhancedContext,
         onDelta: (chunk) => {
           assistantContent += chunk;
           updateLastMessage(assistantContent);
