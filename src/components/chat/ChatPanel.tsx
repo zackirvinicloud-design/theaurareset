@@ -7,8 +7,7 @@ import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
 import { ProgressCard } from './ProgressCard';
 import { JournalHistory } from './JournalHistory';
-import { SymptomsTracker } from '../symptoms/SymptomsTracker';
-import { SymptomsInsights } from '../symptoms/SymptomsInsights';
+import { SymptomsDrawer } from '../symptoms/SymptomsDrawer';
 import { useChatStore } from '@/hooks/useChatStore';
 import { useSymptomsStore } from '@/hooks/useSymptomsStore';
 import { streamChat } from '@/utils/streamChat';
@@ -140,6 +139,10 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           </Button>
         </div>
         <div className="flex gap-1 flex-shrink-0 ml-2">
+          <SymptomsDrawer
+            currentDay={userProgress.currentDay}
+            currentPhase={userProgress.currentPhase}
+          />
           <JournalHistory />
           <Button
             variant="ghost"
@@ -171,15 +174,6 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         onNextDay={handleNextDay}
         onAdjust={() => setSettingsOpen(true)}
       />
-
-      {/* Symptoms Tracking */}
-      <div className="px-3 py-2 space-y-3">
-        <SymptomsTracker
-          currentDay={userProgress.currentDay}
-          currentPhase={userProgress.currentPhase}
-        />
-        <SymptomsInsights />
-      </div>
 
       {/* Messages */}
       <ScrollArea className="flex-1 pt-4 px-4" ref={scrollRef}>
