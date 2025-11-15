@@ -109,14 +109,14 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   };
 
   return (
-    <div className={cn("flex flex-col h-full bg-background", className)}>
+    <div className={cn("flex flex-col h-full glass-card", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border">
+      <div className="flex items-center justify-between p-3 border-b border-border/20">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-sm truncate">Protocol Companion</h3>
-            <p className="text-xs text-muted-foreground truncate">
+            <h3 className="font-semibold text-sm truncate tracking-tight">Protocol Companion</h3>
+            <p className="text-xs text-muted-foreground/80 truncate">
               Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
             </p>
           </div>

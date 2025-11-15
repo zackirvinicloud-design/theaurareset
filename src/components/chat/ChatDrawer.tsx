@@ -13,17 +13,14 @@ export const ChatDrawer = ({ context }: ChatDrawerProps) => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="flex items-center gap-3 p-4 pb-safe cursor-pointer active:opacity-70 transition-opacity">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-muted-foreground truncate">
-                Ask about the protocol...
-              </p>
-            </div>
-          </div>
+        {/* Mobile: Persistent Chat Bar */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 glass border-t border-border/20">
+          <button
+            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200 text-left shadow-sm hover:shadow-md"
+          >
+            <MessageSquare className="w-5 h-5 text-primary flex-shrink-0" />
+            <span className="text-sm text-muted-foreground/80">Ask about the protocol...</span>
+          </button>
         </div>
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0">
