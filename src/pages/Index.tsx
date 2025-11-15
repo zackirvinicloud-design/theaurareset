@@ -112,7 +112,7 @@ const Index = () => {
       />
       
       {/* Main Content */}
-      <div className={`lg:ml-64 pt-14 lg:pt-0 transition-all duration-300 ${chatOpen ? 'lg:mr-80' : ''}`}>
+      <div className={`lg:ml-64 pt-14 lg:pt-0 pb-24 lg:pb-0 transition-all duration-300 ${chatOpen ? 'lg:mr-80' : ''}`}>
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
