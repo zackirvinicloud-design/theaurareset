@@ -7,9 +7,8 @@ import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
 import { ProgressCard } from './ProgressCard';
 import { JournalHistory } from './JournalHistory';
-import { SymptomsDrawer } from '../symptoms/SymptomsDrawer';
+import { InsightsDrawer } from '../insights/InsightsDrawer';
 import { useChatStore } from '@/hooks/useChatStore';
-import { useSymptomsStore } from '@/hooks/useSymptomsStore';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -28,7 +27,6 @@ const SUGGESTED_PROMPTS = [
 
 export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
-  const { exportSymptomsData } = useSymptomsStore();
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -46,13 +44,9 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
     let assistantContent = '';
     const assistantMsg = addMessage({ role: 'assistant', content: '' });
 
-    // Build enhanced context with user progress and symptoms
+    // Build enhanced context with user progress
     const phaseNames = ['Liver Support', 'Fungal & Viral', 'Parasites', 'Heavy Metals & Mold'];
-    const symptomsData = exportSymptomsData();
-    const symptomsContext = symptomsData && JSON.parse(symptomsData).length > 0 
-      ? `\n\nUser's logged symptoms: ${symptomsData}` 
-      : '';
-    const enhancedContext = `Day ${userProgress.currentDay} of 28, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}${symptomsContext}`;
+    const enhancedContext = `Day ${userProgress.currentDay} of 28, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`;
 
     try {
       await streamChat({
@@ -139,10 +133,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           </Button>
         </div>
         <div className="flex gap-1 flex-shrink-0 ml-2">
-          <SymptomsDrawer
-            currentDay={userProgress.currentDay}
-            currentPhase={userProgress.currentPhase}
-          />
+          <InsightsDrawer />
           <JournalHistory />
           <Button
             variant="ghost"
