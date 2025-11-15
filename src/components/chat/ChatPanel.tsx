@@ -174,15 +174,6 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           </Button>
         </div>
         <div className="flex gap-1 flex-shrink-0 ml-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={handleDailyMotivation}
-            title="Daily motivation"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-          </Button>
           <InsightsDrawer />
           <JournalHistory />
           <Button
