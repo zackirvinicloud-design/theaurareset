@@ -20,14 +20,20 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         glass: {
-          DEFAULT: "rgba(255, 255, 255, 0.7)",
-          dark: "rgba(255, 255, 255, 0.1)",
+          DEFAULT: "rgba(255, 255, 255, 0.9)",
+          dark: "rgba(255, 255, 255, 0.05)",
         },
         phase: {
           1: "hsl(var(--phase-1))",
           2: "hsl(var(--phase-2))",
           3: "hsl(var(--phase-3))",
           4: "hsl(var(--phase-4))",
+        },
+        brand: {
+          blue: "hsl(var(--brand-blue))",
+          red: "hsl(var(--brand-red))",
+          "bg-start": "hsl(var(--brand-bg-start))",
+          "bg-end": "hsl(var(--brand-bg-end))",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
