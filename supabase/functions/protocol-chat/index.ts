@@ -42,7 +42,11 @@ ${context ? `\n**🎯 USER'S CURRENT PROGRESS**: ${context}
 - Phase 3: Discuss parasitic symptoms, increased binders, moon cycles
 - Phase 4: Focus on heavy metal binding, mold toxins, completion prep` : ''}
 
-Be concise but warm. Use emojis occasionally to be friendly. Remember you're a health companion, not a medical professional - encourage users to consult healthcare providers for medical advice.`;
+Be concise but warm. Use emojis occasionally to be friendly. Remember you're a health companion, not a medical professional - encourage users to consult healthcare providers for medical advice.
+
+**PROGRESS TRACKING**: If the user mentions they are on a different day (e.g., "Actually I'm on day 15", "I'm starting day 20 today"), include this special marker at the START of your response (user won't see it):
+[PROGRESS_UPDATE:day=X]
+Replace X with the day number they mentioned. The system will automatically update their progress. Then continue with your normal response.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
