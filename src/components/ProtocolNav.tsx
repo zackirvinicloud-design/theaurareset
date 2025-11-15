@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Download, FileText, Printer } from "lucide-react";
+import { Menu, Download, FileText, Printer, GraduationCap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { resetOnboarding } from "@/components/onboarding/OnboardingFlow";
 
 interface NavSection {
   id: string;
@@ -45,6 +46,12 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
   const handlePrint = () => {
     onPrint();
     setOpen(false);
+  };
+
+  const handleRestartTutorial = () => {
+    resetOnboarding();
+    setOpen(false);
+    window.location.reload();
   };
 
   const NavContent = () => (
@@ -108,6 +115,14 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
                 <Printer className="mr-2 h-4 w-4" />
                 Print / Save as PDF
               </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handleRestartTutorial}
+              >
+                <GraduationCap className="mr-2 h-4 w-4" />
+                Restart Tutorial
+              </Button>
             </div>
 
             <Separator className="my-4" />
@@ -143,6 +158,14 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
           >
             <Printer className="mr-2 h-4 w-4" />
             Print / Save PDF
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full justify-start text-sm"
+            onClick={handleRestartTutorial}
+          >
+            <GraduationCap className="mr-2 h-4 w-4" />
+            Restart Tutorial
           </Button>
         </div>
 
