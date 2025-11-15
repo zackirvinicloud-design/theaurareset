@@ -117,75 +117,75 @@ export const OnboardingFlow = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in">
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto animate-scale-in p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-3 animate-fade-in">
-            <div className="animate-scale-in" style={{ animationDelay: '0.1s' }}>
+          <DialogTitle className="text-xl sm:text-2xl flex items-center gap-3 animate-fade-in pr-8">
+            <div className="animate-scale-in flex-shrink-0" style={{ animationDelay: '0.1s' }}>
               {step.icon}
             </div>
-            <span className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <span className="animate-fade-in leading-tight" style={{ animationDelay: '0.2s' }}>
               {step.title}
             </span>
           </DialogTitle>
-          <DialogDescription className="text-base animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <DialogDescription className="text-sm sm:text-base animate-fade-in" style={{ animationDelay: '0.3s' }}>
             {step.description}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-6">
+        <div className="space-y-4 sm:space-y-6 py-4 sm:py-6">
           <Progress value={progress} className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }} />
           
-          <Card className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 border-2 animate-scale-in" style={{ animationDelay: '0.5s' }}>
-            <ul className="space-y-4">
+          <Card className="p-4 sm:p-6 bg-gradient-to-br from-muted/50 to-muted/30 border-2 animate-scale-in" style={{ animationDelay: '0.5s' }}>
+            <ul className="space-y-3 sm:space-y-4">
               {step.content.map((item, index) => (
                 <li 
                   key={index} 
-                  className="flex gap-3 animate-fade-in"
+                  className="flex gap-2 sm:gap-3 animate-fade-in"
                   style={{ animationDelay: `${0.6 + index * 0.1}s` }}
                 >
-                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-sm leading-relaxed">{item}</span>
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-xs sm:text-sm leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
           </Card>
 
-          <div className="flex items-center justify-between pt-4 animate-fade-in" style={{ animationDelay: '0.8s' }}>
-            <div className="flex gap-2">
+          <div className="flex items-center justify-between pt-4 gap-3 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+            <div className="flex gap-2 flex-shrink-0">
               {currentStep > 0 && (
                 <Button
                   variant="outline"
                   onClick={handleBack}
-                  className="gap-2"
+                  className="gap-2 h-10 px-4"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  Back
+                  <span className="hidden sm:inline">Back</span>
                 </Button>
               )}
               <Button
                 variant="ghost"
                 onClick={handleSkip}
+                className="h-10 px-3 sm:px-4 text-sm whitespace-nowrap"
               >
                 Skip Tutorial
               </Button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
                 {currentStep + 1} of {onboardingSteps.length}
               </span>
               <Button
                 onClick={handleNext}
-                className="gap-2 hover-scale"
+                className="gap-2 h-10 px-4 sm:px-6"
               >
-                {currentStep < onboardingSteps.length - 1 ? (
-                  <>
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  "Start Your Journey"
-                )}
+                <span className="hidden sm:inline">
+                  {currentStep < onboardingSteps.length - 1 ? "Next" : "Start Your Journey"}
+                </span>
+                <span className="sm:hidden">
+                  {currentStep < onboardingSteps.length - 1 ? "Next" : "Start"}
+                </span>
+                <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
           </div>

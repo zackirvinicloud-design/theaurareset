@@ -277,71 +277,71 @@ export const PhaseTutorial = ({ phase, isOpen, onClose }: PhaseTutorialProps) =>
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto animate-scale-in">
+      <DialogContent className="max-w-3xl w-[95vw] max-h-[90vh] overflow-y-auto animate-scale-in p-4 sm:p-6">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${tutorial.color} flex items-center justify-center text-white font-bold text-xl animate-fade-in`}>
+          <div className="flex items-center gap-3 pr-8">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r ${tutorial.color} flex items-center justify-center text-white font-bold text-lg sm:text-xl animate-fade-in flex-shrink-0`}>
               {phase}
             </div>
-            <div className="flex-1 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <DialogTitle className="text-2xl">{tutorial.title}</DialogTitle>
-              <DialogDescription className="text-base flex items-center gap-4 mt-1">
-                <Badge variant="outline" className="font-normal">
+            <div className="flex-1 min-w-0 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <DialogTitle className="text-lg sm:text-2xl leading-tight">{tutorial.title}</DialogTitle>
+              <DialogDescription className="text-xs sm:text-base flex flex-wrap items-center gap-2 sm:gap-4 mt-1">
+                <Badge variant="outline" className="font-normal text-xs">
                   {tutorial.duration}
                 </Badge>
-                <span>{tutorial.goal}</span>
+                <span className="text-xs sm:text-sm">{tutorial.goal}</span>
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-6">
+        <div className="space-y-4 sm:space-y-6 py-4 sm:py-6">
           <Progress value={progress} className="w-full animate-fade-in" />
           
-          <Card className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 border-2 animate-scale-in" style={{ animationDelay: '0.2s' }}>
-            <div className="flex items-start gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-background shadow-sm">
+          <Card className="p-4 sm:p-6 bg-gradient-to-br from-muted/50 to-muted/30 border-2 animate-scale-in" style={{ animationDelay: '0.2s' }}>
+            <div className="flex items-start gap-3 sm:gap-4 mb-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-background shadow-sm flex-shrink-0">
                 {section.icon}
               </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold mb-2">{section.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg sm:text-xl font-bold mb-2 leading-tight">{section.title}</h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   {section.content}
                 </p>
               </div>
             </div>
 
-            <div className="space-y-4 mt-6">
+            <div className="space-y-4 mt-4 sm:mt-6">
               <div className="space-y-2">
-                <h4 className="font-semibold text-sm uppercase tracking-wide text-primary flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
+                <h4 className="font-semibold text-xs sm:text-sm uppercase tracking-wide text-primary flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                   Key Actions
                 </h4>
                 <ul className="space-y-2">
                   {section.tips.map((tip, index) => (
                     <li 
                       key={index} 
-                      className="flex gap-3 text-sm animate-fade-in"
+                      className="flex gap-2 sm:gap-3 text-xs sm:text-sm animate-fade-in"
                       style={{ animationDelay: `${0.3 + index * 0.1}s` }}
                     >
-                      <Play className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                      <span>{tip}</span>
+                      <Play className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="leading-relaxed">{tip}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               {section.warnings && section.warnings.length > 0 && (
-                <div className="space-y-2 mt-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg animate-fade-in" style={{ animationDelay: '0.5s' }}>
-                  <h4 className="font-semibold text-sm uppercase tracking-wide text-orange-600 dark:text-orange-400 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4" />
+                <div className="space-y-2 mt-4 p-3 sm:p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                  <h4 className="font-semibold text-xs sm:text-sm uppercase tracking-wide text-orange-600 dark:text-orange-400 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     Important Warnings
                   </h4>
                   <ul className="space-y-2">
                     {section.warnings.map((warning, index) => (
-                      <li key={index} className="flex gap-3 text-sm text-orange-700 dark:text-orange-300">
-                        <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                        <span>{warning}</span>
+                      <li key={index} className="flex gap-2 sm:gap-3 text-xs sm:text-sm text-orange-700 dark:text-orange-300">
+                        <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{warning}</span>
                       </li>
                     ))}
                   </ul>
@@ -350,33 +350,32 @@ export const PhaseTutorial = ({ phase, isOpen, onClose }: PhaseTutorialProps) =>
             </div>
           </Card>
 
-          <div className="flex items-center justify-between pt-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <div className="flex items-center justify-between pt-4 gap-3 animate-fade-in" style={{ animationDelay: '0.6s' }}>
             <Button
               variant="outline"
               onClick={handleBack}
               disabled={currentSection === 0}
-              className="gap-2"
+              className="gap-2 h-9 sm:h-10 px-3 sm:px-4 flex-shrink-0"
             >
               <ChevronLeft className="w-4 h-4" />
-              Back
+              <span className="hidden sm:inline">Back</span>
             </Button>
 
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                 {currentSection + 1} of {tutorial.sections.length}
               </span>
               <Button
                 onClick={handleNext}
-                className="gap-2"
+                className="gap-2 h-9 sm:h-10 px-3 sm:px-4"
               >
-                {currentSection < tutorial.sections.length - 1 ? (
-                  <>
-                    Next
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  "Complete"
-                )}
+                <span className="hidden sm:inline">
+                  {currentSection < tutorial.sections.length - 1 ? "Next" : "Complete"}
+                </span>
+                <span className="sm:hidden">
+                  {currentSection < tutorial.sections.length - 1 ? "Next" : "Done"}
+                </span>
+                <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
           </div>
