@@ -35,6 +35,30 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   // Auto-generate insights every 5 messages
   useAutoInsights({ messages, userProgress });
 
+  // Daily motivation message
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const lastMotivationDate = localStorage.getItem('LAST_MOTIVATION_DATE');
+    
+    if (lastMotivationDate !== today && messages.length > 0) {
+      const phase = userProgress.currentPhase;
+      const motivationPrompts = [
+        `Give me my daily motivation for day ${userProgress.currentDay}`,
+        `What's my morning routine for phase ${phase}?`,
+        `Motivate me for today's protocol`,
+        `What should I focus on today?`
+      ];
+      
+      const randomPrompt = motivationPrompts[Math.floor(Math.random() * motivationPrompts.length)];
+      localStorage.setItem('LAST_MOTIVATION_DATE', today);
+      
+      // Auto-send motivation request after a brief delay
+      setTimeout(() => {
+        handleSend(randomPrompt);
+      }, 500);
+    }
+  }, []); // Only run once on mount
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
