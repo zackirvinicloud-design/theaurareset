@@ -112,7 +112,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="min-h-screen bg-background">
       {/* Unified Menu */}
       <ProtocolNav 
         activeSection={activeSection} 
@@ -133,7 +133,7 @@ const Index = () => {
       </div>
 
       {/* Desktop Chat Panel */}
-      <div className={`hidden lg:block fixed top-0 right-0 h-screen w-80 glass border-l border-brand-blue/20 transition-transform duration-300 ${chatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`hidden lg:block fixed top-0 right-0 h-screen w-80 bg-background border-l border-border transition-transform duration-300 ${chatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <ChatPanel context={activeSection} />
       </div>
 
@@ -142,7 +142,7 @@ const Index = () => {
         onClick={() => setChatOpen(!chatOpen)}
         size="icon"
         variant={chatOpen ? "secondary" : "default"}
-        className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50 gradient-blue text-white hover:shadow-brand-blue/50"
+        className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50"
       >
         {chatOpen ? <X className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
       </Button>
