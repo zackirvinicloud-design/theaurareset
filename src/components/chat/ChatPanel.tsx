@@ -7,7 +7,10 @@ import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
 import { ProgressCard } from './ProgressCard';
 import { JournalHistory } from './JournalHistory';
+import { SymptomsTracker } from '../symptoms/SymptomsTracker';
+import { SymptomsInsights } from '../symptoms/SymptomsInsights';
 import { useChatStore } from '@/hooks/useChatStore';
+import { useSymptomsStore } from '@/hooks/useSymptomsStore';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -26,6 +29,7 @@ const SUGGESTED_PROMPTS = [
 
 export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
+  const { exportSymptomsData } = useSymptomsStore();
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -43,9 +47,13 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
     let assistantContent = '';
     const assistantMsg = addMessage({ role: 'assistant', content: '' });
 
-    // Build enhanced context with user progress
+    // Build enhanced context with user progress and symptoms
     const phaseNames = ['Liver Support', 'Fungal & Viral', 'Parasites', 'Heavy Metals & Mold'];
-    const enhancedContext = `Day ${userProgress.currentDay} of 28, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`;
+    const symptomsData = exportSymptomsData();
+    const symptomsContext = symptomsData && JSON.parse(symptomsData).length > 0 
+      ? `\n\nUser's logged symptoms: ${symptomsData}` 
+      : '';
+    const enhancedContext = `Day ${userProgress.currentDay} of 28, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}${symptomsContext}`;
 
     try {
       await streamChat({
@@ -163,6 +171,15 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         onNextDay={handleNextDay}
         onAdjust={() => setSettingsOpen(true)}
       />
+
+      {/* Symptoms Tracking */}
+      <div className="px-3 py-2 space-y-3">
+        <SymptomsTracker
+          currentDay={userProgress.currentDay}
+          currentPhase={userProgress.currentPhase}
+        />
+        <SymptomsInsights />
+      </div>
 
       {/* Messages */}
       <ScrollArea className="flex-1 pt-4 px-4" ref={scrollRef}>
