@@ -52,6 +52,18 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         context: enhancedContext,
         onDelta: (chunk) => {
           assistantContent += chunk;
+          
+          // Check for progress update marker
+          const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
+          if (progressMatch) {
+            const newDay = parseInt(progressMatch[1]);
+            const newPhase = Math.ceil(newDay / 7) as 1 | 2 | 3 | 4;
+            updateProgress({ currentDay: newDay, currentPhase: newPhase });
+            
+            // Remove the marker from the displayed content
+            assistantContent = assistantContent.replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/, '');
+          }
+          
           updateLastMessage(assistantContent);
         },
         onDone: () => {
