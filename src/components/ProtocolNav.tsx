@@ -57,10 +57,10 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
             setOpen(false);
           }}
           className={cn(
-            "w-full text-left px-3 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 text-sm",
+            "w-full text-left px-3 py-2.5 rounded-lg transition-colors flex items-center gap-2 text-sm",
             activeSection === section.id
-              ? "bg-primary text-primary-foreground font-medium shadow-sm"
-              : "hover:bg-accent/50 text-foreground"
+              ? "bg-primary text-primary-foreground font-medium"
+              : "hover:bg-muted text-foreground"
           )}
         >
           <span className="text-base">{section.emoji}</span>
@@ -73,8 +73,8 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
   return (
     <>
       {/* Mobile Header Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 glass border-b border-border/20 z-50 flex items-center justify-between px-4">
-        <h1 className="text-lg font-semibold truncate tracking-tight">Aura Reset Protocol</h1>
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-md border-b border-border/40 z-50 flex items-center justify-between px-4">
+        <h1 className="font-serif text-lg font-bold truncate">Aura Reset Protocol</h1>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
@@ -121,9 +121,9 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 glass border-r border-border/20 overflow-y-auto p-6 z-40">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-background border-r overflow-y-auto p-6 z-40">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold tracking-tight">Menu</h2>
+          <h2 className="font-serif text-xl font-bold">Menu</h2>
         </div>
         
         {/* Download Options */}
@@ -149,7 +149,7 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
         <Separator className="my-4" />
 
         <div className="mb-4">
-          <h3 className="text-base font-semibold tracking-tight">Navigation</h3>
+          <h3 className="font-serif text-base font-semibold">Navigation</h3>
         </div>
         <NavContent />
       </aside>

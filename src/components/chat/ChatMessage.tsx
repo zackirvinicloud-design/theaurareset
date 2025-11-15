@@ -14,7 +14,7 @@ export const ChatMessage = ({ role, content, timestamp }: ChatMessageProps) => {
   return (
     <div className={cn('flex gap-3 mb-4', isUser && 'flex-row-reverse')}>
       <div className={cn(
-        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm',
+        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
         isUser ? 'bg-primary' : 'bg-secondary'
       )}>
         {isUser ? (
@@ -25,14 +25,14 @@ export const ChatMessage = ({ role, content, timestamp }: ChatMessageProps) => {
       </div>
       <div className={cn('flex flex-col', isUser ? 'items-end' : 'items-start')}>
         <div className={cn(
-          'rounded-2xl px-4 py-2 max-w-[85%] shadow-sm',
+          'rounded-lg px-4 py-2 max-w-[85%]',
           isUser 
             ? 'bg-primary text-primary-foreground' 
-            : 'glass-card text-foreground'
+            : 'bg-muted text-foreground'
         )}>
           <p className="text-sm whitespace-pre-wrap break-words">{content}</p>
         </div>
-        <span className="text-xs text-muted-foreground/70 mt-1">{time}</span>
+        <span className="text-xs text-muted-foreground mt-1">{time}</span>
       </div>
     </div>
   );
