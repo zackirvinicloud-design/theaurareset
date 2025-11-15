@@ -56,7 +56,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           // Check for progress update marker
           const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
           if (progressMatch) {
-            const newDay = parseInt(progressMatch[1]);
+            const newDay = Math.min(Math.max(parseInt(progressMatch[1]), 1), 28);
             const newPhase = Math.ceil(newDay / 7) as 1 | 2 | 3 | 4;
             updateProgress({ currentDay: newDay, currentPhase: newPhase });
             
