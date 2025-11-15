@@ -9,6 +9,7 @@ import { ProgressCard } from './ProgressCard';
 import { JournalHistory } from './JournalHistory';
 import { InsightsDrawer } from '../insights/InsightsDrawer';
 import { useChatStore } from '@/hooks/useChatStore';
+import { useAutoInsights } from '@/hooks/useAutoInsights';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,9 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-generate insights every 5 messages
+  useAutoInsights({ messages, userProgress });
 
   useEffect(() => {
     if (scrollRef.current) {
