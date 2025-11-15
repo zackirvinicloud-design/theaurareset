@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,13 @@ export const ProgressSettingsDialog = ({
   onSave,
 }: ProgressSettingsDialogProps) => {
   const [selectedDay, setSelectedDay] = useState(currentDay.toString());
+
+  // Sync local state with prop when dialog opens or currentDay changes
+  useEffect(() => {
+    if (open) {
+      setSelectedDay(currentDay.toString());
+    }
+  }, [open, currentDay]);
 
   const selectedPhase = getPhaseFromDay(parseInt(selectedDay));
 
