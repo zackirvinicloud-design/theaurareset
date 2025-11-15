@@ -20,7 +20,7 @@ export const ChatDrawer = ({ context }: ChatDrawerProps) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-muted-foreground truncate">
-                Ask about the protocol...
+                Chat with your journal...
               </p>
             </div>
           </div>

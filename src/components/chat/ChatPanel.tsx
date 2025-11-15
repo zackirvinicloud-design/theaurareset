@@ -6,6 +6,7 @@ import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
 import { ProgressCard } from './ProgressCard';
+import { JournalHistory } from './JournalHistory';
 import { useChatStore } from '@/hooks/useChatStore';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
@@ -131,6 +132,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           </Button>
         </div>
         <div className="flex gap-1 flex-shrink-0 ml-2">
+          <JournalHistory />
           <Button
             variant="ghost"
             size="icon"
