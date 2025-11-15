@@ -1,17 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ProtocolNav } from "@/components/ProtocolNav";
-import { ProgressTracker } from "@/components/ProgressTracker";
-import { DailyChecklist } from "@/components/DailyChecklist";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ClipboardList } from "lucide-react";
 
 const Index = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeSection, setActiveSection] = useState("welcome");
-  const [currentDay, setCurrentDay] = useState(1);
-  const [showChecklist, setShowChecklist] = useState(false);
 
   // Set up intersection observer to track active section
   useEffect(() => {
@@ -108,53 +101,6 @@ const Index = () => {
       
       {/* Main Content */}
       <div className="lg:ml-64 pt-14 lg:pt-0">
-        {/* Progress Tracker - Fixed at top */}
-        <div className="sticky top-14 lg:top-0 z-10 bg-background/95 backdrop-blur-sm border-b p-4 shadow-sm">
-          <div className="max-w-4xl mx-auto flex gap-4 items-center">
-            <div className="flex-1">
-              <ProgressTracker onDayChange={setCurrentDay} />
-            </div>
-            
-            {/* Checklist Button - Desktop */}
-            <Sheet open={showChecklist} onOpenChange={setShowChecklist}>
-              <SheetTrigger asChild>
-                <Button size="lg" className="hidden lg:flex gap-2">
-                  <ClipboardList className="h-5 w-5" />
-                  Daily Checklist
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>Daily Protocol Checklist</SheetTitle>
-                </SheetHeader>
-                <div className="mt-6">
-                  <DailyChecklist currentDay={currentDay} />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-
-        {/* Floating Checklist Button - Mobile */}
-        <Sheet open={showChecklist} onOpenChange={setShowChecklist}>
-          <SheetTrigger asChild>
-            <Button 
-              size="lg" 
-              className="lg:hidden fixed bottom-6 right-6 z-50 rounded-full h-14 w-14 shadow-lg"
-            >
-              <ClipboardList className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>Daily Protocol Checklist</SheetTitle>
-            </SheetHeader>
-            <div className="mt-6">
-              <DailyChecklist currentDay={currentDay} />
-            </div>
-          </SheetContent>
-        </Sheet>
-
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
