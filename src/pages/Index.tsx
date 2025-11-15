@@ -5,18 +5,28 @@ import { ChatPanel } from "@/components/chat/ChatPanel";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import { MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeSection, setActiveSection] = useState("welcome");
+  const isMobile = useIsMobile();
+  
   const [chatOpen, setChatOpen] = useState(() => {
     const saved = localStorage.getItem('chat-panel-open');
-    return saved ? JSON.parse(saved) : false;
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    // Default to open on desktop, closed on mobile
+    return !isMobile;
   });
 
   useEffect(() => {
-    localStorage.setItem('chat-panel-open', JSON.stringify(chatOpen));
-  }, [chatOpen]);
+    // Only sync to localStorage on desktop
+    if (!isMobile) {
+      localStorage.setItem('chat-panel-open', JSON.stringify(chatOpen));
+    }
+  }, [chatOpen, isMobile]);
 
   // Set up intersection observer to track active section
   useEffect(() => {

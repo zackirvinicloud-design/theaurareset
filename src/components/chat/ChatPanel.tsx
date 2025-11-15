@@ -111,43 +111,45 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   return (
     <div className={cn("flex flex-col h-full bg-background", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-primary" />
-          <div>
-            <h3 className="font-semibold text-sm">Protocol Companion</h3>
-            <p className="text-xs text-muted-foreground">
+      <div className="flex items-center justify-between p-3 border-b border-border">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-sm truncate">Protocol Companion</h3>
+            <p className="text-xs text-muted-foreground truncate">
               Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7"
+            className="h-7 w-7 flex-shrink-0"
             onClick={() => setSettingsOpen(true)}
             title="Update progress"
           >
             <Settings className="w-3.5 h-3.5" />
           </Button>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-shrink-0 ml-2">
           <Button
             variant="ghost"
             size="icon"
+            className="h-8 w-8"
             onClick={exportChat}
             disabled={messages.length === 0}
             title="Export chat"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
+            className="h-8 w-8"
             onClick={handleClear}
             disabled={messages.length === 0}
             title="Clear chat"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
@@ -163,13 +165,13 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
       {/* Messages */}
       <ScrollArea className="flex-1 pt-4 px-4" ref={scrollRef}>
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-6">
-            <MessageSquare className="w-12 h-12 text-muted-foreground mb-4" />
-            <h4 className="font-semibold mb-2">Start your journey conversation</h4>
-            <p className="text-sm text-muted-foreground mb-4">
+          <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6">
+            <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
+            <h4 className="font-semibold text-sm mb-2">Start your journey conversation</h4>
+            <p className="text-xs text-muted-foreground mb-4 max-w-[240px]">
               Ask me anything about the protocol, track your progress, or use me as a journal.
             </p>
-            <div className="flex flex-col gap-2 w-full max-w-xs">
+            <div className="flex flex-col gap-2 w-full max-w-[240px]">
               {SUGGESTED_PROMPTS.map((prompt, i) => (
                 <Button
                   key={i}
@@ -177,7 +179,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
                   size="sm"
                   onClick={() => handleSend(prompt)}
                   disabled={isLoading}
-                  className="text-xs justify-start"
+                  className="text-xs justify-start h-auto py-2 px-3"
                 >
                   {prompt}
                 </Button>
