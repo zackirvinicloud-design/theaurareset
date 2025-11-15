@@ -26,12 +26,12 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
   const isLastDay = currentDay >= 28;
 
   return (
-    <Card className="mx-3 mt-3 p-3 bg-muted/50 border-primary/20">
+    <Card className="mx-3 mt-3 p-3 rounded-xl glass-card border border-border/20 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2">
-            <h4 className="font-semibold text-base">Day {currentDay}</h4>
-            <span className="text-xs text-muted-foreground">of 28</span>
+            <h4 className="font-semibold text-base tracking-tight">Day {currentDay}</h4>
+            <span className="text-xs text-muted-foreground/70">of 28</span>
           </div>
           <p className={`text-xs font-medium ${phase.color} truncate`}>
             Phase {validPhase}: {phase.name}

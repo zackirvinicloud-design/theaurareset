@@ -6,6 +6,7 @@ import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import { MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -112,17 +113,18 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Unified Menu */}
-      <ProtocolNav 
-        activeSection={activeSection} 
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-background via-background to-muted/20">
+      <ProtocolNav
+        activeSection={activeSection}
         onNavigate={handleNavigate}
         onDownloadHTML={handleDownloadHTML}
         onPrint={handlePrint}
       />
       
-      {/* Main Content */}
-      <div className={`lg:ml-64 pt-14 lg:pt-0 pb-24 lg:pb-0 transition-all duration-300 ${chatOpen ? 'lg:mr-80' : ''}`}>
+      <div className={cn(
+        "flex-1 lg:ml-64 flex flex-col lg:flex-row pt-14 lg:pt-0 pb-24 lg:pb-0",
+        chatOpen && "lg:mr-80"
+      )}>
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
@@ -133,7 +135,10 @@ const Index = () => {
       </div>
 
       {/* Desktop Chat Panel */}
-      <div className={`hidden lg:block fixed top-0 right-0 h-screen w-80 bg-background border-l border-border transition-transform duration-300 ${chatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={cn(
+        "hidden lg:block fixed top-0 right-0 h-screen w-80 glass-card border-l border-border/20 transition-transform duration-300",
+        chatOpen ? 'translate-x-0' : 'translate-x-full'
+      )}>
         <ChatPanel context={activeSection} />
       </div>
 
@@ -142,7 +147,7 @@ const Index = () => {
         onClick={() => setChatOpen(!chatOpen)}
         size="icon"
         variant={chatOpen ? "secondary" : "default"}
-        className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50"
+        className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg hover:shadow-xl z-50"
       >
         {chatOpen ? <X className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
       </Button>

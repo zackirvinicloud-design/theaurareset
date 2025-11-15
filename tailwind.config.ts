@@ -21,7 +21,8 @@ export default {
         foreground: "hsl(var(--foreground))",
         glass: {
           DEFAULT: "rgba(255, 255, 255, 0.7)",
-          dark: "rgba(255, 255, 255, 0.1)",
+          dark: "rgba(0, 0, 0, 0.4)",
+          card: "rgba(255, 255, 255, 0.8)",
         },
         phase: {
           1: "hsl(var(--phase-1))",
