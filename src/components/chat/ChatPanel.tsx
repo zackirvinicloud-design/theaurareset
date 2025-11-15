@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { MessageSquare, Download, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { MessageSquare, Download, Trash2, Settings, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
+import { ProgressSettingsDialog } from './ProgressSettingsDialog';
 import { useChatStore } from '@/hooks/useChatStore';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
@@ -22,8 +23,9 @@ const SUGGESTED_PROMPTS = [
 ];
 
 export const ChatPanel = ({ className, context }: ChatPanelProps) => {
-  const { messages, userProgress, addMessage, updateLastMessage, clearMessages, exportChat } = useChatStore();
+  const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,6 +93,15 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
               Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
             </p>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setSettingsOpen(true)}
+            title="Update progress"
+          >
+            <Settings className="w-3.5 h-3.5" />
+          </Button>
         </div>
         <div className="flex gap-1">
           <Button
@@ -163,9 +174,22 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
 
       {/* Input */}
       <ChatInput onSend={handleSend} disabled={isLoading} />
+
+      {/* Progress Settings Dialog */}
+      <ProgressSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        currentDay={userProgress.currentDay}
+        currentPhase={userProgress.currentPhase}
+        onSave={(day, phase) => {
+          updateProgress({ currentDay: day, currentPhase: phase });
+          setSettingsOpen(false);
+          toast({
+            title: "Progress updated",
+            description: `Updated to Day ${day}, Phase ${phase}`,
+          });
+        }}
+      />
     </div>
   );
 };
-
-import { Bot } from 'lucide-react';
-import { useState } from 'react';
