@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Sparkles } from 'lucide-react';
@@ -7,10 +7,35 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+const INSIGHTS_STORAGE_KEY = 'aura-protocol-latest-insights';
+
 export const ConversationInsights = () => {
   const { messages, userProgress } = useChatStore();
   const [insights, setInsights] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Load cached insights on mount
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(INSIGHTS_STORAGE_KEY);
+      if (cached) {
+        setInsights(cached);
+      }
+    } catch (error) {
+      console.error('Failed to load cached insights:', error);
+    }
+  }, []);
+
+  // Save insights to cache when they change
+  useEffect(() => {
+    if (insights) {
+      try {
+        localStorage.setItem(INSIGHTS_STORAGE_KEY, insights);
+      } catch (error) {
+        console.error('Failed to cache insights:', error);
+      }
+    }
+  }, [insights]);
 
   const generateInsights = async () => {
     if (messages.length === 0) {
@@ -21,7 +46,7 @@ export const ConversationInsights = () => {
     setIsLoading(true);
     try {
       const conversationHistory = messages
-        .slice(-20) // Last 20 messages for context
+        .slice(-20)
         .map(m => `${m.role}: ${m.content}`)
         .join('\n\n');
 
@@ -44,6 +69,16 @@ export const ConversationInsights = () => {
       setIsLoading(false);
     }
   };
+
+  // Expose method to update insights from auto-generation
+  useEffect(() => {
+    const handleAutoInsights = (event: CustomEvent<string>) => {
+      setInsights(event.detail);
+    };
+    
+    window.addEventListener('auto-insights-generated' as any, handleAutoInsights as any);
+    return () => window.removeEventListener('auto-insights-generated' as any, handleAutoInsights as any);
+  }, []);
 
   return (
     <Card>
