@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
@@ -22,34 +22,31 @@ interface ProgressSettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentDay: number;
-  currentPhase: 1 | 2 | 3 | 4;
   onSave: (day: number, phase: 1 | 2 | 3 | 4) => void;
 }
 
-const PHASES = [
-  { value: 1, label: 'Phase 1: Liver Support', days: 'Days 1-7' },
-  { value: 2, label: 'Phase 2: Fungal & Viral', days: 'Days 8-14' },
-  { value: 3, label: 'Phase 3: Parasites', days: 'Days 15-21' },
-  { value: 4, label: 'Phase 4: Heavy Metals', days: 'Days 22-28' },
-] as const;
+const getPhaseFromDay = (day: number): 1 | 2 | 3 | 4 => {
+  return Math.ceil(day / 7) as 1 | 2 | 3 | 4;
+};
 
 export const ProgressSettingsDialog = ({
   open,
   onOpenChange,
   currentDay,
-  currentPhase,
   onSave,
 }: ProgressSettingsDialogProps) => {
   const [selectedDay, setSelectedDay] = useState(currentDay.toString());
-  const [selectedPhase, setSelectedPhase] = useState(currentPhase.toString());
+
+  const selectedPhase = getPhaseFromDay(parseInt(selectedDay));
 
   const handleSave = () => {
-    onSave(parseInt(selectedDay), parseInt(selectedPhase) as 1 | 2 | 3 | 4);
+    const day = parseInt(selectedDay);
+    const phase = getPhaseFromDay(day);
+    onSave(day, phase);
   };
 
   const handleCancel = () => {
     setSelectedDay(currentDay.toString());
-    setSelectedPhase(currentPhase.toString());
     onOpenChange(false);
   };
 
@@ -59,11 +56,11 @@ export const ProgressSettingsDialog = ({
         <DialogHeader>
           <DialogTitle>Update Your Progress</DialogTitle>
           <DialogDescription>
-            Manually set your current day and phase in the protocol.
+            Select your current day. Your phase will be calculated automatically.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 py-4">
           {/* Day Selection */}
           <div className="space-y-2">
             <Label htmlFor="day-select">Current Day</Label>
@@ -81,27 +78,16 @@ export const ProgressSettingsDialog = ({
             </Select>
           </div>
 
-          {/* Phase Selection */}
-          <div className="space-y-3">
-            <Label>Current Phase</Label>
-            <RadioGroup value={selectedPhase} onValueChange={setSelectedPhase}>
-              {PHASES.map((phase) => (
-                <div key={phase.value} className="flex items-start space-x-3">
-                  <RadioGroupItem
-                    value={phase.value.toString()}
-                    id={`phase-${phase.value}`}
-                    className="mt-0.5"
-                  />
-                  <Label
-                    htmlFor={`phase-${phase.value}`}
-                    className="flex flex-col gap-0.5 cursor-pointer font-normal"
-                  >
-                    <span className="font-medium">{phase.label}</span>
-                    <span className="text-xs text-muted-foreground">{phase.days}</span>
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
+          {/* Phase Display */}
+          <div className="p-3 bg-muted rounded-md">
+            <p className="text-sm text-muted-foreground">Calculated Phase</p>
+            <p className="font-medium">
+              Phase {selectedPhase} 
+              {selectedPhase === 1 && ': Liver Support (Days 1-7)'}
+              {selectedPhase === 2 && ': Fungal & Viral (Days 8-14)'}
+              {selectedPhase === 3 && ': Parasites (Days 15-21)'}
+              {selectedPhase === 4 && ': Heavy Metals (Days 22-28)'}
+            </p>
           </div>
         </div>
 

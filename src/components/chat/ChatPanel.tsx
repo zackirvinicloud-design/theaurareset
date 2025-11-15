@@ -199,7 +199,6 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         currentDay={userProgress.currentDay}
-        currentPhase={userProgress.currentPhase}
         onSave={(day, phase) => {
           updateProgress({ currentDay: day, currentPhase: phase });
           setSettingsOpen(false);
