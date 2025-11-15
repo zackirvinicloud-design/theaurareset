@@ -117,24 +117,32 @@ export const OnboardingFlow = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in">
         <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-3">
-            {step.icon}
-            <span>{step.title}</span>
+          <DialogTitle className="text-2xl flex items-center gap-3 animate-fade-in">
+            <div className="animate-scale-in" style={{ animationDelay: '0.1s' }}>
+              {step.icon}
+            </div>
+            <span className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              {step.title}
+            </span>
           </DialogTitle>
-          <DialogDescription className="text-base">
+          <DialogDescription className="text-base animate-fade-in" style={{ animationDelay: '0.3s' }}>
             {step.description}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-6">
-          <Progress value={progress} className="w-full" />
+          <Progress value={progress} className="w-full animate-fade-in" style={{ animationDelay: '0.4s' }} />
           
-          <Card className="p-6 bg-muted/50">
+          <Card className="p-6 bg-gradient-to-br from-muted/50 to-muted/30 border-2 animate-scale-in" style={{ animationDelay: '0.5s' }}>
             <ul className="space-y-4">
               {step.content.map((item, index) => (
-                <li key={index} className="flex gap-3">
+                <li 
+                  key={index} 
+                  className="flex gap-3 animate-fade-in"
+                  style={{ animationDelay: `${0.6 + index * 0.1}s` }}
+                >
                   <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <span className="text-sm leading-relaxed">{item}</span>
                 </li>
@@ -142,7 +150,7 @@ export const OnboardingFlow = () => {
             </ul>
           </Card>
 
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex items-center justify-between pt-4 animate-fade-in" style={{ animationDelay: '0.8s' }}>
             <div className="flex gap-2">
               {currentStep > 0 && (
                 <Button
@@ -168,7 +176,7 @@ export const OnboardingFlow = () => {
               </span>
               <Button
                 onClick={handleNext}
-                className="gap-2"
+                className="gap-2 hover-scale"
               >
                 {currentStep < onboardingSteps.length - 1 ? (
                   <>
