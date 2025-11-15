@@ -5,6 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
+import { ProgressCard } from './ProgressCard';
 import { useChatStore } from '@/hooks/useChatStore';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
@@ -81,6 +82,16 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
     }
   };
 
+  const handleNextDay = () => {
+    const newDay = Math.min(userProgress.currentDay + 1, 28);
+    const newPhase = Math.ceil(newDay / 7) as 1 | 2 | 3 | 4;
+    updateProgress({ currentDay: newDay, currentPhase: newPhase });
+    toast({
+      title: "Progress updated",
+      description: `Advanced to Day ${newDay}, Phase ${newPhase}`,
+    });
+  };
+
   return (
     <div className={cn("flex flex-col h-full bg-background", className)}>
       {/* Header */}
@@ -125,8 +136,16 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         </div>
       </div>
 
+      {/* Progress Card */}
+      <ProgressCard
+        currentDay={userProgress.currentDay}
+        currentPhase={userProgress.currentPhase}
+        onNextDay={handleNextDay}
+        onAdjust={() => setSettingsOpen(true)}
+      />
+
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <ScrollArea className="flex-1 pt-4 px-4" ref={scrollRef}>
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-6">
             <MessageSquare className="w-12 h-12 text-muted-foreground mb-4" />
