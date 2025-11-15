@@ -111,9 +111,9 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   return (
     <div className={cn("flex flex-col h-full bg-background", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border">
+      <div className="flex items-center justify-between p-3 border-b border-brand-blue/20 glass">
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
+          <MessageSquare className="w-4 h-4 text-brand-blue flex-shrink-0" />
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-sm truncate">Protocol Companion</h3>
             <p className="text-xs text-muted-foreground truncate">
@@ -123,7 +123,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 flex-shrink-0"
+            className="h-7 w-7 flex-shrink-0 hover:bg-brand-blue/10"
             onClick={() => setSettingsOpen(true)}
             title="Update progress"
           >
@@ -134,7 +134,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 hover:bg-brand-blue/10"
             onClick={exportChat}
             disabled={messages.length === 0}
             title="Export chat"
@@ -144,7 +144,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 hover:bg-brand-blue/10"
             onClick={handleClear}
             disabled={messages.length === 0}
             title="Clear chat"

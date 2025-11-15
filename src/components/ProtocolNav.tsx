@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Download, FileText, Printer } from "lucide-react";
+import { Menu, Download, FileText, Printer, Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
@@ -73,14 +73,17 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
   return (
     <>
       {/* Mobile Header Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-md border-b border-border/40 z-50 flex items-center justify-between px-4">
-        <h1 className="font-serif text-lg font-bold truncate">Aura Reset Protocol</h1>
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 glass border-b border-brand-blue/20 z-50 flex items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-brand-blue" />
+          <h1 className="font-serif text-lg font-bold truncate">Aura Reset</h1>
+        </div>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 shrink-0"
+              className="h-10 w-10 shrink-0 hover:bg-brand-blue/10"
             >
               <Menu className="h-5 w-5" />
             </Button>
@@ -121,16 +124,19 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-background border-r overflow-y-auto p-6 z-40">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 glass border-r border-brand-blue/20 overflow-y-auto p-6 z-40">
         <div className="mb-6">
-          <h2 className="font-serif text-xl font-bold">Menu</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <Sparkles className="w-5 h-5 text-brand-blue" />
+            <h2 className="font-serif text-xl font-bold">Menu</h2>
+          </div>
         </div>
         
         {/* Download Options */}
         <div className="mb-6 space-y-2">
           <Button
             variant="outline"
-            className="w-full justify-start text-sm"
+            className="w-full justify-start text-sm border-brand-blue/30 hover:bg-brand-blue/10 hover:border-brand-blue"
             onClick={onDownloadHTML}
           >
             <FileText className="mr-2 h-4 w-4" />
@@ -138,7 +144,7 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
           </Button>
           <Button
             variant="outline"
-            className="w-full justify-start text-sm"
+            className="w-full justify-start text-sm border-brand-blue/30 hover:bg-brand-blue/10 hover:border-brand-blue"
             onClick={onPrint}
           >
             <Printer className="mr-2 h-4 w-4" />

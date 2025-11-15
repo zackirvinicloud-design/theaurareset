@@ -26,7 +26,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
   const isLastDay = currentDay >= 28;
 
   return (
-    <Card className="mx-3 mt-3 p-3 bg-muted/50 border-primary/20">
+    <Card className="mx-3 mt-3 p-3 glass border-brand-blue/20">
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2">
@@ -43,7 +43,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
             <Button
               onClick={onNextDay}
               size="sm"
-              className="gap-1 text-xs h-8 px-3"
+              className="gap-1 text-xs h-8 px-3 gradient-blue text-white"
             >
               Next
               <ArrowRight className="w-3 h-3" />
@@ -53,7 +53,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
             onClick={onAdjust}
             variant="outline"
             size="sm"
-            className="gap-1 text-xs h-8 px-3"
+            className="gap-1 text-xs h-8 px-3 border-brand-blue/30 hover:bg-brand-blue/10"
           >
             <Settings className="w-3 h-3" />
             Adjust
