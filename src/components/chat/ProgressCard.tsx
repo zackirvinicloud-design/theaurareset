@@ -17,7 +17,12 @@ const PHASE_INFO = {
 } as const;
 
 export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: ProgressCardProps) => {
-  const phase = PHASE_INFO[currentPhase];
+  // Ensure phase is valid (1-4), fallback to calculated phase if invalid
+  const validPhase = (currentPhase && currentPhase >= 1 && currentPhase <= 4) 
+    ? currentPhase 
+    : Math.ceil(Math.min(Math.max(currentDay, 1), 28) / 7) as 1 | 2 | 3 | 4;
+  
+  const phase = PHASE_INFO[validPhase];
   const isLastDay = currentDay >= 28;
 
   return (
@@ -29,7 +34,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
             <span className="text-xs text-muted-foreground">of 28</span>
           </div>
           <p className={`text-sm font-medium ${phase.color}`}>
-            Phase {currentPhase}: {phase.name}
+            Phase {validPhase}: {phase.name}
           </p>
         </div>
         
