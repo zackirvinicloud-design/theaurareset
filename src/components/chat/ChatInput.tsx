@@ -29,7 +29,7 @@ export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the proto
   };
 
   return (
-    <div className="flex gap-2 p-4 border-t border-border bg-background">
+    <div className="flex gap-2 p-4 pb-safe border-t border-border bg-background">
       <Textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -37,7 +37,7 @@ export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the proto
         placeholder={placeholder}
         disabled={disabled}
         className={cn(
-          "min-h-[60px] max-h-[120px] resize-none",
+          "min-h-[60px] max-h-[120px] resize-none text-base md:text-sm",
           disabled && "opacity-50 cursor-not-allowed"
         )}
       />
