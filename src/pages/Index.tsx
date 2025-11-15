@@ -1,10 +1,22 @@
 import { useRef, useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { ProtocolNav } from "@/components/ProtocolNav";
+import { ChatPanel } from "@/components/chat/ChatPanel";
+import { ChatDrawer } from "@/components/chat/ChatDrawer";
+import { MessageSquare, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeSection, setActiveSection] = useState("welcome");
+  const [chatOpen, setChatOpen] = useState(() => {
+    const saved = localStorage.getItem('chat-panel-open');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('chat-panel-open', JSON.stringify(chatOpen));
+  }, [chatOpen]);
 
   // Set up intersection observer to track active section
   useEffect(() => {
@@ -100,7 +112,7 @@ const Index = () => {
       />
       
       {/* Main Content */}
-      <div className="lg:ml-64 pt-14 lg:pt-0">
+      <div className={`lg:ml-64 pt-14 lg:pt-0 transition-all duration-300 ${chatOpen ? 'lg:mr-80' : ''}`}>
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
@@ -109,6 +121,24 @@ const Index = () => {
           id="protocol-content"
         />
       </div>
+
+      {/* Desktop Chat Panel */}
+      <div className={`hidden lg:block fixed top-0 right-0 h-screen w-80 bg-background border-l border-border transition-transform duration-300 ${chatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <ChatPanel context={activeSection} />
+      </div>
+
+      {/* Desktop Chat Toggle */}
+      <Button
+        onClick={() => setChatOpen(!chatOpen)}
+        size="icon"
+        variant={chatOpen ? "secondary" : "default"}
+        className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50"
+      >
+        {chatOpen ? <X className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+      </Button>
+
+      {/* Mobile Chat Drawer */}
+      <ChatDrawer context={activeSection} />
     </div>
   );
 };
