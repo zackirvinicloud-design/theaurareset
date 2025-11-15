@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Download, Trash2, Settings, Bot } from 'lucide-react';
+import { MessageSquare, Download, Trash2, Settings, Bot, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
@@ -138,6 +138,19 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
     });
   };
 
+  const handleDailyMotivation = () => {
+    const phase = userProgress.currentPhase;
+    const motivationPrompts = [
+      `Give me my daily motivation for day ${userProgress.currentDay}`,
+      `What's my morning routine for phase ${phase}?`,
+      `Motivate me for today's protocol`,
+      `What should I focus on today?`
+    ];
+    
+    const randomPrompt = motivationPrompts[Math.floor(Math.random() * motivationPrompts.length)];
+    handleSend(randomPrompt);
+  };
+
   return (
     <div className={cn("flex flex-col h-full bg-background", className)}>
       {/* Header */}
@@ -161,6 +174,15 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           </Button>
         </div>
         <div className="flex gap-1 flex-shrink-0 ml-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={handleDailyMotivation}
+            title="Daily motivation"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+          </Button>
           <InsightsDrawer />
           <JournalHistory />
           <Button
