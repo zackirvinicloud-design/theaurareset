@@ -165,7 +165,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
           <InsightsDrawer />
           <JournalHistory />
           <Button
@@ -192,7 +192,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hidden lg:flex"
+              className="h-8 w-8 hidden lg:flex ml-1"
               onClick={onClose}
               title="Close chat"
             >
