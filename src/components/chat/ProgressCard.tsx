@@ -31,7 +31,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
 
   return (
     <>
-      <Card className="mx-3 mt-3 p-4 bg-muted/50 border-primary/20 animate-fade-in">
+      <Card className="mx-3 mt-3 p-4 bg-muted/50 border-primary/20 animate-fade-in progress-card">
         <div className="flex flex-col gap-3">
           {/* Top row - Day and Phase info */}
           <div className="flex items-start justify-between gap-4">
