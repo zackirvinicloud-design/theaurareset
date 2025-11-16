@@ -12,6 +12,7 @@ const Index = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [activeSection, setActiveSection] = useState("welcome");
   const isMobile = useIsMobile();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const [chatOpen, setChatOpen] = useState(() => {
     const saved = localStorage.getItem('chat-panel-open');
@@ -21,6 +22,8 @@ const Index = () => {
     // Default to open on desktop, closed on mobile
     return !isMobile;
   });
+
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
 
   useEffect(() => {
     // Only sync to localStorage on desktop
@@ -114,7 +117,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <InteractiveTour />
+      <InteractiveTour 
+        onOpenChat={() => setMobileChatOpen(true)}
+        onOpenMenu={() => setMobileMenuOpen(true)}
+      />
       
       {/* Unified Menu */}
       <ProtocolNav
@@ -122,6 +128,8 @@ const Index = () => {
         onNavigate={handleNavigate}
         onDownloadHTML={handleDownloadHTML}
         onPrint={handlePrint}
+        mobileMenuOpen={mobileMenuOpen}
+        onMobileMenuOpenChange={setMobileMenuOpen}
       />
       
       {/* Main Content */}
@@ -153,7 +161,11 @@ const Index = () => {
       )}
 
       {/* Mobile Chat Drawer */}
-      <ChatDrawer context={activeSection} />
+      <ChatDrawer 
+        context={activeSection} 
+        open={mobileChatOpen}
+        onOpenChange={setMobileChatOpen}
+      />
     </div>
   );
 };

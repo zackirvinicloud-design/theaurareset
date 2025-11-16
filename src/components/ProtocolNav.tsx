@@ -33,10 +33,22 @@ interface ProtocolNavProps {
   onNavigate: (id: string) => void;
   onDownloadHTML: () => void;
   onPrint: () => void;
+  mobileMenuOpen?: boolean;
+  onMobileMenuOpenChange?: (open: boolean) => void;
 }
 
-export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint }: ProtocolNavProps) => {
-  const [open, setOpen] = useState(false);
+export const ProtocolNav = ({ 
+  activeSection, 
+  onNavigate, 
+  onDownloadHTML, 
+  onPrint,
+  mobileMenuOpen: controlledOpen,
+  onMobileMenuOpenChange
+}: ProtocolNavProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onMobileMenuOpenChange || setInternalOpen;
 
   const handleDownload = () => {
     onDownloadHTML();
