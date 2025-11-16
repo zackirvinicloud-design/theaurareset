@@ -111,9 +111,9 @@ export const ConversationInsights = () => {
         </Button>
 
         {insights && (
-          <ScrollArea className="max-h-[400px]">
+          <ScrollArea className="max-h-[600px]">
             <div className="bg-muted p-4 rounded-lg">
-              <div className="text-sm whitespace-pre-wrap">{insights}</div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed">{insights}</div>
             </div>
           </ScrollArea>
         )}
