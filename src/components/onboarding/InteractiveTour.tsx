@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { X, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -17,9 +18,47 @@ interface TourStep {
   target: string; // CSS selector
   position: 'top' | 'bottom' | 'left' | 'right' | 'center';
   highlightPadding?: number;
-  openChatOnMobile?: boolean;
-  openMenuOnMobile?: boolean;
 }
+
+// Simplified mobile-only steps
+const mobileTourSteps: TourStep[] = [
+  {
+    title: "Welcome to The Aura Reset Protocol! 🌟",
+    description: "This quick tour will show you everything you need to succeed on your 28-day healing journey.",
+    target: 'body',
+    position: 'center',
+  },
+  {
+    title: "📱 Chat with Aurora",
+    description: "Tap the chat icon at the bottom to talk with Aurora, your AI health coach. She's available 24/7 to answer questions and provide guidance based on your current phase.",
+    target: 'body',
+    position: 'center',
+  },
+  {
+    title: "📖 Protocol Guide",
+    description: "Use the menu button (☰) to access your complete protocol. Find daily schedules, supplement lists, recipes, and troubleshooting guides organized by phase.",
+    target: 'body',
+    position: 'center',
+  },
+  {
+    title: "✨ AI Insights",
+    description: "Aurora analyzes your journal every 5 messages, spotting patterns and progress. Check the insights section in your chat to see what she's discovered.",
+    target: 'body',
+    position: 'center',
+  },
+  {
+    title: "📊 Track Your Progress",
+    description: "Your progress card in the chat shows which day and phase you're on. Use the buttons to advance days or adjust your position in the protocol.",
+    target: 'body',
+    position: 'center',
+  },
+  {
+    title: "Ready to Begin! 🚀",
+    description: "Remember: Take binders 2 hours away from food, stay hydrated, and trust the process. Aurora is here to guide you every step of the way!",
+    target: 'body',
+    position: 'center',
+  },
+];
 
 const tourSteps: TourStep[] = [
   {
@@ -86,6 +125,8 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const isMobile = useIsMobile();
+  
+  const steps = isMobile ? mobileTourSteps : tourSteps;
 
   useEffect(() => {
     const hasCompleted = localStorage.getItem(TOUR_KEY);
@@ -148,7 +189,7 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
   }, [currentStep, isActive, isMobile, onOpenChat, onOpenMenu]);
 
   const handleNext = () => {
-    if (currentStep < tourSteps.length - 1) {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleComplete();
