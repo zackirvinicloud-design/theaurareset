@@ -209,20 +209,16 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
 
   return (
     <>
-      {/* Dark overlay with cutout for spotlight */}
+      {/* Dark overlay */}
       <div 
-        className="fixed inset-0 z-[100] animate-fade-in" 
+        className="fixed inset-0 bg-black/70 z-[100] animate-fade-in" 
         onClick={handleSkip}
-        style={{ 
-          pointerEvents: 'auto',
-          backgroundColor: 'rgba(0, 0, 0, 0.85)'
-        }}
+        style={{ pointerEvents: 'auto' }}
       />
 
-      {/* Spotlight effect - creates the "cutout" */}
+      {/* Spotlight effect */}
       {highlightRect && (
         <>
-          {/* White/bright spotlight area */}
           <div
             className="fixed z-[101] pointer-events-none transition-all duration-500 ease-out"
             style={{
@@ -230,38 +226,24 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
               left: `${highlightRect.left - padding}px`,
               width: `${highlightRect.width + padding * 2}px`,
               height: `${highlightRect.height + padding * 2}px`,
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              border: '3px solid rgba(16, 185, 129, 0.6)',
               boxShadow: `
-                0 0 0 4px rgba(16, 185, 129, 0.3),
-                inset 0 0 20px rgba(16, 185, 129, 0.1),
-                0 0 60px rgba(16, 185, 129, 0.4)
+                0 0 0 4px rgba(16, 185, 129, 0.4),
+                0 0 0 9999px rgba(0, 0, 0, 0.7),
+                0 0 40px rgba(16, 185, 129, 0.3)
               `,
+              borderRadius: '12px',
             }}
           />
           {/* Pulse animation ring */}
           <div
             className="fixed z-[101] pointer-events-none transition-all duration-500 ease-out animate-pulse"
             style={{
-              top: `${highlightRect.top - padding - 6}px`,
-              left: `${highlightRect.left - padding - 6}px`,
-              width: `${highlightRect.width + padding * 2 + 12}px`,
-              height: `${highlightRect.height + padding * 2 + 12}px`,
-              border: '2px solid rgba(16, 185, 129, 0.4)',
-              borderRadius: '16px',
-            }}
-          />
-          {/* Arrow pointing to the element (optional, for emphasis) */}
-          <div
-            className="fixed z-[101] pointer-events-none transition-all duration-500 ease-out"
-            style={{
-              top: `${highlightRect.top - padding - 2}px`,
-              left: `${highlightRect.left - padding - 2}px`,
-              width: `${highlightRect.width + padding * 2 + 4}px`,
-              height: `${highlightRect.height + padding * 2 + 4}px`,
+              top: `${highlightRect.top - padding - 4}px`,
+              left: `${highlightRect.left - padding - 4}px`,
+              width: `${highlightRect.width + padding * 2 + 8}px`,
+              height: `${highlightRect.height + padding * 2 + 8}px`,
+              border: '2px solid rgba(16, 185, 129, 0.6)',
               borderRadius: '14px',
-              boxShadow: '0 0 0 2000px rgba(0, 0, 0, 0.85)',
             }}
           />
         </>
