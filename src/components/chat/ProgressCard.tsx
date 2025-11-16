@@ -31,14 +31,17 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
 
   return (
     <>
-      <Card className="mx-3 mt-3 p-3 bg-muted/50 border-primary/20 animate-fade-in">
-        <div className="flex items-center justify-between gap-3">
+      <Card className="mx-3 mt-3 p-4 bg-muted/50 border-primary/20 animate-fade-in">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-2">
-              <h4 className="font-semibold text-base">Day {currentDay}</h4>
-              <span className="text-xs text-muted-foreground">of 28</span>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Day</span>
+                <h4 className="font-bold text-2xl leading-none">{currentDay}</h4>
+                <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 28</span>
+              </div>
             </div>
-            <p className={`text-xs font-medium ${phase.color} truncate`}>
+            <p className={`text-sm font-semibold ${phase.color}`}>
               Phase {validPhase}: {phase.name}
             </p>
           </div>
@@ -48,29 +51,30 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
               onClick={() => setShowTutorial(true)}
               variant="outline"
               size="sm"
-              className="gap-1 text-xs h-8 px-3 hover-scale"
+              className="gap-1.5 text-xs h-9 px-3 hover-scale"
               title="Phase Tutorial"
             >
-              <BookOpen className="w-3 h-3" />
-              Learn
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Learn</span>
             </Button>
             {!isLastDay && (
               <Button
                 onClick={onNextDay}
                 size="sm"
-                className="gap-1 text-xs h-8 px-3"
+                className="gap-1.5 text-xs h-9 px-4"
               >
                 Next
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             )}
             <Button
               onClick={onAdjust}
               variant="outline"
-              size="sm"
-              className="gap-1 text-xs h-8 px-3"
+              size="icon"
+              className="h-9 w-9"
+              title="Adjust progress"
             >
-              <Settings className="w-3 h-3" />
+              <Settings className="w-3.5 h-3.5" />
             </Button>
           </div>
         </div>

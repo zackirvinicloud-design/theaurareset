@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Download, Trash2, Settings, Bot, Sparkles } from 'lucide-react';
+import { MessageSquare, Download, Trash2, Settings, Bot, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 interface ChatPanelProps {
   className?: string;
   context?: string;
+  onClose?: () => void;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -26,7 +27,7 @@ const SUGGESTED_PROMPTS = [
   "What supplements should I take today?",
 ];
 
-export const ChatPanel = ({ className, context }: ChatPanelProps) => {
+export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
   const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -154,7 +155,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   return (
     <div className={cn("flex flex-col h-full bg-background", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-3 pr-12 border-b border-border">
+      <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
           <div className="min-w-0 flex-1">
@@ -164,7 +165,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
           <InsightsDrawer />
           <JournalHistory />
           <Button
@@ -187,6 +188,17 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           >
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hidden lg:flex"
+              onClick={onClose}
+              title="Close chat"
+            >
+              <X className="w-3.5 h-3.5" />
+            </Button>
+          )}
         </div>
       </div>
 
