@@ -18,8 +18,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 8%;
 
-    /* Sophisticated purple accent - modern SaaS aesthetic */
-    --primary: 262 80% 50%;
+    /* Modern emerald green accent */
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 100%;
 
     /* Subtle secondary */
@@ -40,31 +40,31 @@ All colors MUST be HSL.
     /* Delicate borders */
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 262 80% 50%;
+    --ring: 160 84% 39%;
 
     --radius: 0.75rem;
 
     /* Modern glass effects */
     --glass-bg: 0 0% 100%;
     --glass-border: 240 6% 95%;
-    --gradient-start: 262 80% 50%;
-    --gradient-end: 280 70% 60%;
+    --gradient-start: 160 84% 39%;
+    --gradient-end: 158 64% 52%;
     
     /* Refined phase colors with better harmony */
-    --phase-1: 262 80% 50%;
-    --phase-2: 280 70% 60%;
-    --phase-3: 220 85% 55%;
-    --phase-4: 340 75% 55%;
+    --phase-1: 160 84% 39%;
+    --phase-2: 158 64% 52%;
+    --phase-3: 173 80% 40%;
+    --phase-4: 142 71% 45%;
 
     /* Clean sidebar design */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 10% 8%;
-    --sidebar-primary: 262 80% 50%;
+    --sidebar-primary: 160 84% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 5% 96%;
     --sidebar-accent-foreground: 240 10% 8%;
     --sidebar-border: 240 6% 90%;
-    --sidebar-ring: 262 80% 50%;
+    --sidebar-ring: 160 84% 39%;
   }
 
   .dark {
@@ -78,8 +78,8 @@ All colors MUST be HSL.
     --popover: 240 10% 6%;
     --popover-foreground: 0 0% 98%;
 
-    /* Vibrant purple accent in dark mode */
-    --primary: 262 80% 60%;
+    /* Vibrant emerald green in dark mode */
+    --primary: 160 84% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 4% 16%;
@@ -96,17 +96,17 @@ All colors MUST be HSL.
 
     --border: 240 4% 16%;
     --input: 240 4% 16%;
-    --ring: 262 80% 60%;
+    --ring: 160 84% 45%;
 
     /* Dark mode sidebar */
     --sidebar-background: 240 10% 6%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 262 80% 60%;
+    --sidebar-primary: 160 84% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4% 16%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 262 80% 60%;
+    --sidebar-ring: 160 84% 45%;
   }
 }
 
