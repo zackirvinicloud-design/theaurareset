@@ -26,7 +26,7 @@ export const ChatDrawer = ({ context }: ChatDrawerProps) => {
           </div>
         </div>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0">
+      <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0 [&>button]:top-3 [&>button]:right-3">
         <ChatPanel context={context} className="h-full" />
       </SheetContent>
     </Sheet>
