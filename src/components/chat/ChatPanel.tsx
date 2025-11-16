@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageSquare, Download, Trash2, Settings, Bot, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
@@ -153,54 +154,73 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
   };
 
   return (
-    <div className={cn("flex flex-col h-full bg-background chat-panel", className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
-          <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-sm truncate">Your Health Journal</h3>
-            <p className="text-xs text-muted-foreground truncate">
-              Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
-            </p>
+    <TooltipProvider>
+      <div className={cn("flex flex-col h-full bg-background chat-panel", className)}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 border-b border-border">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-sm truncate">Your Health Journal</h3>
+              <p className="text-xs text-muted-foreground truncate">
+                Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+            <InsightsDrawer />
+            <JournalHistory />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={exportChat}
+                  disabled={messages.length === 0}
+                >
+                  <Download className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Export chat</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleClear}
+                  disabled={messages.length === 0}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Clear chat</p>
+              </TooltipContent>
+            </Tooltip>
+            {onClose && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hidden lg:flex ml-1"
+                    onClick={onClose}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Close chat</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-          <InsightsDrawer />
-          <JournalHistory />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={exportChat}
-            disabled={messages.length === 0}
-            title="Export chat"
-          >
-            <Download className="w-3.5 h-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={handleClear}
-            disabled={messages.length === 0}
-            title="Clear chat"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-          {onClose && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hidden lg:flex ml-1"
-              onClick={onClose}
-              title="Close chat"
-            >
-              <X className="w-3.5 h-3.5" />
-            </Button>
-          )}
-        </div>
-      </div>
 
       {/* Progress Card */}
       <ProgressCard
@@ -274,6 +294,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           });
         }}
       />
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
