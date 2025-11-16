@@ -163,17 +163,8 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
               Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 flex-shrink-0"
-            onClick={() => setSettingsOpen(true)}
-            title="Update progress"
-          >
-            <Settings className="w-3.5 h-3.5" />
-          </Button>
         </div>
-        <div className="flex gap-1 flex-shrink-0 ml-2">
+        <div className="flex gap-2 flex-shrink-0 ml-3">
           <InsightsDrawer />
           <JournalHistory />
           <Button
