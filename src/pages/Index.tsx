@@ -117,10 +117,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <InteractiveTour 
-        onOpenChat={() => setMobileChatOpen(true)}
-        onOpenMenu={() => setMobileMenuOpen(true)}
-      />
+      <InteractiveTour />
       
       {/* Unified Menu */}
       <ProtocolNav

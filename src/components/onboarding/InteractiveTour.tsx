@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { X, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -15,7 +15,7 @@ export const resetTour = () => {
 interface TourStep {
   title: string;
   description: string;
-  target: string; // CSS selector
+  target: string;
   position: 'top' | 'bottom' | 'left' | 'right' | 'center';
   highlightPadding?: number;
 }
@@ -60,6 +60,7 @@ const mobileTourSteps: TourStep[] = [
   },
 ];
 
+// Desktop tour steps with spotlight
 const tourSteps: TourStep[] = [
   {
     title: "Welcome to The Aura Reset Protocol",
@@ -73,7 +74,6 @@ const tourSteps: TourStep[] = [
     target: '.protocol-nav, nav, aside, button[aria-label="Open menu"], button:has(svg.lucide-menu)',
     position: 'right',
     highlightPadding: 8,
-    openMenuOnMobile: true,
   },
   {
     title: "Your Health Journal with Aurora",
@@ -81,7 +81,6 @@ const tourSteps: TourStep[] = [
     target: '.chat-panel, [class*="chat"], .fixed.bottom-0.left-0.right-0',
     position: 'left',
     highlightPadding: 8,
-    openChatOnMobile: true,
   },
   {
     title: "AI Insights - Pattern Recognition",
@@ -89,7 +88,6 @@ const tourSteps: TourStep[] = [
     target: 'button[title*="insights" i], button:has(.lucide-sparkles)',
     position: 'bottom',
     highlightPadding: 12,
-    openChatOnMobile: true,
   },
   {
     title: "Progress Tracking",
@@ -97,7 +95,6 @@ const tourSteps: TourStep[] = [
     target: '.progress-card, [class*="progress"]',
     position: 'bottom',
     highlightPadding: 8,
-    openChatOnMobile: true,
   },
   {
     title: "Journal History & Export",
@@ -105,7 +102,6 @@ const tourSteps: TourStep[] = [
     target: 'button[title*="history" i], button[title*="export" i]',
     position: 'bottom',
     highlightPadding: 12,
-    openChatOnMobile: true,
   },
   {
     title: "You're All Set!",
@@ -115,12 +111,7 @@ const tourSteps: TourStep[] = [
   },
 ];
 
-interface InteractiveTourProps {
-  onOpenChat?: () => void;
-  onOpenMenu?: () => void;
-}
-
-export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps) => {
+export const InteractiveTour = () => {
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
@@ -135,11 +126,12 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
     }
   }, []);
 
+  // Desktop-only highlight logic
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || isMobile) return;
 
     const updateHighlight = () => {
-      const step = tourSteps[currentStep];
+      const step = steps[currentStep];
       if (!step) return;
 
       if (step.position === 'center') {
@@ -147,17 +139,12 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
         return;
       }
 
-      // Try multiple selectors
       const selectors = step.target.split(',').map(s => s.trim());
       let element: Element | null = null;
-      
+
       for (const selector of selectors) {
-        try {
-          element = document.querySelector(selector);
-          if (element) break;
-        } catch (e) {
-          console.warn(`Invalid selector: ${selector}`);
-        }
+        element = document.querySelector(selector);
+        if (element) break;
       }
 
       if (element) {
@@ -170,23 +157,13 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
 
     updateHighlight();
     window.addEventListener('resize', updateHighlight);
-    return () => window.removeEventListener('resize', updateHighlight);
-  }, [currentStep, isActive]);
+    window.addEventListener('scroll', updateHighlight);
 
-  // Handle opening chat/menu on mobile for specific steps
-  useEffect(() => {
-    if (!isActive || !isMobile) return;
-    
-    const step = tourSteps[currentStep];
-    
-    if (step.openChatOnMobile && onOpenChat) {
-      setTimeout(() => onOpenChat(), 300);
-    }
-    
-    if (step.openMenuOnMobile && onOpenMenu) {
-      setTimeout(() => onOpenMenu(), 300);
-    }
-  }, [currentStep, isActive, isMobile, onOpenChat, onOpenMenu]);
+    return () => {
+      window.removeEventListener('resize', updateHighlight);
+      window.removeEventListener('scroll', updateHighlight);
+    };
+  }, [currentStep, isActive, isMobile, steps]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -196,7 +173,7 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
     }
   };
 
-  const handlePrev = () => {
+  const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
@@ -207,170 +184,209 @@ export const InteractiveTour = ({ onOpenChat, onOpenMenu }: InteractiveTourProps
     setIsActive(false);
   };
 
-  const handleSkip = () => {
-    localStorage.setItem(TOUR_KEY, 'true');
-    setIsActive(false);
+  const getCardPosition = (step: TourStep, rect: DOMRect | null) => {
+    if (!rect || step.position === 'center') {
+      return {
+        x: window.innerWidth / 2 - 190,
+        y: window.innerHeight / 2 - 100,
+      };
+    }
+
+    const padding = 20;
+    let x = 0;
+    let y = 0;
+
+    switch (step.position) {
+      case 'right':
+        x = Math.min(rect.right + padding, window.innerWidth - 380 - padding);
+        y = Math.max(padding, Math.min(rect.top, window.innerHeight - 200 - padding));
+        break;
+      case 'left':
+        x = Math.max(padding, rect.left - 380 - padding);
+        y = Math.max(padding, Math.min(rect.top, window.innerHeight - 200 - padding));
+        break;
+      case 'bottom':
+        x = Math.max(padding, Math.min(rect.left, window.innerWidth - 380 - padding));
+        y = Math.min(rect.bottom + padding, window.innerHeight - 200 - padding);
+        break;
+      case 'top':
+        x = Math.max(padding, Math.min(rect.left, window.innerWidth - 380 - padding));
+        y = Math.max(padding, rect.top - 200 - padding);
+        break;
+    }
+
+    return { x, y };
   };
 
   if (!isActive) return null;
 
-  const step = tourSteps[currentStep];
-  const padding = step.highlightPadding || 0;
+  const step = steps[currentStep];
 
-  // Calculate card position for both mobile and desktop
-  const getCardPosition = () => {
-    if (step.position === 'center' || !highlightRect) {
-      return isMobile
-        ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md'
-        : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px]';
-    }
+  // Mobile: Simple bottom sheet
+  if (isMobile) {
+    return (
+      <Sheet open={isActive} onOpenChange={(open) => !open && handleComplete()}>
+        <SheetContent side="bottom" className="h-auto max-h-[70vh] rounded-t-2xl p-6">
+          <div className="space-y-4">
+            {/* Progress dots */}
+            <div className="flex justify-center gap-2 mb-4">
+              {steps.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "h-2 rounded-full transition-all duration-300",
+                    idx === currentStep 
+                      ? "w-8 bg-primary" 
+                      : "w-2 bg-muted-foreground/30"
+                  )}
+                />
+              ))}
+            </div>
 
-    if (isMobile) {
-      // On mobile, always show at bottom with smaller width
-      return 'bottom-20 left-1/2 -translate-x-1/2 w-[90vw] max-w-md';
-    }
+            {/* Content */}
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-semibold">{step.title}</h3>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {step.description}
+              </p>
+            </div>
 
-    // Desktop positioning logic
-    const { top, left, right, bottom, width } = highlightRect;
-    const cardOffset = 24;
+            {/* Navigation */}
+            <div className="flex gap-3 pt-2">
+              {currentStep > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={handlePrevious}
+                  className="flex-1"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  Back
+                </Button>
+              )}
+              <Button
+                onClick={handleNext}
+                className="flex-1"
+              >
+                {currentStep === steps.length - 1 ? "Get Started" : "Next"}
+                {currentStep < steps.length - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
+              </Button>
+            </div>
 
-    switch (step.position) {
-      case 'right':
-        return `top-[${top}px] left-[${right + cardOffset}px]`;
-      case 'left':
-        return `top-[${top}px] right-[${window.innerWidth - left + cardOffset}px]`;
-      case 'top':
-        return `bottom-[${window.innerHeight - top + cardOffset}px] left-[${left + width / 2}px] -translate-x-1/2`;
-      case 'bottom':
-        return `top-[${bottom + cardOffset}px] left-[${left + width / 2}px] -translate-x-1/2`;
-      default:
-        return 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
-    }
-  };
+            {/* Skip button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleComplete}
+              className="w-full text-xs text-muted-foreground"
+            >
+              Skip tour
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Desktop: Spotlight with positioning
+  const cardPosition = getCardPosition(step, highlightRect);
 
   return (
     <>
-      {/* Dark overlay */}
+      {/* Overlay */}
       <div 
-        className="fixed inset-0 bg-black/70 z-[100] animate-fade-in" 
-        onClick={handleSkip}
-        style={{ pointerEvents: 'auto' }}
+        className="fixed inset-0 z-[9998] pointer-events-none"
+        style={{ 
+          background: highlightRect 
+            ? `
+              radial-gradient(
+                ellipse at ${highlightRect.left + highlightRect.width / 2}px ${highlightRect.top + highlightRect.height / 2}px,
+                transparent 0%,
+                transparent ${Math.max(highlightRect.width, highlightRect.height) / 2}px,
+                rgba(0, 0, 0, 0.7) ${Math.max(highlightRect.width, highlightRect.height) / 2 + 100}px,
+                rgba(0, 0, 0, 0.8) 100%
+              )
+            `
+            : 'rgba(0, 0, 0, 0.6)',
+          transition: 'background 0.3s ease-in-out',
+        }}
       />
 
-      {/* Spotlight effect */}
+      {/* Highlight box */}
       {highlightRect && (
-        <>
-          <div
-            className="fixed z-[101] pointer-events-none transition-all duration-500 ease-out"
-            style={{
-              top: `${highlightRect.top - padding}px`,
-              left: `${highlightRect.left - padding}px`,
-              width: `${highlightRect.width + padding * 2}px`,
-              height: `${highlightRect.height + padding * 2}px`,
-              boxShadow: `
-                0 0 0 4px rgba(16, 185, 129, 0.4),
-                0 0 0 9999px rgba(0, 0, 0, 0.7),
-                0 0 40px rgba(16, 185, 129, 0.3)
-              `,
-              borderRadius: '12px',
-            }}
-          />
-          {/* Pulse animation ring */}
-          <div
-            className="fixed z-[101] pointer-events-none transition-all duration-500 ease-out animate-pulse"
-            style={{
-              top: `${highlightRect.top - padding - 4}px`,
-              left: `${highlightRect.left - padding - 4}px`,
-              width: `${highlightRect.width + padding * 2 + 8}px`,
-              height: `${highlightRect.height + padding * 2 + 8}px`,
-              border: '2px solid rgba(16, 185, 129, 0.6)',
-              borderRadius: '14px',
-            }}
-          />
-        </>
+        <div
+          className="fixed z-[9999] pointer-events-none border-2 border-primary rounded-lg transition-all duration-300"
+          style={{
+            left: `${highlightRect.left - (step.highlightPadding || 0)}px`,
+            top: `${highlightRect.top - (step.highlightPadding || 0)}px`,
+            width: `${highlightRect.width + (step.highlightPadding || 0) * 2}px`,
+            height: `${highlightRect.height + (step.highlightPadding || 0) * 2}px`,
+            boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.2), 0 0 20px rgba(16, 185, 129, 0.4)',
+          }}
+        />
       )}
 
-      {/* Tour card */}
+      {/* Tour Card */}
       <Card 
-        className={cn(
-          "fixed z-[102] shadow-2xl animate-scale-in border-primary/20",
-          isMobile ? "p-4" : "p-6",
-          getCardPosition()
-        )}
-        style={{ pointerEvents: 'auto' }}
+        className="fixed z-[10000] w-[380px] bg-card border-2 border-primary shadow-2xl transition-all duration-300"
+        style={{
+          left: `${cardPosition.x}px`,
+          top: `${cardPosition.y}px`,
+        }}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className={cn("text-primary flex-shrink-0", isMobile ? "w-4 h-4" : "w-5 h-5")} />
-            <span className={cn("font-medium text-muted-foreground", isMobile ? "text-[10px]" : "text-xs")}>
-              Step {currentStep + 1} of {tourSteps.length}
-            </span>
+        <div className="p-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold">
+              {step.title}
+            </h3>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className={cn(isMobile ? "h-6 w-6 -mr-1" : "h-8 w-8 -mr-2")} 
-            onClick={handleSkip}
-          >
-            <X className={cn(isMobile ? "w-3 h-3" : "w-4 h-4")} />
-          </Button>
-        </div>
-
-        {/* Content */}
-        <div className={cn(isMobile ? "mb-4" : "mb-6")}>
-          <h3 className={cn("font-semibold mb-2", isMobile ? "text-base" : "text-xl")}>{step.title}</h3>
-          <p className={cn("text-muted-foreground leading-relaxed", isMobile ? "text-xs" : "text-sm")}>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             {step.description}
           </p>
-        </div>
 
-        {/* Progress dots */}
-        <div className={cn("flex justify-center gap-2", isMobile ? "mb-4" : "mb-6")}>
-          {tourSteps.map((_, index) => (
-            <div
-              key={index}
-              className={cn(
-                "rounded-full transition-all",
-                isMobile ? "h-1" : "h-1.5",
-                index === currentStep
-                  ? isMobile ? "w-6 bg-primary" : "w-8 bg-primary"
-                  : index < currentStep
-                  ? isMobile ? "w-1 bg-primary/50" : "w-1.5 bg-primary/50"
-                  : isMobile ? "w-1 bg-muted" : "w-1.5 bg-muted"
-              )}
-            />
-          ))}
-        </div>
+          {/* Progress indicator */}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-muted-foreground">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+            <div className="flex gap-1">
+              {steps.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "h-1.5 w-8 rounded-full transition-all duration-300",
+                    idx === currentStep 
+                      ? "bg-primary" 
+                      : "bg-muted-foreground/20"
+                  )}
+                />
+              ))}
+            </div>
+          </div>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between gap-3">
-          <Button 
-            variant="outline" 
-            size={isMobile ? "sm" : "sm"}
-            className={cn(isMobile && "text-xs h-8 px-3")}
-            onClick={handleSkip}
-          >
-            Skip
-          </Button>
+          {/* Navigation buttons */}
           <div className="flex gap-2">
             {currentStep > 0 && (
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className={cn(isMobile ? "h-8 w-8" : "h-9 w-9")} 
-                onClick={handlePrev}
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                className="flex-1"
               >
-                <ChevronLeft className={cn(isMobile ? "w-3 h-3" : "w-4 h-4")} />
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
               </Button>
             )}
-            <Button 
-              size="sm" 
-              onClick={handleNext} 
-              className={cn("gap-2", isMobile && "text-xs h-8 px-3")}
+            <Button
+              onClick={handleNext}
+              className="flex-1"
             >
-              {currentStep === tourSteps.length - 1 ? "Get Started" : "Next"}
-              {currentStep < tourSteps.length - 1 && <ChevronRight className="w-3 h-3" />}
+              {currentStep === steps.length - 1 ? "Get Started!" : "Next"}
+              {currentStep < steps.length - 1 && (
+                <ChevronRight className="w-4 h-4 ml-1" />
+              )}
             </Button>
           </div>
         </div>
