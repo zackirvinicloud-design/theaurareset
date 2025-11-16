@@ -26,14 +26,14 @@ export const InsightsDrawer = () => {
           <Sparkles className="w-3.5 h-3.5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto">
+      <SheetContent side="right" className="w-[400px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>AI Insights</SheetTitle>
           <SheetDescription>
             Aurora's deep analysis of your journey patterns
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-6">
+        <div className="mt-6 pb-6">
           <ConversationInsights />
         </div>
       </SheetContent>

@@ -111,11 +111,9 @@ export const ConversationInsights = () => {
         </Button>
 
         {insights && (
-          <ScrollArea className="max-h-[600px]">
-            <div className="bg-muted p-4 rounded-lg">
-              <div className="text-sm whitespace-pre-wrap leading-relaxed">{insights}</div>
-            </div>
-          </ScrollArea>
+          <div className="bg-muted p-4 rounded-lg">
+            <div className="text-sm whitespace-pre-wrap leading-relaxed break-words">{insights}</div>
+          </div>
         )}
 
         {!insights && messages.length === 0 && (
