@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Download, Trash2, Settings, Bot, Sparkles, X } from 'lucide-react';
+import { MessageSquare, Download, Trash2, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
@@ -203,26 +202,6 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
               <p>Clear chat</p>
             </TooltipContent>
           </Tooltip>
-          {onClose && (
-            <>
-              <Separator orientation="vertical" className="h-6 mx-2" />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 hidden lg:flex"
-                    onClick={onClose}
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Close chat</p>
-                </TooltipContent>
-              </Tooltip>
-            </>
-          )}
         </div>
         </div>
 
