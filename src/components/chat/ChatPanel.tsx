@@ -165,38 +165,38 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-1 sm:ml-2">
           <InsightsDrawer />
           <JournalHistory />
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-7 w-7 sm:h-8 sm:w-8 hidden sm:flex"
             onClick={exportChat}
             disabled={messages.length === 0}
             title="Export chat"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-7 w-7 sm:h-8 sm:w-8"
             onClick={handleClear}
             disabled={messages.length === 0}
             title="Clear chat"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </Button>
           {onClose && (
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hidden lg:flex ml-1"
+              className="h-7 w-7 sm:h-8 sm:w-8 hidden lg:flex"
               onClick={onClose}
               title="Close chat"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </Button>
           )}
         </div>
