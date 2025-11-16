@@ -154,7 +154,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   return (
     <div className={cn("flex flex-col h-full bg-background", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border">
+      <div className="flex items-center justify-between p-3 pr-12 border-b border-border">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
           <div className="min-w-0 flex-1">
