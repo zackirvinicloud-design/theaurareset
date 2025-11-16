@@ -167,59 +167,59 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-            <InsightsDrawer />
-            <JournalHistory />
+        <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+          <InsightsDrawer />
+          <JournalHistory />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={exportChat}
+                disabled={messages.length === 0}
+              >
+                <Download className="w-3.5 h-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Export chat</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={handleClear}
+                disabled={messages.length === 0}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Clear chat</p>
+            </TooltipContent>
+          </Tooltip>
+          {onClose && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8"
-                  onClick={exportChat}
-                  disabled={messages.length === 0}
+                  className="h-8 w-8 hidden lg:flex ml-4"
+                  onClick={onClose}
                 >
-                  <Download className="w-3.5 h-3.5" />
+                  <X className="w-3.5 h-3.5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Export chat</p>
+                <p>Close chat</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={handleClear}
-                  disabled={messages.length === 0}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Clear chat</p>
-              </TooltipContent>
-            </Tooltip>
-            {onClose && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 hidden lg:flex ml-1"
-                    onClick={onClose}
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Close chat</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
+          )}
+        </div>
         </div>
 
       {/* Progress Card */}
