@@ -5,7 +5,6 @@ import { Menu, Download, FileText, Printer, GraduationCap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { resetOnboarding } from "@/components/onboarding/OnboardingFlow";
 import { resetTour } from "@/components/onboarding/InteractiveTour";
 
 interface NavSection {
@@ -50,7 +49,6 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
   };
 
   const handleRestartTutorial = () => {
-    resetOnboarding();
     resetTour();
     setOpen(false);
     window.location.reload();
