@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { resetOnboarding } from "@/components/onboarding/OnboardingFlow";
+import { resetTour } from "@/components/onboarding/InteractiveTour";
 
 interface NavSection {
   id: string;
@@ -50,6 +51,7 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
 
   const handleRestartTutorial = () => {
     resetOnboarding();
+    resetTour();
     setOpen(false);
     window.location.reload();
   };
@@ -136,7 +138,7 @@ export const ProtocolNav = ({ activeSection, onNavigate, onDownloadHTML, onPrint
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-background border-r overflow-y-auto p-6 z-40">
+      <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-background border-r overflow-y-auto p-6 z-40 protocol-nav">
         <div className="mb-6">
           <h2 className="font-serif text-xl font-bold">Menu</h2>
         </div>

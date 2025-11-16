@@ -4,6 +4,7 @@ import { ProtocolNav } from "@/components/ProtocolNav";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
+import { InteractiveTour } from "@/components/onboarding/InteractiveTour";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -115,9 +116,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <OnboardingFlow />
+      <InteractiveTour />
       
       {/* Unified Menu */}
-      <ProtocolNav 
+      <ProtocolNav
         activeSection={activeSection} 
         onNavigate={handleNavigate}
         onDownloadHTML={handleDownloadHTML}

@@ -153,7 +153,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
   };
 
   return (
-    <div className={cn("flex flex-col h-full bg-background", className)}>
+    <div className={cn("flex flex-col h-full bg-background chat-panel", className)}>
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-border">
         <div className="flex items-center gap-2 min-w-0 flex-1">
