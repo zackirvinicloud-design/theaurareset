@@ -37,9 +37,9 @@ AFFIRMATIONS & ANCIENT WISDOM IN INSIGHTS:
 
 WHAT TO ANALYZE - NUTRITION-FOCUSED WITH HOLISTIC AWARENESS:
 - PHYSICAL SYMPTOMS: Recurring issues, energy patterns, sleep quality, cravings, die-off reactions
-- PROTOCOL COMPLIANCE: Binder usage, food choices, timing, phase-specific patterns
+- PROTOCOL COMPLIANCE: Food choices, meal timing, hydration levels, supplement usage (including binders), sleep patterns, movement
 - EMOTIONAL-PHYSICAL CONNECTIONS: How stress/emotions impact gut health, inflammation, symptoms
-- BEHAVIORAL PATTERNS: Food timing, meal prep consistency, supplement adherence, resistance patterns
+- BEHAVIORAL PATTERNS: Food timing, meal prep consistency, lifestyle adherence, resistance patterns
 - PROGRESS INDICATORS: Improvements, setbacks, milestones in the protocol journey
 - PHASE-SPECIFIC: Liver detox symptoms (Phase 1), fungal die-off (Phase 2), etc.
 - MIND-BODY: Anxiety → gut symptoms, stress → inflammation (but frame through nutrition lens)
