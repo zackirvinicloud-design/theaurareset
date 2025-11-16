@@ -32,21 +32,27 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
   return (
     <>
       <Card className="mx-3 mt-3 p-4 bg-muted/50 border-primary/20 animate-fade-in">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-1">
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Day</span>
-                <h4 className="font-bold text-2xl leading-none">{currentDay}</h4>
-                <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 28</span>
-              </div>
+        <div className="flex flex-col gap-3">
+          {/* Top row - Day and Phase info */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Day</span>
+              <h4 className="font-bold text-2xl leading-none">{currentDay}</h4>
+              <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 28</span>
             </div>
-            <p className={`text-sm font-semibold ${phase.color}`}>
-              Phase {validPhase}: {phase.name}
-            </p>
+            
+            <div className="text-right">
+              <p className={`text-sm font-semibold ${phase.color} leading-tight`}>
+                Phase {validPhase}:
+              </p>
+              <p className={`text-sm font-semibold ${phase.color} leading-tight`}>
+                {phase.name}
+              </p>
+            </div>
           </div>
           
-          <div className="flex gap-1.5 flex-shrink-0">
+          {/* Bottom row - Action buttons */}
+          <div className="flex gap-1.5 justify-end">
             <Button
               onClick={() => setShowTutorial(true)}
               variant="outline"
