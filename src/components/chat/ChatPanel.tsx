@@ -164,7 +164,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
             </p>
           </div>
         </div>
-        <div className="flex gap-2 flex-shrink-0 ml-3">
+        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
           <InsightsDrawer />
           <JournalHistory />
           <Button
