@@ -70,7 +70,7 @@ Be DETAILED and THOROUGH. You're a nutrition expert who understands humans holis
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Analyze this conversation and provide deep insights:\n\n${conversation}` }
         ],
-        max_tokens: 4000,
+        max_tokens: 8000,
       }),
     });
 

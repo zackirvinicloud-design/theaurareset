@@ -18,42 +18,11 @@ export const useAutoInsights = ({ messages, userProgress, onInsightsGenerated }:
     if (userMessageCount > 0 && userMessageCount % 5 === 0 && userMessageCount !== lastInsightCountRef.current) {
       lastInsightCountRef.current = userMessageCount;
       
-      const triggerAutoInsights = async () => {
-        try {
-          const conversationHistory = messages
-            .slice(-20)
-            .map(m => `${m.role}: ${m.content}`)
-            .join('\n\n');
-
-          const { data, error } = await supabase.functions.invoke('analyze-insights', {
-            body: {
-              conversation: conversationHistory,
-              currentDay: userProgress.currentDay,
-              currentPhase: userProgress.currentPhase,
-            },
-          });
-
-          if (error) throw error;
-
-          if (data?.insights) {
-            // Store in localStorage
-            localStorage.setItem('aura-protocol-latest-insights', data.insights);
-            
-            // Dispatch custom event for the insights component
-            window.dispatchEvent(new CustomEvent('auto-insights-generated', { detail: data.insights }));
-            
-            onInsightsGenerated?.(data.insights);
-            toast({
-              title: "New insights available",
-              description: "Check the insights drawer to see Aurora's analysis",
-            });
-          }
-        } catch (error) {
-          console.error('Auto-insights failed:', error);
-        }
-      };
-      
-      triggerAutoInsights();
+      // Just notify the user to manually generate insights
+      toast({
+        title: "Time for deeper insights",
+        description: "Aurora recommends updating your insights - tap the sparkle icon",
+      });
     }
   }, [messages, userProgress, onInsightsGenerated]);
 };
