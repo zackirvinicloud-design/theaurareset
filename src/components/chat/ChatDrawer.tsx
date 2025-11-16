@@ -42,6 +42,10 @@ export const ChatDrawer = ({ context, open: controlledOpen, onOpenChange }: Chat
         </div>
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0 [&>button]:hidden">
+        {/* Swipe handle */}
+        <div className="flex justify-center pt-2 pb-1">
+          <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+        </div>
         <ChatPanel context={context} className="h-full" />
       </SheetContent>
     </Sheet>
