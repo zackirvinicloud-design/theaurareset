@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { X, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TOUR_KEY = 'aura-protocol-tour-completed';
 
@@ -72,6 +74,7 @@ export const InteractiveTour = () => {
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const hasCompleted = localStorage.getItem(TOUR_KEY);
@@ -81,7 +84,7 @@ export const InteractiveTour = () => {
   }, []);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || isMobile) return;
 
     const updateHighlight = () => {
       const step = tourSteps[currentStep];
@@ -112,7 +115,7 @@ export const InteractiveTour = () => {
     updateHighlight();
     window.addEventListener('resize', updateHighlight);
     return () => window.removeEventListener('resize', updateHighlight);
-  }, [currentStep, isActive]);
+  }, [currentStep, isActive, isMobile]);
 
   const handleNext = () => {
     if (currentStep < tourSteps.length - 1) {
@@ -143,6 +146,69 @@ export const InteractiveTour = () => {
   const step = tourSteps[currentStep];
   const padding = step.highlightPadding || 0;
 
+  // Mobile experience - bottom drawer
+  if (isMobile) {
+    return (
+      <Sheet open={isActive} onOpenChange={(open) => !open && handleSkip()}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+          <SheetHeader className="text-left mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <span className="text-xs font-medium text-muted-foreground">
+                  Step {currentStep + 1} of {tourSteps.length}
+                </span>
+              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSkip}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <SheetTitle className="text-2xl">{step.title}</SheetTitle>
+            <SheetDescription className="text-base leading-relaxed pt-2">
+              {step.description}
+            </SheetDescription>
+          </SheetHeader>
+
+          {/* Progress dots */}
+          <div className="flex justify-center gap-2 mb-8">
+            {tourSteps.map((_, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "h-2 rounded-full transition-all",
+                  index === currentStep
+                    ? "w-8 bg-primary"
+                    : index < currentStep
+                    ? "w-2 bg-primary/50"
+                    : "w-2 bg-muted"
+                )}
+              />
+            ))}
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between gap-3">
+            <Button variant="outline" onClick={handleSkip}>
+              Skip Tour
+            </Button>
+            <div className="flex gap-2">
+              {currentStep > 0 && (
+                <Button variant="outline" size="icon" onClick={handlePrev}>
+                  <ChevronLeft className="w-5 h-5" />
+                </Button>
+              )}
+              <Button onClick={handleNext} className="gap-2">
+                {currentStep === tourSteps.length - 1 ? "Get Started" : "Next"}
+                {currentStep < tourSteps.length - 1 && <ChevronRight className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  // Desktop experience - spotlight with floating card
   return (
     <>
       {/* Dark overlay */}
