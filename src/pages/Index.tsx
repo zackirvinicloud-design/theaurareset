@@ -4,7 +4,7 @@ import { ProtocolNav } from "@/components/ProtocolNav";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
-import { MessageSquare, X } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -137,18 +137,20 @@ const Index = () => {
 
       {/* Desktop Chat Panel */}
       <div className={`hidden lg:block fixed top-0 right-0 h-screen w-80 bg-background border-l border-border transition-transform duration-300 ${chatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <ChatPanel context={activeSection} />
+        <ChatPanel context={activeSection} onClose={() => setChatOpen(false)} />
       </div>
 
-      {/* Desktop Chat Toggle */}
-      <Button
-        onClick={() => setChatOpen(!chatOpen)}
-        size="icon"
-        variant={chatOpen ? "secondary" : "default"}
-        className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50"
-      >
-        {chatOpen ? <X className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
-      </Button>
+      {/* Desktop Chat Toggle - Only show when chat is closed */}
+      {!chatOpen && (
+        <Button
+          onClick={() => setChatOpen(true)}
+          size="icon"
+          variant="default"
+          className="hidden lg:flex fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg z-50 hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]"
+        >
+          <MessageSquare className="w-5 h-5" />
+        </Button>
+      )}
 
       {/* Mobile Chat Drawer */}
       <ChatDrawer context={activeSection} />
