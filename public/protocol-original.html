@@ -137,6 +137,11 @@
         border-radius: 12px;
         box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.1);
         border: 1px solid rgba(228, 228, 231, 0.8);
+        transition: box-shadow 0.3s ease;
+      }
+
+      .info-box:hover {
+        box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.1), 0 0 15px rgba(16, 185, 129, 0.15);
       }
 
       .warning-box {
@@ -185,6 +190,12 @@
         padding: 28px;
         margin: 25px 0;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      }
+
+      .day-schedule:hover {
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 0 25px rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.2);
       }
 
       .time-slot {
@@ -215,6 +226,11 @@
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: box-shadow 0.3s ease;
+      }
+
+      table:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 20px rgba(16, 185, 129, 0.08);
       }
 
       th,
@@ -325,12 +341,13 @@
         padding: 28px;
         margin: 20px 0;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
       }
 
       .pillar-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12), 0 0 30px rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.3);
       }
 
       .pillar-number {
@@ -345,6 +362,12 @@
         font-weight: bold;
         margin-right: 15px;
         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+      }
+
+      .pillar-card:hover .pillar-number {
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4), 0 0 20px rgba(16, 185, 129, 0.3);
+        transform: scale(1.1);
       }
 
       .motivation-section {
@@ -429,11 +452,12 @@
       a {
         color: #10b981;
         text-decoration: none;
-        transition: color 0.2s ease;
+        transition: color 0.2s ease, text-shadow 0.2s ease;
       }
 
       a:hover {
         color: #059669;
+        text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
       }
 
       /* Mobile Responsive Styles */
