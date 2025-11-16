@@ -5,10 +5,15 @@ import { useState } from 'react';
 
 interface ChatDrawerProps {
   context?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const ChatDrawer = ({ context }: ChatDrawerProps) => {
-  const [open, setOpen] = useState(false);
+export const ChatDrawer = ({ context, open: controlledOpen, onOpenChange }: ChatDrawerProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
