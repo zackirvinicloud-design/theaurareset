@@ -31,7 +31,7 @@ export const ChatDrawer = ({ context, open: controlledOpen, onOpenChange }: Chat
           </div>
         </div>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0 [&>button]:top-3 [&>button]:right-3">
+      <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0 [&>button]:hidden">
         <ChatPanel context={context} className="h-full" />
       </SheetContent>
     </Sheet>
