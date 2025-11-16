@@ -13,16 +13,6 @@ export const useAutoInsights = ({ messages, userProgress, onInsightsGenerated }:
   const lastInsightCountRef = useRef(0);
 
   useEffect(() => {
-    const userMessageCount = messages.filter(m => m.role === 'user').length;
-    
-    if (userMessageCount > 0 && userMessageCount % 5 === 0 && userMessageCount !== lastInsightCountRef.current) {
-      lastInsightCountRef.current = userMessageCount;
-      
-      // Just notify the user to manually generate insights
-      toast({
-        title: "Time for deeper insights",
-        description: "Aurora recommends updating your insights - tap the sparkle icon",
-      });
-    }
+    // Insights notifications removed - user will manually check when desired
   }, [messages, userProgress, onInsightsGenerated]);
 };
