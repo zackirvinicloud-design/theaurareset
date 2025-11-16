@@ -1,7 +1,7 @@
 import { MessageSquare } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ChatPanel } from './ChatPanel';
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { triggerHaptic } from '@/utils/haptics';
 
 interface ChatDrawerProps {
@@ -12,6 +12,8 @@ interface ChatDrawerProps {
 
 export const ChatDrawer = ({ context, open: controlledOpen, onOpenChange }: ChatDrawerProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
+  const touchStartY = useRef<number>(0);
+  const touchCurrentY = useRef<number>(0);
   
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const handleOpenChange = (newOpen: boolean) => {
@@ -23,6 +25,26 @@ export const ChatDrawer = ({ context, open: controlledOpen, onOpenChange }: Chat
     } else {
       setInternalOpen(newOpen);
     }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchCurrentY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeDistance = touchCurrentY.current - touchStartY.current;
+    
+    // If swiped down more than 50px, close the drawer
+    if (swipeDistance > 50) {
+      handleOpenChange(false);
+    }
+    
+    touchStartY.current = 0;
+    touchCurrentY.current = 0;
   };
 
   return (
@@ -43,8 +65,13 @@ export const ChatDrawer = ({ context, open: controlledOpen, onOpenChange }: Chat
       </SheetTrigger>
       <SheetContent side="bottom" className="h-[90dvh] max-h-[90dvh] p-0 [&>button]:hidden">
         {/* Swipe handle */}
-        <div className="flex justify-center pt-2 pb-1">
-          <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+        <div 
+          className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="w-12 h-1.5 rounded-full bg-muted-foreground/40 transition-colors hover:bg-muted-foreground/60" />
         </div>
         <ChatPanel context={context} className="h-full" />
       </SheetContent>
