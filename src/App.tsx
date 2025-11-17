@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
+import Signup from "./pages/Signup";
 import PaymentRequired from "./pages/PaymentRequired";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import Protocol from "./pages/Protocol";
@@ -21,6 +22,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/payment-required" element={<PaymentRequired />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/protocol" element={<Protocol />} />
