@@ -413,6 +413,194 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* The Protocol Section */}
+      <div className="py-16 lg:py-24 bg-gradient-to-b from-background to-primary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <Badge variant="secondary" className="mb-4">The Complete Solution</Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                The Aura Reset Protocol: The ONLY 4-Phase System That Eliminates Energy Vampires In The Scientifically-Correct Sequence
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                <strong>Here's why this works when everything else failed:</strong> We attack the ROOT CAUSE in the EXACT sequence your body needs—not just masking symptoms like every other "solution" you've wasted money on.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="p-6 border-2 border-primary/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    1
+                  </div>
+                  <h3 className="text-xl font-bold">Phase 1: Foundation</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">Continuous Liver Support (Days 1-28)</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Master detoxifier activation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Prevent toxin reabsorption</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Daily liver-supporting juices</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Targeted supplement protocol</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Complete elimination support</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6 border-2 border-primary/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    2
+                  </div>
+                  <h3 className="text-xl font-bold">Phase 2: Prep Work</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">Fungal Pre-Conditioning (Days 1-7)</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Starve fungal colonies first</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Create hostile environment for parasites</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Natural antifungal compounds</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Gut microbiome restoration</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Set stage for main elimination</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6 border-2 border-primary/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    3
+                  </div>
+                  <h3 className="text-xl font-bold">Phase 3: Main Event</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">Parasite Elimination (Days 8-21)</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Targeted herbal parasite killers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Aggressive elimination support</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Die-off symptom management</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Complete system cleansing</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Energy restoration protocols</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-6 border-2 border-primary/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    4
+                  </div>
+                  <h3 className="text-xl font-bold">Phase 4: The Epilogue</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">Heavy Metal Detox (Days 22-28)</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Safe chelation from deep tissues</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Natural metal-binding compounds</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Cellular toxin removal</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Full body purification</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Complete system reset</span>
+                  </li>
+                </ul>
+              </Card>
+            </div>
+
+            <Card className="mt-12 p-8 bg-destructive/10 border-2 border-destructive">
+              <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                <AlertTriangle className="w-8 h-8 text-destructive" />
+                WARNING: Sequence Is EVERYTHING
+              </h3>
+              <p className="text-lg mb-6">
+                <strong>CRITICAL:</strong> This 4-phase sequence is scientifically designed! Liver support runs continuously while we systematically eliminate each layer. Skip a phase or change the order and you'll just redistribute toxins and feel WORSE.
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                  <p><strong>Phase 1:</strong> Liver support FIRST → Prevents toxin reabsorption throughout</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                  <p><strong>Phase 2:</strong> Weaken fungus → Creates hostile environment for parasites</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                  <p><strong>Phase 3:</strong> Kill parasites → Eliminates main energy drainers</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                  <p><strong>Phase 4:</strong> Remove metals → Safe chelation without redistribution</p>
+                </div>
+              </div>
+            </Card>
+
+            <div className="text-center mt-12">
+              <Button 
+                size="lg" 
+                onClick={() => navigate("/auth")}
+                className="text-lg px-12 py-6"
+              >
+                Get Access Now 🔥
+              </Button>
+              <p className="text-sm text-muted-foreground mt-4">
+                Instant access • Start in 5 minutes • 28-day guarantee
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Final CTA */}
       <div className="py-16 lg:py-24 bg-gradient-to-b from-primary/5 to-background" id="cta-section">
         <div className="container mx-auto px-4">
