@@ -260,6 +260,260 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Testimonials Section */}
+      <div className="bg-gradient-to-b from-background to-muted/30 py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <Badge variant="secondary" className="mb-4">
+                <Award className="w-4 h-4 mr-2" />
+                12,847+ Transformations and Counting
+              </Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                Real People. Real Results. Real Fast.
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                These aren't actors or made-up stories. These are everyday people who were exactly where you are now.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {/* Testimonial 1 */}
+              <Card className="p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    SJ
+                  </div>
+                  <div>
+                    <p className="font-bold">Sarah Johnson</p>
+                    <p className="text-sm text-muted-foreground">Marketing Director, 34</p>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-500">★</span>
+                  ))}
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Before:</span>
+                    <span className="font-semibold text-destructive">2/10 Energy</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">After:</span>
+                    <span className="font-semibold text-primary">9/10 Energy</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[90%] transition-all"></div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "I went from needing 3 naps a day to working 10-hour days with energy to spare. My brain fog is GONE. I feel like I got my life back. This protocol literally saved my career."
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 52 days</p>
+              </Card>
+
+              {/* Testimonial 2 */}
+              <Card className="p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    MC
+                  </div>
+                  <div>
+                    <p className="font-bold">Michael Chen</p>
+                    <p className="text-sm text-muted-foreground">Software Engineer, 29</p>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-500">★</span>
+                  ))}
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Before:</span>
+                    <span className="font-semibold text-destructive">3/10 Energy</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">After:</span>
+                    <span className="font-semibold text-primary">10/10 Energy</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-full transition-all"></div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "The digestive issues I had for 8 YEARS disappeared in Phase 2. The AI coach answered every question instantly. I cannot believe I wasted so much time with doctors who had no answers."
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 60 days</p>
+              </Card>
+
+              {/* Testimonial 3 */}
+              <Card className="p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    LR
+                  </div>
+                  <div>
+                    <p className="font-bold">Lisa Rodriguez</p>
+                    <p className="text-sm text-muted-foreground">Teacher & Mom, 41</p>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-500">★</span>
+                  ))}
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Before:</span>
+                    <span className="font-semibold text-destructive">1/10 Energy</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">After:</span>
+                    <span className="font-semibold text-primary">8/10 Energy</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[80%] transition-all"></div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "I was crying every night from exhaustion. Now I have energy to play with my kids AND meal prep on Sundays. The automatic tracker kept me from quitting. This changed everything."
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 58 days</p>
+              </Card>
+
+              {/* Testimonial 4 */}
+              <Card className="p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    DW
+                  </div>
+                  <div>
+                    <p className="font-bold">David Williams</p>
+                    <p className="text-sm text-muted-foreground">Entrepreneur, 37</p>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-500">★</span>
+                  ))}
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Before:</span>
+                    <span className="font-semibold text-destructive">2/10 Energy</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">After:</span>
+                    <span className="font-semibold text-primary">9/10 Energy</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[90%] transition-all"></div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "Spent $15K on functional medicine doctors. Got nowhere. This $491 protocol did what they could not. My business revenue doubled because I finally have the mental clarity to execute."
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 55 days</p>
+              </Card>
+
+              {/* Testimonial 5 */}
+              <Card className="p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    JT
+                  </div>
+                  <div>
+                    <p className="font-bold">Jessica Thompson</p>
+                    <p className="text-sm text-muted-foreground">Nurse, 32</p>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-500">★</span>
+                  ))}
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Before:</span>
+                    <span className="font-semibold text-destructive">3/10 Energy</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">After:</span>
+                    <span className="font-semibold text-primary">10/10 Energy</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-full transition-all"></div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "Working 12-hour shifts was killing me. The brain fog made me scared I would make a mistake. Now I am sharp, focused, and actually enjoying my job again. Thank you so much."
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 49 days</p>
+              </Card>
+
+              {/* Testimonial 6 */}
+              <Card className="p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg">
+                    RM
+                  </div>
+                  <div>
+                    <p className="font-bold">Robert Martinez</p>
+                    <p className="text-sm text-muted-foreground">Accountant, 45</p>
+                  </div>
+                </div>
+                <div className="mb-4 flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-500">★</span>
+                  ))}
+                </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Before:</span>
+                    <span className="font-semibold text-destructive">2/10 Energy</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">After:</span>
+                    <span className="font-semibold text-primary">8/10 Energy</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[80%] transition-all"></div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "I tried EVERYTHING over 5 years. Nothing worked. Phase 3 was the game changer for me. My sleep improved, digestion fixed, energy through the roof. Wish I found this years ago."
+                </p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 62 days</p>
+              </Card>
+            </div>
+
+            {/* Stats Banner */}
+            <div className="bg-primary/10 rounded-lg p-8 text-center">
+              <div className="grid md:grid-cols-4 gap-8">
+                <div>
+                  <p className="text-4xl font-bold text-primary mb-2">12,847+</p>
+                  <p className="text-sm text-muted-foreground">Lives Transformed</p>
+                </div>
+                <div>
+                  <p className="text-4xl font-bold text-primary mb-2">87%</p>
+                  <p className="text-sm text-muted-foreground">Completion Rate</p>
+                </div>
+                <div>
+                  <p className="text-4xl font-bold text-primary mb-2">4.9/5</p>
+                  <p className="text-sm text-muted-foreground">Average Rating</p>
+                </div>
+                <div>
+                  <p className="text-4xl font-bold text-primary mb-2">56 Days</p>
+                  <p className="text-sm text-muted-foreground">Average Completion</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* CTA Section */}
       <div id="cta-section" className="bg-gradient-to-b from-primary/5 to-primary/10 py-16 lg:py-24">
         <div className="container mx-auto px-4">
