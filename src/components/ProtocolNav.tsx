@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Download, FileText, Printer, GraduationCap } from "lucide-react";
+import { Menu, Download, FileText, Printer, GraduationCap, LogOut } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
@@ -35,6 +35,7 @@ interface ProtocolNavProps {
   onPrint: () => void;
   mobileMenuOpen?: boolean;
   onMobileMenuOpenChange?: (open: boolean) => void;
+  onSignOut?: () => void;
 }
 
 export const ProtocolNav = ({ 
@@ -43,7 +44,8 @@ export const ProtocolNav = ({
   onDownloadHTML, 
   onPrint,
   mobileMenuOpen: controlledOpen,
-  onMobileMenuOpenChange
+  onMobileMenuOpenChange,
+  onSignOut
 }: ProtocolNavProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
   
@@ -135,6 +137,19 @@ export const ProtocolNav = ({
                 <GraduationCap className="mr-2 h-4 w-4" />
                 Restart Tutorial
               </Button>
+              {onSignOut && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-destructive hover:text-destructive"
+                  onClick={() => {
+                    onSignOut();
+                    setOpen(false);
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </Button>
+              )}
             </div>
 
             <Separator className="my-4" />
@@ -179,6 +194,16 @@ export const ProtocolNav = ({
             <GraduationCap className="mr-2 h-4 w-4" />
             Restart Tutorial
           </Button>
+          {onSignOut && (
+            <Button
+              variant="outline"
+              className="w-full justify-start text-sm text-destructive hover:text-destructive"
+              onClick={onSignOut}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          )}
         </div>
 
         <Separator className="my-4" />
