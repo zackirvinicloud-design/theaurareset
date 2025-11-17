@@ -16,62 +16,72 @@ const PaymentRequired = () => {
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center p-4">
       <Card className="w-full max-w-lg">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <Lock className="w-8 h-8 text-primary" />
+          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center animate-pulse">
+            <Lock className="w-8 h-8 text-destructive" />
           </div>
-          <CardTitle className="text-3xl font-bold">Access Required</CardTitle>
-          <CardDescription className="text-base mt-2">
-            Get lifetime access to The Aura Reset Protocol
+          <CardTitle className="text-3xl font-bold text-destructive">⚠️ ACCESS DENIED ⚠️</CardTitle>
+          <CardDescription className="text-base mt-2 font-semibold">
+            You're ONE DECISION Away From Transforming Your Life in 28 Days
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="bg-muted/50 rounded-lg p-6 space-y-3">
-            <p className="text-lg font-semibold">What's Included:</p>
+          <div className="bg-destructive/10 border-2 border-destructive/30 rounded-lg p-6 space-y-3">
+            <p className="text-lg font-bold text-destructive text-center">STOP. Read This Before You Leave:</p>
+            <p className="text-base font-semibold">What You Get For Just $47:</p>
             <ul className="space-y-2 text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-primary">✓</span>
-                <span>Complete 4-phase reset protocol with step-by-step guidance</span>
+                <span className="text-primary font-bold">✓</span>
+                <span><strong>Complete 28-day reset protocol</strong> with step-by-step guidance (Worth $197)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary">✓</span>
-                <span>Aurora - Your personal health AI trained 1000+ hours on this protocol</span>
+                <span className="text-primary font-bold">✓</span>
+                <span><strong>Aurora</strong> - Your personal health AI trained 1000+ hours on THIS protocol (Worth $197)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary">✓</span>
-                <span>Automatic progress tracking and insights</span>
+                <span className="text-primary font-bold">✓</span>
+                <span><strong>Automatic progress tracking</strong> and insights (Worth $97)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary">✓</span>
-                <span>Interactive diary and symptom monitoring</span>
+                <span className="text-primary font-bold">✓</span>
+                <span><strong>Interactive diary</strong> and symptom monitoring (Worth $97)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary">✓</span>
-                <span>Lifetime access with all future updates</span>
+                <span className="text-primary font-bold">✓</span>
+                <span><strong>Lifetime access</strong> with all future updates (Worth $297)</span>
               </li>
             </ul>
+            <div className="border-t-2 border-primary/20 pt-3 mt-3">
+              <p className="text-center text-lg font-bold">
+                <span className="text-muted-foreground line-through">$885 Total Value</span>
+                <span className="text-primary text-2xl ml-3">→ Only $47</span>
+              </p>
+            </div>
           </div>
           <div className="text-center">
             <div className="mb-4">
-              <p className="text-sm text-muted-foreground mb-2">Regular Price: $297</p>
+              <p className="text-xs text-muted-foreground mb-2 line-through">$885 Value</p>
               <p className="text-5xl font-bold text-primary mb-2">Only $47</p>
-              <p className="text-sm font-semibold">One-Time Payment • Lifetime Access</p>
+              <p className="text-sm font-semibold text-destructive">ONE-TIME Payment • Lifetime Access • NO Subscriptions</p>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              After completing your purchase, you'll be redirected back here with instant access.
+            <p className="text-sm text-foreground font-semibold mb-4">
+              Click below. Complete purchase in 2 minutes. Start transforming in 28 days. Or stay stuck forever.
             </p>
             <Button
               size="lg"
-              className="w-full text-lg py-6"
+              className="w-full text-lg py-6 animate-pulse"
               onClick={() => {
                 // User will provide their payment link
                 window.open("YOUR_PAYMENT_LINK_HERE", "_blank");
               }}
             >
-              Get Access Now - $47
+              YES! Get Access Now - $47 (Save $838)
               <ExternalLink className="ml-2 w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-4">
-              ✓ 60-Day Money-Back Guarantee • ✓ Secure Payment
+              ✓ 28-Day Money-Back Guarantee • ✓ Secure Payment • ✓ Less Than 3% Ever Ask For Refund
+            </p>
+            <p className="text-xs text-destructive font-bold mt-2">
+              ⚠️ Close this page = Choose to stay broken. Your decision.
             </p>
           </div>
         </CardContent>
