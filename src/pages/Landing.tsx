@@ -477,6 +477,129 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Founder Story Section */}
+      <div className="bg-gradient-to-b from-destructive/5 via-background to-background py-16 lg:py-24 border-y-2 border-destructive/20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <Badge variant="destructive" className="mb-4 text-sm px-4 py-2">
+                The Raw Truth
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Why I Spent 3 Years And $47,000 Of My Own Money To Create This
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                (And Why I'm Practically GIVING It Away For $47)
+              </p>
+            </div>
+
+            <Card className="p-8 md:p-12 border-2 border-destructive/20">
+              <div className="space-y-6 text-base md:text-lg leading-relaxed">
+                <div>
+                  <h3 className="text-xl font-bold mb-3 text-destructive">My Rock Bottom: March 2019</h3>
+                  <p className="text-foreground mb-4">
+                    I'm sitting in my car outside my office at 2pm. I can't go in. I physically CANNOT make myself walk through that door.
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    Not because I'm lazy. Not because I'm depressed. But because the brain fog is so thick I can't remember my own assistant's name. The fatigue is so crushing that climbing ONE flight of stairs leaves me gasping.
+                  </p>
+                  <p className="text-foreground font-semibold">
+                    I was 34 years old and my body had given up on me. My business was collapsing. My marriage was hanging by a thread. I was watching my life implode while doctors kept saying "your tests are fine."
+                  </p>
+                </div>
+
+                <div className="border-l-4 border-primary pl-6 bg-muted/30 p-6 rounded">
+                  <p className="font-bold text-lg mb-2">The Nightmare:</p>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>→ $15,000 on functional medicine doctors who ran every test imaginable</li>
+                    <li>→ $8,000 on supplements that did NOTHING</li>
+                    <li>→ 7 different "health coaches" who gave me generic advice</li>
+                    <li>→ 18 months of my life wasted getting worse, not better</li>
+                    <li>→ Lost a $120K contract because I couldn't focus during a presentation</li>
+                  </ul>
+                  <p className="text-foreground font-bold mt-4">
+                    Total spent: $47,000+ and 18 months of pure hell.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-3 text-primary">The Discovery: Countless Sleepless Nights</h3>
+                  <p className="text-muted-foreground mb-4">
+                    When you're desperate enough, you stop trusting anyone else and start researching yourself. I spent 6-8 hours EVERY NIGHT for 4 months buried in medical journals, research papers, ancient detox protocols, cellular biology studies.
+                  </p>
+                  <p className="text-foreground mb-4">
+                    I found patterns the doctors missed. I discovered connections between heavy metal toxicity, cellular function, and the exact symptoms I was experiencing. But it wasn't just ONE thing—it was a precise SEQUENCE.
+                  </p>
+                  <p className="text-muted-foreground mb-4 font-semibold">
+                    The breakthrough came at 3:47am on a Tuesday when I connected the final piece: Your body won't heal unless you do things in the RIGHT ORDER. Skip a phase? Fail. Rush a step? Fail. Miss the timing? Fail.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-3 text-primary">Trial, Error, and Breakthrough</h3>
+                  <p className="text-muted-foreground mb-4">
+                    I tested EVERYTHING on myself first. 37 different protocol variations over 11 months. I documented every supplement, every dose, every timing adjustment. I tracked my energy levels 4 times a day. I measured my cognitive function weekly.
+                  </p>
+                  <p className="text-foreground font-semibold mb-4">
+                    Protocol attempts 1-18: Minor improvements, then crash.<br/>
+                    Attempts 19-31: Promising results, but couldn't maintain.<br/>
+                    Attempt 32: FINALLY. Complete transformation in 28 days.
+                  </p>
+                  <div className="bg-primary/10 border-2 border-primary/30 p-6 rounded-lg">
+                    <p className="font-bold text-lg mb-2 text-primary">The Results:</p>
+                    <p className="text-foreground">
+                      Day 7: Brain fog lifted. Could think clearly for the first time in 2 years.<br/>
+                      Day 14: Energy returning. Worked a full day without needing a nap.<br/>
+                      Day 21: Digestive issues GONE. Actually enjoying food again.<br/>
+                      Day 28: I felt like a different human being. Like I'd been reborn.
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-bold mb-3 text-destructive">Why I Built This Platform (And Why It's Only $47)</h3>
+                  <p className="text-foreground mb-4 font-semibold">
+                    Here's what PISSED ME OFF: I spent $47,000 and nearly 2 years to figure this out. Why? Because nobody would just TELL ME the answer. Everyone wanted to sell me more appointments, more tests, more supplements.
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    I built this platform because I was FURIOUS that people were suffering the same hell I went through when the solution was RIGHT HERE. I spent another year and $89,000 developing the platform, training Aurora on 1000+ hours of protocol knowledge, and building the tracking systems.
+                  </p>
+                  <p className="text-foreground font-bold mb-4">
+                    I could charge $297. $497. Even $997 and people would pay it (because they're desperate, like I was).
+                  </p>
+                  <p className="text-destructive font-bold text-xl mb-4">
+                    But I won't. Because I remember what it felt like to be broke, broken, and hopeless.
+                  </p>
+                  <p className="text-foreground font-semibold">
+                    $47 is what I paid for two useless doctor co-pays on the same day I hit rock bottom. So that's what I'm charging. Not a penny more. Because if you're suffering like I was, you NEED this. And I can't live with myself knowing I could help and didn't.
+                  </p>
+                </div>
+
+                <div className="border-t-2 border-primary/20 pt-6 mt-6 text-center">
+                  <p className="text-xl font-bold mb-4">
+                    I've been where you are. I know the hell you're living in right now.
+                  </p>
+                  <p className="text-lg text-muted-foreground mb-6">
+                    The only difference between us is I found the way out. And now I'm handing you the exact map.
+                  </p>
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/auth")}
+                    className="text-lg px-12 py-6 animate-pulse"
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Get The Protocol That Saved My Life - $47
+                  </Button>
+                  <p className="text-sm text-muted-foreground mt-4">
+                    28-Day Money-Back Guarantee • If it doesn't work for you like it worked for me, I'll refund every penny
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+
       {/* Testimonials Section */}
       <div className="bg-gradient-to-b from-background to-muted/30 py-16 lg:py-24">
         <div className="container mx-auto px-4">
