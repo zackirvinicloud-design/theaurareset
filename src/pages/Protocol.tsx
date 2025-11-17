@@ -39,13 +39,23 @@ const Protocol = () => {
       }
 
       // Check if user has active subscription
-      const { data: subscription, error } = await supabase
+      const { data: subscription } = await supabase
         .from("user_subscriptions")
         .select("*")
         .eq("user_id", session.user.id)
         .single();
 
-      if (error || !subscription?.is_active) {
+      // Check if user has active paid subscription
+      const hasActiveSubscription = subscription?.is_active;
+
+      // Check if user is within 48-hour free trial
+      const userCreatedAt = new Date(session.user.created_at);
+      const now = new Date();
+      const hoursSinceSignup = (now.getTime() - userCreatedAt.getTime()) / (1000 * 60 * 60);
+      const isWithinFreeTrial = hoursSinceSignup < 48;
+
+      // Grant access if either condition is met
+      if (!hasActiveSubscription && !isWithinFreeTrial) {
         navigate("/payment-required");
         return;
       }
