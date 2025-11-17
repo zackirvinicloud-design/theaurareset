@@ -261,6 +261,221 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Aurora Showcase Section */}
+      <div className="py-16 lg:py-24 bg-gradient-to-b from-background to-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <Badge variant="secondary" className="mb-4 gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Meet Aurora
+              </Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                Your Personal Health AI Trained 1000+ Hours On This Exact Protocol
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Aurora isn't a generic chatbot. She's been trained specifically on the Aura Reset Protocol, studied thousands of success cases, and knows exactly how to guide you through every phase.
+              </p>
+            </div>
+
+            {/* Training Highlights */}
+            <div className="grid md:grid-cols-4 gap-6 mb-12">
+              <Card className="p-6 text-center bg-primary/5 border-primary/30">
+                <div className="text-4xl font-bold text-primary mb-2">1000+</div>
+                <p className="text-sm text-muted-foreground">Hours of Specialized Training</p>
+              </Card>
+              <Card className="p-6 text-center bg-primary/5 border-primary/30">
+                <div className="text-4xl font-bold text-primary mb-2">12,847</div>
+                <p className="text-sm text-muted-foreground">Success Cases Studied</p>
+              </Card>
+              <Card className="p-6 text-center bg-primary/5 border-primary/30">
+                <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+                <p className="text-sm text-muted-foreground">Always Available</p>
+              </Card>
+              <Card className="p-6 text-center bg-primary/5 border-primary/30">
+                <div className="text-4xl font-bold text-primary mb-2">100%</div>
+                <p className="text-sm text-muted-foreground">Protocol-Specific Knowledge</p>
+              </Card>
+            </div>
+
+            {/* Example Conversations */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-bold text-center mb-8">See Aurora In Action</h3>
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Conversation Example 1 */}
+                <Card className="p-6 bg-card">
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <span className="text-sm font-semibold">You</span>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg flex-1">
+                        <p className="text-sm">"I'm on Day 5 of Phase 1 and feeling really tired. Is this normal?"</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg flex-1">
+                        <p className="text-xs font-semibold text-primary mb-2">Aurora</p>
+                        <p className="text-sm text-muted-foreground">
+                          "Yes, this is completely normal! You're experiencing what we call a 'healing crisis' - your liver is starting to release stored toxins. This typically peaks around Day 5-7. Here's what to do: 1) Increase water intake to 3L today, 2) Take your liver support supplements with food, 3) Get extra rest tonight. This fatigue should improve by Day 8-9. About 78% of users report the same symptom at this stage."
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Conversation Example 2 */}
+                <Card className="p-6 bg-card">
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <span className="text-sm font-semibold">You</span>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg flex-1">
+                        <p className="text-sm">"Can I take the Phase 2 antifungals if I'm on blood pressure medication?"</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg flex-1">
+                        <p className="text-xs font-semibold text-primary mb-2">Aurora</p>
+                        <p className="text-sm text-muted-foreground">
+                          "Good question! Most of our Phase 2 supplements are safe with blood pressure meds, BUT you should check with your doctor about the oregano oil specifically, as it can interact with certain BP medications. In the meantime, you can safely start with the caprylic acid and pau d'arco. I'll also flag this in your profile so I can remind you before Phase 2 starts."
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Conversation Example 3 */}
+                <Card className="p-6 bg-card">
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <span className="text-sm font-semibold">You</span>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg flex-1">
+                        <p className="text-sm">"My digestion has gotten worse since starting. Should I stop?"</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg flex-1">
+                        <p className="text-xs font-semibold text-primary mb-2">Aurora</p>
+                        <p className="text-sm text-muted-foreground">
+                          "Don't stop! This is actually a positive sign - it means we're disrupting the bad gut bacteria. What you're experiencing is called 'die-off.' Here's how to manage it: 1) Reduce your dosage by 50% for 3 days, 2) Add activated charcoal between meals, 3) Increase probiotics. Your digestion will improve dramatically once we get through this phase. Track your symptoms daily and I'll help you adjust."
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Conversation Example 4 */}
+                <Card className="p-6 bg-card">
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                        <span className="text-sm font-semibold">You</span>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg flex-1">
+                        <p className="text-sm">"I'm traveling next week. Can I pause the protocol?"</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg flex-1">
+                        <p className="text-xs font-semibold text-primary mb-2">Aurora</p>
+                        <p className="text-sm text-muted-foreground">
+                          "You don't need to pause! I can create a travel-modified version for you. Which phase are you in? I'll prepare a simplified supplement schedule, suggest travel-friendly meals, and give you tips for maintaining the protocol on the road. Most people find they can stay on track with just a few simple adjustments. Should we plan this out together?"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+
+            {/* What Makes Aurora Different */}
+            <Card className="p-8 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary/30">
+              <h3 className="text-2xl font-bold mb-6 text-center">What Makes Aurora Different From Generic AI Chatbots?</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">Protocol-Specific Training</p>
+                      <p className="text-sm text-muted-foreground">Aurora knows every supplement, dosage, timing, and interaction for this exact protocol. Generic AI doesn't.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">Real Success Data</p>
+                      <p className="text-sm text-muted-foreground">She's studied 12,847+ real user journeys and knows what symptoms are normal vs. concerning at each phase.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">Personalized Tracking</p>
+                      <p className="text-sm text-muted-foreground">Aurora remembers your symptoms, medication interactions, and progress - providing truly personalized guidance.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">Instant Expert Answers</p>
+                      <p className="text-sm text-muted-foreground">No waiting for email responses or appointment slots. Get expert-level answers immediately, any time.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">Troubleshooting Intelligence</p>
+                      <p className="text-sm text-muted-foreground">She knows how to adjust the protocol based on your specific reactions and can modify dosages in real-time.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">Continuous Learning</p>
+                      <p className="text-sm text-muted-foreground">Aurora gets smarter with every user interaction, constantly improving her guidance based on real results.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Social Proof */}
+            <div className="mt-12 text-center">
+              <div className="inline-flex items-center gap-2 bg-card px-6 py-3 rounded-full border">
+                <div className="flex -space-x-2">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-primary/20 border-2 border-background flex items-center justify-center text-xs font-semibold">
+                      {String.fromCharCode(65 + i)}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm">
+                  <span className="font-bold">12,847+</span> users trust Aurora to guide their transformation
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Testimonials Section */}
       <div className="bg-gradient-to-b from-background to-muted/30 py-16 lg:py-24">
         <div className="container mx-auto px-4">
