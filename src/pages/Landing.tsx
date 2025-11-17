@@ -138,7 +138,7 @@ const Landing = () => {
                 <p className="text-muted-foreground mb-4">
                   Trained for over 1000 hours specifically on this protocol. Ask questions anytime and get expert answers about symptoms, supplements, timing—your personal detox expert who knows this protocol inside out.
                 </p>
-                <p className="text-sm font-semibold text-primary">Included</p>
+                <p className="text-sm font-semibold text-primary">$197 Value</p>
               </Card>
 
               <Card className="p-8 bg-card hover:shadow-lg transition-all">
@@ -147,7 +147,7 @@ const Landing = () => {
                 <p className="text-muted-foreground mb-4">
                   Never wonder "what day am I on?" or "what phase is this?" Your progress is tracked automatically, always visible.
                 </p>
-                <p className="text-sm font-semibold text-primary">Included</p>
+                <p className="text-sm font-semibold text-primary">$97 Value</p>
               </Card>
 
               <Card className="p-8 bg-card hover:shadow-lg transition-all">
@@ -156,7 +156,7 @@ const Landing = () => {
                 <p className="text-muted-foreground mb-4">
                   Track symptoms, energy levels, and breakthroughs. Watch your transformation unfold in real-time with data.
                 </p>
-                <p className="text-sm font-semibold text-primary">Included</p>
+                <p className="text-sm font-semibold text-primary">$97 Value</p>
               </Card>
             </div>
 
@@ -1123,10 +1123,10 @@ const Landing = () => {
                     <p className="text-sm text-muted-foreground mb-2">OUR PROTOCOL:</p>
                     <ul className="space-y-1 text-sm">
                       <li>• Complete platform access: $47</li>
-                      <li>• Aurora (1000+ hrs trained AI): Included</li>
-                      <li>• Progress tracking: Included</li>
-                      <li>• Lifetime updates: Included</li>
-                      <li className="font-bold pt-2 border-t text-primary">= Only $47 total with 87% success rate</li>
+                      <li>• Aurora (1000+ hrs trained AI): $197 value</li>
+                      <li>• Progress tracking: $97 value</li>
+                      <li>• Lifetime updates: $297 value</li>
+                      <li className="font-bold pt-2 border-t text-primary">= $885 total value, pay only $47 (87% success rate)</li>
                     </ul>
                   </div>
                 </div>
@@ -1602,23 +1602,27 @@ const Landing = () => {
               <div className="space-y-4 mb-8">
                 <div className="flex items-center justify-between">
                   <span className="text-lg">Aurora - 1000+ hrs trained AI</span>
-                  <span className="font-semibold text-primary">Included</span>
+                  <span className="font-semibold text-muted-foreground line-through">$197</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-lg">Automatic Day Tracker</span>
-                  <span className="font-semibold text-primary">Included</span>
+                  <span className="font-semibold text-muted-foreground line-through">$97</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-lg">Interactive Diary & Progress</span>
-                  <span className="font-semibold text-primary">Included</span>
+                  <span className="font-semibold text-muted-foreground line-through">$97</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-lg">Complete 4-Phase Protocol</span>
-                  <span className="font-semibold text-primary">Included</span>
+                  <span className="font-semibold text-muted-foreground line-through">$197</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-lg">Lifetime Platform Access</span>
-                  <span className="font-semibold text-primary">Included</span>
+                  <span className="font-semibold text-muted-foreground line-through">$297</span>
+                </div>
+                <div className="flex items-center justify-between border-t pt-4 mt-4">
+                  <span className="text-lg text-muted-foreground">Total Value:</span>
+                  <span className="text-lg text-muted-foreground line-through">$885</span>
                 </div>
                 <div className="flex items-center justify-between border-t pt-4 mt-4">
                   <span className="text-xl font-bold">Your Investment Today:</span>
