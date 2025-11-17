@@ -30,15 +30,19 @@ const PaymentRequired = () => {
             <ul className="space-y-2 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary">✓</span>
-                <span>Complete reset protocol with step-by-step guidance</span>
+                <span>Complete 4-phase reset protocol with step-by-step guidance</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">✓</span>
-                <span>AI-powered chat assistant for personalized support</span>
+                <span>Aurora - Your personal health AI trained 1000+ hours on this protocol</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">✓</span>
-                <span>Progress tracking and insights</span>
+                <span>Automatic progress tracking and insights</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary">✓</span>
+                <span>Interactive diary and symptom monitoring</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">✓</span>
@@ -47,6 +51,11 @@ const PaymentRequired = () => {
             </ul>
           </div>
           <div className="text-center">
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground mb-2">Regular Price: $297</p>
+              <p className="text-5xl font-bold text-primary mb-2">Only $47</p>
+              <p className="text-sm font-semibold">One-Time Payment • Lifetime Access</p>
+            </div>
             <p className="text-sm text-muted-foreground mb-4">
               After completing your purchase, you'll be redirected back here with instant access.
             </p>
@@ -58,9 +67,12 @@ const PaymentRequired = () => {
                 window.open("YOUR_PAYMENT_LINK_HERE", "_blank");
               }}
             >
-              Get Access Now
+              Get Access Now - $47
               <ExternalLink className="ml-2 w-5 h-5" />
             </Button>
+            <p className="text-xs text-muted-foreground mt-4">
+              ✓ 60-Day Money-Back Guarantee • ✓ Secure Payment
+            </p>
           </div>
         </CardContent>
         <CardFooter className="flex justify-center border-t pt-6">

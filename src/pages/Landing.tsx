@@ -71,7 +71,7 @@ const Landing = () => {
           
           <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-4 max-w-2xl mx-auto">
             <p className="text-sm md:text-base font-medium">
-              Not Another PDF Download Or Video Course — This Is A Live Interactive Platform With Built-In AI Coach
+              Not Another PDF Download Or Video Course — This Is A Live Interactive Platform With Aurora: Your Personal Health AI Trained For 1000+ Hours On This Exact Protocol
             </p>
           </div>
           
@@ -134,11 +134,11 @@ const Landing = () => {
             <div className="grid md:grid-cols-3 gap-8 mb-12">
               <Card className="p-8 bg-card hover:shadow-lg transition-all">
                 <MessageSquare className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-2xl font-bold mb-3">AI Health Coach (Built-In)</h3>
+                <h3 className="text-2xl font-bold mb-3">Aurora - Your Personal Health AI</h3>
                 <p className="text-muted-foreground mb-4">
-                  Ask questions anytime. Get instant, personalized answers about symptoms, supplements, timing—your 24/7 detox expert.
+                  Trained for over 1000 hours specifically on this protocol. Ask questions anytime and get expert answers about symptoms, supplements, timing—your personal detox expert who knows this protocol inside out.
                 </p>
-                <p className="text-sm font-semibold text-primary">Value: $297</p>
+                <p className="text-sm font-semibold text-primary">Included</p>
               </Card>
 
               <Card className="p-8 bg-card hover:shadow-lg transition-all">
@@ -147,7 +147,7 @@ const Landing = () => {
                 <p className="text-muted-foreground mb-4">
                   Never wonder "what day am I on?" or "what phase is this?" Your progress is tracked automatically, always visible.
                 </p>
-                <p className="text-sm font-semibold text-primary">Value: $97</p>
+                <p className="text-sm font-semibold text-primary">Included</p>
               </Card>
 
               <Card className="p-8 bg-card hover:shadow-lg transition-all">
@@ -156,20 +156,20 @@ const Landing = () => {
                 <p className="text-muted-foreground mb-4">
                   Track symptoms, energy levels, and breakthroughs. Watch your transformation unfold in real-time with data.
                 </p>
-                <p className="text-sm font-semibold text-primary">Value: $97</p>
+                <p className="text-sm font-semibold text-primary">Included</p>
               </Card>
             </div>
 
             <Card className="p-8 bg-primary/5 border-2 border-primary/30">
               <h3 className="text-2xl font-bold mb-6 text-center">Why People Get Results Faster With The Platform</h3>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex gap-3">
-                  <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
-                  <div>
-                    <p className="font-semibold mb-1">No guessing:</p>
-                    <p className="text-muted-foreground">The AI answers your specific questions instantly—no waiting for customer support</p>
+                  <div className="flex gap-3">
+                    <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold mb-1">No guessing:</p>
+                      <p className="text-muted-foreground">Aurora answers your specific questions instantly with expert knowledge trained specifically on this protocol—no waiting for customer support</p>
+                    </div>
                   </div>
-                </div>
                 <div className="flex gap-3">
                   <Check className="w-6 h-6 text-primary shrink-0 mt-1" />
                   <div>
@@ -344,7 +344,7 @@ const Landing = () => {
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground italic">
-                  "The digestive issues I had for 8 YEARS disappeared in Phase 2. The AI coach answered every question instantly. I cannot believe I wasted so much time with doctors who had no answers."
+                  "The digestive issues I had for 8 YEARS disappeared in Phase 2. Aurora answered every question instantly and knew exactly what I needed. I cannot believe I wasted so much time with doctors who had no answers."
                 </p>
                 <p className="text-xs text-muted-foreground mt-3">✓ Completed in 60 days</p>
               </Card>
@@ -414,7 +414,7 @@ const Landing = () => {
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground italic">
-                  "Spent $15K on functional medicine doctors. Got nowhere. This $491 protocol did what they could not. My business revenue doubled because I finally have the mental clarity to execute."
+                  "Spent $15K on functional medicine doctors. Got nowhere. This $47 protocol did what they could not. My business revenue doubled because I finally have the mental clarity to execute."
                 </p>
                 <p className="text-xs text-muted-foreground mt-3">✓ Completed in 55 days</p>
               </Card>
@@ -534,7 +534,7 @@ const Landing = () => {
                 <div className="text-center mb-4">
                   <Badge className="mb-2">BEST CHOICE</Badge>
                   <h3 className="text-2xl font-bold">The Aura Reset Protocol</h3>
-                  <p className="text-3xl font-bold text-primary mt-2">$491 value</p>
+                  <p className="text-3xl font-bold text-primary mt-2">Only $47</p>
                   <p className="text-muted-foreground">One-time payment</p>
                 </div>
                 <div className="space-y-3">
@@ -548,7 +548,7 @@ const Landing = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span className="text-sm">24/7 AI Health Coach</span>
+                    <span className="text-sm">Aurora - 1000+ hrs trained AI</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-primary shrink-0" />
@@ -796,7 +796,7 @@ const Landing = () => {
                     </td>
                   </tr>
                   <tr className="border-b">
-                    <td className="p-4 font-semibold">24/7 AI Support</td>
+                    <td className="p-4 font-semibold">Aurora (1000+ hrs trained AI)</td>
                     <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
                       <Check className="w-6 h-6 text-primary mx-auto" />
                     </td>
@@ -907,11 +907,11 @@ const Landing = () => {
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">OUR PROTOCOL:</p>
                     <ul className="space-y-1 text-sm">
-                      <li>• Platform access: $491</li>
-                      <li>• AI Health Coach: Included</li>
+                      <li>• Complete platform access: $47</li>
+                      <li>• Aurora (1000+ hrs trained AI): Included</li>
                       <li>• Progress tracking: Included</li>
                       <li>• Lifetime updates: Included</li>
-                      <li className="font-bold pt-2 border-t text-primary">= $491 total with 87% success rate</li>
+                      <li className="font-bold pt-2 border-t text-primary">= Only $47 total with 87% success rate</li>
                     </ul>
                   </div>
                 </div>
@@ -977,7 +977,7 @@ const Landing = () => {
                   This is actually a GOOD sign—it means the protocol is working and your body is releasing stored toxins. These symptoms typically pass within 3-7 days.
                 </p>
                 <p className="mb-4">
-                  The AI Health Coach guides you through managing any discomfort and adjusting the protocol to your body's needs. You're never alone in this process.
+                  Aurora, your personal health AI trained specifically on this protocol, guides you through managing any discomfort and adjusting the protocol to your body's needs. You're never alone in this process.
                 </p>
                 <p className="font-semibold">
                   Important: Always consult with your healthcare provider before starting any new health protocol, especially if you have existing medical conditions or take prescription medications.
@@ -1014,7 +1014,7 @@ const Landing = () => {
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pb-6">
                 <p className="mb-4">
-                  This is designed for BUSY people. The daily commitment is only 15-20 minutes—taking supplements, checking your progress, and asking the AI coach any questions.
+                  This is designed for BUSY people. The daily commitment is only 15-20 minutes—taking supplements, checking your progress, and asking Aurora any questions.
                 </p>
                 <p className="mb-4">
                   Here's the real question: Do you have time to keep suffering? How many hours are you losing to brain fog, afternoon crashes, and feeling terrible? The protocol actually GIVES you time back by restoring your energy and focus.
@@ -1064,7 +1064,7 @@ const Landing = () => {
                 </p>
                 <ul className="list-disc list-inside space-y-2 mb-4 ml-4">
                   <li><strong>The exact protocol sequence</strong> - Which supplements, when, in what order, for how long</li>
-                  <li><strong>AI Health Coach</strong> - Instant answers to "Is this normal?" "What if I feel X?" "Can I take this with Y?"</li>
+                  <li><strong>Aurora - Your Personal Health AI</strong> - Trained for 1000+ hours on this protocol. Instant expert answers to "Is this normal?" "What if I feel X?" "Can I take this with Y?"</li>
                   <li><strong>Automatic tracking</strong> - Never lose your place or forget what phase you're in</li>
                   <li><strong>Progress monitoring</strong> - See your improvements in real-time, stay motivated</li>
                   <li><strong>Troubleshooting guidance</strong> - Adjust the protocol based on your symptoms and reactions</li>
@@ -1101,7 +1101,7 @@ const Landing = () => {
                   Yes! The protocol is flexible and can be adapted for most dietary needs including vegan, vegetarian, gluten-free, dairy-free, and various allergies.
                 </p>
                 <p className="mb-4">
-                  The AI Health Coach can suggest alternative supplements and modifications based on your specific restrictions. We provide substitution options in the protocol for common allergens.
+                  Aurora, your personal health AI, can suggest alternative supplements and modifications based on your specific restrictions. We provide substitution options in the protocol for common allergens.
                 </p>
                 <p className="font-semibold">
                   If you have severe food allergies or specific medical conditions, we recommend consulting with your healthcare provider before starting.
@@ -1161,7 +1161,7 @@ const Landing = () => {
           <div className="mt-12 p-8 bg-primary/10 rounded-lg text-center">
             <p className="text-xl font-bold mb-4">Still Have Questions?</p>
             <p className="text-muted-foreground mb-6">
-              The AI Health Coach inside the platform can answer any specific questions about your situation instantly. Get access now and start getting answers.
+              Aurora, your personal health AI trained specifically on this protocol, can answer any specific questions about your situation instantly. Get access now and start getting answers.
             </p>
             <Button
               size="lg"
@@ -1276,7 +1276,7 @@ const Landing = () => {
                   Support Guarantee
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  The AI Health Coach provides 24/7 answers to your questions. If you ever feel stuck or unsure, you get instant guidance. You're never alone in this journey.
+                  Aurora provides 24/7 expert answers to your questions with knowledge trained specifically on this protocol over 1000+ hours. If you ever feel stuck or unsure, you get instant guidance. You're never alone in this journey.
                 </p>
               </Card>
 
@@ -1380,33 +1380,43 @@ const Landing = () => {
               Ready To Reclaim Your Energy and Life?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Join 12,847+ others who transformed their health with the AI-powered Aura Reset Protocol
+              Join 12,847+ others who transformed their health with Aurora-powered Aura Reset Protocol
             </p>
             
             <Card className="p-8 mb-8">
               <div className="space-y-4 mb-8">
                 <div className="flex items-center justify-between">
-                  <span className="text-lg">AI Health Coach (Built-In)</span>
-                  <span className="font-semibold">$297</span>
+                  <span className="text-lg">Aurora - 1000+ hrs trained AI</span>
+                  <span className="font-semibold text-primary">Included</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-lg">Automatic Day Tracker</span>
-                  <span className="font-semibold">$97</span>
+                  <span className="font-semibold text-primary">Included</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-lg">Interactive Diary</span>
-                  <span className="font-semibold">$97</span>
+                  <span className="text-lg">Interactive Diary & Progress</span>
+                  <span className="font-semibold text-primary">Included</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-lg">Complete 4-Phase Protocol</span>
+                  <span className="font-semibold text-primary">Included</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-lg">Lifetime Platform Access</span>
+                  <span className="font-semibold text-primary">Included</span>
                 </div>
                 <div className="flex items-center justify-between border-t pt-4 mt-4">
-                  <span className="text-xl font-bold">Total Value:</span>
-                  <span className="text-2xl font-bold">$491</span>
+                  <span className="text-xl font-bold">Your Investment Today:</span>
+                  <span className="text-3xl font-bold text-primary">Only $47</span>
                 </div>
               </div>
               
               <div className="bg-primary/10 p-6 rounded-lg mb-6">
-                <p className="text-3xl font-bold mb-2">One-Time Payment</p>
-                <p className="text-muted-foreground mb-4">Lifetime access, no subscriptions</p>
-                <div className="flex items-center justify-center gap-2 mb-4">
+                <p className="text-sm text-muted-foreground mb-2">Regular Price: $297</p>
+                <p className="text-5xl font-bold mb-2 text-primary">$47</p>
+                <p className="text-lg font-semibold mb-1">One-Time Payment Only</p>
+                <p className="text-muted-foreground mb-4">Lifetime access, no subscriptions, no hidden fees</p>
+                <div className="flex items-center justify-center gap-2 mb-2">
                   <Award className="w-6 h-6 text-primary" />
                   <span className="font-semibold">60-Day Money-Back Guarantee</span>
                 </div>
@@ -1422,10 +1432,12 @@ const Landing = () => {
               </Button>
             </Card>
 
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground space-y-1">
               <p>✓ Instant access after signup</p>
               <p>✓ Works on all devices</p>
               <p>✓ Lifetime updates included</p>
+              <p>✓ Aurora AI trained 1000+ hours on this protocol</p>
+              <p className="text-xs pt-2">*Plus supplements cost ~$250 for the full 60 days</p>
             </div>
           </div>
         </div>
