@@ -12,7 +12,7 @@ import { z } from "zod";
 const emailSchema = z.string().email("Invalid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 
-const Auth = () => {
+const Signup = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -56,24 +56,36 @@ const Auth = () => {
     }
   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateInputs()) return;
 
     setIsLoading(true);
+    const redirectPath = searchParams.get("redirect");
+    const redirectUrl = redirectPath 
+      ? `${window.location.origin}${redirectPath}`
+      : `${window.location.origin}/protocol`;
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
     });
 
     setIsLoading(false);
 
     if (error) {
       toast({
-        title: "Sign in failed",
+        title: "Sign up failed",
         description: error.message,
         variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success!",
+        description: "Account created successfully. Redirecting...",
       });
     }
   };
@@ -83,12 +95,12 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Welcome Back
+            Create Your Account
           </CardTitle>
-          <CardDescription>Sign in to continue to The Aura Reset Protocol</CardDescription>
+          <CardDescription>Join The Aura Reset Protocol</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignIn} className="space-y-4">
+          <form onSubmit={handleSignUp} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -109,20 +121,23 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <p className="text-xs text-muted-foreground">
+                Password must be at least 6 characters
+              </p>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? "Creating account..." : "Create Account"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <div className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <Link 
-              to={`/signup${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}
+              to={`/auth${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}
               className="text-primary hover:underline"
             >
-              Create Account
+              Sign In
             </Link>
           </div>
           <Button variant="link" onClick={() => navigate("/")}>
@@ -134,4 +149,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default Signup;

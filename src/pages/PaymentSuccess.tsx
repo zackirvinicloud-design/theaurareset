@@ -12,21 +12,22 @@ const PaymentSuccess = () => {
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    const activateSubscription = async () => {
+    const checkAndActivate = async () => {
+      // First, show we're processing
+      setIsProcessing(true);
+      
+      // Wait a moment to let user see the success message
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const session = await supabase.auth.getSession();
       
       if (!session.data.session) {
-        toast({
-          title: "Create your account",
-          description: "Please create an account to activate your subscription.",
-        });
-        // Pass payment info through URL so we can come back after signup
-        const provider = searchParams.get("provider") || "whop";
-        navigate(`/auth?redirect=/payment-success&provider=${provider}`);
+        // User not logged in - stop processing and show signup button
+        setIsProcessing(false);
         return;
       }
 
-      // Call edge function to activate subscription
+      // User is logged in - activate subscription
       const { data, error } = await supabase.functions.invoke("activate-subscription", {
         body: {
           payment_id: searchParams.get("payment_id") || "manual",
@@ -52,7 +53,7 @@ const PaymentSuccess = () => {
       }
     };
 
-    activateSubscription();
+    checkAndActivate();
   }, [navigate, searchParams]);
 
   return (
@@ -71,17 +72,23 @@ const PaymentSuccess = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            Your payment has been received successfully!
+          </p>
           {isProcessing ? (
             <p className="text-muted-foreground">
-              Please wait while we activate your subscription...
+              Activating your subscription...
             </p>
           ) : (
             <>
-              <p className="text-muted-foreground">
-                Your subscription has been activated. Redirecting to the protocol...
+              <p className="text-muted-foreground font-medium">
+                Please create your account to complete activation
               </p>
-              <Button onClick={() => navigate("/protocol")} className="w-full">
-                Continue to Protocol
+              <Button onClick={() => {
+                const provider = searchParams.get("provider") || "whop";
+                navigate(`/signup?redirect=/payment-success&provider=${provider}`);
+              }} className="w-full">
+                Create Your Account
               </Button>
             </>
           )}
