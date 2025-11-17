@@ -61,23 +61,24 @@ const Landing = () => {
           </Badge>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            How I Went From <span className="text-destructive">Daily Burn-Out</span> to{" "}
-            <span className="text-primary">Unbeatable Energy</span> in 60 Days—Without Doctors, Drugs, or Endless Testing
+            How I Went From <span className="text-destructive">Barely Functional</span> to{" "}
+            <span className="text-primary">Unstoppable Energy</span> in Just 28 Days—And Why You're One Decision Away From Finally Escaping The Hell You're Living In Right Now
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            <strong>(And How 12,847+ Others Used The Same 4-Phase AI-Powered Protocol To Do It Too—Even If They'd "Tried Everything")</strong>
+            <strong>(12,847+ People Who Were WORSE OFF Than You Are Right Now Used This EXACT System To Break Free—While Others Who Ignored This Page Are STILL Suffering. Which Group Will You Be In 28 Days From Now?)</strong>
           </p>
           
-          <div className="bg-primary/10 border-2 border-primary/30 rounded-lg p-4 max-w-2xl mx-auto">
-            <p className="text-sm md:text-base font-medium">
-              Not Another PDF Download Or Video Course — This Is A Live Interactive Platform With Aurora: Your Personal Health AI Trained For 1000+ Hours On This Exact Protocol
+          <div className="bg-destructive/10 border-2 border-destructive/30 rounded-lg p-4 max-w-2xl mx-auto">
+            <p className="text-sm md:text-base font-bold text-center">
+              ⚡ NOT Another Useless PDF or Video Course ⚡<br/>
+              <span className="text-destructive">LIVE Interactive Platform</span> + Aurora: Your Personal AI Health Coach (1000+ Hours Trained On THIS Protocol)
             </p>
           </div>
           
-          <div className="bg-card border-2 border-border rounded-lg p-6 max-w-3xl mx-auto text-left">
+          <div className="bg-destructive/10 border-2 border-destructive rounded-lg p-6 max-w-3xl mx-auto text-left">
             <p className="text-base md:text-lg leading-relaxed">
-              <strong>WARNING:</strong> If you're dragging yourself through each day, drowning in brain fog, and watching your productivity die while your doctor says "you're fine"—read every word of this page. <strong>This could save your career, your relationships, and what's left of your sanity.</strong>
+              <strong className="text-destructive">STOP RIGHT NOW:</strong> Every day you wait is another day your body deteriorates. Another morning you wake up exhausted. Another night your partner sees the empty shell you've become. <strong>Your health is collapsing RIGHT NOW while you read this—and if you close this page, you're choosing to stay in hell.</strong> Is that REALLY what you want?
             </p>
           </div>
 
@@ -85,18 +86,18 @@ const Landing = () => {
             <Button
               size="lg"
               onClick={() => navigate("/auth")}
-              className="text-lg px-8 py-6 shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all w-full sm:w-auto"
+              className="text-lg px-8 py-6 shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all w-full sm:w-auto animate-pulse"
             >
               <Zap className="w-5 h-5 mr-2" />
-              YES! Give Me Access Now
+              YES! Get Me Started NOW - $47
             </Button>
             <Button
               size="lg"
               variant="outline"
               onClick={scrollToCTA}
-              className="text-lg px-8 py-6 w-full sm:w-auto"
+              className="text-lg px-8 py-6 w-full sm:w-auto border-2 hover:bg-destructive/10"
             >
-              Show Me The Proof
+              I Don't Believe You - Show Me Proof
             </Button>
           </div>
 
@@ -111,7 +112,7 @@ const Landing = () => {
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-5 h-5 text-primary" />
-              <span>60-Day Energy Restoration Guarantee</span>
+              <span>28-Day Total Transformation or 100% Money Back</span>
             </div>
           </div>
         </div>
@@ -561,7 +562,7 @@ const Landing = () => {
                 <p className="text-sm text-muted-foreground italic">
                   "The digestive issues I had for 8 YEARS disappeared in Phase 2. Aurora answered every question instantly and knew exactly what I needed. I cannot believe I wasted so much time with doctors who had no answers."
                 </p>
-                <p className="text-xs text-muted-foreground mt-3">✓ Completed in 60 days</p>
+                <p className="text-xs text-muted-foreground mt-3">✓ Complete transformation in just 28 days</p>
               </Card>
 
               {/* Testimonial 3 */}
@@ -771,7 +772,7 @@ const Landing = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span className="text-sm">60-day money-back guarantee</span>
+                    <span className="text-sm">28-day money-back guarantee (you'll see results FAST)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-primary shrink-0" />
@@ -1050,7 +1051,7 @@ const Landing = () => {
                     <td className="p-4 font-semibold">Money-Back Guarantee</td>
                     <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
                       <Check className="w-6 h-6 text-primary mx-auto mb-1" />
-                      <div className="text-sm font-semibold">60 days</div>
+                      <div className="text-sm font-semibold">28 days</div>
                     </td>
                     <td className="p-4 text-center">
                       <X className="w-6 h-6 text-destructive mx-auto" />
@@ -1136,10 +1137,10 @@ const Landing = () => {
                   className="text-lg px-12 py-6"
                 >
                   <Zap className="w-5 h-5 mr-2" />
-                  Choose The Smart Solution
+                  STOP Wasting Money - Get Results NOW
                 </Button>
                 <p className="text-sm text-muted-foreground mt-4">
-                  Plus supplements (~$250 for 60 days) • 60-Day Money-Back Guarantee
+                  Plus supplements (~$150 for 28 days) • 28-Day Money-Back Guarantee
                 </p>
               </Card>
             </div>
@@ -1175,7 +1176,7 @@ const Landing = () => {
                   Our data shows that 87% of people who "tried everything" and felt hopeless got results with this protocol. If traditional medicine failed you, that's because they weren't addressing these core issues.
                 </p>
                 <p className="font-semibold">
-                  Plus, you're protected by our 60-Day Money-Back Guarantee. If it doesn't work, you get every penny back. No risk.
+                  Plus, you're protected by our 28-Day Money-Back Guarantee. If you don't see dramatic improvements, you get every penny back. ZERO risk. ALL reward.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -1249,7 +1250,7 @@ const Landing = () => {
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pb-6">
                 <p className="mb-4">
-                  The protocol requires specific supplements for each phase. Budget approximately $200-$300 total for the entire 60-day protocol, depending on brands you choose and where you purchase.
+                  The protocol requires specific supplements for each phase. Budget approximately $150-$200 total for the entire 28-day protocol, depending on brands you choose and where you purchase.
                 </p>
                 <p className="mb-4">
                   We provide a complete shopping list with recommended brands at various price points. You can buy everything on Amazon, iHerb, or your local health food store.
@@ -1296,7 +1297,7 @@ const Landing = () => {
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pb-6">
                 <p className="mb-4">
-                  Simple: Try the protocol for 60 days. If you don't feel significantly better, email us and we'll refund 100% of your purchase. No questions asked. No hoops to jump through.
+                  Dead simple: Complete the 28-day protocol. If you don't feel dramatically better, email us and we'll refund 100% of your purchase. No questions. No hassle. We take all the risk because we KNOW this works.
                 </p>
                 <p className="mb-4">
                   We can offer this guarantee because we KNOW it works. 87% of people complete the full protocol and report major improvements. Less than 3% ask for refunds.
@@ -1349,7 +1350,7 @@ const Landing = () => {
 
             <AccordionItem value="item-10" className="border rounded-lg px-6 bg-card">
               <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
-                What happens after the 60 days?
+                What happens after the 28 days?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pb-6">
                 <p className="mb-4">
@@ -1409,7 +1410,7 @@ const Landing = () => {
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Award className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">60-Day Money-Back Guarantee</h3>
+                <h3 className="text-xl font-bold mb-3">28-Day Money-Back Guarantee</h3>
                 <p className="text-muted-foreground text-sm">
                   Try the entire protocol. If you don't feel significantly better, email us for a full refund. No questions. No hassle. No risk.
                 </p>
@@ -1481,7 +1482,7 @@ const Landing = () => {
                   Results Guarantee
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  If you complete the protocol as directed and don't see significant improvements in your energy, brain fog, or digestive health within 60 days, we'll refund 100% of your purchase price.
+                  If you complete the protocol as directed and don't see DRAMATIC improvements in your energy, brain fog, or digestive health within 28 days, we'll refund 100% of your purchase price. Period.
                 </p>
               </Card>
 
@@ -1549,22 +1550,28 @@ const Landing = () => {
 
             {/* Final Trust Statement */}
             <div className="mt-12 text-center max-w-3xl mx-auto">
-              <div className="bg-card p-8 rounded-lg border-2 border-border">
-                <h3 className="text-2xl font-bold mb-4">Here's The Bottom Line:</h3>
-                <p className="text-lg text-muted-foreground mb-6">
-                  You can keep suffering, wasting money on solutions that don't work, and watching your life pass by in a fog of exhaustion...
+              <div className="bg-destructive/10 p-8 rounded-lg border-2 border-destructive/50">
+                <h3 className="text-2xl font-bold mb-4 text-destructive">WAKE UP. This Is Your Last Chance:</h3>
+                <p className="text-lg text-foreground mb-4 font-semibold">
+                  Every single day you waste is costing you EVERYTHING. Your career. Your relationships. Your health. Your LIFE.
                 </p>
-                <p className="text-lg font-semibold mb-6">
-                  OR you can try this risk-free for 60 days and finally get the energy, clarity, and health you deserve.
+                <p className="text-lg text-muted-foreground mb-6">
+                  You can keep lying to yourself that "tomorrow" you'll feel better... Keep throwing money at useless supplements and doctors who DON'T CARE... Keep dragging yourself through each miserable day wondering "is this it?"...
+                </p>
+                <p className="text-lg font-bold mb-6 text-foreground">
+                  OR you can take 28 days to COMPLETELY TRANSFORM your life. Risk-free. Guaranteed. Starting RIGHT NOW.
+                </p>
+                <p className="text-base text-destructive font-bold mb-6">
+                  But here's the hard truth: If you close this page without acting, you've just chosen to stay broken. Is that REALLY what you want?
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button
                     size="lg"
                     onClick={() => navigate("/auth")}
-                    className="text-xl px-12 py-8 shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all w-full sm:w-auto"
+                    className="text-xl px-12 py-8 shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all w-full sm:w-auto animate-pulse"
                   >
                     <Zap className="w-6 h-6 mr-2" />
-                    Yes! I'm Ready To Transform
+                    STOP THE PAIN - Start Transforming NOW
                   </Button>
                 </div>
                 <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground">
@@ -1574,7 +1581,7 @@ const Landing = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-primary" />
-                    <span>60-day guarantee</span>
+                    <span>28-day guarantee</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-primary" />
@@ -1592,10 +1599,13 @@ const Landing = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Ready To Reclaim Your Energy and Life?
+              <span className="text-destructive">STOP WASTING TIME.</span> Your Transformation Starts NOW Or It Never Happens.
             </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Join 12,847+ others who transformed their health with Aurora-powered Aura Reset Protocol
+            <p className="text-xl text-foreground mb-4 font-semibold">
+              12,847+ people who were WORSE than you are RIGHT NOW have already transformed their lives.
+            </p>
+            <p className="text-lg text-muted-foreground mb-8">
+              The only difference between them and you? They clicked the button below. <strong>Will you?</strong>
             </p>
             
             <Card className="p-8 mb-8">
@@ -1630,33 +1640,36 @@ const Landing = () => {
                 </div>
               </div>
               
-              <div className="bg-primary/10 p-6 rounded-lg mb-6">
-                <p className="text-sm text-muted-foreground mb-2">Regular Price: $297</p>
-                <p className="text-5xl font-bold mb-2 text-primary">$47</p>
-                <p className="text-lg font-semibold mb-1">One-Time Payment Only</p>
-                <p className="text-muted-foreground mb-4">Lifetime access, no subscriptions, no hidden fees</p>
+              <div className="bg-destructive/10 border-2 border-destructive/30 p-6 rounded-lg mb-6">
+                <p className="text-xs text-muted-foreground mb-2 line-through">Regular Price: $885 Total Value</p>
+                <p className="text-5xl font-bold mb-2 text-primary">Only $47</p>
+                <p className="text-lg font-semibold mb-1 text-destructive">⚠️ ONE-TIME PAYMENT - NO Subscriptions, NO Hidden Fees</p>
+                <p className="text-muted-foreground mb-4 font-semibold">Lifetime Access. Start in 2 Minutes. Transform in 28 Days.</p>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Award className="w-6 h-6 text-primary" />
-                  <span className="font-semibold">60-Day Money-Back Guarantee</span>
+                  <span className="font-semibold">28-Day Money-Back Guarantee (Less Than 3% Ever Ask)</span>
                 </div>
               </div>
 
               <Button
                 size="lg"
                 onClick={() => navigate("/auth")}
-                className="text-xl px-12 py-8 w-full md:w-auto shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all"
+                className="text-xl px-12 py-8 w-full md:w-auto shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all animate-pulse"
               >
                 <Zap className="w-6 h-6 mr-2" />
-                Start Your Transformation Now
+                YES! I'm Done Suffering - START NOW
               </Button>
+              <p className="text-sm text-destructive font-bold mt-3">
+                ⚠️ Close this page = Choose to stay broken. Your call.
+              </p>
             </Card>
 
             <div className="text-sm text-muted-foreground space-y-1">
-              <p>✓ Instant access after signup</p>
-              <p>✓ Works on all devices</p>
-              <p>✓ Lifetime updates included</p>
-              <p>✓ Aurora AI trained 1000+ hours on this protocol</p>
-              <p className="text-xs pt-2">*Plus supplements cost ~$250 for the full 60 days</p>
+              <p>✓ Access granted in 60 seconds</p>
+              <p>✓ Start TODAY - Transform in 28 Days</p>
+              <p>✓ Aurora AI with 1000+ hours protocol training</p>
+              <p>✓ 87% complete the full protocol (you will too)</p>
+              <p className="text-xs pt-2 font-semibold">*Plus supplements ~$150 for 28 days | <span className="text-primary">$885 value for only $47</span></p>
             </div>
           </div>
         </div>
