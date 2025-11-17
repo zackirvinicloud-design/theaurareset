@@ -17,11 +17,12 @@ const PaymentSuccess = () => {
       
       if (!session.data.session) {
         toast({
-          title: "Authentication required",
-          description: "Please sign in to activate your subscription.",
-          variant: "destructive",
+          title: "Create your account",
+          description: "Please create an account to activate your subscription.",
         });
-        navigate("/auth");
+        // Pass payment info through URL so we can come back after signup
+        const provider = searchParams.get("provider") || "whop";
+        navigate(`/auth?redirect=/payment-success&provider=${provider}`);
         return;
       }
 
