@@ -591,7 +591,7 @@ const Landing = () => {
                     Get The Protocol That Saved My Life - $47
                   </Button>
                   <p className="text-sm text-muted-foreground mt-4">
-                    28-Day Money-Back Guarantee • If it doesn't work for you like it worked for me, I'll refund every penny
+                    I'll BEG You For A Refund If This Doesn't Work • 100% Money-Back Guarantee
                   </p>
                 </div>
               </div>
@@ -895,7 +895,7 @@ const Landing = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-primary shrink-0" />
-                    <span className="text-sm">28-day money-back guarantee (you'll see results FAST)</span>
+                    <span className="text-sm">"I'll beg you for a refund" guarantee (less than 3% ever ask)</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-primary shrink-0" />
@@ -1263,7 +1263,7 @@ const Landing = () => {
                   STOP Wasting Money - Get Results NOW
                 </Button>
                 <p className="text-sm text-muted-foreground mt-4">
-                  Plus supplements (~$150 for 28 days) • 28-Day Money-Back Guarantee
+                  Plus supplements (~$150 for 28 days) • I'll BEG You For A Refund If It Doesn't Work
                 </p>
               </Card>
             </div>
@@ -1299,7 +1299,7 @@ const Landing = () => {
                   Our data shows that 87% of people who "tried everything" and felt hopeless got results with this protocol. If traditional medicine failed you, that's because they weren't addressing these core issues.
                 </p>
                 <p className="font-semibold">
-                  Plus, you're protected by our 28-Day Money-Back Guarantee. If you don't see dramatic improvements, you get every penny back. ZERO risk. ALL reward.
+                  Plus, I'll BEG you for a refund if this doesn't work. If you don't see dramatic improvements in 28 days, you get every penny back. ZERO risk. ALL reward.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -1419,14 +1419,17 @@ const Landing = () => {
                 What's your refund policy?
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground pb-6">
-                <p className="mb-4">
-                  Dead simple: Complete the 28-day protocol. If you don't feel dramatically better, email us and we'll refund 100% of your purchase. No questions. No hassle. We take all the risk because we KNOW this works.
+                <p className="mb-4 font-bold text-foreground text-lg">
+                  Here's my guarantee: I'll BEG you to ask for a refund if this doesn't work.
                 </p>
                 <p className="mb-4">
-                  We can offer this guarantee because we KNOW it works. 87% of people complete the full protocol and report major improvements. Less than 3% ask for refunds.
+                  Dead simple: Complete the 28-day protocol. If you don't feel DRAMATICALLY better—more energy, clearer thinking, better digestion—email me personally and I'll refund 100% of your purchase AND apologize for wasting your time.
                 </p>
-                <p className="font-semibold">
-                  You have nothing to lose except your fatigue, brain fog, and digestive issues. That's a risk worth taking.
+                <p className="mb-4">
+                  Why can I make such a bold guarantee? Because less than 3% of people ask for refunds. 87% complete the full protocol and report major improvements. I've SEEN this transform thousands of lives worse off than yours.
+                </p>
+                <p className="font-semibold text-foreground">
+                  The ONLY risk is staying where you are right now. Still exhausted. Still foggy. Still suffering. THAT'S the real risk.
                 </p>
               </AccordionContent>
             </AccordionItem>
@@ -1520,22 +1523,22 @@ const Landing = () => {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                You're 100% Protected. Here's Why This Is RISK-FREE:
+                I'm So Confident This Will Transform Your Life, <span className="text-primary">I'll BEG You To Ask For A Refund</span> If It Doesn't Work
               </h2>
               <p className="text-xl text-muted-foreground">
-                We've eliminated every possible reason to hesitate
+                Seriously. Try the entire 28-day protocol. If you don't feel DRAMATICALLY better, I'll refund every penny AND apologize for wasting your time.
               </p>
             </div>
 
             {/* Main Guarantees Grid */}
             <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <Card className="p-6 text-center hover:shadow-lg transition-all">
+              <Card className="p-6 text-center hover:shadow-lg transition-all border-2 border-primary/20">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Award className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">28-Day Money-Back Guarantee</h3>
+                <h3 className="text-xl font-bold mb-3">I'll BEG You For A Refund</h3>
                 <p className="text-muted-foreground text-sm">
-                  Try the entire protocol. If you don't feel significantly better, email us for a full refund. No questions. No hassle. No risk.
+                  Complete the 28 days. If you're not AMAZED by your transformation, I'll refund 100% AND send you a personal apology. That's how confident I am this will change your life.
                 </p>
               </Card>
 
@@ -1599,13 +1602,13 @@ const Landing = () => {
 
             {/* Detailed Guarantees */}
             <div className="grid md:grid-cols-2 gap-6 mb-12">
-              <Card className="p-6 border-l-4 border-l-primary">
-                <h4 className="font-bold mb-3 flex items-center gap-2">
+              <Card className="p-6 border-l-4 border-l-primary bg-primary/5">
+                <h4 className="font-bold mb-3 flex items-center gap-2 text-lg">
                   <Check className="w-5 h-5 text-primary" />
-                  Results Guarantee
+                  I'll BEG You For A Refund Guarantee
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  If you complete the protocol as directed and don't see DRAMATIC improvements in your energy, brain fog, or digestive health within 28 days, we'll refund 100% of your purchase price. Period.
+                  Complete the 28-day protocol. If you don't experience a DRAMATIC transformation in your energy, mental clarity, and gut health, I'll refund 100% of your money AND apologize for wasting your time. That's how certain I am this will work for you.
                 </p>
               </Card>
 
@@ -1770,7 +1773,7 @@ const Landing = () => {
                 <p className="text-muted-foreground mb-4 font-semibold">Lifetime Access. Start in 2 Minutes. Transform in 28 Days.</p>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Award className="w-6 h-6 text-primary" />
-                  <span className="font-semibold">28-Day Money-Back Guarantee (Less Than 3% Ever Ask)</span>
+                  <span className="font-semibold">I'll BEG You For A Refund If It Doesn't Work (Less Than 3% Ever Ask)</span>
                 </div>
               </div>
 
