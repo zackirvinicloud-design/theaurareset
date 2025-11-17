@@ -78,7 +78,7 @@ const PaymentRequired = () => {
               <ExternalLink className="ml-2 w-5 h-5" />
             </Button>
             <p className="text-xs text-muted-foreground mt-4">
-              ✓ 28-Day Money-Back Guarantee • ✓ Secure Payment • ✓ Less Than 3% Ever Ask For Refund
+              ✓ I'll BEG You For A Refund If It Doesn't Work • ✓ Secure Payment • ✓ Less Than 3% Ever Ask For Refund
             </p>
             <p className="text-xs text-destructive font-bold mt-2">
               ⚠️ Close this page = Choose to stay broken. Your decision.
