@@ -515,6 +515,423 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Comparison Table */}
+      <div className="bg-muted/30 py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                Stop Wasting Money On Solutions That Don't Work
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                Here's what you've probably tried (and why it failed)
+              </p>
+            </div>
+
+            {/* Mobile: Stacked Cards */}
+            <div className="lg:hidden space-y-6">
+              <Card className="p-6 border-2 border-primary bg-primary/5">
+                <div className="text-center mb-4">
+                  <Badge className="mb-2">BEST CHOICE</Badge>
+                  <h3 className="text-2xl font-bold">The Aura Reset Protocol</h3>
+                  <p className="text-3xl font-bold text-primary mt-2">$491 value</p>
+                  <p className="text-muted-foreground">One-time payment</p>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">Results in 7-14 days</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">87% completion rate</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">24/7 AI Health Coach</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">Automatic tracking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">60-day money-back guarantee</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">Targets root causes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">Lifetime access</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="text-xl font-bold mb-4">Traditional Doctors</h3>
+                <p className="text-2xl font-bold text-destructive mb-2">$2,000-5,000+</p>
+                <p className="text-sm text-muted-foreground mb-4">Multiple visits & tests</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Months to "maybe" results</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Often no answers</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Limited availability</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No tracking system</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No guarantee</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Treats symptoms only</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Ongoing costs</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="text-xl font-bold mb-4">Functional Medicine</h3>
+                <p className="text-2xl font-bold text-destructive mb-2">$3,000-10,000+</p>
+                <p className="text-sm text-muted-foreground mb-4">Per protocol</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">Good results possible</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Very expensive</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Appointment-dependent</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Manual tracking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No refund policy</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0" />
+                    <span className="text-sm">Addresses root causes</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Recurring fees</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="text-xl font-bold mb-4">DIY Supplements</h3>
+                <p className="text-2xl font-bold text-destructive mb-2">$200-500/mo</p>
+                <p className="text-sm text-muted-foreground mb-4">Trial & error</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Random results</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">High quit rate (89%)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No guidance</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No tracking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No support</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Missing key steps</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Wasted money</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6">
+                <h3 className="text-xl font-bold mb-4">Online Courses / PDFs</h3>
+                <p className="text-2xl font-bold text-destructive mb-2">$47-297</p>
+                <p className="text-sm text-muted-foreground mb-4">One-time</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Sit in downloads folder</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">12% completion rate</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No AI support</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Manual tracking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Static content</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">Easy to lose place</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <X className="w-5 h-5 text-destructive shrink-0" />
+                    <span className="text-sm">No accountability</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Desktop: Table View */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b-2">
+                    <th className="text-left p-4 font-semibold">Feature</th>
+                    <th className="p-4 bg-primary/5 border-x-2 border-primary">
+                      <Badge className="mb-2">BEST CHOICE</Badge>
+                      <div className="font-bold text-lg">The Aura Reset Protocol</div>
+                    </th>
+                    <th className="p-4 text-center">Traditional Doctors</th>
+                    <th className="p-4 text-center">Functional Medicine</th>
+                    <th className="p-4 text-center">DIY Supplements</th>
+                    <th className="p-4 text-center">Online Courses/PDFs</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">Cost</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <div className="font-bold text-primary text-lg">$491</div>
+                      <div className="text-xs text-muted-foreground">One-time</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="font-bold text-destructive">$2,000-5,000+</div>
+                      <div className="text-xs text-muted-foreground">Multiple visits</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="font-bold text-destructive">$3,000-10,000+</div>
+                      <div className="text-xs text-muted-foreground">Per protocol</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="font-bold text-destructive">$200-500/mo</div>
+                      <div className="text-xs text-muted-foreground">Trial & error</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="font-bold">$47-297</div>
+                      <div className="text-xs text-muted-foreground">One-time</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">Time to Results</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <Check className="w-6 h-6 text-primary mx-auto mb-1" />
+                      <div className="text-sm font-semibold">7-14 days</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto mb-1" />
+                      <div className="text-sm">Months to "maybe"</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="w-6 h-6 text-primary mx-auto mb-1" />
+                      <div className="text-sm">4-8 weeks</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto mb-1" />
+                      <div className="text-sm">Random/Never</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto mb-1" />
+                      <div className="text-sm">If completed</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">Completion Rate</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <div className="text-2xl font-bold text-primary">87%</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="text-sm text-muted-foreground">N/A</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="text-2xl font-bold">~60%</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="text-2xl font-bold text-destructive">11%</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="text-2xl font-bold text-destructive">12%</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">24/7 AI Support</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <Check className="w-6 h-6 text-primary mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">Automatic Tracking</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <Check className="w-6 h-6 text-primary mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">Money-Back Guarantee</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <Check className="w-6 h-6 text-primary mx-auto mb-1" />
+                      <div className="text-sm font-semibold">60 days</div>
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="text-sm text-muted-foreground">Varies</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-4 font-semibold">Addresses Root Causes</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <Check className="w-6 h-6 text-primary mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="w-6 h-6 text-primary mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <div className="text-sm text-muted-foreground">Varies</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-semibold">Lifetime Access</td>
+                    <td className="p-4 text-center bg-primary/5 border-x-2 border-primary">
+                      <Check className="w-6 h-6 text-primary mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <X className="w-6 h-6 text-destructive mx-auto" />
+                    </td>
+                    <td className="p-4 text-center">
+                      <Check className="w-6 h-6 text-primary mx-auto" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-12 text-center">
+              <Card className="p-8 bg-gradient-to-r from-primary/10 to-primary/5 border-2 border-primary max-w-3xl mx-auto">
+                <h3 className="text-2xl font-bold mb-4">The Math Is Simple:</h3>
+                <div className="grid md:grid-cols-2 gap-6 text-left mb-6">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">TRADITIONAL ROUTE:</p>
+                    <ul className="space-y-1 text-sm">
+                      <li>• Doctor visits: $2,000</li>
+                      <li>• Tests that show nothing: $800</li>
+                      <li>• Random supplements: $600</li>
+                      <li>• Online courses you never finish: $200</li>
+                      <li className="font-bold pt-2 border-t">= $3,600+ with no results</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-2">OUR PROTOCOL:</p>
+                    <ul className="space-y-1 text-sm">
+                      <li>• Platform access: $491</li>
+                      <li>• AI Health Coach: Included</li>
+                      <li>• Progress tracking: Included</li>
+                      <li>• Lifetime updates: Included</li>
+                      <li className="font-bold pt-2 border-t text-primary">= $491 total with 87% success rate</li>
+                    </ul>
+                  </div>
+                </div>
+                <Button
+                  size="lg"
+                  onClick={() => navigate("/auth")}
+                  className="text-lg px-12 py-6"
+                >
+                  <Zap className="w-5 h-5 mr-2" />
+                  Choose The Smart Solution
+                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Plus supplements (~$250 for 60 days) • 60-Day Money-Back Guarantee
+                </p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* FAQ Section */}
       <div className="py-16 lg:py-24 container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
