@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check, X, AlertTriangle, Sparkles, Clock, Target, Zap, MessageSquare, LineChart, Award } from "lucide-react";
+import { Check, X, AlertTriangle, Sparkles, Clock, Target, Zap, MessageSquare, LineChart, Award, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -1171,6 +1171,203 @@ const Landing = () => {
               <Zap className="w-5 h-5 mr-2" />
               Start Your Transformation
             </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Risk Reversal Section */}
+      <div className="py-16 lg:py-24 bg-gradient-to-b from-background to-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                You're 100% Protected. Here's Why This Is RISK-FREE:
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                We've eliminated every possible reason to hesitate
+              </p>
+            </div>
+
+            {/* Main Guarantees Grid */}
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
+              <Card className="p-6 text-center hover:shadow-lg transition-all">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Award className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">60-Day Money-Back Guarantee</h3>
+                <p className="text-muted-foreground text-sm">
+                  Try the entire protocol. If you don't feel significantly better, email us for a full refund. No questions. No hassle. No risk.
+                </p>
+              </Card>
+
+              <Card className="p-6 text-center hover:shadow-lg transition-all">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Secure & Private</h3>
+                <p className="text-muted-foreground text-sm">
+                  256-bit SSL encryption. Your payment info is never stored on our servers. PCI-DSS compliant processing.
+                </p>
+              </Card>
+
+              <Card className="p-6 text-center hover:shadow-lg transition-all">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Instant Access</h3>
+                <p className="text-muted-foreground text-sm">
+                  Start immediately after signup. No waiting for shipping. No delays. Begin your transformation right now.
+                </p>
+              </Card>
+            </div>
+
+            {/* Trust Badges */}
+            <Card className="p-8 mb-12">
+              <h3 className="text-xl font-bold text-center mb-6">Trusted & Secure Payment Processing</h3>
+              <div className="flex flex-wrap justify-center items-center gap-8 mb-6">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Shield className="w-6 h-6" />
+                  <span className="font-semibold">SSL Secure</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Check className="w-6 h-6 text-primary" />
+                  <span className="font-semibold">PCI Compliant</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Award className="w-6 h-6" />
+                  <span className="font-semibold">Money-Back Guarantee</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Target className="w-6 h-6" />
+                  <span className="font-semibold">Privacy Protected</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t">
+                <div className="text-center p-3 bg-muted/50 rounded">
+                  <p className="text-xs font-semibold text-muted-foreground">VISA</p>
+                </div>
+                <div className="text-center p-3 bg-muted/50 rounded">
+                  <p className="text-xs font-semibold text-muted-foreground">MASTERCARD</p>
+                </div>
+                <div className="text-center p-3 bg-muted/50 rounded">
+                  <p className="text-xs font-semibold text-muted-foreground">AMEX</p>
+                </div>
+                <div className="text-center p-3 bg-muted/50 rounded">
+                  <p className="text-xs font-semibold text-muted-foreground">DISCOVER</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Detailed Guarantees */}
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              <Card className="p-6 border-l-4 border-l-primary">
+                <h4 className="font-bold mb-3 flex items-center gap-2">
+                  <Check className="w-5 h-5 text-primary" />
+                  Results Guarantee
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  If you complete the protocol as directed and don't see significant improvements in your energy, brain fog, or digestive health within 60 days, we'll refund 100% of your purchase price.
+                </p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <h4 className="font-bold mb-3 flex items-center gap-2">
+                  <Check className="w-5 h-5 text-primary" />
+                  Support Guarantee
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  The AI Health Coach provides 24/7 answers to your questions. If you ever feel stuck or unsure, you get instant guidance. You're never alone in this journey.
+                </p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <h4 className="font-bold mb-3 flex items-center gap-2">
+                  <Check className="w-5 h-5 text-primary" />
+                  Update Guarantee
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  You get lifetime access to all future updates, improvements, and new features we add to the platform. One payment, forever access. No subscription traps.
+                </p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <h4 className="font-bold mb-3 flex items-center gap-2">
+                  <Check className="w-5 h-5 text-primary" />
+                  Privacy Guarantee
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Your health data stays private. We never sell your information. We never spam you. Your email is only used for essential protocol updates and support.
+                </p>
+              </Card>
+            </div>
+
+            {/* Social Proof Stats */}
+            <Card className="p-8 bg-primary/5 border-2 border-primary/30">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold mb-2">Join 12,847+ Happy Members</h3>
+                <p className="text-muted-foreground">Real people getting real results every single day</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-1">4.9/5</div>
+                  <div className="flex justify-center gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-500 text-sm">★</span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Average Rating</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-1">87%</div>
+                  <p className="text-xs text-muted-foreground">Complete the full protocol</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-1">&lt;3%</div>
+                  <p className="text-xs text-muted-foreground">Request refunds</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary mb-1">56</div>
+                  <p className="text-xs text-muted-foreground">Avg. completion days</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Final Trust Statement */}
+            <div className="mt-12 text-center max-w-3xl mx-auto">
+              <div className="bg-card p-8 rounded-lg border-2 border-border">
+                <h3 className="text-2xl font-bold mb-4">Here's The Bottom Line:</h3>
+                <p className="text-lg text-muted-foreground mb-6">
+                  You can keep suffering, wasting money on solutions that don't work, and watching your life pass by in a fog of exhaustion...
+                </p>
+                <p className="text-lg font-semibold mb-6">
+                  OR you can try this risk-free for 60 days and finally get the energy, clarity, and health you deserve.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/auth")}
+                    className="text-xl px-12 py-8 shadow-lg hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] transition-all w-full sm:w-auto"
+                  >
+                    <Zap className="w-6 h-6 mr-2" />
+                    Yes! I'm Ready To Transform
+                  </Button>
+                </div>
+                <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Instant access</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>60-day guarantee</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Secure checkout</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
