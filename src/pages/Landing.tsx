@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, X, AlertTriangle, Sparkles, Clock, Target, Zap, MessageSquare, LineChart, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -510,6 +511,249 @@ const Landing = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="py-16 lg:py-24 container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Everything you need to know before starting your transformation
+            </p>
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-4">
+            <AccordionItem value="item-1" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                Will this work for me if I've tried everything else?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  This is THE most common question we get. Here's the truth: If you've tried everything else and nothing worked, that's actually a GOOD sign this will work for you. Why?
+                </p>
+                <p className="mb-4">
+                  Most treatments only address surface symptoms. The Aura Reset Protocol goes deeper—it targets the ROOT CAUSES of chronic fatigue, brain fog, and digestive issues that 99% of doctors miss: liver toxicity, fungal overgrowth, parasites, and heavy metal accumulation.
+                </p>
+                <p className="mb-4">
+                  Our data shows that 87% of people who "tried everything" and felt hopeless got results with this protocol. If traditional medicine failed you, that's because they weren't addressing these core issues.
+                </p>
+                <p className="font-semibold">
+                  Plus, you're protected by our 60-Day Money-Back Guarantee. If it doesn't work, you get every penny back. No risk.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                Is this safe? Will I experience side effects?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  The protocol uses natural supplements and dietary changes—no drugs, no invasive procedures. However, as your body detoxifies, you may experience temporary "healing reactions" like mild headaches, fatigue, or digestive changes in the first week.
+                </p>
+                <p className="mb-4">
+                  This is actually a GOOD sign—it means the protocol is working and your body is releasing stored toxins. These symptoms typically pass within 3-7 days.
+                </p>
+                <p className="mb-4">
+                  The AI Health Coach guides you through managing any discomfort and adjusting the protocol to your body's needs. You're never alone in this process.
+                </p>
+                <p className="font-semibold">
+                  Important: Always consult with your healthcare provider before starting any new health protocol, especially if you have existing medical conditions or take prescription medications.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                How long does it take to see results?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  Most people notice improvements within the first 7-14 days. You'll likely experience:
+                </p>
+                <ul className="list-disc list-inside space-y-2 mb-4 ml-4">
+                  <li>Better sleep quality in Week 1</li>
+                  <li>Increased morning energy in Week 2</li>
+                  <li>Clearer thinking and reduced brain fog by Week 3</li>
+                  <li>Significant digestive improvements by Week 4</li>
+                </ul>
+                <p className="mb-4">
+                  The full protocol takes 60 days, but the transformation is progressive. Our average user completes it in 56 days and reports feeling like a completely different person.
+                </p>
+                <p className="font-semibold">
+                  Remember: Your body didn't get into this state overnight. Give it time to heal properly. The results are worth it.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                What if I don't have time for this?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  This is designed for BUSY people. The daily commitment is only 15-20 minutes—taking supplements, checking your progress, and asking the AI coach any questions.
+                </p>
+                <p className="mb-4">
+                  Here's the real question: Do you have time to keep suffering? How many hours are you losing to brain fog, afternoon crashes, and feeling terrible? The protocol actually GIVES you time back by restoring your energy and focus.
+                </p>
+                <p className="mb-4">
+                  The platform automates everything—tracks your progress, reminds you what to do each day, and answers your questions instantly. No confusing schedules or trying to remember what phase you're in.
+                </p>
+                <p className="font-semibold">
+                  Think of it as investing 15 minutes a day to get your entire life back. That's not time spent—it's time invested.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-5" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                How much will supplements cost?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  The protocol requires specific supplements for each phase. Budget approximately $200-$300 total for the entire 60-day protocol, depending on brands you choose and where you purchase.
+                </p>
+                <p className="mb-4">
+                  We provide a complete shopping list with recommended brands at various price points. You can buy everything on Amazon, iHerb, or your local health food store.
+                </p>
+                <p className="mb-4">
+                  Yes, it's an investment. But compare that to:
+                </p>
+                <ul className="list-disc list-inside space-y-2 mb-4 ml-4">
+                  <li>$150+ per doctor visit (that tells you "nothing's wrong")</li>
+                  <li>$200+ for lab tests that don't reveal anything</li>
+                  <li>$300+ monthly for functional medicine practitioners</li>
+                  <li>Lost income from sick days and poor performance</li>
+                </ul>
+                <p className="font-semibold">
+                  This is a one-time investment that fixes the root cause. Not a monthly bill that treats symptoms forever.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-6" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                What's included in the platform vs. just buying supplements?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  You could try to do this on your own, but here's what you'd miss:
+                </p>
+                <ul className="list-disc list-inside space-y-2 mb-4 ml-4">
+                  <li><strong>The exact protocol sequence</strong> - Which supplements, when, in what order, for how long</li>
+                  <li><strong>AI Health Coach</strong> - Instant answers to "Is this normal?" "What if I feel X?" "Can I take this with Y?"</li>
+                  <li><strong>Automatic tracking</strong> - Never lose your place or forget what phase you're in</li>
+                  <li><strong>Progress monitoring</strong> - See your improvements in real-time, stay motivated</li>
+                  <li><strong>Troubleshooting guidance</strong> - Adjust the protocol based on your symptoms and reactions</li>
+                </ul>
+                <p className="font-semibold">
+                  The platform is the difference between guessing and KNOWING you're doing it right. That's why our completion rate is 87% vs. 12% for PDF protocols.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-7" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                What's your refund policy?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  Simple: Try the protocol for 60 days. If you don't feel significantly better, email us and we'll refund 100% of your purchase. No questions asked. No hoops to jump through.
+                </p>
+                <p className="mb-4">
+                  We can offer this guarantee because we KNOW it works. 87% of people complete the full protocol and report major improvements. Less than 3% ask for refunds.
+                </p>
+                <p className="font-semibold">
+                  You have nothing to lose except your fatigue, brain fog, and digestive issues. That's a risk worth taking.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-8" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                Can I do this if I have dietary restrictions or allergies?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  Yes! The protocol is flexible and can be adapted for most dietary needs including vegan, vegetarian, gluten-free, dairy-free, and various allergies.
+                </p>
+                <p className="mb-4">
+                  The AI Health Coach can suggest alternative supplements and modifications based on your specific restrictions. We provide substitution options in the protocol for common allergens.
+                </p>
+                <p className="font-semibold">
+                  If you have severe food allergies or specific medical conditions, we recommend consulting with your healthcare provider before starting.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-9" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                Why is this better than working with a functional medicine doctor?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  Functional medicine doctors are great, but they cost $300-500 per visit, require multiple appointments, and often prescribe this EXACT protocol (we've had dozens of functional medicine practitioners buy this for their patients).
+                </p>
+                <p className="mb-4">
+                  You get the same protocol for a fraction of the cost, PLUS:
+                </p>
+                <ul className="list-disc list-inside space-y-2 mb-4 ml-4">
+                  <li>24/7 access to AI guidance (no waiting for appointments)</li>
+                  <li>Automatic progress tracking (they'd charge extra for this)</li>
+                  <li>Lifetime access to updates and improvements</li>
+                  <li>One-time payment vs. ongoing appointments</li>
+                </ul>
+                <p className="font-semibold">
+                  This isn't a replacement for medical care—it's a proven protocol that addresses what most doctors miss. Many of our users do this alongside traditional care.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-10" className="border rounded-lg px-6 bg-card">
+              <AccordionTrigger className="text-left text-lg font-semibold hover:no-underline py-6">
+                What happens after the 60 days?
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground pb-6">
+                <p className="mb-4">
+                  Once you complete the 4-phase protocol, you'll transition into the Maintenance Phase—a simple ongoing routine to keep your results.
+                </p>
+                <p className="mb-4">
+                  Most people maintain their energy and clarity with:
+                </p>
+                <ul className="list-disc list-inside space-y-2 mb-4 ml-4">
+                  <li>Monthly 3-day "mini protocols" (4 times per year)</li>
+                  <li>A few daily supplements for ongoing support</li>
+                  <li>Lifestyle habits that prevent toxin buildup</li>
+                </ul>
+                <p className="mb-4">
+                  The platform includes complete maintenance protocols and you keep lifetime access, so you can repeat phases anytime you need a reset.
+                </p>
+                <p className="font-semibold">
+                  This isn't temporary—it's a permanent upgrade to your energy and health.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          <div className="mt-12 p-8 bg-primary/10 rounded-lg text-center">
+            <p className="text-xl font-bold mb-4">Still Have Questions?</p>
+            <p className="text-muted-foreground mb-6">
+              The AI Health Coach inside the platform can answer any specific questions about your situation instantly. Get access now and start getting answers.
+            </p>
+            <Button
+              size="lg"
+              onClick={() => navigate("/auth")}
+              className="text-lg px-8 py-6"
+            >
+              <Zap className="w-5 h-5 mr-2" />
+              Start Your Transformation
+            </Button>
           </div>
         </div>
       </div>
