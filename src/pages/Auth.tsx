@@ -18,6 +18,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   useEffect(() => {
     // Check if already logged in
@@ -78,6 +79,40 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordReset = async () => {
+    try {
+      emailSchema.parse(email);
+    } catch (error) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsResettingPassword(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth`,
+    });
+
+    setIsResettingPassword(false);
+
+    if (error) {
+      toast({
+        title: "Password reset failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Check your email",
+        description: "We sent you a password reset link",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -114,6 +149,16 @@ const Auth = () => {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+          <div className="text-center mt-2">
+            <Button
+              variant="link"
+              onClick={handlePasswordReset}
+              disabled={isResettingPassword}
+              className="text-sm text-muted-foreground hover:text-primary"
+            >
+              {isResettingPassword ? "Sending..." : "Forgot password?"}
+            </Button>
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <div className="text-sm text-muted-foreground">
