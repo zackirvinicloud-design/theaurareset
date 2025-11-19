@@ -26,7 +26,7 @@ interface ChatStore {
 const STORAGE_KEY = 'aura-protocol-chat';
 
 const defaultProgress: UserProgress = {
-  currentDay: 1,
+  currentDay: 0,
   currentPhase: 1,
   startDate: new Date().toISOString(),
   notes: [],

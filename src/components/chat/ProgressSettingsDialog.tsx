@@ -93,10 +93,10 @@ export const ProgressSettingsDialog = ({
             <p className="text-sm text-muted-foreground">Calculated Phase</p>
             <p className="font-medium">
               Phase {selectedPhase}
-              {selectedPhase === 1 && ': Preliminary (Day 0)'}
-              {selectedPhase === 2 && ': Fungal + Foundation (Days 1-7)'}
-              {selectedPhase === 3 && ': Parasites + Foundation (Days 8-14)'}
-              {selectedPhase === 4 && ': Heavy Metals + Foundation (Days 15-21)'}
+              {selectedPhase === 1 && ': Foundation (All 21 Days)'}
+              {selectedPhase === 2 && ': Fungal (Days 1-7)'}
+              {selectedPhase === 3 && ': Parasites (Days 8-14)'}
+              {selectedPhase === 4 && ': Heavy Metals (Days 15-21)'}
             </p>
           </div>
         </div>

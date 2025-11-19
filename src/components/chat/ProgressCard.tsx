@@ -12,7 +12,7 @@ interface ProgressCardProps {
 }
 
 const PHASE_INFO = {
-  1: { name: 'Preliminary (Day 0)', color: 'text-phase-1' },
+  1: { name: 'Foundation (All 21 Days)', color: 'text-phase-1' },
   2: { name: 'Fungal (Days 1-7)', color: 'text-phase-2' },
   3: { name: 'Parasites (Days 8-14)', color: 'text-phase-3' },
   4: { name: 'Heavy Metals (Days 15-21)', color: 'text-phase-4' },
