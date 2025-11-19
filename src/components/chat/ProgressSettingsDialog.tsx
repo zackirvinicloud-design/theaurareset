@@ -26,7 +26,10 @@ interface ProgressSettingsDialogProps {
 }
 
 const getPhaseFromDay = (day: number): 1 | 2 | 3 | 4 => {
-  return Math.ceil(day / 7) as 1 | 2 | 3 | 4;
+  if (day === 0) return 1; // Preliminary phase
+  if (day <= 7) return 2; // Fungal phase
+  if (day <= 14) return 3; // Parasite phase
+  return 4; // Heavy metals phase
 };
 
 export const ProgressSettingsDialog = ({
@@ -76,9 +79,9 @@ export const ProgressSettingsDialog = ({
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                {Array.from({ length: 22 }, (_, i) => i).map((day) => (
                   <SelectItem key={day} value={day.toString()}>
-                    Day {day}
+                    Day {day}{day === 0 ? ' (Prep)' : ''}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -89,11 +92,11 @@ export const ProgressSettingsDialog = ({
           <div className="p-3 bg-muted rounded-md">
             <p className="text-sm text-muted-foreground">Calculated Phase</p>
             <p className="font-medium">
-              Phase {selectedPhase} 
-              {selectedPhase === 1 && ': Liver Support (Days 1-7)'}
-              {selectedPhase === 2 && ': Fungal & Viral (Days 8-14)'}
-              {selectedPhase === 3 && ': Parasites (Days 15-21)'}
-              {selectedPhase === 4 && ': Heavy Metals (Days 22-28)'}
+              Phase {selectedPhase}
+              {selectedPhase === 1 && ': Preliminary (Day 0)'}
+              {selectedPhase === 2 && ': Fungal + Foundation (Days 1-7)'}
+              {selectedPhase === 3 && ': Parasites + Foundation (Days 8-14)'}
+              {selectedPhase === 4 && ': Heavy Metals + Foundation (Days 15-21)'}
             </p>
           </div>
         </div>
