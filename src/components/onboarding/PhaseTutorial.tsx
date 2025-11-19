@@ -28,10 +28,10 @@ const phaseTutorials: Record<number, {
   sections: TutorialSection[];
 }> = {
   1: {
-    title: "Phase 1: Foundation & Liver Support",
+    title: "Phase 1: Foundation",
     color: "from-green-500 to-emerald-600",
-    duration: "All 21 Days",
-    goal: "Continuous foundation - Open drainage pathways and support liver function",
+    duration: "Day 0 (Prep Day)",
+    goal: "Prepare your body and mind - Open drainage pathways and support liver function",
     sections: [
       {
         title: "Morning Ritual",
@@ -82,10 +82,10 @@ const phaseTutorials: Record<number, {
     ]
   },
   2: {
-    title: "Phase 2: Fungal & Viral Elimination",
+    title: "Phase 2: Fungal Elimination",
     color: "from-purple-500 to-violet-600",
     duration: "Days 1-7",
-    goal: "Target candida, fungi, and viral overgrowth (Runs with Phase 1)",
+    goal: "Target candida and fungal overgrowth (Foundation continues all 21 days)",
     sections: [
       {
         title: "The Anti-Fungal Arsenal",
@@ -142,7 +142,7 @@ const phaseTutorials: Record<number, {
     title: "Phase 3: Parasite Elimination",
     color: "from-orange-500 to-red-600",
     duration: "Days 8-14",
-    goal: "Address parasitic infections and gut invaders",
+    goal: "Address parasitic infections and gut invaders (Foundation continues all 21 days)",
     sections: [
       {
         title: "Anti-Parasitic Protocol",
@@ -196,10 +196,10 @@ const phaseTutorials: Record<number, {
     ]
   },
   4: {
-    title: "Phase 4: Heavy Metals & Mold",
+    title: "Phase 4: Heavy Metals",
     color: "from-blue-500 to-cyan-600",
     duration: "Days 15-21",
-    goal: "Remove deep-stored heavy metals and mycotoxins",
+    goal: "Remove deep-stored heavy metals and mycotoxins (Foundation continues all 21 days)",
     sections: [
       {
         title: "Metal Chelation",
