@@ -25,11 +25,7 @@ const Landing = () => {
   }, []);
 
   const handleCTA = () => {
-    if (isAuthenticated) {
-      navigate("/protocol");
-    } else {
-      navigate("/auth");
-    }
+    window.location.href = "https://whop.com/checkout/plan_CUGZlF5JjekWR";
   };
 
   return (
@@ -51,7 +47,7 @@ const Landing = () => {
                 <Button onClick={() => navigate("/auth")} variant="ghost">
                   Sign In
                 </Button>
-                <Button onClick={() => navigate("/auth")} variant="default">
+                <Button onClick={() => window.location.href = "https://whop.com/checkout/plan_CUGZlF5JjekWR"} variant="default">
                   Get Started Free
                 </Button>
               </>
