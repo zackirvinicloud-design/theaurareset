@@ -28,10 +28,10 @@ const phaseTutorials: Record<number, {
   sections: TutorialSection[];
 }> = {
   1: {
-    title: "Phase 1: Liver Support & Detox Pathways",
+    title: "Phase 1: Foundation & Liver Support",
     color: "from-green-500 to-emerald-600",
-    duration: "Days 1-7",
-    goal: "Open drainage pathways and support liver function",
+    duration: "All 21 Days",
+    goal: "Continuous foundation - Open drainage pathways and support liver function",
     sections: [
       {
         title: "Morning Ritual",
@@ -84,8 +84,8 @@ const phaseTutorials: Record<number, {
   2: {
     title: "Phase 2: Fungal & Viral Elimination",
     color: "from-purple-500 to-violet-600",
-    duration: "Days 8-14",
-    goal: "Target candida, fungi, and viral overgrowth",
+    duration: "Days 1-7",
+    goal: "Target candida, fungi, and viral overgrowth (Runs with Phase 1)",
     sections: [
       {
         title: "The Anti-Fungal Arsenal",
@@ -141,7 +141,7 @@ const phaseTutorials: Record<number, {
   3: {
     title: "Phase 3: Parasite Elimination",
     color: "from-orange-500 to-red-600",
-    duration: "Days 15-21",
+    duration: "Days 8-14",
     goal: "Address parasitic infections and gut invaders",
     sections: [
       {
@@ -198,7 +198,7 @@ const phaseTutorials: Record<number, {
   4: {
     title: "Phase 4: Heavy Metals & Mold",
     color: "from-blue-500 to-cyan-600",
-    duration: "Days 22-28",
+    duration: "Days 15-21",
     goal: "Remove deep-stored heavy metals and mycotoxins",
     sections: [
       {

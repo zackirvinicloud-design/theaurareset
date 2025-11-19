@@ -12,22 +12,32 @@ interface ProgressCardProps {
 }
 
 const PHASE_INFO = {
-  1: { name: 'Liver Support', color: 'text-phase-1' },
-  2: { name: 'Fungal & Viral', color: 'text-phase-2' },
-  3: { name: 'Parasites', color: 'text-phase-3' },
-  4: { name: 'Heavy Metals', color: 'text-phase-4' },
+  1: { name: 'Foundation (All 21 Days)', color: 'text-phase-1' },
+  2: { name: 'Fungal (Days 1-7)', color: 'text-phase-2' },
+  3: { name: 'Parasites (Days 8-14)', color: 'text-phase-3' },
+  4: { name: 'Heavy Metals (Days 15-21)', color: 'text-phase-4' },
 } as const;
 
 export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: ProgressCardProps) => {
   const [showTutorial, setShowTutorial] = useState(false);
   
-  // Ensure phase is valid (1-4), fallback to calculated phase if invalid
-  const validPhase = (currentPhase && currentPhase >= 1 && currentPhase <= 4) 
-    ? currentPhase 
-    : Math.ceil(Math.min(Math.max(currentDay, 1), 28) / 7) as 1 | 2 | 3 | 4;
+  // Calculate phase based on new 21-day structure
+  // Phase 1: Always active (foundation)
+  // Phase 2: Days 1-7 (Fungal)
+  // Phase 3: Days 8-14 (Parasites)
+  // Phase 4: Days 15-21 (Heavy Metals)
+  const calculatePhase = (day: number): 1 | 2 | 3 | 4 => {
+    if (day <= 7) return 2; // Fungal phase (with Foundation)
+    if (day <= 14) return 3; // Parasite phase
+    return 4; // Heavy metals phase
+  };
+
+  const validPhase = (currentPhase && currentPhase >= 1 && currentPhase <= 4)
+    ? currentPhase
+    : calculatePhase(Math.min(Math.max(currentDay, 1), 21));
   
   const phase = PHASE_INFO[validPhase];
-  const isLastDay = currentDay >= 28;
+  const isLastDay = currentDay >= 21;
 
   return (
     <>
@@ -38,7 +48,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
             <div className="flex items-baseline gap-1.5">
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Day</span>
               <h4 className="font-bold text-2xl leading-none">{currentDay}</h4>
-              <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 28</span>
+              <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 21</span>
             </div>
             
             <div className="text-right">

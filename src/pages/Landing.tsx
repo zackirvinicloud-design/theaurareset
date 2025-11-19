@@ -36,13 +36,13 @@ const Landing = () => {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <Badge variant="secondary" className="mx-auto gap-2 px-4 py-2">
             <Sparkles className="w-4 h-4" />
-            AI-Powered 28-Day Transformation
+            AI-Powered 21-Day Transformation
           </Badge>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
             Transform Your Health in{" "}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              28 Days
+              21 Days
             </span>
           </h1>
           
@@ -99,7 +99,7 @@ const Landing = () => {
               <div className="text-sm text-muted-foreground">Average Rating</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">28</div>
+              <div className="text-4xl font-bold text-primary mb-2">21</div>
               <div className="text-sm text-muted-foreground">Days to Transform</div>
             </div>
             <div className="text-center">
@@ -160,15 +160,19 @@ const Landing = () => {
               <ul className="space-y-2 text-sm">
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>Foundation & liver support</span>
+                  <span>Phase 1: Foundation (all 21 days)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>Fungal pre-conditioning</span>
+                  <span>Phase 2: Fungal cleanse (days 1-7)</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <span>Complete detoxification</span>
+                  <span>Phase 3: Parasite cleanse (days 8-14)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <span>Phase 4: Heavy metals (days 15-21)</span>
                 </li>
               </ul>
             </Card>
@@ -350,7 +354,7 @@ const Landing = () => {
               Real People, Real Results
             </h2>
             <p className="text-xl text-muted-foreground">
-              Join thousands who've transformed their health in just 28 days
+              Join thousands who've transformed their health in just 21 days
             </p>
           </div>
 
@@ -418,7 +422,7 @@ const Landing = () => {
                 <div className="text-left space-y-3 max-w-md mx-auto">
                   <div className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-primary shrink-0 mt-1" />
-                    <span>Complete 28-day protocol with AI guidance</span>
+                    <span>Complete 21-day protocol with AI guidance</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-primary shrink-0 mt-1" />
@@ -474,7 +478,7 @@ const Landing = () => {
                   <span className="font-bold">Aura Reset</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Transform your health in 28 days with AI-powered guidance.
+                  Transform your health in 21 days with AI-powered guidance.
                 </p>
               </div>
               <div>
