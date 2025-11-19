@@ -3,26 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowRight, Sparkles, MessageSquare, LineChart, Brain, Shield, Zap, Users, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 const Landing = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsAuthenticated(true);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const handleCTA = () => {
     window.location.href = "https://whop.com/checkout/plan_CUGZlF5JjekWR";
@@ -38,20 +21,12 @@ const Landing = () => {
             <span className="text-xl font-bold">Aura Reset Protocol</span>
           </div>
           <div className="flex items-center gap-4">
-            {isAuthenticated ? (
-              <Button onClick={() => navigate("/protocol")} variant="default">
-                Go to Dashboard
-              </Button>
-            ) : (
-              <>
-                <Button onClick={() => navigate("/auth")} variant="ghost">
-                  Sign In
-                </Button>
-                <Button onClick={() => window.location.href = "https://whop.com/checkout/plan_CUGZlF5JjekWR"} variant="default">
-                  Get Started Free
-                </Button>
-              </>
-            )}
+            <Button onClick={() => navigate("/auth")} variant="ghost">
+              Sign In
+            </Button>
+            <Button onClick={handleCTA} variant="default">
+              Get Started Free
+            </Button>
           </div>
         </div>
       </nav>
