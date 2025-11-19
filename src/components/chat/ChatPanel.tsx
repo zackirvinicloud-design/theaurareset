@@ -75,8 +75,9 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     const assistantMsg = addMessage({ role: 'assistant', content: '' });
 
     // Build enhanced context with user progress
-    const phaseNames = ['Liver Support', 'Fungal & Viral', 'Parasites', 'Heavy Metals & Mold'];
-    const enhancedContext = `Day ${userProgress.currentDay} of 28, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`;
+    const phaseNames = ['Preliminary (Prep)', 'Fungal + Foundation', 'Parasites + Foundation', 'Heavy Metals + Foundation'];
+    const dayLabel = userProgress.currentDay === 0 ? 'Day 0 (Prep)' : `Day ${userProgress.currentDay} of 21`;
+    const enhancedContext = `${dayLabel}, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`;
 
     try {
       await streamChat({
@@ -88,8 +89,8 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           // Check for progress update marker
           const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
           if (progressMatch) {
-            const newDay = Math.min(Math.max(parseInt(progressMatch[1]), 1), 28);
-            const newPhase = Math.ceil(newDay / 7) as 1 | 2 | 3 | 4;
+            const newDay = Math.min(Math.max(parseInt(progressMatch[1]), 0), 21);
+            const newPhase = newDay === 0 ? 1 : (newDay <= 7 ? 2 : (newDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
             updateProgress({ currentDay: newDay, currentPhase: newPhase });
             
             // Remove the marker from the displayed content
@@ -131,12 +132,13 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
   };
 
   const handleNextDay = () => {
-    const newDay = Math.min(userProgress.currentDay + 1, 28);
-    const newPhase = Math.ceil(newDay / 7) as 1 | 2 | 3 | 4;
+    const newDay = Math.min(userProgress.currentDay + 1, 21);
+    const newPhase = newDay === 0 ? 1 : (newDay <= 7 ? 2 : (newDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
     updateProgress({ currentDay: newDay, currentPhase: newPhase });
+    const dayLabel = newDay === 0 ? 'Day 0 (Prep)' : `Day ${newDay}`;
     toast({
       title: "Progress updated",
-      description: `Advanced to Day ${newDay}, Phase ${newPhase}`,
+      description: `Advanced to ${dayLabel}, Phase ${newPhase}`,
     });
   };
 
