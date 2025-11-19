@@ -15,14 +15,14 @@ export const streamChat = async ({
   onDone,
   onError,
 }: StreamChatOptions) => {
-  const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/protocol-chat`;
+  const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL || 'https://mergwwrhcqzbogtnhxus.supabase.co'}/functions/v1/protocol-chat`;
 
   try {
     const response = await fetch(CHAT_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lcmd3d3JoY3F6Ym9ndG5oeHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTc0NTgsImV4cCI6MjA3ODc3MzQ1OH0.t0f8RGXnEPaAVC63bKFcHGg9xrVt9gIsW8fMxI7uJ-I'}`,
       },
       body: JSON.stringify({
         messages: messages.map(m => ({ role: m.role, content: m.content })),
