@@ -12,7 +12,7 @@ interface ProgressCardProps {
 }
 
 const PHASE_INFO = {
-  1: { name: 'Foundation (All 21 Days)', color: 'text-phase-1' },
+  1: { name: 'Preliminary (Day 0)', color: 'text-phase-1' },
   2: { name: 'Fungal (Days 1-7)', color: 'text-phase-2' },
   3: { name: 'Parasites (Days 8-14)', color: 'text-phase-3' },
   4: { name: 'Heavy Metals (Days 15-21)', color: 'text-phase-4' },
@@ -21,20 +21,21 @@ const PHASE_INFO = {
 export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: ProgressCardProps) => {
   const [showTutorial, setShowTutorial] = useState(false);
   
-  // Calculate phase based on new 21-day structure
-  // Phase 1: Always active (foundation)
-  // Phase 2: Days 1-7 (Fungal)
-  // Phase 3: Days 8-14 (Parasites)
-  // Phase 4: Days 15-21 (Heavy Metals)
+  // Calculate phase based on new 22-day structure (Day 0-21)
+  // Phase 1: Day 0 (Preliminary - prep and mindset)
+  // Phase 2: Days 1-7 (Fungal + Foundation)
+  // Phase 3: Days 8-14 (Parasites + Foundation)
+  // Phase 4: Days 15-21 (Heavy Metals + Foundation)
   const calculatePhase = (day: number): 1 | 2 | 3 | 4 => {
-    if (day <= 7) return 2; // Fungal phase (with Foundation)
+    if (day === 0) return 1; // Preliminary phase
+    if (day <= 7) return 2; // Fungal phase
     if (day <= 14) return 3; // Parasite phase
     return 4; // Heavy metals phase
   };
 
   const validPhase = (currentPhase && currentPhase >= 1 && currentPhase <= 4)
     ? currentPhase
-    : calculatePhase(Math.min(Math.max(currentDay, 1), 21));
+    : calculatePhase(Math.min(Math.max(currentDay, 0), 21));
   
   const phase = PHASE_INFO[validPhase];
   const isLastDay = currentDay >= 21;
