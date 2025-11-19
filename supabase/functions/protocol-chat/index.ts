@@ -1,4 +1,4 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// Edge runtime types removed to avoid OpenAI dependency conflicts
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
