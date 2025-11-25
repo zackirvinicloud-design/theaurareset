@@ -72,7 +72,7 @@ const Landing = () => {
           <div className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Check className="w-5 h-5 text-primary" />
-              <span>No credit card required</span>
+              <span>2-day free trial</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-5 h-5 text-primary" />
@@ -301,7 +301,7 @@ const Landing = () => {
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Sign Up Free</h3>
                   <p className="text-muted-foreground text-lg">
-                    Create your account in 30 seconds. No credit card required to start your 7-day free trial.
+                    Create your account in 30 seconds. Start your 2-day free trial, then continue for just $47.
                   </p>
                 </div>
               </div>
@@ -452,7 +452,7 @@ const Landing = () => {
                 </Button>
 
                 <p className="text-sm text-muted-foreground">
-                  Try it free for 7 days. Cancel anytime, full refund within 30 days.
+                  Try it free for 2 days. Cancel anytime, full refund within 30 days.
                 </p>
               </div>
             </Card>
