@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { MessageSquare, Search, X } from 'lucide-react';
+import { Stethoscope, BookOpen, X } from 'lucide-react';
 
 export const ProblemScene = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -32,24 +32,24 @@ export const ProblemScene = () => {
             <div className="absolute top-4 right-4">
               <X className="w-6 h-6 text-destructive" />
             </div>
-            <MessageSquare className="w-12 h-12 mb-4 text-muted-foreground" />
-            <h3 className="text-2xl font-bold mb-4">ChatGPT</h3>
+            <Stethoscope className="w-12 h-12 mb-4 text-muted-foreground" />
+            <h3 className="text-2xl font-bold mb-4">Traditional Medicine</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>Gives you information, but no structure to follow</span>
+                <span>"Your tests are normal" but you still feel terrible</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>No daily check-ins or accountability system</span>
+                <span>15-minute appointments with no real answers</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>You close the tab and forget what you learned</span>
+                <span>Prescribed medications that mask symptoms</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>Still stuck figuring out what to do next</span>
+                <span>No focus on root causes or prevention</span>
               </li>
             </ul>
           </motion.div>
@@ -61,24 +61,24 @@ export const ProblemScene = () => {
             <div className="absolute top-4 right-4">
               <X className="w-6 h-6 text-destructive" />
             </div>
-            <Search className="w-12 h-12 mb-4 text-muted-foreground" />
-            <h3 className="text-2xl font-bold mb-4">Google Search</h3>
+            <BookOpen className="w-12 h-12 mb-4 text-muted-foreground" />
+            <h3 className="text-2xl font-bold mb-4">Self-Diagnosis & Research</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>10,000 results saying different things</span>
+                <span>Cabinet full of half-used supplements</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>Hours of research, still no clarity</span>
+                <span>Start and quit multiple protocols within weeks</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>Contradictory advice from "experts"</span>
+                <span>Spend hours researching but never commit</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>More confused than when you started</span>
+                <span>Analysis paralysis from conflicting information</span>
               </li>
             </ul>
           </motion.div>
