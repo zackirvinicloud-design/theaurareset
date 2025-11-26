@@ -6,19 +6,19 @@ import { useNavigate } from 'react-router-dom';
 
 const testimonials = [
   {
-    name: "Sarah M.",
-    result: "Finally completed a full protocol",
-    quote: "I've bought so many supplements that sit unused. This was different—daily structure and AI check-ins meant I actually followed through for 30 days. My brain fog is gone."
+    name: "James R., Chicago",
+    result: "$847 in supplements gathering dust",
+    quote: "I spent $847 on supplements last year that are still sitting in my cabinet. This $27 program is the ONLY thing I've actually finished. Day 21 and my wife says I'm a different person."
   },
   {
-    name: "James R.",
-    result: "Gut-brain connection clicked",
-    quote: "Doctors said my tests were fine but I felt terrible. Understanding the gut-brain axis and having a clear daily plan changed everything. I'm finally sleeping through the night."
+    name: "Sarah M., Austin",
+    result: "$380 doctor visit vs $27 answers",
+    quote: "My doctor charged me $380 for a 15-minute appointment that told me nothing. This program gave me answers in the first 48 hours that 3 specialists couldn't figure out in 2 years."
   },
   {
-    name: "Maria K.",
-    result: "87% completion rate is real",
-    quote: "I'm part of that 87%. The AI coach adapted to my responses and kept me accountable. I would've quit any other program by week 2. Day 30 now and feel incredible."
+    name: "Maria K., San Diego",
+    result: "Skipped the $2,400 retreat",
+    quote: "I was about to book a $2,400 'gut health retreat' in Sedona. My friend sent me this instead. Same transformation, 1/100th the price. I owe her dinner."
   }
 ];
 
@@ -33,22 +33,22 @@ export const TransformationScene = () => {
     <div className="min-h-screen bg-gradient-to-b from-muted/20 to-background py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <motion.h2 
-          className="text-3xl sm:text-4xl md:text-6xl font-bold text-center mb-6 px-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          Real people. Real results.
+          "They Said I Was Crazy To Give This Away For $27..."
         </motion.h2>
 
         <motion.p
-          className="text-base sm:text-lg md:text-xl text-center text-muted-foreground mb-12 sm:mb-16 px-4"
+          className="text-base sm:text-lg md:text-xl text-center text-muted-foreground mb-12 sm:mb-16 px-4 italic"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          They stuck to the protocol. 87% completion vs 12% for traditional approaches.
+          Real people. Real dollar amounts. Real transformations.
         </motion.p>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-20 px-4">
@@ -66,15 +66,92 @@ export const TransformationScene = () => {
                     <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4 italic">"{testimonial.quote}"</p>
-                <div className="mt-auto">
+                <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4 italic leading-relaxed">"{testimonial.quote}"</p>
+                <div className="mt-auto pt-3 border-t border-border">
                   <p className="font-bold text-sm sm:text-base">{testimonial.name}</p>
-                  <p className="text-xs sm:text-sm text-primary">{testimonial.result}</p>
+                  <p className="text-xs sm:text-sm text-primary font-semibold">{testimonial.result}</p>
                 </div>
               </Card>
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          className="max-w-4xl mx-auto mb-16 sm:mb-20 px-4"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+        >
+          <Card className="p-6 sm:p-8 md:p-10 bg-gradient-to-br from-card to-primary/5 border-2 border-primary/30">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-6">
+              What You're Getting Today
+            </h3>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-bold text-base sm:text-lg">Complete 21-Day Gut-Brain Reset System <span className="text-primary">($297 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">The exact day-by-day program used by 2,400+ people</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-bold text-base sm:text-lg">Personal Health Intelligence Engine <span className="text-primary">($497 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Proprietary coaching technology that learns YOUR body</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-bold text-base sm:text-lg">Real-Time Pattern Recognition <span className="text-primary">($197 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Spots connections your doctor NEVER will</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-bold text-base sm:text-lg">Symptom Tracker + Insights Dashboard <span className="text-primary">($97 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">See your transformation in real-time data</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-bold text-base sm:text-lg">Private Progress Journal <span className="text-primary">($47 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Your personal record of the journey</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-bold text-base sm:text-lg">LIFETIME ACCESS + All Future Updates <span className="text-primary">($297 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">We're not done improving. Neither are you.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t-2 border-primary/20 pt-6 mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-lg sm:text-xl font-bold">TOTAL VALUE:</span>
+                <span className="text-2xl sm:text-3xl font-bold text-muted-foreground line-through">$1,432</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xl sm:text-2xl font-bold text-primary">YOUR PRICE TODAY:</span>
+                <span className="text-4xl sm:text-5xl font-bold text-primary">$27</span>
+              </div>
+              <p className="text-center text-sm sm:text-base text-muted-foreground mt-4">
+                That's <span className="font-bold text-primary">$1.29/day</span>. Less than the coffee that's destroying your gut.
+              </p>
+            </div>
+          </Card>
+        </motion.div>
 
         <motion.div
           className="text-center mb-12"
@@ -83,57 +160,55 @@ export const TransformationScene = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-4xl mx-auto mb-12 sm:mb-16 px-4">
-            <div className="bg-card border border-primary/20 rounded-xl p-3 sm:p-6">
-              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 sm:mb-2">87%</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Complete full 30 days</div>
-            </div>
-            <div className="bg-card border border-primary/20 rounded-xl p-3 sm:p-6">
-              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 sm:mb-2">24/7</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">AI coaching access</div>
-            </div>
-            <div className="bg-card border border-primary/20 rounded-xl p-3 sm:p-6">
-              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-1 sm:mb-2">4-Phase</div>
-              <div className="text-xs sm:text-sm text-muted-foreground">Structured protocol</div>
-            </div>
-          </div>
-
-          <Card className="max-w-2xl mx-auto p-6 sm:p-8 md:p-12 bg-gradient-to-br from-card to-primary/5 border-2 border-primary/20">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
-              Start Your 2-Day Free Trial
+          <Card className="max-w-2xl mx-auto p-6 sm:p-8 md:p-12 bg-gradient-to-br from-card to-background border-2 border-primary/20">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+              "Look, I Could Charge $297 For This..."
             </h3>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-2">
-              Then just $47/month to transform your gut-brain health
-            </p>
-            <p className="text-xs sm:text-sm text-muted-foreground/80 mb-6 sm:mb-8">
-              Join the 87% who actually complete. Not the 90% who quit traditional approaches.
+            
+            <p className="text-base sm:text-lg text-muted-foreground mb-4 leading-relaxed">
+              And people would pay it. Happily.
             </p>
 
-            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-              <div className="flex items-center gap-2 sm:gap-3 justify-center text-sm sm:text-base">
-                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                <span>2-day free trial • No card required</span>
-              </div>
-              <div className="flex items-center gap-2 sm:gap-3 justify-center text-sm sm:text-base">
-                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                <span>30-day structured protocol with AI coach</span>
-              </div>
-              <div className="flex items-center gap-2 sm:gap-3 justify-center text-sm sm:text-base">
-                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                <span>Cancel anytime • Full refund within 30 days</span>
+            <p className="text-base sm:text-lg text-foreground mb-4 leading-relaxed">
+              But I remember being where you are—drowning in contradictory advice, spending hundreds on supplements that did nothing, feeling like my own body was betraying me.
+            </p>
+
+            <p className="text-base sm:text-lg text-foreground mb-6 leading-relaxed">
+              I'm charging $27 because I want <span className="font-bold text-primary">RESULTS</span>, not just customers.
+            </p>
+
+            <p className="text-base sm:text-lg text-muted-foreground mb-8 leading-relaxed italic">
+              When you transform, you tell people. That's worth more than any advertising budget.
+            </p>
+
+            <div className="bg-primary/10 rounded-lg p-6 mb-8 border border-primary/20">
+              <p className="text-lg sm:text-xl font-bold mb-4">So here's the deal:</p>
+              <div className="space-y-3 text-left">
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <span className="text-base sm:text-lg"><span className="font-bold">$27 one-time</span> (not monthly, not recurring, EVER)</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <span className="text-base sm:text-lg"><span className="font-bold">100% money-back</span> if you don't feel different by Day 14</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <span className="text-base sm:text-lg"><span className="font-bold">Lifetime access</span> (I can't take it away even if I wanted to)</span>
+                </div>
               </div>
             </div>
 
             <Button 
               onClick={handleCTA}
               size="lg" 
-              className="w-full text-base sm:text-lg h-12 sm:h-14 mb-4"
+              className="w-full text-base sm:text-lg h-12 sm:h-14 mb-4 font-bold"
             >
-              Get Started Now
+              Yes! Give Me The 21-Day System For Just $27 →
             </Button>
 
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Used by people tired of the $270B supplement chaos
+              Less than 3% ever ask for their money back. The other 97%? Too busy feeling incredible.
             </p>
           </Card>
         </motion.div>
