@@ -59,40 +59,6 @@ export const ProblemScene = () => {
 
         <div className="grid md:grid-cols-2 gap-8 mb-20">
           <motion.div 
-            style={{ y: chatGptY }}
-            className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
-          >
-            <div className="absolute top-4 right-4">
-              <X className="w-8 h-8 text-destructive" strokeWidth={3} />
-            </div>
-            <Stethoscope className="w-12 h-12 mb-4 text-destructive" />
-            <h3 className="text-2xl font-bold mb-2 text-destructive">Traditional Medicine</h3>
-            <p className="text-sm text-muted-foreground mb-4 italic">The $200-$400/visit humiliation factory</p>
-            <ul className="space-y-4 text-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">"Your labs are perfect."</span> But you can't sleep. Can't focus. Can't remember the last time you felt GOOD. They send you home with nothing.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">$380 later</span>, you get 12 minutes of nodding and a prescription that makes you MORE tired. No mention of your gut. Not once.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">"Try stress management."</span> THAT'S the advice? You KNOW something is wrong but they can't find it in their precious tests.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">The gut-brain axis?</span> They've never heard of it. Or they don't care. Either way, you're walking out more confused and poorer than when you walked in.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight font-semibold text-destructive">You leave feeling dismissed, gaslit, and wondering if it's "all in your head." (Spoiler: It's in your gut.)</span>
-              </li>
-            </ul>
-          </motion.div>
-
-          <motion.div 
             style={{ y: googleY }}
             className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
           >
@@ -126,6 +92,44 @@ export const ProblemScene = () => {
               <li className="flex items-start gap-2">
                 <DollarSign className="w-5 h-5 text-destructive mt-1 flex-shrink-0" />
                 <span className="leading-tight font-semibold text-destructive">Add it up. Go ahead. Every bottle. Every "this is the one" moment. It's not dozens. It's HUNDREDS. Maybe thousands. And you're still here.</span>
+              </li>
+            </ul>
+          </motion.div>
+
+          <motion.div 
+            style={{ y: chatGptY }}
+            className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
+          >
+            <div className="absolute top-4 right-4">
+              <X className="w-8 h-8 text-destructive" strokeWidth={3} />
+            </div>
+            <Stethoscope className="w-12 h-12 mb-4 text-destructive" />
+            <h3 className="text-2xl font-bold mb-2 text-destructive">Traditional Medicine</h3>
+            <p className="text-sm text-muted-foreground mb-4 italic">They profit when you stay sick</p>
+            <ul className="space-y-4 text-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">"Everything came back normal."</span> But you can't sleep. Can't focus. Can't remember the last time you felt GOOD. They send you home with nothing. Because normal labs = no billable treatment.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">$380 later</span>, you get 12 minutes and a prescription for an antidepressant or PPI. Big Pharma gets paid. Your gut gets worse. You come back in 3 months. Repeat.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">They don't get paid to cure you.</span> They get paid per visit, per prescription, per test. A healthy patient is a lost customer. There's no financial incentive to fix the ROOT cause.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">The gut-brain connection?</span> Not in their medical school curriculum. Not in the insurance playbook. Not profitable for pharma companies selling symptom-masking pills for life.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">"Have you tried therapy?"</span> Translation: "We don't know what's wrong, but we're not going to admit it. Here's a $150/session referral. See you in 6 months when you're worse."</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight font-semibold text-destructive">You leave feeling dismissed, gaslit, and wondering if it's "all in your head." (It's not. It's in your gut. They just don't get paid to look there.)</span>
               </li>
             </ul>
           </motion.div>
