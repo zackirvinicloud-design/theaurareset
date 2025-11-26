@@ -1,9 +1,16 @@
 import { motion } from 'framer-motion';
 import { Calendar, Brain, Target } from 'lucide-react';
+import { useLazyLoad } from '@/hooks/useLazyLoad';
 
 export const JournalIntroScene = () => {
+  const { ref, isVisible } = useLazyLoad({ threshold: 0.1 });
+
+  if (!isVisible) {
+    return <div ref={ref} className="min-h-screen bg-background py-20 px-4" />;
+  }
+
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
+    <div ref={ref} className="min-h-screen bg-background py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <motion.div 
           className="text-center mb-12"

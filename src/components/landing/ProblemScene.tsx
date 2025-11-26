@@ -1,9 +1,11 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Stethoscope, ShoppingCart, X } from 'lucide-react';
+import { useLazyLoad } from '@/hooks/useLazyLoad';
 
 export const ProblemScene = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const { isVisible } = useLazyLoad({ threshold: 0.1 });
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -11,6 +13,10 @@ export const ProblemScene = () => {
 
   const chatGptY = useTransform(scrollYProgress, [0, 0.5], [100, 0]);
   const googleY = useTransform(scrollYProgress, [0, 0.5], [-100, 0]);
+
+  if (!isVisible) {
+    return <div className="min-h-screen bg-background py-20 px-4" />;
+  }
 
   return (
     <div ref={ref} className="min-h-screen bg-background py-20 px-4">

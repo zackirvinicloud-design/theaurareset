@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useLazyLoad } from '@/hooks/useLazyLoad';
 
 const noisyAdvice = [
   "$270 billion market", "Try probiotics", "Eliminate gluten", 
@@ -10,8 +11,10 @@ const noisyAdvice = [
 ];
 
 export const NoiseScene = () => {
+  const { ref, isVisible } = useLazyLoad({ threshold: 0.1, rootMargin: '100px' });
+
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-background to-muted/20">
+    <div ref={ref} className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-background to-muted/20">
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center space-y-8 z-10 px-4">
           <motion.div
@@ -43,8 +46,9 @@ export const NoiseScene = () => {
         </div>
         
         {/* Floating chaotic text - reduced count on mobile */}
-        <div className="absolute inset-0 opacity-20 hidden sm:block">
-          {noisyAdvice.map((text, i) => (
+        {isVisible && (
+          <div className="absolute inset-0 opacity-20 hidden sm:block">
+            {noisyAdvice.map((text, i) => (
             <motion.div
               key={i}
               className="absolute text-sm md:text-base font-medium text-muted-foreground whitespace-nowrap"
@@ -73,10 +77,12 @@ export const NoiseScene = () => {
               {text}
             </motion.div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Simplified mobile version */}
-        <div className="absolute inset-0 opacity-10 sm:hidden">
+        {isVisible && (
+          <div className="absolute inset-0 opacity-10 sm:hidden">
           {noisyAdvice.slice(0, 8).map((text, i) => (
             <motion.div
               key={i}
@@ -104,7 +110,8 @@ export const NoiseScene = () => {
               {text}
             </motion.div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
