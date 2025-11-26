@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 
 const noisyAdvice = [
-  "Try keto", "No, go vegan", "Intermittent fasting", 
-  "Eat every 2 hours", "Carbs are bad", "Fat is the enemy",
-  "Gluten-free", "Paleo diet", "Raw food only",
-  "Juice cleanse", "Detox tea", "Supplement stack",
-  "Count calories", "Don't count calories", "Low-carb high-fat",
-  "High-carb low-fat", "Eat more protein", "Less protein"
+  "$270 billion market", "Try probiotics", "Eliminate gluten", 
+  "Carnivore diet", "More fiber", "Less fiber",
+  "Detox cleanse", "Raw foods", "Fermented foods",
+  "Keto for gut health", "Veganism heals", "Bone broth protocol",
+  "Supplement stacks", "Parasite cleanse", "Candida diet",
+  "SIBO treatment", "Low FODMAP", "Prebiotic foods"
 ];
 
 export const NoiseScene = () => {
@@ -14,21 +14,31 @@ export const NoiseScene = () => {
     <div className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-background to-muted/20">
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center space-y-8 z-10 px-4">
+          <motion.div
+            className="text-sm md:text-base text-primary font-semibold mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            The $270 Billion Gut Health Industry
+          </motion.div>
+          
           <motion.h1 
             className="text-5xl md:text-7xl font-bold text-foreground"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            The Noise
+            Everyone's Talking
           </motion.h1>
+          
           <motion.p 
             className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            Endless conflicting advice. No clear answers.
+            But nobody's showing you exactly what to do—and when.
           </motion.p>
         </div>
         

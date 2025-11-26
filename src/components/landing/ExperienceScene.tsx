@@ -4,32 +4,32 @@ import { Check, X } from 'lucide-react';
 
 const comparisons = [
   {
-    feature: "Structured daily protocol (not just advice)",
+    feature: "Day-by-day structured protocol (Phases 1-4)",
     others: false,
     us: true
   },
   {
-    feature: "Built-in accountability system",
+    feature: "AI coach that tracks YOUR patterns",
     others: false,
     us: true
   },
   {
-    feature: "Personalized progression plan",
+    feature: "Built-in daily accountability check-ins",
     others: false,
     us: true
   },
   {
-    feature: "Knows what you should do TODAY",
+    feature: "Adapts to your unique symptoms in real-time",
     others: false,
     us: true
   },
   {
-    feature: "Tracks your patterns over time",
+    feature: "87% completion rate (vs 12% DIY)",
     others: false,
     us: true
   },
   {
-    feature: "One clear path (not decision paralysis)",
+    feature: "Combines gut-brain science + AI coaching",
     others: false,
     us: true
   }
@@ -93,9 +93,12 @@ export const ExperienceScene = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <p className="text-xl md:text-2xl text-muted-foreground italic">
-            "Information doesn't change behavior. Structure and accountability do."
-          </p>
+          <div className="bg-card border border-primary/20 rounded-xl p-6 max-w-2xl mx-auto">
+            <p className="text-2xl font-bold text-primary mb-2">The Science</p>
+            <p className="text-lg text-muted-foreground">
+              90% of serotonin is produced in your gut. Your gut-brain axis controls mood, energy, immunity, and inflammation. We're not selling supplements—we're providing the structured path to optimize this connection.
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>
