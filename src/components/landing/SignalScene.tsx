@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { Zap } from 'lucide-react';
+import { Brain } from 'lucide-react';
 
 export const SignalScene = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -19,19 +19,20 @@ export const SignalScene = () => {
         className="text-center space-y-8 max-w-4xl"
       >
         <motion.div
-          initial={{ rotate: 0 }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, ease: "easeInOut" }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <Zap className="w-20 h-20 md:w-32 md:h-32 mx-auto text-primary" />
+          <Brain className="w-20 h-20 md:w-32 md:h-32 mx-auto text-primary" />
         </motion.div>
         
         <h2 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-          What if there was a signal?
+          Your gut knows
         </h2>
         
         <p className="text-xl md:text-3xl text-foreground font-light">
-          One clear path. One voice. One journal that actually remembers.
+          90% of your serotonin is made in your gut.<br />
+          The gut-brain axis is real. The confusion ends here.
         </p>
 
         <motion.div
@@ -41,11 +42,11 @@ export const SignalScene = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <p className="text-2xl md:text-4xl font-bold text-primary">
-            Cut through the noise.
+          <p className="text-2xl md:text-4xl font-bold text-primary mb-2">
+            Cut through the $270 billion noise.
           </p>
           <p className="text-2xl md:text-4xl font-bold text-primary">
-            Finally, a signal.
+            Finally, a clear signal.
           </p>
         </motion.div>
       </motion.div>
