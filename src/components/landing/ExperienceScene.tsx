@@ -1,7 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Check, X } from 'lucide-react';
-import { useLazyLoad } from '@/hooks/useLazyLoad';
 
 const comparisons = [
   {
@@ -38,17 +37,12 @@ const comparisons = [
 
 export const ExperienceScene = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const { isVisible } = useLazyLoad({ threshold: 0.1 });
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
-
-  if (!isVisible) {
-    return <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-20 px-4" />;
-  }
 
   return (
     <div ref={ref} className="min-h-screen bg-gradient-to-b from-background to-muted/20 py-20 px-4">

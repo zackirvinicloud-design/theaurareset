@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Check, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useLazyLoad } from '@/hooks/useLazyLoad';
 
 const testimonials = [
   {
@@ -25,18 +24,13 @@ const testimonials = [
 
 export const TransformationScene = () => {
   const navigate = useNavigate();
-  const { ref, isVisible } = useLazyLoad({ threshold: 0.1 });
 
   const handleCTA = () => {
     navigate('/signup');
   };
 
-  if (!isVisible) {
-    return <div ref={ref} className="min-h-screen bg-gradient-to-b from-muted/20 to-background py-20 px-4" />;
-  }
-
   return (
-    <div ref={ref} className="min-h-screen bg-gradient-to-b from-muted/20 to-background py-20 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-muted/20 to-background py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <motion.h2 
           className="text-3xl sm:text-4xl md:text-6xl font-bold text-center mb-6 px-4"
