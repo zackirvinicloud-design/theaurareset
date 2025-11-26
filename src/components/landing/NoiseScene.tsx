@@ -1,0 +1,70 @@
+import { motion } from 'framer-motion';
+
+const noisyAdvice = [
+  "Try keto", "No, go vegan", "Intermittent fasting", 
+  "Eat every 2 hours", "Carbs are bad", "Fat is the enemy",
+  "Gluten-free", "Paleo diet", "Raw food only",
+  "Juice cleanse", "Detox tea", "Supplement stack",
+  "Count calories", "Don't count calories", "Low-carb high-fat",
+  "High-carb low-fat", "Eat more protein", "Less protein"
+];
+
+export const NoiseScene = () => {
+  return (
+    <div className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-background to-muted/20">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-center space-y-8 z-10 px-4">
+          <motion.h1 
+            className="text-5xl md:text-7xl font-bold text-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            The Noise
+          </motion.h1>
+          <motion.p 
+            className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            Endless conflicting advice. No clear answers.
+          </motion.p>
+        </div>
+        
+        {/* Floating chaotic text */}
+        <div className="absolute inset-0 opacity-20">
+          {noisyAdvice.map((text, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-sm md:text-base font-medium text-muted-foreground whitespace-nowrap"
+              initial={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+              }}
+              animate={{
+                x: [
+                  Math.random() * window.innerWidth,
+                  Math.random() * window.innerWidth,
+                  Math.random() * window.innerWidth,
+                ],
+                y: [
+                  Math.random() * window.innerHeight,
+                  Math.random() * window.innerHeight,
+                  Math.random() * window.innerHeight,
+                ],
+              }}
+              transition={{
+                duration: 15 + Math.random() * 10,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              {text}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
