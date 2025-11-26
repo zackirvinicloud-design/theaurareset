@@ -121,18 +121,18 @@ const PaymentRequired = () => {
             </div>
           </div>
 
-          {/* Guarantee */}
+          {/* Free Trial Section */}
           <div className="bg-primary/5 border-2 border-primary/30 rounded-lg p-6">
-            <p className="text-xl font-bold text-center mb-4">My "You'd Have To Be An Idiot Not To Try This" Guarantee:</p>
+            <p className="text-xl font-bold text-center mb-4">Why Would I Give You 2 Days FREE?</p>
             <div className="space-y-3 text-sm sm:text-base text-muted-foreground">
-              <p>Go through the first 14 days.</p>
-              <p>If you don't feel a noticeable difference—if your energy isn't better, if your sleep isn't improving, if you're not finally understanding YOUR body's patterns...</p>
-              <p className="font-bold text-foreground">Email me. I'll refund every penny. No questions. No hassle. No hard feelings.</p>
+              <p className="text-foreground">Because I remember what you're feeling right now. The hesitation. The "I've been burned before" voice in your head.</p>
+              <p className="font-bold text-foreground">So try it. For free. For 2 full days.</p>
+              <p>See the structure. Talk to the coaching system. Log your first day. Feel what it's like to have something ACTUALLY guiding you.</p>
               <p className="text-center font-semibold text-foreground pt-4 border-t border-primary/20">
-                I've done this for 2,400+ people. Less than 3% ever ask for their money back.
+                If you don't want to continue after 2 days? Walk away. No charge. No questions.
               </p>
-              <p className="text-center italic">
-                The other 97%? They're too busy feeling incredible to remember they ever doubted this.
+              <p className="text-center italic text-primary font-semibold">
+                But 87% of people who start the free trial finish all 21 days. Because it works.
               </p>
             </div>
           </div>
@@ -140,7 +140,7 @@ const PaymentRequired = () => {
           {/* CTA */}
           <div className="text-center">
             <p className="text-base sm:text-lg font-semibold text-foreground mb-6">
-              Click below. Complete purchase in 2 minutes. Start transforming your life in 21 days.
+              Start your 2-day FREE trial. No card required. Then just $27 one-time if you love it.
             </p>
             <Button
               size="lg"
@@ -149,14 +149,14 @@ const PaymentRequired = () => {
                 window.open("YOUR_PAYMENT_LINK_HERE", "_blank");
               }}
             >
-              Yes! Give Me The 21-Day System For Just $27 (Save $1,358)
+              Yes! Start My FREE 2-Day Trial Now →
               <ExternalLink className="ml-2 w-5 h-5" />
             </Button>
             <p className="text-xs sm:text-sm text-muted-foreground mt-4">
-              ✓ 100% Money-Back Guarantee • ✓ Secure Payment • ✓ ONE-TIME Payment • ✓ NO Subscriptions
+              ✓ 2-Day FREE Trial • ✓ No Card Required • ✓ Then Just $27 One-Time • ✓ NO Subscriptions
             </p>
             <p className="text-xs sm:text-sm text-primary font-bold mt-3">
-              Lifetime Access • Less Than 3% Refund Rate
+              Lifetime Access • 87% Complete All 21 Days
             </p>
           </div>
         </CardContent>
