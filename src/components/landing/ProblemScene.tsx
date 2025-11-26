@@ -37,19 +37,19 @@ export const ProblemScene = () => {
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>Forgets your conversation after you close the tab</span>
+                <span>Gives you information, but no structure to follow</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>No follow-up, no accountability</span>
+                <span>No daily check-ins or accountability system</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>Generic advice that doesn't adapt to YOUR journey</span>
+                <span>You close the tab and forget what you learned</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1">•</span>
-                <span>You're just another prompt in the void</span>
+                <span>Still stuck figuring out what to do next</span>
               </li>
             </ul>
           </motion.div>
@@ -84,17 +84,17 @@ export const ProblemScene = () => {
           </motion.div>
         </div>
 
-        <motion.div 
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-        >
-          <p className="text-2xl md:text-3xl text-muted-foreground italic">
-            "Just one more article and I'll figure it out..."
-          </p>
-        </motion.div>
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <p className="text-2xl md:text-3xl text-muted-foreground italic">
+              "I have all the information... but I still don't know what to actually DO."
+            </p>
+          </motion.div>
       </div>
     </div>
   );
