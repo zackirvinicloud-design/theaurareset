@@ -16,7 +16,7 @@ export const JournalIntroScene = () => {
             The Gut Brain Journal
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-4 px-4">
-            The only protocol combining gut-brain science with AI coaching
+            The only program combining gut-brain science with advanced intelligent coaching
           </p>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
             You understand the gut-brain connection matters. But knowing isn't enough—you need a structured, personalized path forward. That's exactly what we built.
@@ -32,12 +32,12 @@ export const JournalIntroScene = () => {
             transition={{ delay: 0.1 }}
           >
             <Calendar className="w-10 h-10 sm:w-12 sm:h-12 mb-4 text-primary" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-3">30-Day Structured Protocol</h3>
+            <h3 className="text-xl sm:text-2xl font-bold mb-3">21-Day Structured Program</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Not random advice. A scientifically-designed protocol that tells you exactly what to do each day. Phase 1-4 progression proven to work.
+              Not random advice. A scientifically-designed program that tells you exactly what to do each day. Phase 1-4 progression proven to work.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
-              87% complete the full protocol vs 12% for DIY approaches
+              87% complete the full program vs 12% for DIY approaches
             </div>
           </motion.div>
 
@@ -49,9 +49,9 @@ export const JournalIntroScene = () => {
             transition={{ delay: 0.2 }}
           >
             <Brain className="w-10 h-10 sm:w-12 sm:h-12 mb-4 text-primary" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-3">24/7 AI Health Coach</h3>
+            <h3 className="text-xl sm:text-2xl font-bold mb-3">24/7 Intelligent Coaching System</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Part of the $188 billion AI health revolution. Your coach tracks your patterns, answers questions instantly, and adapts to YOUR unique responses.
+              Powered by proprietary technology that learns your unique patterns, answers questions instantly, and adapts to YOUR individual responses in real-time.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
               Continuous personalized guidance doctors can't provide
@@ -87,7 +87,7 @@ export const JournalIntroScene = () => {
             "The gut health market is worth $270 billion, but completion rates for traditional approaches are under 15%."
           </p>
           <p className="text-base sm:text-lg font-semibold text-primary">
-            Structure + AI Accountability = 87% Completion Rate
+            Structure + Intelligent Accountability = 87% Completion Rate
           </p>
         </motion.div>
       </div>

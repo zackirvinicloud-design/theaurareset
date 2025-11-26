@@ -4,12 +4,12 @@ import { Check, X } from 'lucide-react';
 
 const comparisons = [
   {
-    feature: "Day-by-day structured protocol (Phases 1-4)",
+    feature: "Day-by-day structured program (Phases 1-4)",
     others: false,
     us: true
   },
   {
-    feature: "AI coach that tracks YOUR patterns",
+    feature: "Intelligent coaching system that tracks YOUR patterns",
     others: false,
     us: true
   },
@@ -29,7 +29,7 @@ const comparisons = [
     us: true
   },
   {
-    feature: "Combines gut-brain science + AI coaching",
+    feature: "Combines gut-brain science + intelligent coaching",
     others: false,
     us: true
   }
