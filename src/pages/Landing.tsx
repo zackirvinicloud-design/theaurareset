@@ -16,24 +16,29 @@ const Landing = () => {
       {/* Fixed Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <span className="text-base sm:text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 The Gut Brain Journal
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Button 
                 variant="ghost" 
                 onClick={() => navigate('/auth')}
+                size="sm"
+                className="text-sm sm:text-base"
               >
                 Sign In
               </Button>
               <Button 
                 onClick={() => navigate('/signup')}
-                className="gap-2"
+                className="gap-1 sm:gap-2"
+                size="sm"
               >
-                Get Started <ArrowRight className="w-4 h-4" />
+                <span className="hidden sm:inline">Get Started</span>
+                <span className="sm:hidden">Start</span>
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </div>
           </div>

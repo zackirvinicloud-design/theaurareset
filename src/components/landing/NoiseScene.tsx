@@ -24,7 +24,7 @@ export const NoiseScene = () => {
           </motion.div>
           
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold text-foreground"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold text-foreground px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -33,7 +33,7 @@ export const NoiseScene = () => {
           </motion.h1>
           
           <motion.p 
-            className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto"
+            className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -42,8 +42,8 @@ export const NoiseScene = () => {
           </motion.p>
         </div>
         
-        {/* Floating chaotic text */}
-        <div className="absolute inset-0 opacity-20">
+        {/* Floating chaotic text - reduced count on mobile */}
+        <div className="absolute inset-0 opacity-20 hidden sm:block">
           {noisyAdvice.map((text, i) => (
             <motion.div
               key={i}
@@ -66,6 +66,37 @@ export const NoiseScene = () => {
               }}
               transition={{
                 duration: 15 + Math.random() * 10,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              {text}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Simplified mobile version */}
+        <div className="absolute inset-0 opacity-10 sm:hidden">
+          {noisyAdvice.slice(0, 8).map((text, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-xs font-medium text-muted-foreground whitespace-nowrap"
+              initial={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+              }}
+              animate={{
+                x: [
+                  Math.random() * window.innerWidth,
+                  Math.random() * window.innerWidth,
+                ],
+                y: [
+                  Math.random() * window.innerHeight,
+                  Math.random() * window.innerHeight,
+                ],
+              }}
+              transition={{
+                duration: 20,
                 repeat: Infinity,
                 ease: "linear"
               }}

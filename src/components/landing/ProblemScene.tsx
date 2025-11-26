@@ -29,7 +29,7 @@ export const ProblemScene = () => {
         </motion.div>
 
         <motion.h2 
-          className="text-4xl md:text-6xl font-bold text-center mb-4"
+          className="text-3xl sm:text-4xl md:text-6xl font-bold text-center mb-4 px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -38,7 +38,7 @@ export const ProblemScene = () => {
         </motion.h2>
 
         <motion.p
-          className="text-xl text-center text-muted-foreground mb-16 max-w-3xl mx-auto"
+          className="text-base sm:text-lg md:text-xl text-center text-muted-foreground mb-12 sm:mb-16 max-w-3xl mx-auto px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -108,17 +108,17 @@ export const ProblemScene = () => {
         </div>
 
         <motion.div 
-          className="text-center bg-muted/30 rounded-2xl p-8"
+          className="text-center bg-muted/30 rounded-2xl p-6 sm:p-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
         >
-          <p className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">
             The real problem isn't information
           </p>
-          <p className="text-xl text-muted-foreground">
-            You know gut health matters. You've read about the gut-brain axis. <br />
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
+            You know gut health matters. You've read about the gut-brain axis. <br className="hidden sm:block" />
             What you need is structure, personalization, and accountability to actually <span className="font-semibold text-foreground">complete</span> a protocol.
           </p>
         </motion.div>
