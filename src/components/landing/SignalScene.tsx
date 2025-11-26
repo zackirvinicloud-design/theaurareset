@@ -26,26 +26,26 @@ export const SignalScene = () => {
           <Brain className="w-20 h-20 md:w-32 md:h-32 mx-auto text-primary" />
         </motion.div>
         
-        <h2 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+        <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent px-4">
           Your gut knows
         </h2>
         
-        <p className="text-xl md:text-3xl text-foreground font-light">
+        <p className="text-lg sm:text-xl md:text-3xl text-foreground font-light px-4">
           90% of your serotonin is made in your gut.<br />
           The gut-brain axis is real. The confusion ends here.
         </p>
 
         <motion.div
-          className="pt-8"
+          className="pt-8 px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
         >
-          <p className="text-2xl md:text-4xl font-bold text-primary mb-2">
+          <p className="text-xl sm:text-2xl md:text-4xl font-bold text-primary mb-2">
             Cut through the $270 billion noise.
           </p>
-          <p className="text-2xl md:text-4xl font-bold text-primary">
+          <p className="text-xl sm:text-2xl md:text-4xl font-bold text-primary">
             Finally, a clear signal.
           </p>
         </motion.div>
