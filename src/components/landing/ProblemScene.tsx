@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
-import { Stethoscope, ShoppingCart, X } from 'lucide-react';
+import { Stethoscope, ShoppingCart, X, DollarSign } from 'lucide-react';
 
 export const ProblemScene = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,7 +23,7 @@ export const ProblemScene = () => {
         >
           <div className="inline-block px-4 py-2 bg-destructive/10 rounded-full mb-4">
             <span className="text-sm font-semibold text-destructive">
-              Over 90% of people quit within 2 weeks
+              90% quit within 2 weeks • You've been one of them
             </span>
           </div>
         </motion.div>
@@ -34,92 +34,135 @@ export const ProblemScene = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          You've been here before
+          How Much Money Have You Already Thrown Away?
         </motion.h2>
 
         <motion.p
-          className="text-base sm:text-lg md:text-xl text-center text-muted-foreground mb-12 sm:mb-16 max-w-3xl mx-auto px-4"
+          className="text-base sm:text-lg md:text-xl text-center text-destructive font-semibold mb-2 max-w-3xl mx-auto px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          Stuck in the cycle between medical dead-ends and supplement graveyard
+          $500? $1,200? $3,000? More?
+        </motion.p>
+
+        <motion.p
+          className="text-base sm:text-lg text-center text-muted-foreground mb-12 sm:mb-16 max-w-3xl mx-auto px-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3 }}
+        >
+          You know the exact number. It makes you sick every time you think about it.
         </motion.p>
 
         <div className="grid md:grid-cols-2 gap-8 mb-20">
           <motion.div 
             style={{ y: chatGptY }}
-            className="relative p-8 rounded-2xl border-2 border-destructive/20 bg-card"
+            className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
           >
             <div className="absolute top-4 right-4">
-              <X className="w-6 h-6 text-destructive" />
+              <X className="w-8 h-8 text-destructive" strokeWidth={3} />
             </div>
-            <Stethoscope className="w-12 h-12 mb-4 text-muted-foreground" />
-            <h3 className="text-2xl font-bold mb-4">Traditional Medicine</h3>
-            <ul className="space-y-3 text-muted-foreground">
+            <Stethoscope className="w-12 h-12 mb-4 text-destructive" />
+            <h3 className="text-2xl font-bold mb-2 text-destructive">Traditional Medicine</h3>
+            <p className="text-sm text-muted-foreground mb-4 italic">The $200-$400/visit humiliation factory</p>
+            <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>"Your bloodwork is normal" but you still feel awful</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">"Your labs are perfect."</span> But you can't sleep. Can't focus. Can't remember the last time you felt GOOD. They send you home with nothing.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>15-minute appointments, zero gut-brain education</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">$380 later</span>, you get 12 minutes of nodding and a prescription that makes you MORE tired. No mention of your gut. Not once.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>Prescription that masks symptoms, not root cause</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">"Try stress management."</span> THAT'S the advice? You KNOW something is wrong but they can't find it in their precious tests.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>Left to figure out the gut connection yourself</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">The gut-brain axis?</span> They've never heard of it. Or they don't care. Either way, you're walking out more confused and poorer than when you walked in.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight font-semibold text-destructive">You leave feeling dismissed, gaslit, and wondering if it's "all in your head." (Spoiler: It's in your gut.)</span>
               </li>
             </ul>
           </motion.div>
 
           <motion.div 
             style={{ y: googleY }}
-            className="relative p-8 rounded-2xl border-2 border-destructive/20 bg-card"
+            className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
           >
             <div className="absolute top-4 right-4">
-              <X className="w-6 h-6 text-destructive" />
+              <X className="w-8 h-8 text-destructive" strokeWidth={3} />
             </div>
-            <ShoppingCart className="w-12 h-12 mb-4 text-muted-foreground" />
-            <h3 className="text-2xl font-bold mb-4">The Supplement Graveyard</h3>
-            <ul className="space-y-3 text-muted-foreground">
+            <ShoppingCart className="w-12 h-12 mb-4 text-destructive" />
+            <h3 className="text-2xl font-bold mb-2 text-destructive">The Supplement Graveyard</h3>
+            <p className="text-sm text-muted-foreground mb-4 italic">Your shame cabinet of $270 billion failure</p>
+            <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>Cabinet full of half-used bottles ($270B market chaos)</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">That probiotic you bought for $68.</span> Sitting there 7 months later, 80% full. You took it for 9 days. You don't even remember why you stopped.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>Brand-hopping every few weeks, no consistency</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">The "gut health stack"</span> the influencer swore by. $147 for 6 bottles. You took them for a week and a half. Felt nothing. Now they mock you every morning.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>Conflicting protocols, zero personalization</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">The new brand</span> you'll try next month. Because THIS time will be different. (It won't. You know it won't. But what else are you supposed to do?)</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span>
-                <span>12% completion rate—you always quit by week 3</span>
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">Zero accountability.</span> No tracking. No structure. Just you, alone, trying to remember if you took 3 pills or 4. You quit by week 3 every single time.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-destructive mt-1 font-bold text-lg">•</span>
+                <span className="leading-tight"><span className="font-bold">Your partner sees the cabinet.</span> They don't say anything. They don't have to. You FEEL the judgment. Another failed attempt. Another waste of money you can't get back.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <DollarSign className="w-5 h-5 text-destructive mt-1 flex-shrink-0" />
+                <span className="leading-tight font-semibold text-destructive">Add it up. Go ahead. Every bottle. Every "this is the one" moment. It's not dozens. It's HUNDREDS. Maybe thousands. And you're still here.</span>
               </li>
             </ul>
           </motion.div>
         </div>
 
         <motion.div 
-          className="text-center bg-muted/30 rounded-2xl p-6 sm:p-8"
+          className="text-center bg-destructive/10 border-2 border-destructive/30 rounded-2xl p-6 sm:p-10 mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
         >
-          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">
-            The real problem isn't information
+          <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-destructive mb-4">
+            You're Not Broken. The System Is.
           </p>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
-            You know gut health matters. You've read about the gut-brain axis. <br className="hidden sm:block" />
-            What you need is structure, personalization, and accountability to actually <span className="font-semibold text-foreground">complete</span> a protocol.
+          <p className="text-base sm:text-lg md:text-xl text-foreground mb-4 leading-relaxed">
+            The doctors won't learn about the gut-brain axis. The supplements can't keep you accountable. The protocols don't adapt to YOU.
+          </p>
+          <p className="text-lg sm:text-xl font-bold text-foreground">
+            So you keep spending. Keep failing. Keep hating yourself for "not having discipline."
+          </p>
+        </motion.div>
+
+        <motion.div 
+          className="text-center bg-primary/10 border-2 border-primary/30 rounded-2xl p-6 sm:p-8"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">
+            It's Not About More Information
+          </p>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
+            You already know gut health matters. You've spent 100+ hours reading about it. <br className="hidden sm:block" />
+            What you actually need: <span className="font-bold text-primary">Structure. Personalization. Accountability.</span><br className="hidden sm:block" />
+            Something that won't let you quit on Day 9.
           </p>
         </motion.div>
       </div>

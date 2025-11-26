@@ -186,11 +186,11 @@ export const TransformationScene = () => {
               <div className="space-y-3 text-left">
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span className="text-base sm:text-lg"><span className="font-bold">$27 one-time</span> (not monthly, not recurring, EVER)</span>
+                  <span className="text-base sm:text-lg"><span className="font-bold">2-day FREE trial</span> — Test drive it before you pay a cent</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span className="text-base sm:text-lg"><span className="font-bold">100% money-back</span> if you don't feel different by Day 14</span>
+                  <span className="text-base sm:text-lg"><span className="font-bold">Then $27 one-time</span> (not monthly, not recurring, EVER)</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
@@ -208,7 +208,7 @@ export const TransformationScene = () => {
             </Button>
 
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Less than 3% ever ask for their money back. The other 97%? Too busy feeling incredible.
+              Try it free for 2 days. See for yourself. Then decide. Zero risk.
             </p>
           </Card>
         </motion.div>
