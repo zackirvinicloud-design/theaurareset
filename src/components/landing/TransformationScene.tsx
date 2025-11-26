@@ -7,18 +7,18 @@ import { useNavigate } from 'react-router-dom';
 const testimonials = [
   {
     name: "Sarah M.",
-    result: "Finally understood my triggers",
-    quote: "After years of Googling and confusion, this gave me one clear path. I'm 3 weeks in and my symptoms are 80% better."
+    result: "Finally stuck to something",
+    quote: "I've tried every diet and supplement stack out there. This was the first time I had a clear structure to follow. No more guessing what to do next."
   },
   {
     name: "James R.",
-    result: "Lost the bloating for good",
-    quote: "ChatGPT couldn't remember what I told it yesterday. This journal knows my entire journey and adapts every day."
+    result: "No more analysis paralysis",
+    quote: "I spent years researching gut health but never committed to anything. Having daily check-ins and a structured protocol made all the difference."
   },
   {
     name: "Maria K.",
-    result: "No more diet confusion",
-    quote: "I tried everything. The accountability here is what made the difference. Someone actually follows up with me."
+    result: "Actually finished a protocol",
+    quote: "I've started and quit so many health programs. The daily accountability kept me going when I would've normally given up by week 2."
   }
 ];
 

@@ -43,9 +43,9 @@ export const JournalIntroScene = () => {
             transition={{ delay: 0.2 }}
           >
             <Brain className="w-12 h-12 mb-4 text-primary" />
-            <h3 className="text-2xl font-bold mb-3">AI That Remembers</h3>
+            <h3 className="text-2xl font-bold mb-3">AI Accountability Partner</h3>
             <p className="text-muted-foreground">
-              Unlike ChatGPT, we remember every conversation. Your journal builds context over time, understanding your patterns and progress.
+              Not just answers—daily check-ins, progress tracking, and personalized guidance. Your journal adapts to YOUR unique responses and keeps you moving forward.
             </p>
           </motion.div>
 

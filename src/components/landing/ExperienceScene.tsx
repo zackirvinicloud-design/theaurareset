@@ -4,32 +4,32 @@ import { Check, X } from 'lucide-react';
 
 const comparisons = [
   {
-    feature: "Remembers your entire health journey",
+    feature: "Structured daily protocol (not just advice)",
     others: false,
     us: true
   },
   {
-    feature: "Daily check-ins and follow-ups",
+    feature: "Built-in accountability system",
     others: false,
     us: true
   },
   {
-    feature: "Structured 30-day protocol",
+    feature: "Personalized progression plan",
     others: false,
     us: true
   },
   {
-    feature: "Adapts based on your responses",
+    feature: "Knows what you should do TODAY",
     others: false,
     us: true
   },
   {
-    feature: "One clear path, not 10,000 results",
+    feature: "Tracks your patterns over time",
     others: false,
     us: true
   },
   {
-    feature: "Accountability that keeps you going",
+    feature: "One clear path (not decision paralysis)",
     others: false,
     us: true
   }
@@ -94,7 +94,7 @@ export const ExperienceScene = () => {
           transition={{ delay: 0.5 }}
         >
           <p className="text-xl md:text-2xl text-muted-foreground italic">
-            "Generic AI gives answers. We give accountability."
+            "Information doesn't change behavior. Structure and accountability do."
           </p>
         </motion.div>
       </div>
