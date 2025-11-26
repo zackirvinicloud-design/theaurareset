@@ -62,7 +62,7 @@ export const ExperienceScene = () => {
         >
           <div className="grid grid-cols-3 gap-4 p-6 bg-muted/50 border-b border-border">
             <div className="text-muted-foreground font-medium">Feature</div>
-            <div className="text-center font-bold">ChatGPT / Google</div>
+            <div className="text-center font-bold">Traditional Approach</div>
             <div className="text-center font-bold text-primary">Gut Brain Journal</div>
           </div>
 
