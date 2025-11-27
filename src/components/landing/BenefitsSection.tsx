@@ -30,10 +30,10 @@ export const BenefitsSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Everything You Need to Heal
+            What You Get for $27
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            A complete system that finally makes gut healing simple, sustainable, and actually effective.
+            Everything you saw on TikTok, plus the complete protocol and unlimited coaching.
           </p>
         </div>
 

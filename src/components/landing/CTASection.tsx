@@ -17,11 +17,11 @@ export const CTASection = () => {
         <Sparkles className="w-12 h-12 text-primary mx-auto mb-6" />
         
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-          Ready to Finally Heal Your Gut?
+          Start Your Transformation Today
         </h2>
         
         <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Stop cycling through conflicting advice. Start your guided 21-day transformation with Journey today—completely free.
+          Journey is ready. Your 21-day protocol is ready. Just $27 to begin.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -30,13 +30,13 @@ export const CTASection = () => {
             onClick={() => navigate('/signup')}
             className="gap-2 text-lg px-8 py-6 w-full sm:w-auto"
           >
-            Start Your Free Trial
+            Get Journey Now - $27
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          No credit card required • 21 days completely free • Cancel anytime
+          One-time payment • Instant access • 30-day guarantee
         </p>
       </motion.div>
     </section>
