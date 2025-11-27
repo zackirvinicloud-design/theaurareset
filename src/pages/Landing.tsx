@@ -29,15 +29,15 @@ const Landing = () => {
                 size="sm"
                 className="text-sm sm:text-base"
               >
-                Sign In
+                Log In
               </Button>
               <Button 
                 onClick={() => navigate('/signup')}
                 className="gap-1 sm:gap-2"
                 size="sm"
               >
-                <span className="hidden sm:inline">Get Started</span>
-                <span className="sm:hidden">Start</span>
+                <span className="hidden sm:inline">Start Free Trial</span>
+                <span className="sm:hidden">Start Trial</span>
                 <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </div>
