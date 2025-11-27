@@ -119,7 +119,7 @@ export const NoiseScene = () => {
         {/* Simplified mobile version */}
         {isVisible && (
           <div className="absolute inset-0 opacity-30 sm:hidden">
-          {noisyAdvice.slice(0, 15).map((text, i) => (
+          {noisyAdvice.slice(0, 25).map((text, i) => (
             <motion.div
               key={i}
               className="absolute text-xs font-medium text-muted-foreground whitespace-nowrap"
