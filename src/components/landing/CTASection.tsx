@@ -21,7 +21,7 @@ export const CTASection = () => {
         </h2>
         
         <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Stop cycling through conflicting advice. Start your guided 21-day transformation with Journey today—completely free.
+          Stop cycling through conflicting advice. Get instant access to your guided 21-day transformation with Journey.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -30,13 +30,13 @@ export const CTASection = () => {
             onClick={() => navigate('/signup')}
             className="gap-2 text-lg px-8 py-6 w-full sm:w-auto"
           >
-            Start Your Free Trial
+            Get Started for $27
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          No credit card required • 21 days completely free • Cancel anytime
+          One-time payment • Instant access • 30-day money-back guarantee
         </p>
       </motion.div>
     </section>

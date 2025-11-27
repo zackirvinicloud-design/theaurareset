@@ -11,7 +11,7 @@ const features = [
   "Phase-specific supplement guidance",
   "Unlimited questions & support",
   "Shopping lists & prep guides",
-  "Access to full protocol library"
+  "Lifetime access to all content"
 ];
 
 export const PricingSection = () => {
@@ -41,12 +41,12 @@ export const PricingSection = () => {
           </div>
 
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold mb-2">Free 21-Day Trial</h3>
+            <h3 className="text-2xl font-bold mb-2">Complete 21-Day Program</h3>
             <div className="flex items-baseline justify-center gap-2 mb-2">
-              <span className="text-5xl font-bold">$0</span>
-              <span className="text-muted-foreground">for 21 days</span>
+              <span className="text-5xl font-bold">$27</span>
+              <span className="text-muted-foreground">one-time</span>
             </div>
-            <p className="text-muted-foreground">Then $29/month • Cancel anytime</p>
+            <p className="text-muted-foreground">Instant access • Lifetime ownership</p>
           </div>
 
           <div className="space-y-4 mb-8">
@@ -63,12 +63,12 @@ export const PricingSection = () => {
             onClick={() => navigate('/signup')}
             className="w-full gap-2 text-lg py-6"
           >
-            Start Your Free Trial
+            Get Instant Access
             <ArrowRight className="w-5 h-5" />
           </Button>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            No credit card required • Access everything instantly
+            Secure payment • Instant access • Lifetime ownership
           </p>
         </motion.div>
 

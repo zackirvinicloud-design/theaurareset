@@ -40,11 +40,11 @@ export const HeroSection = () => {
           <div className="flex flex-wrap items-center justify-center gap-6 mb-10 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>No credit card required</span>
+              <span>One-time payment</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>Personalized daily guidance</span>
+              <span>Personalized AI coach</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
@@ -59,7 +59,7 @@ export const HeroSection = () => {
               onClick={() => navigate('/signup')}
               className="gap-2 text-lg px-8 py-6 w-full sm:w-auto"
             >
-              Start Your Free Trial
+              Get Started for $27
               <ArrowRight className="w-5 h-5" />
             </Button>
             <Button 
@@ -76,7 +76,7 @@ export const HeroSection = () => {
 
           {/* Social proof line */}
           <p className="mt-8 text-sm text-muted-foreground">
-            Join thousands healing their gut-brain connection
+            Proven protocol trusted by thousands
           </p>
         </motion.div>
       </div>
