@@ -35,8 +35,8 @@ const mobileTourSteps: TourStep[] = [
     position: 'center',
   },
   {
-    title: "📖 Protocol Guide",
-    description: "Use the menu button (☰) to access your complete protocol. Find daily schedules, supplement lists, recipes, and troubleshooting guides organized by phase.",
+    title: "📖 Program Guide",
+    description: "Use the menu button (☰) to access your complete program. Find daily schedules, supplement lists, recipes, and troubleshooting guides organized by phase.",
     target: 'body',
     position: 'center',
   },
@@ -48,7 +48,7 @@ const mobileTourSteps: TourStep[] = [
   },
   {
     title: "📊 Track Your Progress",
-    description: "Your progress card in the chat shows which day and phase you're on. Use the buttons to advance days or adjust your position in the protocol.",
+    description: "Your progress card in the chat shows which day and phase you're on. Use the buttons to advance days or adjust your position in the program.",
     target: 'body',
     position: 'center',
   },
@@ -69,15 +69,15 @@ const tourSteps: TourStep[] = [
     position: 'center',
   },
   {
-    title: "Protocol Navigation",
-    description: "This sidebar contains your complete protocol guide. Navigate through phases, daily schedules, supplement lists, and troubleshooting. Everything you need is organized here by phase and topic.",
+    title: "Program Navigation",
+    description: "This sidebar contains your complete program guide. Navigate through phases, daily schedules, supplement lists, and troubleshooting. Everything you need is organized here by phase and topic.",
     target: '.protocol-nav, nav, aside, button[aria-label="Open menu"], button:has(svg.lucide-menu)',
     position: 'right',
     highlightPadding: 8,
   },
   {
     title: "Your Health Journal with AI Coach",
-    description: "This is your personal AI health coach! Chat anytime - ask about symptoms, get recipe ideas, or request daily motivation. She knows where you are in the protocol and tailors guidance to your current phase.",
+    description: "This is your personal AI health coach! Chat anytime - ask about symptoms, get recipe ideas, or request daily motivation. She knows where you are in the program and tailors guidance to your current phase.",
     target: '.chat-panel, [class*="chat"], .fixed.bottom-0.left-0.right-0',
     position: 'left',
     highlightPadding: 8,

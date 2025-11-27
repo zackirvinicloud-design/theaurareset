@@ -134,7 +134,7 @@ export const ProblemScene = () => {
             You're Not Broken. The System Is.
           </p>
           <p className="text-base sm:text-lg md:text-xl text-foreground mb-4 leading-relaxed">
-            The doctors won't learn about the gut-brain axis. The supplements can't keep you accountable. The protocols don't adapt to YOU.
+            The doctors won't learn about the gut-brain axis. The supplements can't keep you accountable. The programs don't adapt to YOU.
           </p>
           <p className="text-lg sm:text-xl font-bold text-foreground">
             So you keep spending. Keep failing. Keep hating yourself for "not having discipline."

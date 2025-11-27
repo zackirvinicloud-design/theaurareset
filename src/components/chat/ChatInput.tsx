@@ -10,7 +10,7 @@ interface ChatInputProps {
   placeholder?: string;
 }
 
-export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the protocol..." }: ChatInputProps) => {
+export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the program..." }: ChatInputProps) => {
   const [input, setInput] = useState('');
 
   const handleSend = () => {
