@@ -163,7 +163,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm truncate">Your Health Journal</h3>
+              <h3 className="font-semibold text-sm truncate">Gut Brain Journal</h3>
               <p className="text-xs text-muted-foreground truncate">
                 Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
               </p>
@@ -220,9 +220,9 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6">
             <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
-            <h4 className="font-semibold text-sm mb-2">Chat with your journal</h4>
+            <h4 className="font-semibold text-sm mb-2">Your Gut Brain Guide</h4>
             <p className="text-xs text-muted-foreground mb-4 max-w-[240px]">
-              Document your journey, ask questions, or get support from your AI assistant anytime.
+              Get personalized support through your 21-day gut-brain detox protocol.
             </p>
             <div className="flex flex-col gap-2 w-full max-w-[240px]">
               {SUGGESTED_PROMPTS.map((prompt, i) => (
