@@ -45,8 +45,11 @@ export const SignalScene = () => {
           <p className="text-xl sm:text-2xl md:text-4xl font-bold text-primary mb-2">
             Cut through the $270 billion noise.
           </p>
-          <p className="text-xl sm:text-2xl md:text-4xl font-bold text-primary">
+          <p className="text-xl sm:text-2xl md:text-4xl font-bold text-primary mb-4">
             Finally, a clear signal.
+          </p>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Step-by-step guidance. Answers to every question. Save both time and money.
           </p>
         </motion.div>
       </motion.div>

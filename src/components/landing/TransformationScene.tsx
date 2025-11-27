@@ -99,16 +99,16 @@ export const TransformationScene = () => {
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold text-base sm:text-lg">Personal Health Intelligence Engine <span className="text-primary">($497 Value)</span></p>
-                  <p className="text-sm text-muted-foreground">Proprietary coaching technology that learns YOUR body</p>
+                  <p className="font-bold text-base sm:text-lg">Journey AI - Instant Granular Guidance <span className="text-primary">($497 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Answer ANY question instantly, save hours of research and costly mistakes</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold text-base sm:text-lg">Real-Time Pattern Recognition <span className="text-primary">($197 Value)</span></p>
-                  <p className="text-sm text-muted-foreground">Spots connections your doctor NEVER will</p>
+                  <p className="font-bold text-base sm:text-lg">Step-by-Step Daily Program Structure <span className="text-primary">($197 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Exact play-by-play instructions saving you time, money, and confusion</p>
                 </div>
               </div>
 
