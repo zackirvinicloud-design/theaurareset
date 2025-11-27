@@ -2,53 +2,16 @@ import { motion } from 'framer-motion';
 import { useLazyLoad } from '@/hooks/useLazyLoad';
 
 const noisyAdvice = [
-  "$270 billion market", "Try probiotics", "Eliminate gluten", 
-  "Carnivore diet", "More fiber", "Less fiber",
-  "Detox cleanse", "Raw foods", "Fermented foods",
-  "Keto for gut health", "Veganism heals", "Bone broth protocol",
-  "Supplement stacks", "Parasite cleanse", "Candida diet",
-  "SIBO treatment", "Low FODMAP", "Prebiotic foods",
-  "Intermittent fasting", "Eat every 2 hours", "Juice cleanse",
-  "Alkaline water", "Apple cider vinegar", "Collagen peptides",
-  "L-Glutamine heals", "Zinc carnosine", "Try this probiotic",
-  "Gut inflammation", "Leaky gut syndrome", "Microbiome test",
-  "Organic only", "Non-GMO matters", "Grass-fed everything",
-  "Seed oils toxic", "Saturated fat good", "Fat makes you fat",
-  "Carbs are bad", "Carbs fuel you", "Sugar addiction",
-  "Processed foods", "Whole30 protocol", "Paleo lifestyle",
-  "Mediterranean diet", "Blue zones secret", "Longevity hacks",
-  "Autophagy fasting", "Time-restricted eating", "OMAD diet",
-  "High protein", "Plant-based protein", "Whey vs casein",
-  "Digestive enzymes", "Betaine HCL", "Ox bile supplement",
-  "Psyllium husk", "Chia seeds daily", "Flax seeds ground",
-  "Kombucha gut health", "Kefir probiotics", "Sauerkraut healing",
-  "Kimchi benefits", "Miso soup daily", "Tempeh protein",
-  "Gluten sensitivity", "Celiac disease", "Wheat belly",
-  "Dairy inflammatory", "A2 milk better", "Raw milk healing",
-  "Lectins damage gut", "Oxalates problem", "Histamine intolerance",
-  "Nightshades inflammatory", "AIP protocol", "Elimination diet",
-  "Food sensitivity test", "IgG antibodies", "Gut-brain axis",
-  "Vagus nerve tone", "Polyvagal theory", "Nervous system",
-  "Cortisol belly", "Adrenal fatigue", "Thyroid function",
-  "Hormone balance", "Estrogen dominance", "Insulin resistance",
-  "Blood sugar spikes", "CGM tracking", "Metabolic health",
-  "Mitochondria energy", "NAD+ boosters", "Resveratrol benefits",
-  "Turmeric curcumin", "Ginger anti-inflammatory", "Garlic allicin",
-  "Omega-3 fatty acids", "Fish oil daily", "Cod liver oil",
-  "Vitamin D deficiency", "Magnesium glycinate", "B12 methylated",
-  "Folate not folic", "Iron bisglycinate", "Selenium Brazil nuts",
-  "Iodine protocol", "Lugol's solution", "Nascent iodine",
-  "Chlorella detox", "Spirulina superfood", "Activated charcoal",
-  "Bentonite clay", "Zeolite chelation", "Cilantro heavy metals",
-  "Coffee enemas", "Castor oil packs", "Dry brushing lymph",
-  "Red light therapy", "Cold plunges", "Sauna detox",
-  "Grounding earthing", "EMF protection", "Blue light blocking",
-  "Mouth taping sleep", "Nose breathing", "Wim Hof method",
-  "Buteyko breathing", "Box breathing", "4-7-8 technique",
-  "Meditation gut", "Yoga digestion", "Qi gong healing",
-  "Acupuncture points", "Reflexology feet", "Massage lymphatic",
-  "Functional medicine", "Integrative approach", "Root cause",
-  "Holistic healing", "Mind-body connection", "Biohacking optimal"
+  "Carnivore diet", "Keto for gut health", "Low FODMAP",
+  "Intermittent fasting", "Leaky gut syndrome", "Microbiome test",
+  "Seed oils toxic", "Sugar addiction", "Whole30 protocol",
+  "Paleo lifestyle", "Mediterranean diet", "Blue zones secret",
+  "Autophagy fasting", "OMAD diet", "Kombucha gut health",
+  "Gluten sensitivity", "Gut-brain axis", "Adrenal fatigue",
+  "Insulin resistance", "CGM tracking", "Turmeric curcumin",
+  "Fish oil daily", "Vitamin D deficiency", "Coffee enemas",
+  "Cold plunges", "Sauna detox", "Grounding earthing",
+  "Wim Hof method", "Functional medicine", "Biohacking"
 ];
 
 export const NoiseScene = () => {
@@ -124,7 +87,7 @@ export const NoiseScene = () => {
         {/* Simplified mobile version */}
         {isVisible && (
           <div className="absolute inset-0 opacity-30 sm:hidden">
-          {noisyAdvice.slice(0, 25).map((text, i) => (
+          {noisyAdvice.slice(0, 15).map((text, i) => (
             <motion.div
               key={i}
               className="absolute text-xs font-medium text-muted-foreground whitespace-nowrap"
