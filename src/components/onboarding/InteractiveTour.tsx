@@ -6,7 +6,7 @@ import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const TOUR_KEY = 'aura-protocol-tour-completed';
+const TOUR_KEY = 'gut-brain-journal-tour-completed';
 
 export const resetTour = () => {
   localStorage.removeItem(TOUR_KEY);
@@ -23,7 +23,7 @@ interface TourStep {
 // Simplified mobile-only steps
 const mobileTourSteps: TourStep[] = [
   {
-    title: "Welcome to The Aura Reset Protocol! 🌟",
+    title: "Welcome to The Gut Brain Journal! 🌟",
     description: "This quick tour will show you everything you need to succeed on your 28-day healing journey.",
     target: 'body',
     position: 'center',
@@ -63,7 +63,7 @@ const mobileTourSteps: TourStep[] = [
 // Desktop tour steps with spotlight
 const tourSteps: TourStep[] = [
   {
-    title: "Welcome to The Aura Reset Protocol",
+    title: "Welcome to The Gut Brain Journal",
     description: "Let me show you around! This interactive tour will guide you through all the features to help you succeed on your 28-day healing journey.",
     target: 'body',
     position: 'center',

@@ -97,7 +97,7 @@ const Signup = () => {
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Create Your Account
           </CardTitle>
-          <CardDescription>Join The Aura Reset Protocol</CardDescription>
+          <CardDescription>Join The Gut Brain Journal</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp} className="space-y-4">
