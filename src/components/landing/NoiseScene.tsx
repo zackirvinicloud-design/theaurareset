@@ -1,8 +1,5 @@
 import { motion } from 'framer-motion';
 import { useLazyLoad } from '@/hooks/useLazyLoad';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 
 const noisyAdvice = [
   "$270 billion market", "Try probiotics", "Eliminate gluten", 
@@ -10,12 +7,52 @@ const noisyAdvice = [
   "Detox cleanse", "Raw foods", "Fermented foods",
   "Keto for gut health", "Veganism heals", "Bone broth protocol",
   "Supplement stacks", "Parasite cleanse", "Candida diet",
-  "SIBO treatment", "Low FODMAP", "Prebiotic foods"
+  "SIBO treatment", "Low FODMAP", "Prebiotic foods",
+  "Intermittent fasting", "Eat every 2 hours", "Juice cleanse",
+  "Alkaline water", "Apple cider vinegar", "Collagen peptides",
+  "L-Glutamine heals", "Zinc carnosine", "Try this probiotic",
+  "Gut inflammation", "Leaky gut syndrome", "Microbiome test",
+  "Organic only", "Non-GMO matters", "Grass-fed everything",
+  "Seed oils toxic", "Saturated fat good", "Fat makes you fat",
+  "Carbs are bad", "Carbs fuel you", "Sugar addiction",
+  "Processed foods", "Whole30 protocol", "Paleo lifestyle",
+  "Mediterranean diet", "Blue zones secret", "Longevity hacks",
+  "Autophagy fasting", "Time-restricted eating", "OMAD diet",
+  "High protein", "Plant-based protein", "Whey vs casein",
+  "Digestive enzymes", "Betaine HCL", "Ox bile supplement",
+  "Psyllium husk", "Chia seeds daily", "Flax seeds ground",
+  "Kombucha gut health", "Kefir probiotics", "Sauerkraut healing",
+  "Kimchi benefits", "Miso soup daily", "Tempeh protein",
+  "Gluten sensitivity", "Celiac disease", "Wheat belly",
+  "Dairy inflammatory", "A2 milk better", "Raw milk healing",
+  "Lectins damage gut", "Oxalates problem", "Histamine intolerance",
+  "Nightshades inflammatory", "AIP protocol", "Elimination diet",
+  "Food sensitivity test", "IgG antibodies", "Gut-brain axis",
+  "Vagus nerve tone", "Polyvagal theory", "Nervous system",
+  "Cortisol belly", "Adrenal fatigue", "Thyroid function",
+  "Hormone balance", "Estrogen dominance", "Insulin resistance",
+  "Blood sugar spikes", "CGM tracking", "Metabolic health",
+  "Mitochondria energy", "NAD+ boosters", "Resveratrol benefits",
+  "Turmeric curcumin", "Ginger anti-inflammatory", "Garlic allicin",
+  "Omega-3 fatty acids", "Fish oil daily", "Cod liver oil",
+  "Vitamin D deficiency", "Magnesium glycinate", "B12 methylated",
+  "Folate not folic", "Iron bisglycinate", "Selenium Brazil nuts",
+  "Iodine protocol", "Lugol's solution", "Nascent iodine",
+  "Chlorella detox", "Spirulina superfood", "Activated charcoal",
+  "Bentonite clay", "Zeolite chelation", "Cilantro heavy metals",
+  "Coffee enemas", "Castor oil packs", "Dry brushing lymph",
+  "Red light therapy", "Cold plunges", "Sauna detox",
+  "Grounding earthing", "EMF protection", "Blue light blocking",
+  "Mouth taping sleep", "Nose breathing", "Wim Hof method",
+  "Buteyko breathing", "Box breathing", "4-7-8 technique",
+  "Meditation gut", "Yoga digestion", "Qi gong healing",
+  "Acupuncture points", "Reflexology feet", "Massage lymphatic",
+  "Functional medicine", "Integrative approach", "Root cause",
+  "Holistic healing", "Mind-body connection", "Biohacking optimal"
 ];
 
 export const NoiseScene = () => {
   const { ref, isVisible } = useLazyLoad({ threshold: 0.1, rootMargin: '100px' });
-  const navigate = useNavigate();
 
   return (
     <div ref={ref} className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-background to-muted/20">
@@ -47,30 +84,6 @@ export const NoiseScene = () => {
           >
             But nobody's showing you exactly what to do—and when.
           </motion.p>
-
-          <motion.div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-          >
-            <Button 
-              onClick={() => navigate('/signup')}
-              size="lg"
-              className="gap-2 text-base h-12 px-8 font-bold"
-            >
-              Start Free Trial
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-            <Button 
-              onClick={() => navigate('/auth')}
-              variant="outline"
-              size="lg"
-              className="text-base h-12 px-8"
-            >
-              Sign In
-            </Button>
-          </motion.div>
         </div>
         
         {/* Floating chaotic text - reduced count on mobile */}
@@ -110,8 +123,8 @@ export const NoiseScene = () => {
 
         {/* Simplified mobile version */}
         {isVisible && (
-          <div className="absolute inset-0 opacity-20 sm:hidden">
-          {noisyAdvice.slice(0, 8).map((text, i) => (
+          <div className="absolute inset-0 opacity-30 sm:hidden">
+          {noisyAdvice.slice(0, 25).map((text, i) => (
             <motion.div
               key={i}
               className="absolute text-xs font-medium text-muted-foreground whitespace-nowrap"
@@ -123,14 +136,16 @@ export const NoiseScene = () => {
                 x: [
                   Math.random() * window.innerWidth,
                   Math.random() * window.innerWidth,
+                  Math.random() * window.innerWidth,
                 ],
                 y: [
+                  Math.random() * window.innerHeight,
                   Math.random() * window.innerHeight,
                   Math.random() * window.innerHeight,
                 ],
               }}
               transition={{
-                duration: 20,
+                duration: 12 + Math.random() * 8,
                 repeat: Infinity,
                 ease: "linear"
               }}

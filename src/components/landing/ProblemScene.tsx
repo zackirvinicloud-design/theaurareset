@@ -36,7 +36,7 @@ export const ProblemScene = () => {
         </motion.p>
 
         <motion.p
-          className="text-base sm:text-lg text-center text-muted-foreground mb-12 sm:mb-16 max-w-3xl mx-auto px-4"
+          className="text-base sm:text-lg text-center text-muted-foreground mb-16 sm:mb-20 max-w-3xl mx-auto px-4"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -45,7 +45,7 @@ export const ProblemScene = () => {
           You know the exact number. It makes you sick every time you think about it.
         </motion.p>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
+        <div className="grid md:grid-cols-2 gap-8 mb-20 mt-8">{" "}
           <motion.div 
             style={{ y: googleY }}
             className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
