@@ -20,35 +20,35 @@ export const HeroSection = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6 text-sm font-medium text-primary">
             <CheckCircle2 className="w-4 h-4" />
-            <span>Yes, This Is Journey From TikTok</span>
+            <span>Guided 21-Day Gut Healing Program</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            Your 21-Day Gut Healing
+            Transform Your Gut Health
             <span className="block bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Starts Right Now
+              in 21 Days
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-            Journey guides you through the complete protocol. Daily support. Real transformation. Just $27.
+            Cut through the conflicting health advice. Journey, your AI nutrition coach, guides you through a proven gut-brain healing protocol—one day at a time.
           </p>
 
           {/* Trust signals */}
           <div className="flex flex-wrap items-center justify-center gap-6 mb-10 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>Instant access</span>
+              <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>Complete 21-day protocol</span>
+              <span>Personalized daily guidance</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-primary" />
-              <span>24/7 AI coaching</span>
+              <span>Science-backed protocol</span>
             </div>
           </div>
 
@@ -59,14 +59,24 @@ export const HeroSection = () => {
               onClick={() => navigate('/signup')}
               className="gap-2 text-lg px-8 py-6 w-full sm:w-auto"
             >
-              Get Journey Now - $27
+              Start Your Free Trial
               <ArrowRight className="w-5 h-5" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => {
+                document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-lg px-8 py-6 w-full sm:w-auto"
+            >
+              How It Works
             </Button>
           </div>
 
           {/* Social proof line */}
           <p className="mt-8 text-sm text-muted-foreground">
-            One-time payment • Instant access • Start today
+            Join thousands healing their gut-brain connection
           </p>
         </motion.div>
       </div>
