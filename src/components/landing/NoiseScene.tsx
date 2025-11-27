@@ -47,7 +47,7 @@ export const NoiseScene = () => {
         
         {/* Floating chaotic text - reduced count on mobile */}
         {isVisible && (
-          <div className="absolute inset-0 opacity-20 hidden sm:block">
+          <div className="absolute inset-0 opacity-30 hidden sm:block">
             {noisyAdvice.map((text, i) => (
             <motion.div
               key={i}
@@ -82,7 +82,7 @@ export const NoiseScene = () => {
 
         {/* Simplified mobile version */}
         {isVisible && (
-          <div className="absolute inset-0 opacity-10 sm:hidden">
+          <div className="absolute inset-0 opacity-20 sm:hidden">
           {noisyAdvice.slice(0, 8).map((text, i) => (
             <motion.div
               key={i}
