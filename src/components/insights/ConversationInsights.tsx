@@ -88,7 +88,7 @@ export const ConversationInsights = () => {
           AI Insights
         </CardTitle>
         <CardDescription>
-          Aurora analyzes patterns in your journey
+          AI analyzes patterns in your journey
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -118,7 +118,7 @@ export const ConversationInsights = () => {
 
         {!insights && messages.length === 0 && (
           <p className="text-muted-foreground text-sm text-center py-4">
-            Start chatting with Aurora to get personalized insights
+            Start chatting with your Gut Brain Journal AI assistant to get personalized insights
           </p>
         )}
       </CardContent>

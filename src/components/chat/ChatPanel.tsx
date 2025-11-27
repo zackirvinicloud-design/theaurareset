@@ -222,7 +222,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
             <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
             <h4 className="font-semibold text-sm mb-2">Chat with your journal</h4>
             <p className="text-xs text-muted-foreground mb-4 max-w-[240px]">
-              Document your journey, ask questions, or get support from Aurora anytime.
+              Document your journey, ask questions, or get support from your AI assistant anytime.
             </p>
             <div className="flex flex-col gap-2 w-full max-w-[240px]">
               {SUGGESTED_PROMPTS.map((prompt, i) => (

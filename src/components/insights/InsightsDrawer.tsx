@@ -30,7 +30,7 @@ export const InsightsDrawer = () => {
         <SheetHeader>
           <SheetTitle>AI Insights</SheetTitle>
           <SheetDescription>
-            Aurora's deep analysis of your journey patterns
+            AI-powered deep analysis of your journey patterns
           </SheetDescription>
         </SheetHeader>
         <div className="mt-6 pb-6">

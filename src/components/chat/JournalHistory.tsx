@@ -56,7 +56,7 @@ export const JournalHistory = ({ trigger }: JournalHistoryProps) => {
         <DialogHeader>
           <DialogTitle>Journal History</DialogTitle>
           <DialogDescription>
-            Review your past conversations with Aurora, organized by date
+            Review your past conversations, organized by date
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[60vh] pr-4">
@@ -83,7 +83,7 @@ export const JournalHistory = ({ trigger }: JournalHistoryProps) => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-xs">
-                            {msg.role === 'user' ? 'You' : 'Aurora'}
+                            {msg.role === 'user' ? 'You' : 'AI Coach'}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(msg.timestamp).toLocaleTimeString('en-US', {
