@@ -136,7 +136,7 @@ const Protocol = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "aura-reset-protocol.html";
+      a.download = "gut-brain-journal.html";
       a.click();
       URL.revokeObjectURL(url);
       toast({
@@ -199,7 +199,7 @@ const Protocol = () => {
           ref={iframeRef}
           src="/protocol-original.html"
           className="w-full min-h-screen border-0"
-          title="The Aura Reset Protocol"
+          title="The Gut Brain Journal"
           id="protocol-content"
         />
       </div>

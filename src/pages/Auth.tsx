@@ -120,7 +120,7 @@ const Auth = () => {
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Welcome Back
           </CardTitle>
-          <CardDescription>Sign in to continue to The Aura Reset Protocol</CardDescription>
+          <CardDescription>Sign in to continue to The Gut Brain Journal</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignIn} className="space-y-4">
