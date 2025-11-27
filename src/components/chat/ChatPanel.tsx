@@ -22,10 +22,10 @@ interface ChatPanelProps {
 }
 
 const SUGGESTED_PROMPTS = [
-  "What should I expect in Phase 1?",
-  "Tell me about the binders",
-  "I'm feeling tired, is this normal?",
-  "What supplements should I take today?",
+  "What should I prep for Day 0?",
+  "When do I take my binders today?",
+  "What can I order on DoorDash that's compliant?",
+  "Is this die-off symptom normal for my phase?",
 ];
 
 export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
