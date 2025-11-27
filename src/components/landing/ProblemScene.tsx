@@ -21,7 +21,7 @@ export const ProblemScene = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          How Much Money Have You Already Thrown Away?
+          How Much Time and Money Have You Already Wasted?
         </motion.h2>
 
         <motion.p
@@ -32,7 +32,7 @@ export const ProblemScene = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          $500? $1,200? $3,000? More?
+          Hundreds of hours? Thousands of dollars? Both?
         </motion.p>
 
         <motion.p
@@ -42,7 +42,7 @@ export const ProblemScene = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
         >
-          You know the exact number. It makes you sick every time you think about it.
+          You know the exact numbers. The wasted weekends researching. The money you'll never get back. It haunts you.
         </motion.p>
 
         <div className="grid md:grid-cols-2 gap-8 mb-20 mt-8">{" "}
@@ -55,31 +55,31 @@ export const ProblemScene = () => {
             </div>
             <ShoppingCart className="w-12 h-12 mb-4" style={{ color: '#dc2626' }} />
             <h3 className="text-2xl font-bold mb-2" style={{ color: '#dc2626' }}>The Supplement Graveyard</h3>
-            <p className="text-sm text-muted-foreground mb-4 italic">Your shame cabinet of $270 billion failure</p>
+            <p className="text-sm text-muted-foreground mb-4 italic">Your shame cabinet of wasted time and money</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">That probiotic you bought for $68.</span> Sitting there 7 months later, 80% full. You took it for 9 days. You don't even remember why you stopped.</span>
+                <span className="leading-tight"><span className="font-bold">That probiotic you bought for $68.</span> Sitting there 7 months later, 80% full. You took it for 9 days. You spent 6 hours researching which one to buy. You don't even remember why you stopped.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">The "gut health stack"</span> the influencer swore by. $147 for 6 bottles. You took them for a week and a half. Felt nothing. Now they mock you every morning.</span>
+                <span className="leading-tight"><span className="font-bold">The "gut health stack"</span> the influencer swore by. $147 for 6 bottles plus 4 hours watching videos and reading reviews. Took them for a week and a half. Felt nothing. Now they mock you every morning.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">The new brand</span> you'll try next month. Because THIS time will be different. (It won't. You know it won't. But what else are you supposed to do?)</span>
+                <span className="leading-tight"><span className="font-bold">The research rabbit holes.</span> Entire Saturday afternoons lost to conflicting advice. Reddit threads. YouTube videos. Blog posts. 20+ hours trying to figure out what works. Still confused.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">Zero accountability.</span> No tracking. No structure. Just you, alone, trying to remember if you took 3 pills or 4. You quit by week 3 every single time.</span>
+                <span className="leading-tight"><span className="font-bold">Zero accountability. No structure.</span> Just you, alone, trying to remember if you took 3 pills or 4. No one tracking your progress. You quit by week 3 every single time because there's no guidance.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">Your partner sees the cabinet.</span> They don't say anything. They don't have to. You FEEL the judgment. Another failed attempt. Another waste of money you can't get back.</span>
+                <span className="leading-tight"><span className="font-bold">Your partner sees the cabinet.</span> They see you still scrolling gut health articles at 11pm. They don't say anything. They don't have to. Another failed attempt. Another waste of TIME and money you can't get back.</span>
               </li>
               <li className="flex items-start gap-2">
                 <DollarSign className="w-5 h-5 text-destructive mt-1 flex-shrink-0" />
-                <span className="leading-tight font-semibold text-destructive">Add it up. Go ahead. Every bottle. Every "this is the one" moment. It's not dozens. It's HUNDREDS. Maybe thousands. And you're still here.</span>
+                <span className="leading-tight font-semibold text-destructive">Add it ALL up. Every bottle. Every hour researching. Every "this is the one" moment. It's not dozens. It's HUNDREDS of hours and THOUSANDS of dollars. And you're still here, still searching.</span>
               </li>
             </ul>
           </motion.div>
@@ -93,31 +93,31 @@ export const ProblemScene = () => {
             </div>
             <Stethoscope className="w-12 h-12 mb-4" style={{ color: '#dc2626' }} />
             <h3 className="text-2xl font-bold mb-2" style={{ color: '#dc2626' }}>Traditional Medicine</h3>
-            <p className="text-sm text-muted-foreground mb-4 italic">They profit when you stay sick</p>
+            <p className="text-sm text-muted-foreground mb-4 italic">They waste your time AND your money</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">"Everything came back normal."</span> But you can't sleep. Can't focus. Can't remember the last time you felt GOOD. They send you home with nothing. Because normal labs = no billable treatment.</span>
+                <span className="leading-tight"><span className="font-bold">"Everything came back normal."</span> But you can't sleep. Can't focus. You took 3 hours off work, waited 45 minutes in the lobby, spent $380 for 12 minutes. They send you home with nothing. Time AND money, gone.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">$380 later</span>, you get 12 minutes and a prescription for an antidepressant or PPI. Big Pharma gets paid. Your gut gets worse. You come back in 3 months. Repeat.</span>
+                <span className="leading-tight"><span className="font-bold">Months of appointments</span> that lead nowhere. Each one: time off work, driving, waiting rooms, parking fees. $380 per visit. A prescription for an antidepressant or PPI. Your gut gets worse. You come back in 3 months. Repeat.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">They don't get paid to cure you.</span> They get paid per visit, per prescription, per test. A healthy patient is a lost customer. There's no financial incentive to fix the ROOT cause.</span>
+                <span className="leading-tight"><span className="font-bold">They don't get paid to cure you quickly.</span> They get paid per visit, per prescription, per test. A healthy patient is a lost customer. No financial incentive to fix the ROOT cause fast. Your time doesn't matter to them.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">The gut-brain connection?</span> Not in their medical school curriculum. Not in the insurance playbook. Not profitable for pharma companies selling symptom-masking pills for life.</span>
+                <span className="leading-tight"><span className="font-bold">The gut-brain connection?</span> Not in their medical school curriculum. Not in the insurance playbook. They have 12 minutes per patient. No time to actually understand YOU. Not profitable for pharma companies.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">"Have you tried therapy?"</span> Translation: "We don't know what's wrong, but we're not going to admit it. Here's a $150/session referral. See you in 6 months when you're worse."</span>
+                <span className="leading-tight"><span className="font-bold">"Have you tried therapy?"</span> Translation: "We don't know what's wrong, but we're not going to admit it. Here's a $150/session referral. More time. More money. See you in 6 months when you're worse."</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight font-semibold text-destructive">You leave feeling dismissed, gaslit, and wondering if it's "all in your head." (It's not. It's in your gut. They just don't get paid to look there.)</span>
+                <span className="leading-tight font-semibold text-destructive">You leave feeling dismissed, gaslit, and wondering if it's "all in your head." (It's not. It's in your gut. They just don't get paid—or have TIME—to look there.)</span>
               </li>
             </ul>
           </motion.div>
@@ -134,10 +134,10 @@ export const ProblemScene = () => {
             You're Not Broken. The System Is.
           </p>
           <p className="text-base sm:text-lg md:text-xl text-foreground mb-4 leading-relaxed">
-            The doctors won't learn about the gut-brain axis. The supplements can't keep you accountable. The programs don't adapt to YOU.
+            The doctors won't learn about the gut-brain axis AND waste your time with useless visits. The supplements can't keep you accountable AND drain your bank account. The programs don't adapt to YOU AND leave you drowning in research.
           </p>
           <p className="text-lg sm:text-xl font-bold text-foreground">
-            So you keep spending. Keep failing. Keep hating yourself for "not having discipline."
+            So you keep spending hours. Keep spending money. Keep failing. Keep hating yourself for "not having discipline."
           </p>
         </motion.div>
 
