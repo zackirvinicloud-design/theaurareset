@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
 import { useLazyLoad } from '@/hooks/useLazyLoad';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 const noisyAdvice = [
   "Carnivore diet", "Keto for gut health", "Low FODMAP",
@@ -20,6 +23,7 @@ const noisyAdvice = [
 
 export const NoiseScene = () => {
   const { ref, isVisible } = useLazyLoad({ threshold: 0.1, rootMargin: '100px' });
+  const navigate = useNavigate();
 
   return (
     <div ref={ref} className="relative w-full h-screen overflow-hidden bg-gradient-to-b from-background to-muted/20">
@@ -51,6 +55,30 @@ export const NoiseScene = () => {
           >
             But nobody's showing you exactly what to do—and when.
           </motion.p>
+          
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8 px-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <Button 
+              onClick={() => navigate('/signup')}
+              size="lg"
+              className="w-full sm:w-auto text-base sm:text-lg h-12 sm:h-14 font-bold gap-2"
+            >
+              Start Free Trial
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </Button>
+            <Button 
+              onClick={() => navigate('/auth')}
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto text-base sm:text-lg h-12 sm:h-14 font-bold"
+            >
+              Sign In
+            </Button>
+          </motion.div>
         </div>
         
         {/* Floating chaotic text - reduced count on mobile */}
