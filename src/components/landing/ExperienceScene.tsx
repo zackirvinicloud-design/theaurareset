@@ -4,32 +4,32 @@ import { Check, X } from 'lucide-react';
 
 const comparisons = [
   {
-    feature: "Day-by-day structured program (Phases 1-4)",
+    feature: "Step-by-step daily instructions (what, when, how)",
     others: false,
     us: true
   },
   {
-    feature: "Intelligent coaching system that tracks YOUR patterns",
+    feature: "Journey AI answers ANY granular question instantly",
     others: false,
     us: true
   },
   {
-    feature: "Built-in daily accountability check-ins",
+    feature: "Saves both TIME (no research) and MONEY (no trial-and-error)",
     others: false,
     us: true
   },
   {
-    feature: "Adapts to your unique symptoms in real-time",
+    feature: "Real-time personalized guidance adapting to YOU",
+    others: false,
+    us: true
+  },
+  {
+    feature: "Built-in accountability that prevents quitting",
     others: false,
     us: true
   },
   {
     feature: "87% completion rate (vs 12% DIY)",
-    others: false,
-    us: true
-  },
-  {
-    feature: "Combines gut-brain science + intelligent coaching",
     others: false,
     us: true
   }

@@ -16,10 +16,10 @@ export const JournalIntroScene = () => {
             The Gut Brain Journal
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-4 px-4">
-            The only program combining gut-brain science with advanced intelligent coaching
+            Step-by-step guidance that saves you both time and money
           </p>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
-            You understand the gut-brain connection matters. But knowing isn't enough—you need a structured, personalized path forward. That's exactly what we built.
+            No more wasted hours researching. No more expensive trial-and-error. Journey AI gives you instant answers to ANY question, adapting to YOUR unique situation in real-time.
           </p>
         </motion.div>
 
@@ -32,9 +32,9 @@ export const JournalIntroScene = () => {
             transition={{ delay: 0.1 }}
           >
             <Calendar className="w-10 h-10 sm:w-12 sm:h-12 mb-4 text-primary" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-3">21-Day Structured Program</h3>
+            <h3 className="text-xl sm:text-2xl font-bold mb-3">21-Day Step-by-Step Program</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Not random advice. A scientifically-designed program that tells you exactly what to do each day. Phase 1-4 progression proven to work.
+              Not random advice. Exact daily instructions telling you what to do, when to do it, and how. Phase 1-4 progression with play-by-play guidance. Saves hours of confusion and costly mistakes.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
               87% complete the full program vs 12% for DIY approaches
@@ -49,12 +49,12 @@ export const JournalIntroScene = () => {
             transition={{ delay: 0.2 }}
           >
             <Brain className="w-10 h-10 sm:w-12 sm:h-12 mb-4 text-primary" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-3">24/7 Intelligent Coaching System</h3>
+            <h3 className="text-xl sm:text-2xl font-bold mb-3">Journey AI - Granular Answers Instantly</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Powered by proprietary technology that learns your unique patterns, answers questions instantly, and adapts to YOUR individual responses in real-time.
+              Ask ANY question, get specific answers immediately. "Can I substitute this?" "Why am I dizzy?" "What if I can't find organic?" Journey adapts to YOUR situation, saving hours of research and preventing expensive mistakes.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
-              Continuous personalized guidance doctors can't provide
+              Instant guidance doctors can't provide, available 24/7
             </div>
           </motion.div>
 
@@ -87,7 +87,7 @@ export const JournalIntroScene = () => {
             "The gut health market is worth $270 billion, but completion rates for traditional approaches are under 15%."
           </p>
           <p className="text-base sm:text-lg font-semibold text-primary">
-            Structure + Intelligent Accountability = 87% Completion Rate
+            Step-by-Step Guidance + Instant Answers + Structured Accountability = Save Time, Money, and Confusion
           </p>
         </motion.div>
       </div>
