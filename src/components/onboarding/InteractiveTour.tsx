@@ -24,7 +24,7 @@ interface TourStep {
 const mobileTourSteps: TourStep[] = [
   {
     title: "Welcome to The Gut Brain Journal! 🌟",
-    description: "This quick tour will show you everything you need to succeed on your 28-day healing journey.",
+    description: "This quick tour will show you everything you need to succeed on your 21-day healing journey.",
     target: 'body',
     position: 'center',
   },
@@ -64,7 +64,7 @@ const mobileTourSteps: TourStep[] = [
 const tourSteps: TourStep[] = [
   {
     title: "Welcome to The Gut Brain Journal",
-    description: "Let me show you around! This interactive tour will guide you through all the features to help you succeed on your 28-day healing journey.",
+    description: "Let me show you around! This interactive tour will guide you through all the features to help you succeed on your 21-day healing journey.",
     target: 'body',
     position: 'center',
   },
@@ -91,7 +91,7 @@ const tourSteps: TourStep[] = [
   },
   {
     title: "Progress Tracking",
-    description: "Track your journey through all 28 days and 4 phases. Use 'Next' to advance days, or click the settings icon to jump to any day. Your AI always knows your current phase and provides phase-specific guidance.",
+    description: "Track your journey through all 21 days and 4 phases. Use 'Next' to advance days, or click the settings icon to jump to any day. Your AI always knows your current phase and provides phase-specific guidance.",
     target: '.progress-card, [class*="progress"]',
     position: 'bottom',
     highlightPadding: 8,
