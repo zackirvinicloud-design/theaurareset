@@ -23,7 +23,7 @@ export const ProblemScene = () => {
         >
           <div className="inline-block px-4 py-2 bg-destructive/20 border border-destructive/30 rounded-full mb-4">
             <span className="text-sm font-semibold text-destructive-foreground">
-              90% quit within 2 weeks • You've been one of them
+              90% quit within 2 weeks
             </span>
           </div>
         </motion.div>
