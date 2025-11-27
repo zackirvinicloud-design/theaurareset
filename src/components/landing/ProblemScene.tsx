@@ -1,60 +1,61 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Stethoscope, ShoppingCart, X, DollarSign } from 'lucide-react';
-
 export const ProblemScene = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
+  const {
+    scrollYProgress
+  } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
-
   const chatGptY = useTransform(scrollYProgress, [0, 0.5], [100, 0]);
   const googleY = useTransform(scrollYProgress, [0, 0.5], [-100, 0]);
-
-  return (
-    <div ref={ref} className="min-h-screen bg-background py-20 px-4">
+  return <div ref={ref} className="min-h-screen bg-background py-20 px-4">
       <div className="max-w-6xl mx-auto">
-        <motion.h2 
-          className="text-3xl sm:text-4xl md:text-6xl font-bold text-center mb-4 px-4"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          How Much Time and Money Have You Already Wasted?
-        </motion.h2>
+        <motion.h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-center mb-4 px-4" initial={{
+        opacity: 0
+      }} whileInView={{
+        opacity: 1
+      }} viewport={{
+        once: true
+      }}>How Much Time and Money Have You Already Wasted?</motion.h2>
 
-        <motion.p
-          className="text-base sm:text-lg md:text-xl text-center font-bold mb-2 max-w-3xl mx-auto px-4"
-          style={{ color: '#dc2626' }}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          Hundreds of hours? Thousands of dollars? Both?
-        </motion.p>
+        <motion.p className="text-base sm:text-lg md:text-xl text-center font-bold mb-2 max-w-3xl mx-auto px-4" style={{
+        color: '#dc2626'
+      }} initial={{
+        opacity: 0
+      }} whileInView={{
+        opacity: 1
+      }} viewport={{
+        once: true
+      }} transition={{
+        delay: 0.2
+      }}>Thousands of Dollars? Years of Life?</motion.p>
 
-        <motion.p
-          className="text-base sm:text-lg text-center text-muted-foreground mb-16 sm:mb-20 max-w-3xl mx-auto px-4"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-        >
-          You know the exact numbers. The wasted weekends researching. The money you'll never get back. It haunts you.
-        </motion.p>
+        <motion.p className="text-base sm:text-lg text-center text-muted-foreground mb-16 sm:mb-20 max-w-3xl mx-auto px-4" initial={{
+        opacity: 0
+      }} whileInView={{
+        opacity: 1
+      }} viewport={{
+        once: true
+      }} transition={{
+        delay: 0.3
+      }}>It may make you sick to think about it.</motion.p>
 
         <div className="grid md:grid-cols-2 gap-8 mb-20 mt-8">{" "}
-          <motion.div 
-            style={{ y: googleY }}
-            className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
-          >
+          <motion.div style={{
+          y: googleY
+        }} className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10">
             <div className="absolute top-4 right-4">
               <X className="w-8 h-8 text-destructive" strokeWidth={3} />
             </div>
-            <ShoppingCart className="w-12 h-12 mb-4" style={{ color: '#dc2626' }} />
-            <h3 className="text-2xl font-bold mb-2" style={{ color: '#dc2626' }}>The Supplement Graveyard</h3>
+            <ShoppingCart className="w-12 h-12 mb-4" style={{
+            color: '#dc2626'
+          }} />
+            <h3 className="text-2xl font-bold mb-2" style={{
+            color: '#dc2626'
+          }}>The Supplement Graveyard</h3>
             <p className="text-sm text-muted-foreground mb-4 italic">Your shame cabinet of wasted time and money</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
@@ -84,15 +85,18 @@ export const ProblemScene = () => {
             </ul>
           </motion.div>
 
-          <motion.div 
-            style={{ y: chatGptY }}
-            className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10"
-          >
+          <motion.div style={{
+          y: chatGptY
+        }} className="relative p-8 rounded-2xl border-2 border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10">
             <div className="absolute top-4 right-4">
               <X className="w-8 h-8 text-destructive" strokeWidth={3} />
             </div>
-            <Stethoscope className="w-12 h-12 mb-4" style={{ color: '#dc2626' }} />
-            <h3 className="text-2xl font-bold mb-2" style={{ color: '#dc2626' }}>Traditional Medicine</h3>
+            <Stethoscope className="w-12 h-12 mb-4" style={{
+            color: '#dc2626'
+          }} />
+            <h3 className="text-2xl font-bold mb-2" style={{
+            color: '#dc2626'
+          }}>Traditional Medicine</h3>
             <p className="text-sm text-muted-foreground mb-4 italic">They waste your time AND your money</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
@@ -123,14 +127,20 @@ export const ProblemScene = () => {
           </motion.div>
         </div>
 
-        <motion.div 
-          className="text-center bg-destructive/10 border-2 border-destructive/30 rounded-2xl p-6 sm:p-10 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-        >
-          <p className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4" style={{ color: '#dc2626' }}>
+        <motion.div className="text-center bg-destructive/10 border-2 border-destructive/30 rounded-2xl p-6 sm:p-10 mb-12" initial={{
+        opacity: 0,
+        y: 20
+      }} whileInView={{
+        opacity: 1,
+        y: 0
+      }} viewport={{
+        once: true
+      }} transition={{
+        delay: 0.3
+      }}>
+          <p className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4" style={{
+          color: '#dc2626'
+        }}>
             You're Not Broken. The System Is.
           </p>
           <p className="text-base sm:text-lg md:text-xl text-foreground mb-4 leading-relaxed">
@@ -141,13 +151,17 @@ export const ProblemScene = () => {
           </p>
         </motion.div>
 
-        <motion.div 
-          className="text-center bg-primary/10 border-2 border-primary/30 rounded-2xl p-6 sm:p-8"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-        >
+        <motion.div className="text-center bg-primary/10 border-2 border-primary/30 rounded-2xl p-6 sm:p-8" initial={{
+        opacity: 0,
+        y: 20
+      }} whileInView={{
+        opacity: 1,
+        y: 0
+      }} viewport={{
+        once: true
+      }} transition={{
+        delay: 0.5
+      }}>
           <p className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-3">
             It's Not About More Information
           </p>
@@ -158,6 +172,5 @@ export const ProblemScene = () => {
           </p>
         </motion.div>
       </div>
-    </div>
-  );
+    </div>;
 };
