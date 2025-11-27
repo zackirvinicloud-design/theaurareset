@@ -181,7 +181,7 @@ const Protocol = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <InteractiveTour />
       
       <ProtocolNav
@@ -194,7 +194,7 @@ const Protocol = () => {
         onSignOut={handleSignOut}
       />
       
-      <div className={`lg:ml-64 pt-14 lg:pt-0 pb-24 lg:pb-0 transition-all duration-300 ${chatOpen ? 'lg:mr-80' : ''}`}>
+      <div className={`lg:ml-64 pt-14 lg:pt-0 pb-24 lg:pb-0 transition-all duration-300 ${chatOpen ? 'lg:mr-80' : ''} overflow-x-hidden`}>
         <iframe
           ref={iframeRef}
           src="/protocol-original.html"
