@@ -95,7 +95,7 @@ export const ProtocolNav = ({
     <>
       {/* Mobile Header Bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-background/95 backdrop-blur-md border-b border-border/40 z-50 flex items-center justify-between px-4">
-        <h1 className="font-serif text-lg font-bold truncate">Gut Brain Journal</h1>
+        <h1 className="font-serif text-lg font-bold truncate">Gutbrain.app</h1>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
