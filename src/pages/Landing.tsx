@@ -1,9 +1,8 @@
-import { NoiseScene } from '@/components/landing/NoiseScene';
-import { ProblemScene } from '@/components/landing/ProblemScene';
-import { SignalScene } from '@/components/landing/SignalScene';
-import { JournalIntroScene } from '@/components/landing/JournalIntroScene';
-import { ExperienceScene } from '@/components/landing/ExperienceScene';
-import { TransformationScene } from '@/components/landing/TransformationScene';
+import { HeroSection } from '@/components/landing/HeroSection';
+import { BenefitsSection } from '@/components/landing/BenefitsSection';
+import { SocialProofSection } from '@/components/landing/SocialProofSection';
+import { PricingSection } from '@/components/landing/PricingSection';
+import { CTASection } from '@/components/landing/CTASection';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -45,14 +44,13 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Scroll Storytelling Experience */}
+      {/* Conversion-Optimized Sections */}
       <div className="pt-16">
-        <NoiseScene />
-        <ProblemScene />
-        <SignalScene />
-        <JournalIntroScene />
-        <ExperienceScene />
-        <TransformationScene />
+        <HeroSection />
+        <BenefitsSection />
+        <SocialProofSection />
+        <PricingSection />
+        <CTASection />
       </div>
 
       {/* Footer */}
@@ -62,9 +60,9 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Program</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Protocol</a></li>
               </ul>
             </div>
             <div>
@@ -91,7 +89,7 @@ const Landing = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 The Gut Brain Journal. Cut through the noise. Finally, a signal.</p>
+            <p>&copy; 2024 The Gut Brain Journal. Transform your gut health with Journey.</p>
           </div>
         </div>
       </footer>
