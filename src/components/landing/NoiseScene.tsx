@@ -11,7 +11,11 @@ const noisyAdvice = [
   "Insulin resistance", "CGM tracking", "Turmeric curcumin",
   "Fish oil daily", "Vitamin D deficiency", "Coffee enemas",
   "Cold plunges", "Sauna detox", "Grounding earthing",
-  "Wim Hof method", "Functional medicine", "Biohacking"
+  "Wim Hof method", "Functional medicine", "Biohacking",
+  "Shilajit resin", "Sea moss gel", "Collagen peptides",
+  "Ashwagandha", "Lion's mane", "Chlorophyll water",
+  "Magnesium glycinate", "Berberine", "L-theanine",
+  "Tongkat Ali", "Fadogia agrestis", "Turkey tail mushroom"
 ];
 
 export const NoiseScene = () => {
