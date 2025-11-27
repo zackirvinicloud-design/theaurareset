@@ -21,8 +21,8 @@ export const ProblemScene = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          <div className="inline-block px-4 py-2 bg-destructive/10 rounded-full mb-4">
-            <span className="text-sm font-semibold text-destructive">
+          <div className="inline-block px-4 py-2 bg-destructive/20 border border-destructive/30 rounded-full mb-4">
+            <span className="text-sm font-semibold text-destructive-foreground">
               90% quit within 2 weeks • You've been one of them
             </span>
           </div>
@@ -38,7 +38,8 @@ export const ProblemScene = () => {
         </motion.h2>
 
         <motion.p
-          className="text-base sm:text-lg md:text-xl text-center text-destructive font-semibold mb-2 max-w-3xl mx-auto px-4"
+          className="text-base sm:text-lg md:text-xl text-center font-bold mb-2 max-w-3xl mx-auto px-4"
+          style={{ color: '#dc2626' }}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -65,8 +66,8 @@ export const ProblemScene = () => {
             <div className="absolute top-4 right-4">
               <X className="w-8 h-8 text-destructive" strokeWidth={3} />
             </div>
-            <ShoppingCart className="w-12 h-12 mb-4 text-destructive" />
-            <h3 className="text-2xl font-bold mb-2 text-destructive">The Supplement Graveyard</h3>
+            <ShoppingCart className="w-12 h-12 mb-4" style={{ color: '#dc2626' }} />
+            <h3 className="text-2xl font-bold mb-2" style={{ color: '#dc2626' }}>The Supplement Graveyard</h3>
             <p className="text-sm text-muted-foreground mb-4 italic">Your shame cabinet of $270 billion failure</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
@@ -103,8 +104,8 @@ export const ProblemScene = () => {
             <div className="absolute top-4 right-4">
               <X className="w-8 h-8 text-destructive" strokeWidth={3} />
             </div>
-            <Stethoscope className="w-12 h-12 mb-4 text-destructive" />
-            <h3 className="text-2xl font-bold mb-2 text-destructive">Traditional Medicine</h3>
+            <Stethoscope className="w-12 h-12 mb-4" style={{ color: '#dc2626' }} />
+            <h3 className="text-2xl font-bold mb-2" style={{ color: '#dc2626' }}>Traditional Medicine</h3>
             <p className="text-sm text-muted-foreground mb-4 italic">They profit when you stay sick</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
@@ -142,7 +143,7 @@ export const ProblemScene = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.3 }}
         >
-          <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-destructive mb-4">
+          <p className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4" style={{ color: '#dc2626' }}>
             You're Not Broken. The System Is.
           </p>
           <p className="text-base sm:text-lg md:text-xl text-foreground mb-4 leading-relaxed">
