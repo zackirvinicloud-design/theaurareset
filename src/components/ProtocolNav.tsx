@@ -15,7 +15,7 @@ interface NavSection {
 
 const sections: NavSection[] = [
   { id: "welcome", title: "Welcome", emoji: "🌟" },
-  { id: "architecture", title: "Protocol Architecture", emoji: "🏗️" },
+  { id: "architecture", title: "Program Architecture", emoji: "🏗️" },
   { id: "shopping", title: "Shopping List", emoji: "🛒" },
   { id: "phase-1", title: "Phase 1: Liver Support", emoji: "🛡️" },
   { id: "phase-2", title: "Phase 2: Fungal", emoji: "🍄" },

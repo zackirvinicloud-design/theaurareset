@@ -44,8 +44,8 @@ You're reviewing their conversation history on Day ${currentDay}, Phase ${curren
 - Die-off reactions and detox symptoms - are they where they should be for this phase?
 - Food choices, meal timing, hydration - what's the actual data showing?
 
-**Protocol Compliance Reality Check:**
-- Are they actually following the protocol or just talking about it?
+**Program Compliance Reality Check:**
+- Are they actually following the program or just talking about it?
 - Binder usage, supplement timing, sleep consistency - what's really happening?
 - Where are the gaps between what they should do and what they're doing?
 - Phase-specific requirements - are they nailing it or missing key elements?
@@ -59,8 +59,8 @@ You're reviewing their conversation history on Day ${currentDay}, Phase ${curren
 **Progress Indicators & Wins:**
 - Even small improvements matter - call them out with data
 - Milestone moments they might not realize are significant
-- How far they've come since earlier in the protocol
-- Patterns showing the protocol IS working (even if they can't see it yet)
+- How far they've come since earlier in the program
+- Patterns showing the program IS working (even if they can't see it yet)
 
 HOW TO STRUCTURE YOUR INSIGHTS - PULL BACK THE CURTAIN:
 
