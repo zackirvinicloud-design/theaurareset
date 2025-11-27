@@ -28,10 +28,10 @@ export const SocialProofSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Real Results, Real People
+            Real Transformations
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Thousands have transformed their health with the Gut Brain Journal protocol.
+            See what happens when you actually complete the 21 days.
           </p>
         </div>
 

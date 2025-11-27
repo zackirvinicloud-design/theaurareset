@@ -22,10 +22,10 @@ export const PricingSection = () => {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Start Your Healing Journey Today
+            Get Instant Access
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground">
-            Everything you need to transform your gut health in 21 days.
+            One payment. Complete access. Start your transformation now.
           </p>
         </div>
 
@@ -37,16 +37,16 @@ export const PricingSection = () => {
         >
           {/* Popular badge */}
           <div className="absolute top-0 right-8 bg-primary text-primary-foreground px-6 py-2 text-sm font-semibold rounded-b-lg">
-            Most Popular
+            Limited Time
           </div>
 
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold mb-2">Free 21-Day Trial</h3>
+            <h3 className="text-2xl font-bold mb-2">Complete Gut Brain Journal</h3>
             <div className="flex items-baseline justify-center gap-2 mb-2">
-              <span className="text-5xl font-bold">$0</span>
-              <span className="text-muted-foreground">for 21 days</span>
+              <span className="text-5xl font-bold">$27</span>
+              <span className="text-muted-foreground">one-time</span>
             </div>
-            <p className="text-muted-foreground">Then $29/month • Cancel anytime</p>
+            <p className="text-muted-foreground">Instant access • Yours forever</p>
           </div>
 
           <div className="space-y-4 mb-8">
@@ -63,19 +63,19 @@ export const PricingSection = () => {
             onClick={() => navigate('/signup')}
             className="w-full gap-2 text-lg py-6"
           >
-            Start Your Free Trial
+            Get Journey Now - $27
             <ArrowRight className="w-5 h-5" />
           </Button>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            No credit card required • Access everything instantly
+            Secure checkout • Instant access • Start immediately
           </p>
         </motion.div>
 
         {/* Guarantee */}
         <div className="mt-12 text-center">
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            <span className="font-semibold text-foreground">30-Day Money-Back Guarantee.</span> If you don't see improvements in your gut health, energy, or mental clarity, we'll refund you completely.
+            <span className="font-semibold text-foreground">30-Day Money-Back Guarantee.</span> Complete the 21-day protocol. If you don't see real improvements in your gut health, energy, or mental clarity, we'll refund you—no questions asked.
           </p>
         </div>
       </div>
