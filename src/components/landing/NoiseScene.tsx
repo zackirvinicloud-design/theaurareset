@@ -123,8 +123,8 @@ export const NoiseScene = () => {
 
         {/* Simplified mobile version */}
         {isVisible && (
-          <div className="absolute inset-0 opacity-20 sm:hidden">
-          {noisyAdvice.slice(0, 8).map((text, i) => (
+          <div className="absolute inset-0 opacity-30 sm:hidden">
+          {noisyAdvice.slice(0, 25).map((text, i) => (
             <motion.div
               key={i}
               className="absolute text-xs font-medium text-muted-foreground whitespace-nowrap"
@@ -136,14 +136,16 @@ export const NoiseScene = () => {
                 x: [
                   Math.random() * window.innerWidth,
                   Math.random() * window.innerWidth,
+                  Math.random() * window.innerWidth,
                 ],
                 y: [
+                  Math.random() * window.innerHeight,
                   Math.random() * window.innerHeight,
                   Math.random() * window.innerHeight,
                 ],
               }}
               transition={{
-                duration: 20,
+                duration: 12 + Math.random() * 8,
                 repeat: Infinity,
                 ease: "linear"
               }}
