@@ -63,16 +63,12 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     }
   }, []); // Only run once on mount
 
-  // Auto-scroll to show top of new messages
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
-    if (scrollViewportRef.current && messages.length > 0) {
-      // Scroll to show the last message (top of it, not bottom)
-      const lastMessageElement = scrollViewportRef.current.querySelector('[data-message-id]:last-of-type');
-      if (lastMessageElement) {
-        lastMessageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+    if (scrollViewportRef.current) {
+      scrollViewportRef.current.scrollTop = scrollViewportRef.current.scrollHeight;
     }
-  }, [messages.length]); // Only trigger on new messages, not during streaming
+  }, [messages, isLoading]);
 
   // Attach scroll listener to viewport
   useEffect(() => {
@@ -269,10 +265,8 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           </div>
         ) : (
           <>
-            {messages.map((msg, index) => (
-              <div key={msg.id} data-message-id={msg.id}>
-                <ChatMessage {...msg} />
-              </div>
+            {messages.map((msg) => (
+              <ChatMessage key={msg.id} {...msg} />
             ))}
             {isLoading && (
               <div className="flex gap-3 mb-4">
