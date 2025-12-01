@@ -1,59 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const plans = [
-  {
-    name: 'Monthly',
-    price: '$29',
-    period: '/month',
-    description: 'Perfect for trying it out',
-    features: [
-      'Full 21-day protocol access',
-      'Unlimited AI assistant queries',
-      'Daily journal & tracking',
-      'Progress analytics',
-      'Email support',
-    ],
-    cta: 'Start Free Trial',
-    popular: false
-  },
-  {
-    name: 'Quarterly',
-    price: '$69',
-    period: '/3 months',
-    savings: 'Save 20%',
-    description: 'Most popular choice',
-    features: [
-      'Everything in Monthly, plus:',
-      'Priority AI response times',
-      'Advanced analytics dashboard',
-      'Personalized meal suggestions',
-      'Priority support',
-      'Exclusive community access',
-    ],
-    cta: 'Start Free Trial',
-    popular: true
-  },
-  {
-    name: 'Annual',
-    price: '$199',
-    period: '/year',
-    savings: 'Save 43%',
-    description: 'Best value for serious results',
-    features: [
-      'Everything in Quarterly, plus:',
-      'One-on-one protocol optimization',
-      'Custom supplement recommendations',
-      'Lifetime access to updates',
-      'VIP support (24hr response)',
-      'Early access to new features',
-    ],
-    cta: 'Start Free Trial',
-    popular: false
-  }
-];
 
 export const PricingSection = () => {
   const navigate = useNavigate();
@@ -64,7 +12,7 @@ export const PricingSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-muted/30 via-background to-background" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.1),transparent_50%)]" />
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -73,91 +21,123 @@ export const PricingSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            Investment in Your Health.{' '}
+            One Payment.{' '}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Not Another Expense.
+              Lifetime Access.
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Less than a single doctor's visit. More impact than years of trial and error.
+            Less than a single supplement bottle. More impact than thousands spent on trial and error.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative"
-            >
-              {plan.popular && (
-                <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
-                  <div className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold shadow-lg">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Most Popular
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-2xl mx-auto"
+        >
+          <div className="relative">
+            {/* Popular badge */}
+            <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
+              <div className="flex items-center gap-1 px-6 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold shadow-lg">
+                <Zap className="w-4 h-4" />
+                Limited Time Offer
+              </div>
+            </div>
+
+            <div className="relative p-12 rounded-3xl bg-gradient-to-br from-primary/10 via-background to-primary/5 border-2 border-primary shadow-2xl">
+              {/* Price */}
+              <div className="text-center mb-8">
+                <div className="inline-block mb-4">
+                  <div className="text-sm text-muted-foreground line-through mb-1">$197</div>
+                  <div className="flex items-baseline justify-center gap-2">
+                    <span className="text-7xl font-bold">$27</span>
                   </div>
-                </div>
-              )}
-              
-              <div className={`relative h-full p-8 rounded-2xl border transition-all duration-300 ${
-                plan.popular 
-                  ? 'bg-primary/5 border-primary shadow-xl scale-105' 
-                  : 'bg-card border-border hover:border-primary/40 hover:shadow-lg'
-              }`}>
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  {plan.savings && (
-                    <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-2">
-                      {plan.savings}
-                    </div>
-                  )}
-                  <p className="text-muted-foreground">{plan.description}</p>
+                  <div className="text-lg text-muted-foreground mt-2">One-time payment • Lifetime access</div>
                 </div>
 
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => navigate('/signup')}
-                  className={`w-full mb-6 h-12 text-base font-semibold ${
-                    plan.popular ? 'shadow-lg' : ''
-                  }`}
-                  variant={plan.popular ? 'default' : 'outline'}
-                >
-                  {plan.cta}
-                </Button>
-
-                <div className="space-y-3">
-                  {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="mt-0.5 flex-shrink-0">
-                        <Check className="w-5 h-5 text-primary" />
-                      </div>
-                      <span className="text-sm leading-relaxed">{feature}</span>
-                    </div>
-                  ))}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 text-primary text-sm font-semibold mb-6">
+                  <Sparkles className="w-4 h-4" />
+                  Save $170 Today
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
 
+              {/* CTA */}
+              <Button
+                onClick={() => navigate('/signup')}
+                className="w-full mb-8 h-16 text-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
+              >
+                Get Lifetime Access Now
+              </Button>
+
+              {/* Features */}
+              <div className="space-y-4 mb-8">
+                <h3 className="text-xl font-bold text-center mb-6">Everything Included:</h3>
+                {[
+                  'Complete 21-day gut-brain protocol',
+                  'Unlimited GutBrain AI assistant access',
+                  'Daily journal & symptom tracking',
+                  'Advanced progress analytics dashboard',
+                  'Personalized meal & supplement suggestions',
+                  'Priority email support',
+                  'All future updates & features (free forever)',
+                  'Private community access',
+                  'Downloadable resources & guides',
+                ].map((feature, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                    className="flex items-start gap-3"
+                  >
+                    <div className="mt-0.5 flex-shrink-0">
+                      <Check className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="text-base leading-relaxed">{feature}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Guarantee */}
+              <div className="pt-8 border-t border-border text-center">
+                <p className="text-sm text-muted-foreground mb-2">
+                  ✓ 30-Day Money-Back Guarantee
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  If you don't see results, we'll refund you. No questions asked.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Comparison */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="text-center text-muted-foreground"
+          className="mt-16 text-center space-y-2"
         >
-          <p className="mb-2">✓ 7-day free trial • Cancel anytime • No hidden fees</p>
-          <p className="text-sm">Compare: Average functional medicine visit: $300-500/session</p>
+          <p className="text-muted-foreground">Compare to alternatives:</p>
+          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-sm">
+            <div className="p-4 rounded-lg bg-muted/30">
+              <div className="font-semibold mb-1">Functional Medicine</div>
+              <div className="text-muted-foreground">$300-500 per visit</div>
+            </div>
+            <div className="p-4 rounded-lg bg-muted/30">
+              <div className="font-semibold mb-1">Supplement Trial & Error</div>
+              <div className="text-muted-foreground">$2,000+ wasted</div>
+            </div>
+            <div className="p-4 rounded-lg bg-muted/30">
+              <div className="font-semibold mb-1">Gut Health Programs</div>
+              <div className="text-muted-foreground">$99-297/month</div>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
