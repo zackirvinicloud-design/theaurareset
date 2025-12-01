@@ -50,7 +50,7 @@ export const HeroSection = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
         >
           <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">plus gutbrain ai for instant insights and personal guidance</span>
+          <span className="text-sm font-medium text-primary">Your structured 21-day program</span>
         </motion.div>
 
         {/* Main headline */}
@@ -77,7 +77,7 @@ export const HeroSection = () => {
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
           <span className="text-foreground font-semibold">Everyone has an opinion. Nobody has a plan.</span>{' '}
-          Get the exact 21-day program that tells you what to do, when to do it—plus GutBrain AI for instant answers to your specific questions.{' '}
+          Get the exact 21-day program that tells you what to do, when to do it—plus GutBrain AI for instant insights and personal guidance.{' '}
           <span className="text-foreground font-semibold">No more confusion. Just results.</span>
         </motion.p>
 
