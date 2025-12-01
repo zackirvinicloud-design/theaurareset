@@ -1,6 +1,11 @@
+import { HeroSection } from '@/components/landing/HeroSection';
+import { FeaturesShowcase } from '@/components/landing/FeaturesShowcase';
+import { TransformationProof } from '@/components/landing/TransformationProof';
+import { PricingSection } from '@/components/landing/PricingSection';
+import { FinalCTA } from '@/components/landing/FinalCTA';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Brain, Calendar, Target } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -39,70 +44,11 @@ const Landing = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            Your Gut-Brain Health Journey
-          </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            A structured 21-day program with AI-powered insights to help you understand and optimize your gut-brain connection.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={() => navigate('/signup')}
-              size="lg"
-              className="text-base sm:text-lg h-12 sm:h-14"
-            >
-              Start Free Trial
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Button>
-            <Button 
-              onClick={() => navigate('/auth')}
-              variant="outline"
-              size="lg"
-              className="text-base sm:text-lg h-12 sm:h-14"
-            >
-              Sign In
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-muted/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Calendar className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">21-Day Program</h3>
-              <p className="text-muted-foreground">
-                Step-by-step guidance through your gut health transformation
-              </p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">AI-Powered Insights</h3>
-              <p className="text-muted-foreground">
-                Get personalized answers and guidance instantly
-              </p>
-            </div>
-            <div className="text-center p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Target className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Daily Tracking</h3>
-              <p className="text-muted-foreground">
-                Monitor your progress and stay accountable
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection />
+      <FeaturesShowcase />
+      <TransformationProof />
+      <PricingSection />
+      <FinalCTA />
 
       {/* Footer */}
       <footer className="bg-muted/30 border-t border-border py-12 px-4">
