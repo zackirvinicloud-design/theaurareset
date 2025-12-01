@@ -76,12 +76,10 @@ export const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
-          No more bloating. No more brain fog. No more{' '}
-          <span className="text-foreground font-semibold">wasted money on things that don't work</span>.{' '}
-          Get the{' '}
-          <span className="text-foreground font-semibold">exact 21-day roadmap</span>{' '}
-          + instant answers to{' '}
-          <span className="text-foreground font-semibold">every question you'll have</span>.
+          <span className="text-foreground font-semibold">Tired of conflicting advice?</span>{' '}
+          There's a proven 21-day roadmap that actually works.{' '}
+          <span className="text-foreground font-semibold">Daily steps. Instant answers. Real results.</span>{' '}
+          Everything you need to finally fix your gut health—for just $19.
         </motion.p>
 
         {/* CTAs */}
