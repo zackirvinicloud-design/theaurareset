@@ -69,10 +69,10 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
               variant="outline"
               size="sm"
               className="gap-1.5 text-xs h-9 px-3 hover-scale"
-              title="Phase Tutorial"
+              title="Learn about this phase"
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Learn</span>
+              Learn
             </Button>
             {!isLastDay && (
               <Button
@@ -80,7 +80,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
                 size="sm"
                 className="gap-1.5 text-xs h-9 px-4"
               >
-                Next
+                Next Day
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             )}
