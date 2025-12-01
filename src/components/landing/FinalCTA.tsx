@@ -38,17 +38,17 @@ export const FinalCTA = () => {
               size="lg"
               className="text-xl h-20 px-12 gap-3 shadow-2xl hover:shadow-primary/50 transition-all duration-300 group"
             >
-              Start Your Free Trial Now
+              Get Lifetime Access Now
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </Button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
-            <div>✓ 7-day free trial</div>
+            <div>✓ $19 one-time payment</div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <div>✓ No credit card required</div>
+            <div>✓ Lifetime access</div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <div>✓ Cancel anytime</div>
+            <div>✓ 30-day money-back guarantee</div>
           </div>
         </motion.div>
 

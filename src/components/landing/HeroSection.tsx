@@ -94,7 +94,7 @@ export const HeroSection = () => {
             size="lg"
             className="text-lg h-16 px-8 gap-3 shadow-xl hover:shadow-2xl transition-all duration-300 group"
           >
-            Start Your Free Trial
+            Get Started Now
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
           <Button
