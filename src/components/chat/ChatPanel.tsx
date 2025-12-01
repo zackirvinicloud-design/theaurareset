@@ -220,9 +220,9 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6">
             <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
-            <h4 className="font-semibold text-sm mb-2">Your Gut Brain Guide</h4>
+            <h4 className="font-semibold text-sm mb-2">Your Personal Nutrition Coach</h4>
             <p className="text-xs text-muted-foreground mb-4 max-w-[240px]">
-              Get personalized support through your 21-day gut-brain detox protocol.
+              I'm here to guide you through every step of your healing journey - ask me anything.
             </p>
             <div className="flex flex-col gap-2 w-full max-w-[240px]">
               {SUGGESTED_PROMPTS.map((prompt, i) => (
