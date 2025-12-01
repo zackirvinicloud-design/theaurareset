@@ -53,14 +53,14 @@ export const PricingSection = () => {
                 <div className="inline-block mb-4">
                   <div className="text-sm text-muted-foreground line-through mb-1">$197</div>
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-7xl font-bold">$27</span>
+                    <span className="text-7xl font-bold">$19</span>
                   </div>
                   <div className="text-lg text-muted-foreground mt-2">One-time payment • Lifetime access</div>
                 </div>
 
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 text-primary text-sm font-semibold mb-6">
                   <Sparkles className="w-4 h-4" />
-                  Save $170 Today
+                  Save $178 Today
                 </div>
               </div>
 
