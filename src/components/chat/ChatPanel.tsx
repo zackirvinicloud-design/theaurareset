@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Download, Trash2, Bot } from 'lucide-react';
+import { MessageSquare, Download, Trash2, Bot, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -32,7 +32,9 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
   const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-generate insights every 5 messages
   useAutoInsights({ messages, userProgress });
@@ -61,11 +63,21 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     }
   }, []); // Only run once on mount
 
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  // Detect if user has scrolled up
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
+    const isNearBottom = target.scrollHeight - target.scrollTop - target.clientHeight < 100;
+    setShowScrollButton(!isNearBottom && messages.length > 0);
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleSend = async (content: string) => {
     addMessage({ role: 'user', content });
@@ -216,8 +228,9 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
       />
 
       {/* Messages */}
-      <ScrollArea className="flex-1 pt-4 px-4" ref={scrollRef}>
-        {messages.length === 0 ? (
+      <div className="flex-1 relative">
+        <ScrollArea className="h-full pt-4 px-4" onScrollCapture={handleScroll}>
+          {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6">
             <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
             <h4 className="font-semibold text-sm mb-2">Your Personal Nutrition Coach</h4>
@@ -258,9 +271,23 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </>
         )}
-      </ScrollArea>
+        </ScrollArea>
+        
+        {/* Scroll to bottom button */}
+        {showScrollButton && (
+          <Button
+            variant="secondary"
+            size="icon"
+            className="absolute bottom-4 right-4 rounded-full shadow-lg z-10 h-10 w-10"
+            onClick={scrollToBottom}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
 
       {/* Input */}
       <ChatInput onSend={handleSend} disabled={isLoading} />
