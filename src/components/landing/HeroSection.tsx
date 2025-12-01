@@ -76,9 +76,9 @@ export const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
-          <span className="text-foreground font-semibold">Cut through the noise.</span>{' '}
-          The exact steps to take every day for 21 days—plus instant answers when you're stuck.{' '}
-          <span className="text-foreground font-semibold">Finally know what to do.</span>
+          <span className="text-foreground font-semibold">Everyone has an opinion. Nobody has a plan.</span>{' '}
+          Get the exact 21-day program that tells you what to do, when to do it—plus instant expert answers for your specific situation.{' '}
+          <span className="text-foreground font-semibold">No more confusion. Just results.</span>
         </motion.p>
 
         {/* CTAs */}
