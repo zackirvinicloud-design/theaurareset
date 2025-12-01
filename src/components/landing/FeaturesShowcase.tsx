@@ -12,7 +12,7 @@ const features = [
   },
   {
     icon: Brain,
-    title: 'Journey AI Assistant',
+    title: 'GutBrain AI Assistant',
     description: 'Your personal gut-brain expert. Get granular answers instantly—no waiting, no guessing.',
     stat: 'Answers in seconds',
     color: 'from-purple-500/20 to-pink-500/20',
