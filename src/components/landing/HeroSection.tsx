@@ -77,7 +77,7 @@ export const HeroSection = () => {
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
           <span className="text-foreground font-semibold">Everyone has an opinion. Nobody has a plan.</span>{' '}
-          Get the exact 21-day program that tells you what to do, when to do it—plus instant expert answers for your specific situation.{' '}
+          Get the exact 21-day program that tells you what to do, when to do it—plus GutBrain AI for instant answers to your specific questions.{' '}
           <span className="text-foreground font-semibold">No more confusion. Just results.</span>
         </motion.p>
 
