@@ -67,6 +67,10 @@ export const HeroSection = () => {
           <span className="bg-gradient-to-r from-primary via-primary to-primary/60 bg-clip-text text-transparent">
             Start Healing.
           </span>
+          <br />
+          <span className="text-2xl sm:text-3xl md:text-4xl bg-gradient-to-r from-muted-foreground to-foreground/60 bg-clip-text text-transparent">
+            GutBrain AI guides you every step of the way.
+          </span>
         </motion.h1>
 
         {/* Subheadline */}
