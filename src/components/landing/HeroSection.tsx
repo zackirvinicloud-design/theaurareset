@@ -76,10 +76,11 @@ export const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
-          <span className="text-foreground font-semibold">You've tried everything. Nothing worked.</span>{' '}
-          Here's the exact 21-day program that finally gets results.{' '}
-          <span className="text-foreground font-semibold">Daily action steps + instant expert guidance</span>{' '}
-          = no more guessing. Just $19, lifetime access.
+          <span className="text-foreground font-semibold">Drowning in conflicting health advice?</span>{' '}
+          Cut through the noise. Get the{' '}
+          <span className="text-foreground font-semibold">exact steps to take every single day</span>{' '}
+          for 21 days—plus instant answers when you're confused.{' '}
+          <span className="text-foreground font-semibold">Finally know exactly what to do.</span>
         </motion.p>
 
         {/* CTAs */}
