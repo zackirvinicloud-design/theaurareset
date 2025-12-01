@@ -232,7 +232,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
                   size="sm"
                   onClick={() => handleSend(prompt)}
                   disabled={isLoading}
-                  className="text-xs justify-start h-auto py-2 px-3"
+                  className="text-xs justify-start h-auto py-2.5 px-3 whitespace-normal text-left leading-relaxed"
                 >
                   {prompt}
                 </Button>
