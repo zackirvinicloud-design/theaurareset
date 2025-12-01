@@ -5,6 +5,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  suggestions?: string[];
 }
 
 export interface UserProgress {
@@ -75,13 +76,14 @@ export const useChatStore = () => {
     return newMessage;
   };
 
-  const updateLastMessage = (content: string) => {
+  const updateLastMessage = (content: string, suggestions?: string[]) => {
     setStore(prev => {
       const messages = [...prev.messages];
       if (messages.length > 0) {
         messages[messages.length - 1] = {
           ...messages[messages.length - 1],
           content,
+          ...(suggestions && { suggestions }),
         };
       }
       return { ...prev, messages };

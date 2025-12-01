@@ -72,7 +72,7 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     setIsLoading(true);
 
     let assistantContent = '';
-    const assistantMsg = addMessage({ role: 'assistant', content: '' });
+    let suggestions: string[] = [];
 
     // Build enhanced context with user progress
     const phaseNames = ['Preliminary (Prep)', 'Fungal + Foundation', 'Parasites + Foundation', 'Heavy Metals + Foundation'];
@@ -96,8 +96,16 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
             // Remove the marker from the displayed content
             assistantContent = assistantContent.replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/, '');
           }
+
+          // Check for suggestions marker
+          const suggestionsMatch = assistantContent.match(/\[SUGGESTIONS:(.*?)\]/);
+          if (suggestionsMatch) {
+            suggestions = suggestionsMatch[1].split('|').map(s => s.trim()).filter(Boolean);
+            // Remove the marker from the displayed content
+            assistantContent = assistantContent.replace(/\[SUGGESTIONS:.*?\]\s*/, '');
+          }
           
-          updateLastMessage(assistantContent);
+          updateLastMessage(assistantContent, suggestions);
         },
         onDone: () => {
           setIsLoading(false);
@@ -242,7 +250,11 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
         ) : (
           <>
             {messages.map((msg) => (
-              <ChatMessage key={msg.id} {...msg} />
+              <ChatMessage 
+                key={msg.id} 
+                {...msg} 
+                onSuggestionClick={handleSend}
+              />
             ))}
             {isLoading && (
               <div className="flex gap-3 mb-4">
