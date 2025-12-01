@@ -13,7 +13,7 @@ const features = [
   {
     icon: Brain,
     title: 'GutBrain AI Assistant',
-    description: 'Your personal gut-brain expert. Get granular answers instantly—no waiting, no guessing.',
+    description: 'Your personal gut-brain expert. Get granular answers instantly—no waiting, no guessing. All conversations stay private on your device.',
     stat: 'Answers in seconds',
     color: 'from-purple-500/20 to-pink-500/20',
     iconColor: 'text-purple-500'
@@ -73,7 +73,7 @@ export const FeaturesShowcase = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            While others give you generic advice, we give you a personalized roadmap with AI-powered support every step of the way.
+            While others give you generic advice, we give you a personalized roadmap with GutBrain AI guiding you every step of the way.
           </p>
         </motion.div>
 

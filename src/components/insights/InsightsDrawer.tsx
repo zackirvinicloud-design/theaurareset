@@ -28,9 +28,9 @@ export const InsightsDrawer = () => {
       </SheetTrigger>
       <SheetContent side="right" className="w-[400px] sm:w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>AI Insights</SheetTitle>
+          <SheetTitle>Journey Insights</SheetTitle>
           <SheetDescription>
-            AI-powered deep analysis of your journey patterns
+            Advanced deep analysis of your journey patterns
           </SheetDescription>
         </SheetHeader>
         <div className="mt-6 pb-6">

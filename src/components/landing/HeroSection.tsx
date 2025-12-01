@@ -76,7 +76,7 @@ export const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
-          The only AI-powered gut-brain protocol that gives you{' '}
+          The only intelligent gut-brain protocol that gives you{' '}
           <span className="text-foreground font-semibold">exact steps</span>,{' '}
           <span className="text-foreground font-semibold">instant answers</span>, and{' '}
           <span className="text-foreground font-semibold">real results</span>.
