@@ -50,7 +50,7 @@ export const HeroSection = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
         >
           <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Your structured 21-day program</span>
+          <span className="text-sm font-medium text-primary">Your structured 21-day protocol</span>
         </motion.div>
 
         {/* Main headline */}
@@ -77,7 +77,7 @@ export const HeroSection = () => {
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
           <span className="text-foreground font-semibold">Everyone has an opinion. Nobody has a plan.</span>{' '}
-          Get the exact 21-day program that tells you what to do, when to do it—plus GutBrain AI for instant insights and personal guidance.{' '}
+          Get the exact 21-day protocol that tells you what to do, when to do it—plus GutBrain AI for instant insights and personal guidance.{' '}
           <span className="text-foreground font-semibold">No more confusion. Just results.</span>
         </motion.p>
 
@@ -120,8 +120,8 @@ export const HeroSection = () => {
             <span className="ml-2 font-medium text-foreground">4.9/5</span>
           </div>
           <div className="hidden sm:block w-1 h-1 rounded-full bg-muted-foreground/30" />
-          <div>
-            <span className="font-semibold text-foreground">10,000+</span> people transforming their health
+          <div className="font-medium">
+            <span className="text-foreground">$19 one-time</span> • No subscription ever
           </div>
         </motion.div>
       </div>
