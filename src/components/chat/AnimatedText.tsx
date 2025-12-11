@@ -6,57 +6,54 @@ interface AnimatedTextProps {
   speed?: number; // characters per second
 }
 
-export const AnimatedText = ({ targetText, isComplete, speed = 40 }: AnimatedTextProps) => {
+export const AnimatedText = ({ targetText, isComplete, speed = 50 }: AnimatedTextProps) => {
   const [displayedLength, setDisplayedLength] = useState(0);
-  const animationRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number>(0);
+  const displayedLengthRef = useRef(0);
 
   useEffect(() => {
     // If complete, show all text immediately
     if (isComplete) {
       setDisplayedLength(targetText.length);
+      displayedLengthRef.current = targetText.length;
+      return;
+    }
+
+    // If we're already caught up, no need to animate
+    if (displayedLengthRef.current >= targetText.length) {
       return;
     }
 
     const msPerChar = 1000 / speed;
+    let animationId: number;
+    let lastTime = performance.now();
 
     const animate = (timestamp: number) => {
-      if (!lastTimeRef.current) {
-        lastTimeRef.current = timestamp;
-      }
-
-      const elapsed = timestamp - lastTimeRef.current;
+      const elapsed = timestamp - lastTime;
       
       if (elapsed >= msPerChar) {
         const charsToAdd = Math.floor(elapsed / msPerChar);
-        setDisplayedLength(prev => {
-          const newLength = Math.min(prev + charsToAdd, targetText.length);
-          return newLength;
-        });
-        lastTimeRef.current = timestamp;
+        const newLength = Math.min(displayedLengthRef.current + charsToAdd, targetText.length);
+        
+        if (newLength !== displayedLengthRef.current) {
+          displayedLengthRef.current = newLength;
+          setDisplayedLength(newLength);
+        }
+        
+        lastTime = timestamp;
       }
 
-      if (displayedLength < targetText.length) {
-        animationRef.current = requestAnimationFrame(animate);
+      // Continue animating if not caught up
+      if (displayedLengthRef.current < targetText.length) {
+        animationId = requestAnimationFrame(animate);
       }
     };
 
-    animationRef.current = requestAnimationFrame(animate);
+    animationId = requestAnimationFrame(animate);
 
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      cancelAnimationFrame(animationId);
     };
-  }, [targetText, isComplete, speed, displayedLength]);
-
-  // Reset animation when targetText grows (new streaming content)
-  useEffect(() => {
-    if (targetText.length > displayedLength && !isComplete) {
-      // Continue animation from current position
-      lastTimeRef.current = 0;
-    }
-  }, [targetText.length]);
+  }, [targetText, isComplete, speed]);
 
   const displayedText = targetText.slice(0, displayedLength);
   const showCursor = !isComplete && displayedLength < targetText.length;
