@@ -265,9 +265,17 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           </div>
         ) : (
           <>
-            {messages.map((msg) => (
-              <ChatMessage key={msg.id} {...msg} />
-            ))}
+            {messages.map((msg, index) => {
+              const isLastMessage = index === messages.length - 1;
+              const isStreamingMessage = isLastMessage && msg.role === 'assistant' && isLoading;
+              return (
+                <ChatMessage 
+                  key={msg.id} 
+                  {...msg} 
+                  isStreaming={isStreamingMessage}
+                />
+              );
+            })}
             {isLoading && (
               <div className="flex gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">

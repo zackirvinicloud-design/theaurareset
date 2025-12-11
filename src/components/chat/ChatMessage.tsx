@@ -1,13 +1,15 @@
 import { Bot, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AnimatedText } from './AnimatedText';
 
 interface ChatMessageProps {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  isStreaming?: boolean;
 }
 
-export const ChatMessage = ({ role, content, timestamp }: ChatMessageProps) => {
+export const ChatMessage = ({ role, content, timestamp, isStreaming = false }: ChatMessageProps) => {
   const isUser = role === 'user';
   const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -30,7 +32,17 @@ export const ChatMessage = ({ role, content, timestamp }: ChatMessageProps) => {
             ? 'bg-primary text-primary-foreground' 
             : 'bg-muted text-foreground'
         )}>
-          <p className="text-sm whitespace-pre-wrap break-words">{content}</p>
+          <p className="text-sm whitespace-pre-wrap break-words">
+            {isUser ? (
+              content
+            ) : (
+              <AnimatedText 
+                targetText={content} 
+                isComplete={!isStreaming}
+                speed={50}
+              />
+            )}
+          </p>
         </div>
         <span className="text-xs text-muted-foreground mt-1">{time}</span>
       </div>
