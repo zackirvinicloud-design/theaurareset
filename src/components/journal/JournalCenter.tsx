@@ -23,6 +23,7 @@ interface JournalCenterProps {
     onAddCustomItem?: (label: string, source?: 'ai' | 'manual') => void;
     pendingPrompt?: string | null;
     onPendingPromptConsumed?: () => void;
+    isMobile?: boolean;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -46,6 +47,7 @@ export const JournalCenter = ({
     onAddCustomItem,
     pendingPrompt,
     onPendingPromptConsumed,
+    isMobile = false,
 }: JournalCenterProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showScrollButton, setShowScrollButton] = useState(false);
@@ -154,40 +156,42 @@ export const JournalCenter = ({
 
     return (
         <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
-                <div className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-primary" />
-                    <div>
-                        <h3 className="font-semibold text-sm">Your Journal</h3>
-                        <p className="text-xs text-muted-foreground">
-                            {getDayLabel(progress.currentDay)} · {phase.shortName} Phase
-                        </p>
+            {/* Header — hidden on mobile (TopBar handles it) */}
+            {!isMobile && (
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
+                    <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-primary" />
+                        <div>
+                            <h3 className="font-semibold text-sm">Your Journal</h3>
+                            <p className="text-xs text-muted-foreground">
+                                {getDayLabel(progress.currentDay)} · {phase.shortName} Phase
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Button
+                            onClick={onExportChat}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            disabled={entries.length === 0}
+                            title="Export journal"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                            onClick={handleClear}
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            disabled={entries.length === 0}
+                            title="Clear today's entries"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                     </div>
                 </div>
-                <div className="flex items-center gap-1">
-                    <Button
-                        onClick={onExportChat}
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        disabled={entries.length === 0}
-                        title="Export journal"
-                    >
-                        <Download className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button
-                        onClick={handleClear}
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        disabled={entries.length === 0}
-                        title="Clear today's entries"
-                    >
-                        <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                </div>
-            </div>
+            )}
 
             {/* Messages area */}
             <div className="flex-1 relative overflow-hidden">
@@ -274,25 +278,27 @@ export const JournalCenter = ({
                 )}
             </div>
 
-            {/* Quick actions bar */}
-            <div className="px-4 py-2 border-t border-border/30 flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-7 gap-1"
-                    onClick={onOpenSymptomLogger}
-                >
-                    📝 Log Symptom
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-7 gap-1"
-                    onClick={onOpenMoodTracker}
-                >
-                    😊 Mood Check
-                </Button>
-            </div>
+            {/* Quick actions bar — hidden on mobile (bottom nav handles it) */}
+            {!isMobile && (
+                <div className="px-4 py-2 border-t border-border/30 flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs h-7 gap-1"
+                        onClick={onOpenSymptomLogger}
+                    >
+                        📝 Log Symptom
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs h-7 gap-1"
+                        onClick={onOpenMoodTracker}
+                    >
+                        😊 Mood Check
+                    </Button>
+                </div>
+            )}
 
             {/* Input */}
             <ChatInput onSend={handleSend} disabled={isLoading} />

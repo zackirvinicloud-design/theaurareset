@@ -189,7 +189,7 @@ const Protocol = () => {
         </aside>
 
         {/* ── Center: Journal ── */}
-        <main className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${refOpen ? 'lg:mr-80' : ''}`}>
+        <main className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${refOpen ? 'lg:mr-80' : ''} ${isMobile ? 'pb-14' : ''}`}>
           {activeView === 'shopping' ? (
             <ShoppingListView
               currentDay={store.progress.currentDay}
@@ -213,6 +213,7 @@ const Protocol = () => {
               onAddCustomItem={store.addCustomItem}
               pendingPrompt={pendingPrompt}
               onPendingPromptConsumed={() => setPendingPrompt(null)}
+              isMobile={isMobile}
             />
           )}
         </main>
@@ -228,47 +229,62 @@ const Protocol = () => {
 
       {/* ── Mobile Bottom Nav ── */}
       {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 px-2 py-2 flex items-center gap-2 safe-area-bottom">
-          <Sheet open={mobileChecklistOpen} onOpenChange={setMobileChecklistOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs">
-                <ClipboardList className="w-3.5 h-3.5" />
-                Checklist
-                <span className="text-muted-foreground">
-                  {completedToday}/{currentItems.length}
-                </span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl pt-6">
-              <DailyChecklist
-                currentDay={store.progress.currentDay}
-                currentPhase={store.progress.currentPhase}
-                checklist={store.checklist}
-                customItems={store.customItems}
-                onToggle={store.toggleChecklistItem}
-                onAddCustomItem={store.addCustomItem}
-                onRemoveCustomItem={store.removeCustomItem}
-                onAskAbout={handleAskAbout}
-              />
-            </SheetContent>
-          </Sheet>
-
-          <Sheet open={mobileRefOpen} onOpenChange={setMobileRefOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="flex-1 gap-1.5 text-xs">
-                <BookOpen className="w-3.5 h-3.5" />
-                Protocol
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl pt-6">
-              <div className="h-full overflow-y-auto">
-                <MobileProtocolRef
-                  currentPhase={store.progress.currentPhase}
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 safe-area-bottom">
+          <div className="flex items-center justify-around px-2 py-1.5">
+            <Sheet open={mobileChecklistOpen} onOpenChange={setMobileChecklistOpen}>
+              <SheetTrigger asChild>
+                <button className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors">
+                  <ClipboardList className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground font-medium">Checklist</span>
+                </button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl pt-6">
+                <DailyChecklist
                   currentDay={store.progress.currentDay}
+                  currentPhase={store.progress.currentPhase}
+                  checklist={store.checklist}
+                  customItems={store.customItems}
+                  onToggle={store.toggleChecklistItem}
+                  onAddCustomItem={store.addCustomItem}
+                  onRemoveCustomItem={store.removeCustomItem}
+                  onAskAbout={handleAskAbout}
                 />
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+
+            <Sheet open={mobileRefOpen} onOpenChange={setMobileRefOpen}>
+              <SheetTrigger asChild>
+                <button className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors">
+                  <BookOpen className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground font-medium">Protocol</span>
+                </button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl pt-6">
+                <div className="h-full overflow-y-auto">
+                  <MobileProtocolRef
+                    currentPhase={store.progress.currentPhase}
+                    currentDay={store.progress.currentDay}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            <button
+              onClick={() => setSymptomOpen(true)}
+              className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <span className="text-lg leading-none">📝</span>
+              <span className="text-[10px] text-muted-foreground font-medium">Symptom</span>
+            </button>
+
+            <button
+              onClick={() => setMoodOpen(true)}
+              className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <span className="text-lg leading-none">😊</span>
+              <span className="text-[10px] text-muted-foreground font-medium">Mood</span>
+            </button>
+          </div>
         </div>
       )}
 
