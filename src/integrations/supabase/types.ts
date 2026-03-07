@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
@@ -41,6 +39,129 @@ export type Database = {
           payment_provider?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          id: string
+          user_id: string
+          current_day: number
+          current_phase: number
+          streak_count: number
+          last_active_date: string | null
+          start_date: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          current_day?: number
+          current_phase?: number
+          streak_count?: number
+          last_active_date?: string | null
+          start_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          current_day?: number
+          current_phase?: number
+          streak_count?: number
+          last_active_date?: string | null
+          start_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          role: string
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          role: string
+          content: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          role?: string
+          content?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      symptom_logs: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          symptom_type: string
+          severity: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          symptom_type: string
+          severity: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          symptom_type?: string
+          severity?: number
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      daily_checklists: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          item_key: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          item_key: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          item_key?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
         }
         Relationships: []
       }
