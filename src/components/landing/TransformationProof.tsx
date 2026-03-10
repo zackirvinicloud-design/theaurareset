@@ -1,28 +1,34 @@
 import { motion } from 'framer-motion';
-import { Quote } from 'lucide-react';
+import { CheckCircle2, CircleSlash2 } from 'lucide-react';
 
-const testimonials = [
+const steps = [
   {
-    name: "Sarah M.",
-    role: "Marketing Executive",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-    quote: "After 10 years of IBS, I finally have answers. The AI assistant helped me identify my exact triggers in just 2 weeks. Life-changing.",
-    metric: "90% symptom reduction"
+    number: '01',
+    title: 'Prep once',
+    description: 'Get your kitchen, supplements, and shopping list ready before the protocol starts.',
   },
   {
-    name: "Michael R.",
-    role: "Software Engineer",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-    quote: "I wasted $5,000+ on supplements that didn't work. This protocol gave me a systematic approach that actually works. Wish I found this years ago.",
-    metric: "Saved $4,000+"
+    number: '02',
+    title: 'Follow today',
+    description: 'Open the app and see the current day grouped into clear morning, afternoon, and evening actions.',
   },
   {
-    name: "Jennifer K.",
-    role: "Yoga Instructor",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
-    quote: "The daily structure and AI insights kept me accountable. My brain fog is gone, energy is through the roof. I feel like myself again.",
-    metric: "3x energy increase"
-  }
+    number: '03',
+    title: 'Ask and log',
+    description: 'Use AI for clarification and keep lightweight notes on symptoms and mood as you go.',
+  },
+];
+
+const goodFit = [
+  'People who want a clear daily plan instead of more research.',
+  'People willing to follow a structured 21-day reset.',
+  'People who want guidance without hiring a coach.',
+];
+
+const notFit = [
+  'People looking for medical diagnosis or urgent care.',
+  'People who want a fully custom protocol engine.',
+  'People who prefer content browsing over step-by-step execution.',
 ];
 
 export const TransformationProof = () => {
@@ -37,18 +43,18 @@ export const TransformationProof = () => {
           className="text-center mb-20"
         >
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            Real People. Real Results.{' '}
+            How It{' '}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Real Fast.
+              Works.
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Join thousands who stopped suffering and started thriving
+            The reset is straightforward when the product stays focused on the job: prep, follow, and keep moving.
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
+          {steps.map((step, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -58,55 +64,48 @@ export const TransformationProof = () => {
               className="relative"
             >
               <div className="h-full p-8 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-xl">
-                <Quote className="w-10 h-10 text-primary/30 mb-4" />
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-lg font-bold mb-6">
+                  {step.number}
+                </div>
                 
-                <p className="text-lg leading-relaxed mb-6">
-                  "{testimonial.quote}"
+                <h3 className="text-2xl font-bold mb-3">{step.title}</h3>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {step.description}
                 </p>
-                
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                  </div>
-                </div>
-                
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold">
-                  {testimonial.metric}
-                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Stats bar */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 p-8 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20"
+          className="mt-20 grid lg:grid-cols-2 gap-8"
         >
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">10,000+</div>
-            <div className="text-muted-foreground">Active Users</div>
+          <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background to-primary/5 p-8">
+            <h3 className="text-2xl font-bold mb-5">Best fit for</h3>
+            <div className="space-y-4">
+              {goodFit.map((item) => (
+                <div key={item} className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                  <p className="text-muted-foreground">{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">4.9★</div>
-            <div className="text-muted-foreground">Average Rating</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">89%</div>
-            <div className="text-muted-foreground">See Results in Week 1</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">$2.7k</div>
-            <div className="text-muted-foreground">Average Saved</div>
+
+          <div className="rounded-2xl border border-border bg-card p-8">
+            <h3 className="text-2xl font-bold mb-5">Not built for</h3>
+            <div className="space-y-4">
+              {notFit.map((item) => (
+                <div key={item} className="flex items-start gap-3">
+                  <CircleSlash2 className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <p className="text-muted-foreground">{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>

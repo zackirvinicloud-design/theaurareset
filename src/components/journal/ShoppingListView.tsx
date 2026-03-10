@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { SHOPPING_LIST, ShoppingPhase } from '@/hooks/useProtocolData';
+import { SHOPPING_LIST, ShoppingCategory, ShoppingItem, ShoppingPhase } from '@/hooks/useProtocolData';
 import { ChecklistState } from '@/hooks/useJournalStore';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    CheckCircle2, Circle, ChevronDown, ShoppingCart,
-    ArrowLeft, Sparkles, DollarSign
+    ArrowLeft,
+    CheckCircle2,
+    ChevronDown,
+    Circle,
+    DollarSign,
+    ShoppingCart,
+    Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -18,15 +23,27 @@ interface ShoppingListViewProps {
     onAskAI: (prompt: string) => void;
 }
 
-// Phase shopping windows — only show the phase(s) you need to buy RIGHT NOW
-// Day 0-4: Foundation + Fungal (initial setup)
-// Day 5-11: Parasite Elimination only (new purchases)
-// Day 12+: Heavy Metal Detox only (new purchases)
-const PHASE_WINDOWS: { phases: string[]; minDay: number; maxDay: number }[] = [
-    { phases: ['Foundation', 'Fungal Elimination'], minDay: 0, maxDay: 4 },
-    { phases: ['Parasite Elimination'], minDay: 5, maxDay: 11 },
-    { phases: ['Heavy Metal Detox'], minDay: 12, maxDay: 999 },
-];
+type PhaseStatus = 'current' | 'next' | 'later' | 'reference';
+
+const STATUS_STYLES: Record<PhaseStatus, string> = {
+    current: 'bg-primary/10 text-primary border-primary/20',
+    next: 'bg-sky-100 text-sky-700 border-sky-200',
+    later: 'bg-muted text-muted-foreground border-border/60',
+    reference: 'bg-muted text-muted-foreground border-border/60',
+};
+
+const STATUS_LABELS: Record<PhaseStatus, string> = {
+    current: 'Shop now',
+    next: 'Next up',
+    later: 'Later',
+    reference: 'Reference',
+};
+
+interface ShoppingReferenceContentProps {
+    currentDay: number;
+    checklist: ChecklistState;
+    onToggle: (key: string) => void;
+}
 
 export function ShoppingListView({
     currentDay,
@@ -35,30 +52,8 @@ export function ShoppingListView({
     onBack,
     onAskAI,
 }: ShoppingListViewProps) {
-    const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-
-    // Find which shopping window we're in
-    const currentWindow = PHASE_WINDOWS.find(w => currentDay >= w.minDay && currentDay <= w.maxDay)
-        ?? PHASE_WINDOWS[0];
-    const visiblePhases = SHOPPING_LIST.filter(p => currentWindow.phases.includes(p.phase));
-
-    // Count totals
-    const allShopKeys = visiblePhases.flatMap(p =>
-        p.categories.flatMap(c =>
-            c.items.map((_, i) => `shop_${p.phase}_${c.category}_${i}`)
-        )
-    );
-    const checkedCount = allShopKeys.filter(k => checklist[k]).length;
-    const totalCount = allShopKeys.length;
-    const progress = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
-
-    const toggleCategory = (key: string) => {
-        setExpandedCategories(prev => ({ ...prev, [key]: !prev[key] }));
-    };
-
     return (
         <div className="flex flex-col h-full bg-background">
-            {/* Header */}
             <div className="flex-shrink-0 border-b border-border/50 px-6 py-4">
                 <div className="flex items-center gap-3">
                     <Button
@@ -69,151 +64,197 @@ export function ShoppingListView({
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                         <h2 className="text-lg font-semibold flex items-center gap-2">
                             <ShoppingCart className="w-5 h-5 text-primary" />
-                            Shopping List
+                            Full Shopping List
                         </h2>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                            {checkedCount} of {totalCount} items checked · {progress}% complete
-                        </p>
-                        <p className="text-xs text-primary/80 mt-1 font-medium">
-                            {currentDay <= 4
-                                ? "🗓️ Buy anytime before Day 1 · These will be needed starting Day 1"
-                                : currentDay <= 11
-                                    ? `🗓️ Buy anytime between Day ${currentDay}–7 · These will be needed starting Day 8`
-                                    : `🗓️ Buy anytime between Day ${currentDay}–14 · These will be needed starting Day 15`
-                            }
+                            One list for the entire protocol. Buy from the sections marked shop now, and use the rest as reference until you get there.
                         </p>
                     </div>
                 </div>
 
-                {/* Progress bar */}
-                <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
-                    <motion.div
-                        className="h-full bg-primary rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.5 }}
-                    />
-                </div>
-
-                {/* AI assistance buttons */}
                 <div className="flex gap-2 mt-3">
                     <Button
                         variant="outline"
                         size="sm"
                         className="text-xs gap-1.5"
                         onClick={() => onAskAI(
-                            "Help me create a budget-friendly version of my shopping list. What items are absolutely essential vs. nice-to-have? I want to prioritize what gives me the most impact for my money."
+                            "Help me simplify this full protocol shopping list. Tell me what I should buy now, what can wait until later phases, and where I can choose one product instead of buying everything."
                         )}
                     >
-                        <DollarSign className="w-3.5 h-3.5" />
-                        Budget-friendly version
+                        <Sparkles className="w-3.5 h-3.5" />
+                        Simplify this list
                     </Button>
                     <Button
                         variant="outline"
                         size="sm"
                         className="text-xs gap-1.5"
                         onClick={() => onAskAI(
-                            "What are the absolute must-buy items from my shopping list that I cannot skip? And which items are optional or have cheaper alternatives?"
+                            "Give me a budget-friendly shopping plan for this protocol. Keep the must-have items, point out optional ones, and flag any one-or-the-other choices so I do not overbuy."
                         )}
                     >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        What's essential?
+                        <DollarSign className="w-3.5 h-3.5" />
+                        Budget version
                     </Button>
                 </div>
             </div>
 
-            {/* Shopping list body */}
             <ScrollArea className="flex-1">
-                <div className="px-6 py-4 space-y-6">
-                    {visiblePhases.map((phase) => (
-                        <PhaseSection
-                            key={phase.phase}
-                            phase={phase}
-                            checklist={checklist}
-                            onToggle={onToggle}
-                            expandedCategories={expandedCategories}
-                            onToggleCategory={toggleCategory}
-                        />
-                    ))}
+                <div className="px-6 py-4">
+                    <ShoppingReferenceContent
+                        currentDay={currentDay}
+                        checklist={checklist}
+                        onToggle={onToggle}
+                    />
                 </div>
             </ScrollArea>
         </div>
     );
 }
 
+export function ShoppingReferenceContent({
+    currentDay,
+    checklist,
+    onToggle,
+}: ShoppingReferenceContentProps) {
+    const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+    const allShopKeys = SHOPPING_LIST.flatMap((phase) =>
+        phase.categories.flatMap((category) =>
+            category.items.map((_, index) => buildShopKey(phase.phase, category.category, index))
+        )
+    );
+    const checkedCount = allShopKeys.filter((key) => checklist[key]).length;
+    const totalCount = allShopKeys.length;
+    const progress = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+
+    const toggleCategory = (key: string) => {
+        setExpandedCategories((prev) => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="mt-1 h-2 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                    className="h-full bg-primary rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5 }}
+                />
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+                {checkedCount} of {totalCount} items checked
+            </p>
+
+            <p className="text-xs text-muted-foreground leading-relaxed">
+                Use the phase badges to see what to buy now versus later.
+            </p>
+
+            <div className="space-y-6">
+                {SHOPPING_LIST.map((phase) => (
+                    <PhaseSection
+                        key={phase.phase}
+                        phase={phase}
+                        phaseStatus={getPhaseStatus(currentDay, phase.phase)}
+                        checklist={checklist}
+                        onToggle={onToggle}
+                        expandedCategories={expandedCategories}
+                        onToggleCategory={toggleCategory}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function PhaseSection({
     phase,
+    phaseStatus,
     checklist,
     onToggle,
     expandedCategories,
     onToggleCategory,
 }: {
     phase: ShoppingPhase;
+    phaseStatus: PhaseStatus;
     checklist: ChecklistState;
     onToggle: (key: string) => void;
     expandedCategories: Record<string, boolean>;
     onToggleCategory: (key: string) => void;
 }) {
-    // Phase totals
-    const phaseKeys = phase.categories.flatMap(c =>
-        c.items.map((_, i) => `shop_${phase.phase}_${c.category}_${i}`)
+    const phaseKeys = phase.categories.flatMap((category) =>
+        category.items.map((_, index) => buildShopKey(phase.phase, category.category, index))
     );
-    const phaseChecked = phaseKeys.filter(k => checklist[k]).length;
+    const phaseChecked = phaseKeys.filter((key) => checklist[key]).length;
 
     return (
-        <div>
-            {/* Phase header */}
-            <div className="flex items-center gap-2 mb-3">
+        <section className="space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm">{phase.emoji}</span>
                 <h3 className="text-sm font-bold text-foreground">{phase.phase}</h3>
                 <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
                     {phase.buyBefore}
                 </span>
                 <span className={cn(
-                    "text-[11px] font-mono ml-auto",
-                    phaseChecked === phaseKeys.length ? "text-primary font-semibold" : "text-muted-foreground"
+                    'text-[10px] px-2 py-0.5 rounded-full border',
+                    STATUS_STYLES[phaseStatus]
+                )}>
+                    {STATUS_LABELS[phaseStatus]}
+                </span>
+                <span className={cn(
+                    'text-[11px] font-mono ml-auto',
+                    phaseChecked === phaseKeys.length ? 'text-primary font-semibold' : 'text-muted-foreground'
                 )}>
                     {phaseChecked}/{phaseKeys.length}
                 </span>
             </div>
 
-            {/* Categories */}
             <div className="space-y-2">
-                {phase.categories.map((cat) => {
-                    const catKey = `${phase.phase}_${cat.category}`;
-                    const isExpanded = expandedCategories[catKey] ?? true; // default open
-                    const catItemKeys = cat.items.map((_, i) => `shop_${phase.phase}_${cat.category}_${i}`);
-                    const catChecked = catItemKeys.filter(k => checklist[k]).length;
-                    const allDone = catChecked === cat.items.length;
+                {phase.categories.map((category) => {
+                    const categoryKey = `${phase.phase}_${category.category}`;
+                    const isExpanded = expandedCategories[categoryKey] ?? false;
+                    const categoryItemKeys = category.items.map((_, index) => buildShopKey(phase.phase, category.category, index));
+                    const categoryChecked = categoryItemKeys.filter((key) => checklist[key]).length;
+                    const allDone = categoryChecked === category.items.length;
 
                     return (
-                        <div key={catKey} className={cn(
-                            "rounded-xl border transition-all",
-                            allDone ? "border-primary/20 bg-primary/5" : "border-border/50 bg-card"
-                        )}>
-                            {/* Category header */}
+                        <div
+                            key={categoryKey}
+                            className={cn(
+                                'rounded-xl border transition-all',
+                                allDone ? 'border-primary/20 bg-primary/5' : 'border-border/50 bg-card'
+                            )}
+                        >
                             <button
-                                onClick={() => onToggleCategory(catKey)}
+                                onClick={() => onToggleCategory(categoryKey)}
                                 className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-muted/30 transition-colors rounded-xl"
                             >
-                                <span className="text-sm">{cat.emoji}</span>
-                                <span className="text-sm font-semibold text-foreground flex-1">{cat.category}</span>
+                                <span className="text-sm">{category.emoji}</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="text-sm font-semibold text-foreground">{category.category}</span>
+                                        {hasChoiceLanguage(category) && (
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-100 text-sky-700">
+                                                choose carefully
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                                 <span className={cn(
-                                    "text-xs font-mono",
-                                    allDone ? "text-primary" : "text-muted-foreground"
+                                    'text-xs font-mono',
+                                    allDone ? 'text-primary' : 'text-muted-foreground'
                                 )}>
-                                    {catChecked}/{cat.items.length}
+                                    {categoryChecked}/{category.items.length}
                                 </span>
                                 <ChevronDown className={cn(
-                                    "w-4 h-4 text-muted-foreground transition-transform duration-200",
-                                    isExpanded && "rotate-180"
+                                    'w-4 h-4 text-muted-foreground transition-transform duration-200',
+                                    isExpanded && 'rotate-180'
                                 )} />
                             </button>
 
-                            {/* Items */}
                             <AnimatePresence>
                                 {isExpanded && (
                                     <motion.div
@@ -223,17 +264,25 @@ function PhaseSection({
                                         transition={{ duration: 0.2 }}
                                         className="overflow-hidden"
                                     >
+                                        {category.guidance && (
+                                            <div className="mx-3 mb-3 rounded-lg border border-sky-200/70 bg-sky-50 px-3 py-2 text-xs text-sky-800 leading-relaxed">
+                                                {category.guidance}
+                                            </div>
+                                        )}
+
                                         <div className="px-3 pb-3 space-y-0.5">
-                                            {cat.items.map((item, i) => {
-                                                const shopKey = `shop_${phase.phase}_${cat.category}_${i}`;
+                                            {category.items.map((item, index) => {
+                                                const shopKey = buildShopKey(phase.phase, category.category, index);
                                                 const checked = !!checklist[shopKey];
+                                                const meta = getItemMeta(item);
+
                                                 return (
                                                     <motion.button
                                                         key={shopKey}
                                                         onClick={() => onToggle(shopKey)}
                                                         className={cn(
-                                                            "w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all group",
-                                                            checked ? "bg-primary/5" : "hover:bg-muted/40"
+                                                            'w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all group',
+                                                            checked ? 'bg-primary/5' : 'hover:bg-muted/40'
                                                         )}
                                                         whileTap={{ scale: 0.98 }}
                                                     >
@@ -245,22 +294,27 @@ function PhaseSection({
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center gap-2 flex-wrap">
                                                                 <span className={cn(
-                                                                    "text-sm",
-                                                                    checked ? "line-through text-muted-foreground" : "text-foreground"
+                                                                    'text-sm',
+                                                                    checked ? 'line-through text-muted-foreground' : 'text-foreground'
                                                                 )}>
                                                                     {item.name}
                                                                 </span>
                                                                 <span className="text-[11px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground flex-shrink-0">
                                                                     {item.quantity}
                                                                 </span>
-                                                                {item.optional && (
-                                                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
-                                                                        {item.optional}
+                                                                {meta && (
+                                                                    <span className={cn(
+                                                                        'text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0',
+                                                                        meta.className
+                                                                    )}>
+                                                                        {meta.label}
                                                                     </span>
                                                                 )}
                                                             </div>
                                                             {item.notes && (
-                                                                <p className="text-xs text-muted-foreground/60 mt-0.5">{item.notes}</p>
+                                                                <p className="text-xs text-muted-foreground/70 mt-0.5 leading-relaxed">
+                                                                    {item.notes}
+                                                                </p>
                                                             )}
                                                         </div>
                                                     </motion.button>
@@ -274,6 +328,48 @@ function PhaseSection({
                     );
                 })}
             </div>
-        </div>
+        </section>
     );
+}
+
+function buildShopKey(phase: string, category: string, index: number) {
+    return `shop_${phase}_${category}_${index}`;
+}
+
+function hasChoiceLanguage(category: ShoppingCategory) {
+    return category.category.toLowerCase().includes('pick') || Boolean(category.guidance);
+}
+
+function getItemMeta(item: ShoppingItem) {
+    if (item.optional === 'alternative') {
+        return {
+            label: 'Alternative',
+            className: 'bg-sky-100 text-sky-700',
+        };
+    }
+
+    if (item.optional === 'optional') {
+        return {
+            label: 'Optional',
+            className: 'bg-amber-100 text-amber-700',
+        };
+    }
+
+    return null;
+}
+
+function getPhaseStatus(currentDay: number, phaseName: string): PhaseStatus {
+    if (phaseName === 'Foundation' || phaseName === 'Fungal Elimination') {
+        return currentDay <= 4 ? 'current' : 'reference';
+    }
+
+    if (phaseName === 'Parasite Elimination') {
+        if (currentDay <= 4) return 'next';
+        if (currentDay <= 11) return 'current';
+        return 'reference';
+    }
+
+    if (currentDay <= 4) return 'later';
+    if (currentDay <= 11) return 'next';
+    return 'current';
 }

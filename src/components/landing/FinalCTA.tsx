@@ -21,15 +21,15 @@ export const FinalCTA = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-8 leading-tight">
-            Stop Wasting Time.{' '}
+            Start with{' '}
             <br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-primary via-primary to-primary/60 bg-clip-text text-transparent">
-              Start Healing Today.
+              Prep Day.
             </span>
           </h2>
 
           <p className="text-xl sm:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-            You've already spent years guessing. 21 days to finally get it right. What do you have to lose?
+            Know what to buy, know what to do today, and know where to ask when you are stuck.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
@@ -38,31 +38,18 @@ export const FinalCTA = () => {
               size="lg"
               className="text-xl h-20 px-12 gap-3 shadow-2xl hover:shadow-primary/50 transition-all duration-300 group"
             >
-              Get Lifetime Access Now
+              Open the guided protocol
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </Button>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
-            <div>✓ $19 one-time payment</div>
+            <div>✓ Prep flow</div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <div>✓ Lifetime access</div>
+            <div>✓ Daily plan</div>
             <div className="hidden sm:block w-1 h-1 rounded-full bg-muted-foreground/30" />
-            <div>✓ 30-day money-back guarantee</div>
+            <div>✓ In-app guide</div>
           </div>
-        </motion.div>
-
-        {/* Urgency element */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-16 p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-primary/20"
-        >
-          <p className="text-muted-foreground">
-            <span className="font-semibold text-foreground">478 people</span> joined in the last 7 days
-          </p>
         </motion.div>
       </div>
     </section>

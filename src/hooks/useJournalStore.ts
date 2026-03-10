@@ -193,6 +193,52 @@ export function useJournalStore() {
         load();
     }, [userId]);
 
+    const loadDayState = useCallback(async (targetDay: number, shoppingItems?: ChecklistState) => {
+        const persistentShopping = shoppingItems ?? Object.fromEntries(
+            Object.entries(checklist).filter(([key, value]) => key.startsWith('shop_') && value)
+        );
+
+        if (userId) {
+            const { data: ents } = await supabase
+                .from('journal_entries')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('day_number', targetDay)
+                .order('created_at', { ascending: true });
+
+            const mappedEntries: JournalEntry[] = (ents || []).map(e => ({
+                id: e.id,
+                dayNumber: e.day_number,
+                role: e.role as 'user' | 'assistant',
+                content: e.content,
+                createdAt: e.created_at,
+            }));
+            setEntries(mappedEntries);
+            lsSet(LS_ENTRIES_KEY, mappedEntries);
+
+            const { data: checks } = await supabase
+                .from('daily_checklists')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('day_number', targetDay);
+
+            const dayChecklist: ChecklistState = {};
+            (checks || []).forEach(c => { dayChecklist[c.item_key] = c.completed; });
+            const mergedChecklist = { ...dayChecklist, ...persistentShopping };
+            setChecklist(mergedChecklist);
+            lsSet(LS_CHECKLIST_KEY, mergedChecklist);
+            return;
+        }
+
+        const savedEntries = lsGet<JournalEntry[]>(LS_ENTRIES_KEY, []).filter((entry) => entry.dayNumber === targetDay);
+        setEntries(savedEntries);
+
+        const savedChecklist = lsGet<ChecklistState>(LS_CHECKLIST_KEY, {});
+        const mergedChecklist = { ...savedChecklist, ...persistentShopping };
+        setChecklist(mergedChecklist);
+        lsSet(LS_CHECKLIST_KEY, mergedChecklist);
+    }, [checklist, userId]);
+
     // ── Progress Updates ───────────────────────────────
 
     const updateProgress = useCallback(async (updates: Partial<UserProgress>) => {
@@ -215,6 +261,18 @@ export function useJournalStore() {
             }).eq('user_id', userId);
         }
     }, [progress, userId]);
+
+    const setCurrentDay = useCallback(async (targetDay: number) => {
+        const newDay = Math.min(Math.max(targetDay, 0), 21);
+        if (newDay === progress.currentDay) return;
+
+        const shoppingItems = Object.fromEntries(
+            Object.entries(checklist).filter(([key, value]) => key.startsWith('shop_') && value)
+        );
+
+        await updateProgress({ currentDay: newDay });
+        await loadDayState(newDay, shoppingItems);
+    }, [checklist, loadDayState, progress.currentDay, updateProgress]);
 
     const advanceDay = useCallback(async () => {
         const newDay = Math.min(progress.currentDay + 1, 21);
@@ -428,50 +486,6 @@ export function useJournalStore() {
         lsSet(LS_CHECKLIST_KEY, newChecklist);
     }, [customItems, checklist]);
 
-    const extractActionsFromAI = useCallback((aiResponse: string) => {
-        // Heuristic extraction: look for actionable patterns in AI text
-        const lines = aiResponse.split('\n');
-        const actionPatterns = [
-            /(?:^|\s)[-•*]\s*(.+(?:pick up|buy|get|grab|purchase|order|stock up|find|make sure|remember to|don't forget|try|start|stop|avoid|add|take|drink|eat|prepare|schedule|book|set up|call)\s.+)/i,
-            /(?:you should|i recommend|try to|make sure to|don't forget to|remember to|be sure to|go ahead and)\s+(.{10,80})/i,
-            /(?:^|\s)[-•*]\s*(?:buy|pick up|get|grab|order)\s+(.{5,60})/i,
-        ];
-
-        const extracted: string[] = [];
-
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed.length < 8) continue;
-
-            // Check if line is a bullet/list item with actionable content
-            const bulletMatch = trimmed.match(/^[-•*\d.]+\s*(.+)/);
-            const candidate = bulletMatch ? bulletMatch[1] : trimmed;
-
-            for (const pattern of actionPatterns) {
-                const match = candidate.match(pattern);
-                if (match) {
-                    let action = (match[1] || match[0]).trim();
-                    // Clean up: remove trailing periods, limit length
-                    action = action.replace(/[.!]+$/, '').trim();
-                    if (action.length >= 8 && action.length <= 80) {
-                        // Capitalize first letter
-                        action = action.charAt(0).toUpperCase() + action.slice(1);
-                        extracted.push(action);
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Add unique items (max 3 per response to avoid flooding)
-        const toAdd = extracted.slice(0, 3);
-        for (const label of toAdd) {
-            addCustomItem(label, 'ai');
-        }
-
-        return toAdd;
-    }, [addCustomItem]);
-
     // ── Export Chat ────────────────────────────────────
 
     const exportChat = useCallback(() => {
@@ -503,6 +517,7 @@ export function useJournalStore() {
 
         // Progress
         updateProgress,
+        setCurrentDay,
         advanceDay,
 
         // Journal
@@ -520,6 +535,5 @@ export function useJournalStore() {
         getChecklistCompletion,
         addCustomItem,
         removeCustomItem,
-        extractActionsFromAI,
     };
 }

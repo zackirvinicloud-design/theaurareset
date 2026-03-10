@@ -50,42 +50,34 @@ const Landing = () => {
       <PricingSection />
       <FinalCTA />
 
-      {/* Footer */}
       <footer className="bg-muted/30 border-t border-border py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+          <div className="grid gap-8 md:grid-cols-[1.4fr,1fr,1fr] items-start">
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-3 text-lg">The Gut Brain Journal</h4>
+              <p className="text-sm text-muted-foreground max-w-md">
+                A guided protocol companion built to answer one question first:
+                what do I need to do today?
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Core Flow</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Program</a></li>
+                <li>Prep</li>
+                <li>Today</li>
+                <li>Guide</li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-3">Principles</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Connect</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Twitter</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Instagram</a></li>
+                <li>Protocol first</li>
+                <li>Reduce confusion</li>
+                <li>Optimize for completion</li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
+          <div className="pt-8 mt-8 border-t border-border text-center text-sm text-muted-foreground">
             <p>&copy; 2024 The Gut Brain Journal. All rights reserved.</p>
           </div>
         </div>

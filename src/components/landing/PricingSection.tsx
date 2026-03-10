@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles, Zap } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const PricingSection = () => {
@@ -21,13 +21,13 @@ export const PricingSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            One Payment.{' '}
+            Simple Scope.{' '}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Lifetime Access.
+              One Payment.
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Less than a single supplement bottle. More impact than thousands spent on trial and error.
+            Pay for a guided protocol companion, not a sprawling wellness platform.
           </p>
         </motion.div>
 
@@ -39,28 +39,14 @@ export const PricingSection = () => {
           className="max-w-2xl mx-auto"
         >
           <div className="relative">
-            {/* Popular badge */}
-            <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
-              <div className="flex items-center gap-1 px-6 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold shadow-lg">
-                <Zap className="w-4 h-4" />
-                Limited Time Offer
-              </div>
-            </div>
-
             <div className="relative p-12 rounded-3xl bg-gradient-to-br from-primary/10 via-background to-primary/5 border-2 border-primary shadow-2xl">
               {/* Price */}
               <div className="text-center mb-8">
-                <div className="inline-block mb-4">
-                  <div className="text-sm text-muted-foreground line-through mb-1">$197</div>
+                <div className="inline-block">
                   <div className="flex items-baseline justify-center gap-2">
                     <span className="text-7xl font-bold">$19</span>
                   </div>
-                  <div className="text-lg text-muted-foreground mt-2">One-time payment • Lifetime access</div>
-                </div>
-
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 text-primary text-sm font-semibold mb-6">
-                  <Sparkles className="w-4 h-4" />
-                  Save $178 Today
+                  <div className="text-lg text-muted-foreground mt-2">One-time payment</div>
                 </div>
               </div>
 
@@ -76,15 +62,12 @@ export const PricingSection = () => {
               <div className="space-y-4 mb-8">
                 <h3 className="text-xl font-bold text-center mb-6">Everything Included:</h3>
                 {[
-                  'Complete 21-day gut-brain protocol',
-                  'Unlimited GutBrain AI assistant access',
-                  'Daily journal & symptom tracking',
-                  'Advanced progress analytics dashboard',
-                  'Personalized meal & supplement suggestions',
-                  'Priority email support',
-                  'All future updates & features (free forever)',
-                  'Private community access',
-                  'Downloadable resources & guides',
+                  'Prep Day setup and shopping guidance',
+                  'Daily plan for the current protocol day',
+                  'Phase-by-phase guide and supplement reminders',
+                  'AI help for step clarification and troubleshooting',
+                  'Symptom, mood, and note logging',
+                  'A focused app experience instead of a static PDF',
                 ].map((feature, i) => (
                   <motion.div
                     key={i}
@@ -102,40 +85,11 @@ export const PricingSection = () => {
                 ))}
               </div>
 
-              {/* Guarantee */}
               <div className="pt-8 border-t border-border text-center">
-                <p className="text-sm text-muted-foreground mb-2">
-                  ✓ 30-Day Money-Back Guarantee
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  If you don't see results, we'll refund you. No questions asked.
+                <p className="text-sm text-muted-foreground">
+                  The scope is intentionally narrow so the product stays clear, actionable, and easy to finish.
                 </p>
               </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Comparison */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-16 text-center space-y-2"
-        >
-          <p className="text-muted-foreground">Compare to alternatives:</p>
-          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto text-sm">
-            <div className="p-4 rounded-lg bg-muted/30">
-              <div className="font-semibold mb-1">Functional Medicine</div>
-              <div className="text-muted-foreground">$300-500 per visit</div>
-            </div>
-            <div className="p-4 rounded-lg bg-muted/30">
-              <div className="font-semibold mb-1">Supplement Trial & Error</div>
-              <div className="text-muted-foreground">$2,000+ wasted</div>
-            </div>
-            <div className="p-4 rounded-lg bg-muted/30">
-              <div className="font-semibold mb-1">Gut Health Programs</div>
-              <div className="text-muted-foreground">$99-297/month</div>
             </div>
           </div>
         </motion.div>

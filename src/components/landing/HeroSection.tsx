@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ export const HeroSection = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
         >
           <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Your structured 21-day protocol</span>
+          <span className="text-sm font-medium text-primary">Guided protocol companion</span>
         </motion.div>
 
         {/* Main headline */}
@@ -61,11 +61,11 @@ export const HeroSection = () => {
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
         >
           <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-            Stop Guessing.
+            A 21-day gut reset
           </span>
           <br />
           <span className="bg-gradient-to-r from-primary via-primary to-primary/60 bg-clip-text text-transparent">
-            Start Healing.
+            you can actually follow.
           </span>
         </motion.h1>
 
@@ -76,9 +76,8 @@ export const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
         >
-          <span className="text-foreground font-semibold">Everyone has an opinion. Nobody has a plan.</span>{' '}
-          Get the exact 21-day protocol that tells you what to do, when to do it—plus GutBrain AI for instant insights and personal guidance.{' '}
-          <span className="text-foreground font-semibold">No more confusion. Just results.</span>
+          Built like a mini web app, not another static PDF. Prep once, see what to do today,
+          check off each step, and get help when you need clarity.
         </motion.p>
 
         {/* CTAs */}
@@ -93,7 +92,7 @@ export const HeroSection = () => {
             size="lg"
             className="text-lg h-16 px-8 gap-3 shadow-xl hover:shadow-2xl transition-all duration-300 group"
           >
-            Get Started Now
+            Start the protocol
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
           <Button
@@ -106,22 +105,24 @@ export const HeroSection = () => {
           </Button>
         </motion.div>
 
-        {/* Social proof */}
+        {/* Product proof */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground"
+          className="grid gap-3 sm:grid-cols-3 max-w-3xl mx-auto text-sm text-muted-foreground"
         >
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-primary text-primary" />
-            ))}
-            <span className="ml-2 font-medium text-foreground">4.9/5</span>
+          <div className="flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-3">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span>Prep flow with shopping list</span>
           </div>
-          <div className="hidden sm:block w-1 h-1 rounded-full bg-muted-foreground/30" />
-          <div className="font-medium">
-            <span className="text-foreground">$19 one-time</span> • No subscription ever
+          <div className="flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-3">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span>Daily plan grouped by time of day</span>
+          </div>
+          <div className="flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-3">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span>AI help when you get stuck</span>
           </div>
         </motion.div>
       </div>

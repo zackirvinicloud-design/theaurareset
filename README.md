@@ -1,4 +1,8 @@
-# Welcome to your Lovable project
+# The Gut Brain Journal
+
+## Product Direction
+
+The current product reset brief lives in [docs/product-reset.md](./docs/product-reset.md).
 
 ## Project info
 

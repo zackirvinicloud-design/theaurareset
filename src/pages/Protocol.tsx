@@ -1,27 +1,25 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { ClipboardList, BookOpen, Loader2, ShoppingCart, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getDayLabel } from "@/hooks/useProtocolData";
 import { useJournalStore } from "@/hooks/useJournalStore";
-import { getChecklistForDay, getPhaseInfo } from "@/hooks/useProtocolData";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 // New layout components
 import { TopBar } from "@/components/journal/TopBar";
 import { DailyChecklist } from "@/components/journal/DailyChecklist";
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
-import { ProtocolReference } from "@/components/journal/ProtocolReference";
+import { FullProtocolView } from "@/components/journal/FullProtocolView";
+import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
+import { InteractiveTour } from "@/components/onboarding/InteractiveTour";
 import { SymptomLogger } from "@/components/journal/SymptomLogger";
 import { MoodTracker } from "@/components/journal/MoodTracker";
-import { ProgressDashboard } from "@/components/journal/ProgressDashboard";
-import { ProgressSettingsDialog } from "@/components/chat/ProgressSettingsDialog";
 
-// Mobile-specific
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { ClipboardList, BookOpen } from "lucide-react";
 
 const Protocol = () => {
   const navigate = useNavigate();
@@ -32,8 +30,6 @@ const Protocol = () => {
   // Modals
   const [symptomOpen, setSymptomOpen] = useState(false);
   const [moodOpen, setMoodOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [refOpen, setRefOpen] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 1024) return false;
     const saved = localStorage.getItem('protocol-ref-open');
@@ -46,9 +42,10 @@ const Protocol = () => {
 
   // Pending prompt for auto-sending from checklist tap
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
+  const [tourStartToken, setTourStartToken] = useState(0);
 
-  // Active center view: 'chat' (default) or 'shopping'
-  const [activeView, setActiveView] = useState<'chat' | 'shopping'>('chat');
+  // Active center view
+  const [activeView, setActiveView] = useState<'chat' | 'shopping' | 'protocol'>('chat');
 
   // Journal store (Supabase-backed)
   const store = useJournalStore();
@@ -106,11 +103,25 @@ const Protocol = () => {
     navigate("/");
   };
 
-  const handleAdvanceDay = async () => {
-    await store.advanceDay();
+  const handlePreviousDay = async () => {
+    const targetDay = Math.max(store.progress.currentDay - 1, 0);
+    if (targetDay === store.progress.currentDay) return;
+
+    await store.setCurrentDay(targetDay);
     toast({
-      title: "Day advanced! 🎉",
-      description: `Now on ${store.progress.currentDay + 1 <= 21 ? `Day ${store.progress.currentDay + 1}` : 'Day 21 (Complete!)'}`,
+      title: "Day updated",
+      description: `Now on ${getDayLabel(targetDay)}`,
+    });
+  };
+
+  const handleNextDay = async () => {
+    const targetDay = Math.min(store.progress.currentDay + 1, 21);
+    if (targetDay === store.progress.currentDay) return;
+
+    await store.setCurrentDay(targetDay);
+    toast({
+      title: "Day updated",
+      description: `Now on ${getDayLabel(targetDay)}`,
     });
   };
 
@@ -126,7 +137,7 @@ const Protocol = () => {
       return;
     }
     setActiveView('chat');
-    setPendingPrompt(`Tell me more about this checklist item: "${label}" — what exactly should I do, why is it important, and any tips?`);
+    setPendingPrompt(`Can you walk me through this step for ${getDayLabel(store.progress.currentDay)}: "${label}"? Use the full protocol. If this is a supplement step, name the exact supplements and timing in plain English.`);
   };
 
   const handleShoppingAskAI = (prompt: string) => {
@@ -134,18 +145,48 @@ const Protocol = () => {
     setPendingPrompt(prompt);
   };
 
+  const handleOpenShoppingFromGuide = () => {
+    setMobileChecklistOpen(false);
+    setMobileRefOpen(false);
+    setActiveView('shopping');
+  };
+
+  const handleOpenFullProtocolFromGuide = () => {
+    setMobileChecklistOpen(false);
+    setMobileRefOpen(false);
+    setActiveView('protocol');
+  };
+
+  const handleStartTutorial = () => {
+    setMobileChecklistOpen(false);
+    setMobileRefOpen(false);
+    setActiveView('chat');
+    if (!isMobile) {
+      setRefOpen(true);
+    }
+    setTourStartToken((value) => value + 1);
+  };
+
+  const handleExportJournal = () => {
+    store.exportChat();
+  };
+
+  const handleClearJournal = async () => {
+    if (!confirm("Clear today's journal entries? This cannot be undone.")) {
+      return;
+    }
+
+    await store.clearEntries();
+    toast({
+      title: "Cleared",
+      description: "Today's entries have been removed.",
+    });
+  };
+
   const handleLogMood = async (severity: number, notes?: string) => {
     await store.logSymptom('mood', severity, notes);
     toast({ title: "Mood logged ✓" });
   };
-
-  // Build checklist completion data for dashboard
-  const checklistCompletionByDay: Record<number, number> = {};
-  const currentItems = getChecklistForDay(store.progress.currentDay);
-  const completedToday = currentItems.filter(i => store.checklist[i.key]).length;
-  if (currentItems.length > 0) {
-    checklistCompletionByDay[store.progress.currentDay] = Math.round((completedToday / currentItems.length) * 100);
-  }
 
   // Loading states
   if (isAuthLoading || store.isLoading) {
@@ -163,19 +204,29 @@ const Protocol = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
+      <InteractiveTour
+        completionKey={`gut-brain-journal-tour-v2-${store.userId ?? 'local'}`}
+        startToken={tourStartToken}
+      />
+
       {/* Top Bar */}
       <TopBar
         progress={store.progress}
-        onAdvanceDay={handleAdvanceDay}
-        onSettings={() => setSettingsOpen(true)}
+        hasJournalEntries={store.entries.length > 0}
+        onPreviousDay={handlePreviousDay}
+        onNextDay={handleNextDay}
+        onExportJournal={handleExportJournal}
+        onClearJournal={handleClearJournal}
         onSignOut={handleSignOut}
-        onDashboard={() => setDashboardOpen(true)}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* ── Left: Daily Checklist (desktop) ── */}
-        <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-muted/20 flex-shrink-0 overflow-hidden">
+        <aside
+          data-tour="today-plan"
+          className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-muted/20 flex-shrink-0 overflow-hidden"
+        >
           <DailyChecklist
             currentDay={store.progress.currentDay}
             currentPhase={store.progress.currentPhase}
@@ -198,6 +249,10 @@ const Protocol = () => {
               onBack={() => setActiveView('chat')}
               onAskAI={handleShoppingAskAI}
             />
+          ) : activeView === 'protocol' ? (
+            <FullProtocolView
+              onBack={() => setActiveView('chat')}
+            />
           ) : (
             <JournalCenter
               progress={store.progress}
@@ -205,12 +260,8 @@ const Protocol = () => {
               onAddEntry={store.addJournalEntry}
               onUpdateLastEntry={store.updateLastEntry}
               onFinalizeLastEntry={store.finalizeLastEntry}
-              onClearEntries={store.clearEntries}
-              onExportChat={store.exportChat}
               onOpenSymptomLogger={() => setSymptomOpen(true)}
               onOpenMoodTracker={() => setMoodOpen(true)}
-              onExtractActions={store.extractActionsFromAI}
-              onAddCustomItem={store.addCustomItem}
               pendingPrompt={pendingPrompt}
               onPendingPromptConsumed={() => setPendingPrompt(null)}
               isMobile={isMobile}
@@ -222,6 +273,9 @@ const Protocol = () => {
         <ProtocolReference
           currentPhase={store.progress.currentPhase}
           currentDay={store.progress.currentDay}
+          onOpenShoppingView={handleOpenShoppingFromGuide}
+          onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
+          onStartTutorial={handleStartTutorial}
           isOpen={refOpen}
           onToggle={() => setRefOpen(prev => !prev)}
         />
@@ -230,12 +284,18 @@ const Protocol = () => {
       {/* ── Mobile Bottom Nav ── */}
       {isMobile && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 safe-area-bottom">
-          <div className="flex items-center justify-around px-2 py-1.5">
+          <div data-tour="mobile-resource-nav" className="grid grid-cols-4 gap-1 px-2 py-1.5">
             <Sheet open={mobileChecklistOpen} onOpenChange={setMobileChecklistOpen}>
               <SheetTrigger asChild>
-                <button className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors">
-                  <ClipboardList className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground font-medium">Checklist</span>
+                <button
+                  data-tour="mobile-plan-nav"
+                  className={cn(
+                    "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                    mobileChecklistOpen ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+                  )}
+                >
+                  <ClipboardList className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Plan</span>
                 </button>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl pt-6">
@@ -254,35 +314,58 @@ const Protocol = () => {
 
             <Sheet open={mobileRefOpen} onOpenChange={setMobileRefOpen}>
               <SheetTrigger asChild>
-                <button className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors">
-                  <BookOpen className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground font-medium">Protocol</span>
+                <button
+                  data-tour="mobile-guide-nav"
+                  className={cn(
+                    "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                    mobileRefOpen ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+                  )}
+                >
+                  <BookOpen className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Guide</span>
                 </button>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[70vh] rounded-t-2xl pt-6">
                 <div className="h-full overflow-y-auto">
-                  <MobileProtocolRef
+                  <MobileProtocolReferenceContent
                     currentPhase={store.progress.currentPhase}
                     currentDay={store.progress.currentDay}
+                    onOpenShoppingView={handleOpenShoppingFromGuide}
+                    onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
+                    onStartTutorial={handleStartTutorial}
                   />
                 </div>
               </SheetContent>
             </Sheet>
 
             <button
-              onClick={() => setSymptomOpen(true)}
-              className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors"
+              onClick={() => {
+                setMobileChecklistOpen(false);
+                setMobileRefOpen(false);
+                setActiveView('shopping');
+              }}
+              className={cn(
+                "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                activeView === 'shopping' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+              )}
             >
-              <span className="text-lg leading-none">📝</span>
-              <span className="text-[10px] text-muted-foreground font-medium">Symptom</span>
+              <ShoppingCart className="w-5 h-5" />
+              <span className="text-[10px] font-medium">Shop</span>
             </button>
 
             <button
-              onClick={() => setMoodOpen(true)}
-              className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg hover:bg-muted/50 transition-colors"
+              onClick={() => {
+                setMobileChecklistOpen(false);
+                setMobileRefOpen(false);
+                setActiveView('protocol');
+              }}
+              className={cn(
+                "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                activeView === 'protocol' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+              )}
             >
-              <span className="text-lg leading-none">😊</span>
-              <span className="text-[10px] text-muted-foreground font-medium">Mood</span>
+              <FileText className="w-5 h-5" />
+              <span className="text-[10px] font-medium">Protocol</span>
             </button>
           </div>
         </div>
@@ -300,70 +383,8 @@ const Protocol = () => {
         onOpenChange={setMoodOpen}
         onLog={handleLogMood}
       />
-
-      <ProgressDashboard
-        open={dashboardOpen}
-        onOpenChange={setDashboardOpen}
-        progress={store.progress}
-        symptoms={store.symptoms}
-        checklistCompletionByDay={checklistCompletionByDay}
-      />
-
-      <ProgressSettingsDialog
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        currentDay={store.progress.currentDay}
-        onSave={(day, phase) => {
-          store.updateProgress({ currentDay: day, currentPhase: phase as 1 | 2 | 3 | 4 });
-          setSettingsOpen(false);
-          toast({
-            title: "Progress updated",
-            description: `Set to Day ${day}, Phase ${phase}`,
-          });
-        }}
-      />
     </div>
   );
 };
-
-// Simple inline protocol reference for mobile (no animation needed)
-function MobileProtocolRef({ currentPhase, currentDay }: { currentPhase: number; currentDay: number }) {
-  const phase = getPhaseInfo(currentPhase);
-
-  return (
-    <div className="space-y-4 px-1">
-      <div className={`p-3 rounded-lg border ${phase.bgColor} ${phase.borderColor}`}>
-        <p className={`text-sm font-semibold mb-1 ${phase.color}`}>
-          Phase {currentPhase}: {phase.name}
-        </p>
-        <p className="text-xs text-muted-foreground">{phase.description}</p>
-      </div>
-
-      <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider mb-2">Today's Supplements</h4>
-        {phase.supplements.map((s: string, i: number) => (
-          <div key={i} className="flex items-start gap-2 text-sm py-1">
-            <span className="text-primary">•</span>
-            <span className="text-sm">{s}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50">
-        <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1">⚠️ Binder Timing</p>
-        <p className="text-xs text-amber-600 dark:text-amber-300/80">
-          Take binders 2 hours away from food and other supplements.
-        </p>
-      </div>
-
-      <div>
-        <h4 className="text-xs font-semibold uppercase tracking-wider mb-2">Phase Tips</h4>
-        {phase.tips.map((tip: string, i: number) => (
-          <div key={i} className="text-xs p-2 mb-1 rounded bg-muted/50">{tip}</div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default Protocol;

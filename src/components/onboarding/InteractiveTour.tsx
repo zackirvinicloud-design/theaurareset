@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const TOUR_KEY = 'gut-brain-journal-tour-completed';
+const DEFAULT_TOUR_KEY = 'gut-brain-journal-tour-v2-completed';
 
-export const resetTour = () => {
-  localStorage.removeItem(TOUR_KEY);
+export const resetTour = (key: string = DEFAULT_TOUR_KEY) => {
+  localStorage.removeItem(key);
 };
 
 interface TourStep {
@@ -20,115 +19,137 @@ interface TourStep {
   highlightPadding?: number;
 }
 
-// Simplified mobile-only steps
+function resolveTarget(step: TourStep) {
+  const selectors = step.target.split(',').map((selector) => selector.trim());
+
+  for (const selector of selectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      return element;
+    }
+  }
+
+  return null;
+}
+
 const mobileTourSteps: TourStep[] = [
   {
-    title: "Welcome to The Gut Brain Journal! 🌟",
-    description: "This quick tour will show you everything you need to succeed on your 21-day healing journey.",
+    title: "Welcome to The Gut Brain Journal",
+    description: "This tour shows the shortest path to value: what to do today, where to get help, and where the full protocol lives.",
     target: 'body',
     position: 'center',
   },
   {
-    title: "📱 Chat with your AI Coach",
-    description: "Tap the chat icon at the bottom to talk with your AI health coach. She's available 24/7 to answer questions and provide guidance based on your current phase.",
-    target: 'body',
-    position: 'center',
+    title: "Move Day By Day",
+    description: "Use Previous day and Next day here to move through the reset. The gear holds export, clear, and sign out so the top bar stays clean.",
+    target: '[data-tour=\"day-controls\"]',
+    position: 'bottom',
+    highlightPadding: 10,
   },
   {
-    title: "📖 Program Guide",
-    description: "Use the menu button (☰) to access your complete program. Find daily schedules, supplement lists, recipes, and troubleshooting guides organized by phase.",
-    target: 'body',
-    position: 'center',
+    title: "Open Today's Plan",
+    description: "Tap Plan to open today's exact checklist. This is the action layer of the app: tap any item for context, then check it off when done.",
+    target: '[data-tour=\"mobile-plan-nav\"]',
+    position: 'top',
+    highlightPadding: 10,
   },
   {
-    title: "✨ AI Insights",
-    description: "Your AI analyzes your journal every 5 messages, spotting patterns and progress. Check the insights section in your chat to see what she's discovered.",
-    target: 'body',
-    position: 'center',
+    title: "Use Today As Your Workspace",
+    description: "This is where you ask questions, get meal or supplement help, and quickly log symptoms or mood without leaving the flow.",
+    target: '[data-tour=\"today-actions\"]',
+    position: 'top',
+    highlightPadding: 10,
   },
   {
-    title: "📊 Track Your Progress",
-    description: "Your progress card in the chat shows which day and phase you're on. Use the buttons to advance days or adjust your position in the program.",
-    target: 'body',
-    position: 'center',
+    title: "Guide Gives The Why",
+    description: "Tap Guide when you want the brief, phase roadmap, and tips. If you ever want this walkthrough again, restart it from Start.",
+    target: '[data-tour=\"mobile-guide-nav\"]',
+    position: 'top',
+    highlightPadding: 10,
   },
   {
-    title: "Ready to Begin! 🚀",
-    description: "Remember: Take binders 2 hours away from food, stay hydrated, and trust the process. Your AI is here to guide you every step of the way!",
-    target: 'body',
-    position: 'center',
+    title: "Full References Stay One Tap Away",
+    description: "Use Shop for the full shopping list and Protocol for the original written protocol. Those are references, not your main workflow.",
+    target: '[data-tour=\"mobile-resource-nav\"]',
+    position: 'top',
+    highlightPadding: 10,
   },
 ];
 
-// Desktop tour steps with spotlight
 const tourSteps: TourStep[] = [
   {
     title: "Welcome to The Gut Brain Journal",
-    description: "Let me show you around! This interactive tour will guide you through all the features to help you succeed on your 21-day healing journey.",
+    description: "This quick walkthrough shows the core loop: move day by day, follow today's plan, ask for help when stuck, and keep the full references nearby.",
     target: 'body',
     position: 'center',
   },
   {
-    title: "Program Navigation",
-    description: "This sidebar contains your complete program guide. Navigate through phases, daily schedules, supplement lists, and troubleshooting. Everything you need is organized here by phase and topic.",
-    target: '.protocol-nav, nav, aside, button[aria-label="Open menu"], button:has(svg.lucide-menu)',
+    title: "Move Day By Day",
+    description: "Use Previous day and Next day here to move through the reset. The gear now holds export, clear, and sign out.",
+    target: '[data-tour=\"day-controls\"]',
+    position: 'bottom',
+    highlightPadding: 10,
+  },
+  {
+    title: "Open Today's Plan",
+    description: "This panel is today's exact checklist. Tap any step when you want the AI to explain it in plain English, then check it off when done.",
+    target: '[data-tour=\"today-plan\"]',
     position: 'right',
-    highlightPadding: 8,
+    highlightPadding: 10,
   },
   {
-    title: "Your Health Journal with AI Coach",
-    description: "This is your personal AI health coach! Chat anytime - ask about symptoms, get recipe ideas, or request daily motivation. She knows where you are in the program and tailors guidance to your current phase.",
-    target: '.chat-panel, [class*="chat"], .fixed.bottom-0.left-0.right-0',
+    title: "Use Today As Your Workspace",
+    description: "Ask questions here, get meal or supplement guidance, and use the quick actions to log symptoms or mood without breaking your flow.",
+    target: '[data-tour=\"today-actions\"]',
+    position: 'top',
+    highlightPadding: 10,
+  },
+  {
+    title: "Guide Gives The Why",
+    description: "Guide is where you get the brief, the phase roadmap, and the tips. Start also lets you reopen the tutorial whenever you want a reset.",
+    target: '[data-tour=\"guide-panel\"], [data-tour=\"guide-toggle\"]',
     position: 'left',
-    highlightPadding: 8,
+    highlightPadding: 10,
   },
   {
-    title: "AI Insights - Pattern Recognition",
-    description: "Your AI automatically analyzes your journal entries every 5 messages. She spots patterns you might miss - symptom triggers, progress indicators, and areas needing attention. Click the sparkles icon to view insights anytime.",
-    target: 'button[title*="insights" i], button:has(.lucide-sparkles)',
-    position: 'bottom',
-    highlightPadding: 12,
-  },
-  {
-    title: "Progress Tracking",
-    description: "Track your journey through all 21 days and 4 phases. Use 'Next' to advance days, or click the settings icon to jump to any day. Your AI always knows your current phase and provides phase-specific guidance.",
-    target: '.progress-card, [class*="progress"]',
-    position: 'bottom',
-    highlightPadding: 8,
-  },
-  {
-    title: "Journal History & Export",
-    description: "Access your complete chat history and export your journal anytime. Track your progress over time and keep a record of your healing journey.",
-    target: 'button[title*="history" i], button[title*="export" i]',
-    position: 'bottom',
-    highlightPadding: 12,
-  },
-  {
-    title: "You're All Set!",
-    description: "Remember: Take binders 2 hours away from food. Stay hydrated. Trust the process. Your AI is here 24/7 to guide you. Start by asking 'What should I do today?' - she's got you covered!",
-    target: 'body',
-    position: 'center',
+    title: "References Stay Nearby",
+    description: "Use Shop for the full shopping list and Protocol for the original written protocol. Keep those as references while today's plan stays your main workflow.",
+    target: '[data-tour=\"shopping-trigger\"], [data-tour=\"protocol-trigger\"], [data-tour=\"guide-panel\"], [data-tour=\"guide-toggle\"]',
+    position: 'left',
+    highlightPadding: 10,
   },
 ];
 
-export const InteractiveTour = () => {
+interface InteractiveTourProps {
+  completionKey?: string;
+  startToken?: number;
+}
+
+export const InteractiveTour = ({
+  completionKey = DEFAULT_TOUR_KEY,
+  startToken = 0,
+}: InteractiveTourProps) => {
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [highlightRect, setHighlightRect] = useState<DOMRect | null>(null);
   const isMobile = useIsMobile();
-  
-  const steps = isMobile ? mobileTourSteps : tourSteps;
+  const steps = useMemo(() => (isMobile ? mobileTourSteps : tourSteps), [isMobile]);
 
   useEffect(() => {
-    const hasCompleted = localStorage.getItem(TOUR_KEY);
+    const hasCompleted = localStorage.getItem(completionKey);
     if (!hasCompleted) {
       setTimeout(() => setIsActive(true), 800);
     }
-  }, []);
+  }, [completionKey]);
 
-  // Desktop-only highlight logic
   useEffect(() => {
-    if (!isActive || isMobile) return;
+    if (startToken <= 0) return;
+    setCurrentStep(0);
+    setIsActive(true);
+  }, [startToken]);
+
+  useEffect(() => {
+    if (!isActive) return;
 
     const updateHighlight = () => {
       const step = steps[currentStep];
@@ -139,13 +160,7 @@ export const InteractiveTour = () => {
         return;
       }
 
-      const selectors = step.target.split(',').map(s => s.trim());
-      let element: Element | null = null;
-
-      for (const selector of selectors) {
-        element = document.querySelector(selector);
-        if (element) break;
-      }
+      const element = resolveTarget(step);
 
       if (element) {
         const rect = element.getBoundingClientRect();
@@ -155,13 +170,34 @@ export const InteractiveTour = () => {
       }
     };
 
+    const step = steps[currentStep];
+    const element = step ? resolveTarget(step) : null;
+
+    if (isMobile && step && step.position !== 'center' && element instanceof HTMLElement) {
+      const rect = element.getBoundingClientRect();
+      const cardClearance = 230;
+      const shouldScrollUp = rect.top < 72;
+      const shouldScrollDown = rect.bottom > window.innerHeight - cardClearance;
+
+      if (shouldScrollUp || shouldScrollDown) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: shouldScrollUp ? 'start' : 'center',
+          inline: 'nearest',
+        });
+      }
+    }
+
     updateHighlight();
     window.addEventListener('resize', updateHighlight);
-    window.addEventListener('scroll', updateHighlight);
+    document.addEventListener('scroll', updateHighlight, true);
+
+    const settleTimer = window.setTimeout(updateHighlight, isMobile ? 280 : 120);
 
     return () => {
       window.removeEventListener('resize', updateHighlight);
-      window.removeEventListener('scroll', updateHighlight);
+      document.removeEventListener('scroll', updateHighlight, true);
+      window.clearTimeout(settleTimer);
     };
   }, [currentStep, isActive, isMobile, steps]);
 
@@ -180,7 +216,7 @@ export const InteractiveTour = () => {
   };
 
   const handleComplete = () => {
-    localStorage.setItem(TOUR_KEY, 'true');
+    localStorage.setItem(completionKey, 'true');
     setIsActive(false);
   };
 
@@ -218,51 +254,114 @@ export const InteractiveTour = () => {
     return { x, y };
   };
 
+  const getMobileCardStyle = (step: TourStep, rect: DOMRect | null): CSSProperties => {
+    const inset = 12;
+    const shared = {
+      left: inset,
+      right: inset,
+    };
+
+    if (!rect || step.position === 'center') {
+      return {
+        ...shared,
+        top: '50%',
+        transform: 'translateY(-50%)',
+      };
+    }
+
+    const targetMidpoint = rect.top + rect.height / 2;
+    const placeAboveTarget = targetMidpoint > window.innerHeight * 0.55;
+
+    if (placeAboveTarget) {
+      return {
+        ...shared,
+        top: 'calc(env(safe-area-inset-top, 0px) + 72px)',
+      };
+    }
+
+    return {
+      ...shared,
+      bottom: 'calc(env(safe-area-inset-bottom, 0px) + 84px)',
+    };
+  };
+
   if (!isActive) return null;
 
   const step = steps[currentStep];
+  const highlightPadding = step.highlightPadding || 0;
 
-  // Mobile: Simple bottom sheet
+  // Mobile: Spotlight card anchored away from the target
   if (isMobile) {
+    const mobileCardStyle = getMobileCardStyle(step, highlightRect);
+
     return (
-      <Sheet open={isActive} onOpenChange={(open) => !open && handleComplete()}>
-        <SheetContent side="bottom" className="h-auto max-h-[70vh] rounded-t-2xl p-6">
-          <div className="space-y-4">
-            {/* Progress dots */}
-            <div className="flex justify-center gap-2 mb-4">
+      <>
+        <div
+          className="fixed inset-0 z-[9998] pointer-events-none"
+          style={{
+            background: highlightRect
+              ? `
+                radial-gradient(
+                  ellipse at ${highlightRect.left + highlightRect.width / 2}px ${highlightRect.top + highlightRect.height / 2}px,
+                  transparent 0%,
+                  transparent ${Math.max(highlightRect.width, highlightRect.height) / 2}px,
+                  rgba(0, 0, 0, 0.68) ${Math.max(highlightRect.width, highlightRect.height) / 2 + 88}px,
+                  rgba(0, 0, 0, 0.82) 100%
+                )
+              `
+              : 'rgba(0, 0, 0, 0.68)',
+            transition: 'background 0.3s ease-in-out',
+          }}
+        />
+
+        {highlightRect && (
+          <div
+            className="fixed z-[9999] pointer-events-none rounded-2xl border-2 border-primary transition-all duration-300"
+            style={{
+              left: `${highlightRect.left - highlightPadding}px`,
+              top: `${highlightRect.top - highlightPadding}px`,
+              width: `${highlightRect.width + highlightPadding * 2}px`,
+              height: `${highlightRect.height + highlightPadding * 2}px`,
+              boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.18), 0 0 24px rgba(16, 185, 129, 0.35)',
+            }}
+          />
+        )}
+
+        <Card
+          className="fixed z-[10000] border-2 border-primary/70 bg-[hsl(var(--background)/0.94)] shadow-[0_24px_60px_rgba(15,23,42,0.28)] supports-[backdrop-filter]:bg-[hsl(var(--background)/0.78)] supports-[backdrop-filter]:backdrop-blur-xl"
+          style={mobileCardStyle}
+        >
+          <div className="p-5">
+            <div className="mb-4 flex justify-center gap-2">
               {steps.map((_, idx) => (
                 <div
                   key={idx}
                   className={cn(
-                    "h-2 rounded-full transition-all duration-300",
-                    idx === currentStep 
-                      ? "w-8 bg-primary" 
-                      : "w-2 bg-muted-foreground/30"
+                    'h-2 rounded-full transition-all duration-300',
+                    idx === currentStep ? 'w-8 bg-primary' : 'w-2 bg-muted-foreground/30'
                   )}
                 />
               ))}
             </div>
 
-            {/* Content */}
-            <div className="text-center space-y-3">
+            <div className="space-y-3 text-center">
               <div className="flex items-center justify-center gap-2">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold">{step.title}</h3>
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h3 className="text-base font-semibold">{step.title}</h3>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {step.description}
               </p>
             </div>
 
-            {/* Navigation */}
-            <div className="flex gap-3 pt-2">
+            <div className="mt-5 flex gap-3">
               {currentStep > 0 && (
                 <Button
                   variant="outline"
                   onClick={handlePrevious}
                   className="flex-1"
                 >
-                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  <ChevronLeft className="mr-1 h-4 w-4" />
                   Back
                 </Button>
               )}
@@ -270,23 +369,22 @@ export const InteractiveTour = () => {
                 onClick={handleNext}
                 className="flex-1"
               >
-                {currentStep === steps.length - 1 ? "Get Started" : "Next"}
-                {currentStep < steps.length - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
+                {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
+                {currentStep < steps.length - 1 && <ChevronRight className="ml-1 h-4 w-4" />}
               </Button>
             </div>
 
-            {/* Skip button */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleComplete}
-              className="w-full text-xs text-muted-foreground"
+              className="mt-2 w-full text-xs text-muted-foreground"
             >
               Skip tour
             </Button>
           </div>
-        </SheetContent>
-      </Sheet>
+        </Card>
+      </>
     );
   }
 
@@ -319,10 +417,10 @@ export const InteractiveTour = () => {
         <div
           className="fixed z-[9999] pointer-events-none border-2 border-primary rounded-lg transition-all duration-300"
           style={{
-            left: `${highlightRect.left - (step.highlightPadding || 0)}px`,
-            top: `${highlightRect.top - (step.highlightPadding || 0)}px`,
-            width: `${highlightRect.width + (step.highlightPadding || 0) * 2}px`,
-            height: `${highlightRect.height + (step.highlightPadding || 0) * 2}px`,
+            left: `${highlightRect.left - highlightPadding}px`,
+            top: `${highlightRect.top - highlightPadding}px`,
+            width: `${highlightRect.width + highlightPadding * 2}px`,
+            height: `${highlightRect.height + highlightPadding * 2}px`,
             boxShadow: '0 0 0 4px rgba(16, 185, 129, 0.2), 0 0 20px rgba(16, 185, 129, 0.4)',
           }}
         />
@@ -330,7 +428,7 @@ export const InteractiveTour = () => {
 
       {/* Tour Card */}
       <Card 
-        className="fixed z-[10000] w-[380px] bg-card border-2 border-primary shadow-2xl transition-all duration-300"
+        className="fixed z-[10000] w-[380px] border-2 border-primary/70 bg-[hsl(var(--background)/0.95)] shadow-[0_24px_60px_rgba(15,23,42,0.28)] transition-all duration-300 supports-[backdrop-filter]:bg-[hsl(var(--background)/0.82)] supports-[backdrop-filter]:backdrop-blur-xl"
         style={{
           left: `${cardPosition.x}px`,
           top: `${cardPosition.y}px`,

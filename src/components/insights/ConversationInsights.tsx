@@ -5,7 +5,6 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useChatStore } from '@/hooks/useChatStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const INSIGHTS_STORAGE_KEY = 'aura-protocol-latest-insights';
 
@@ -72,12 +71,12 @@ export const ConversationInsights = () => {
 
   // Expose method to update insights from auto-generation
   useEffect(() => {
-    const handleAutoInsights = (event: CustomEvent<string>) => {
-      setInsights(event.detail);
+    const handleAutoInsights = (event: Event) => {
+      setInsights((event as CustomEvent<string>).detail);
     };
     
-    window.addEventListener('auto-insights-generated' as any, handleAutoInsights as any);
-    return () => window.removeEventListener('auto-insights-generated' as any, handleAutoInsights as any);
+    window.addEventListener('auto-insights-generated', handleAutoInsights);
+    return () => window.removeEventListener('auto-insights-generated', handleAutoInsights);
   }, []);
 
   return (

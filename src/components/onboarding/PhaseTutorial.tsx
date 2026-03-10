@@ -36,12 +36,13 @@ const phaseTutorials: Record<number, {
       {
         title: "Morning Ritual",
         icon: <Droplet className="w-6 h-6 text-green-500" />,
-        content: "Start every morning with 16 oz warm lemon water + pinch of sea salt. Wait 30 minutes before eating. This kickstarts bile flow and hydration.",
+        content: "Choose one morning elixir daily: sole water (salt + lemon), baking soda alkalizer (baking soda + lemon), or the complete elixir (salt + baking soda + lemon). Then fit binders into any clean 2-hour window before or after food and supplements.",
         tips: [
           "Use fresh lemon juice, not bottled",
           "Room temperature or slightly warm water",
-          "Himalayan or Celtic sea salt preferred",
-          "Do this BEFORE coffee or supplements"
+          "Himalayan or Celtic sea salt preferred for sole water",
+          "Use baking soda versions on heavier die-off days",
+          "If breakfast is soon, move binders to a later gap between meals"
         ]
       },
       {

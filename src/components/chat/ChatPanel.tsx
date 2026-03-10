@@ -14,6 +14,7 @@ import { useAutoInsights } from '@/hooks/useAutoInsights';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { buildProtocolChatContext } from '@/hooks/useProtocolData';
 
 interface ChatPanelProps {
   className?: string;
@@ -100,7 +101,10 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     // Build enhanced context with user progress
     const phaseNames = ['Preliminary (Prep)', 'Fungal + Foundation', 'Parasites + Foundation', 'Heavy Metals + Foundation'];
     const dayLabel = userProgress.currentDay === 0 ? 'Day 0 (Prep)' : `Day ${userProgress.currentDay} of 21`;
-    const enhancedContext = `${dayLabel}, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`;
+    const enhancedContext = [
+      `${dayLabel}, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`,
+      buildProtocolChatContext(userProgress.currentDay),
+    ].join(' ');
 
     try {
       await streamChat({

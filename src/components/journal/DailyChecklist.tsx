@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ChecklistItem, getChecklistForDay, getPhaseInfo } from '@/hooks/useProtocolData';
+import { ChecklistItem, getChecklistForDay } from '@/hooks/useProtocolData';
 import { ChecklistState, CustomChecklistItem } from '@/hooks/useJournalStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Circle, Plus, X, Bot, Sparkles, Info } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, X, Sparkles, Info } from 'lucide-react';
 
 interface DailyChecklistProps {
     currentDay: number;
@@ -62,9 +62,14 @@ export const DailyChecklist = ({
             {/* Header */}
             <div className="p-4 border-b border-border/50">
                 <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-sm">Today's Checklist</h3>
+                    <div>
+                        <h3 className="font-semibold text-sm">Today's Plan</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                            Tap a step for context, check it off when done.
+                        </p>
+                    </div>
                     <span className={cn(
-                        "text-xs font-bold px-2 py-0.5 rounded-full",
+                        "text-xs font-bold px-2 py-0.5 rounded-full self-start",
                         completionPercent === 100
                             ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
                             : "bg-muted text-muted-foreground"
@@ -118,7 +123,7 @@ export const DailyChecklist = ({
                             <div className="flex items-center gap-1.5 mb-2 px-1">
                                 <Sparkles className="w-3 h-3 text-primary" />
                                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    From Your Journal
+                                    Follow-ups
                                 </span>
                             </div>
                             <div className="space-y-1">
@@ -178,7 +183,7 @@ export const DailyChecklist = ({
                 ) : completionPercent === 100 ? (
                     <div className="text-center py-2 px-3 rounded-lg bg-gradient-to-r from-emerald-50 to-primary/5 dark:from-emerald-900/20 dark:to-primary/10 border border-emerald-200/50">
                         <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                            ✨ All done today! Amazing work.
+                            ✨ Today's plan is complete.
                         </span>
                     </div>
                 ) : (
@@ -189,7 +194,7 @@ export const DailyChecklist = ({
                         onClick={() => setShowAddInput(true)}
                     >
                         <Plus className="w-3.5 h-3.5" />
-                        Add custom task
+                        Add follow-up
                     </Button>
                 )}
             </div>
@@ -250,4 +255,3 @@ function ChecklistRow({ itemKey, label, emoji, isChecked, onToggle, onAskAbout }
         </div>
     );
 }
-

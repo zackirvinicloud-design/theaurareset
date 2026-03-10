@@ -26,12 +26,13 @@ export interface ShoppingItem {
     name: string;
     quantity: string;
     notes?: string;
-    optional?: string; // e.g. 'pick one' or 'alternative' — shown as a badge
+    optional?: string; // e.g. 'alternative' or 'optional' — shown as a badge
 }
 
 export interface ShoppingCategory {
     category: string;
     emoji: string;
+    guidance?: string;
     items: ShoppingItem[];
 }
 
@@ -63,6 +64,18 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
                 ],
             },
             {
+                category: 'Morning Ritual Essentials',
+                emoji: '🌅',
+                guidance: 'Salt is the core buy here. Baking soda supports the alkalizer or complete elixir. ACV and raw honey are only needed if you want the tonic variations from the written protocol.',
+                items: [
+                    { name: 'Himalayan Pink Salt', quantity: '1 bag or jar', notes: 'Choose this or Celtic sea salt for sole water.' },
+                    { name: 'Celtic Sea Salt', quantity: '1 bag or jar', notes: 'Alternative to Himalayan salt for sole water.', optional: 'alternative' },
+                    { name: 'Aluminum-Free Baking Soda', quantity: '1 box', notes: 'For the baking soda alkalizer or complete morning elixir.' },
+                    { name: 'Raw Apple Cider Vinegar', quantity: '1 bottle', notes: 'For liver tonic support or bath add-ins from the written protocol.', optional: 'optional' },
+                    { name: 'Raw Honey', quantity: '1 jar', notes: 'Optional sweetener for the liver love tonic.', optional: 'optional' },
+                ],
+            },
+            {
                 category: 'Liver Support Supplements',
                 emoji: '💊',
                 items: [
@@ -78,10 +91,23 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
             {
                 category: 'Essential Binders (pick 1-2)',
                 emoji: '🧲',
+                guidance: 'Choose 1-2 total in this section. Activated charcoal and bentonite clay are alternatives. Psyllium is optional.',
                 items: [
                     { name: 'Activated Charcoal 500mg caps', quantity: '2-3 bottles', notes: '2-4 caps daily, 2hrs from food' },
-                    { name: 'Bentonite Clay (food grade)', quantity: '1 container', notes: '1 tsp daily between meals', optional: 'or charcoal' },
-                    { name: 'Psyllium Husk Powder', quantity: '1 large bag', notes: '1 tsp before bed with water', optional: 'optional add-on' },
+                    { name: 'Bentonite Clay (food grade)', quantity: '1 container', notes: 'Use this instead of activated charcoal if you prefer clay.', optional: 'alternative' },
+                    { name: 'Psyllium Husk Powder', quantity: '1 large bag', notes: 'Optional add-on. Helpful for extra bowel support, but not required.', optional: 'optional' },
+                ],
+            },
+            {
+                category: 'Detox Support Supplies',
+                emoji: '🛁',
+                guidance: 'Tongue scraper and Epsom salt are the most practical buys here. The rest are optional support tools from the full written protocol.',
+                items: [
+                    { name: 'Tongue Scraper', quantity: '1', notes: 'Copper or stainless steel.' },
+                    { name: 'Epsom Salt', quantity: '2-4 lbs', notes: 'For baths during tougher detox days.' },
+                    { name: 'Dry Brush', quantity: '1', notes: 'Optional lymphatic support tool.', optional: 'optional' },
+                    { name: 'Castor Oil + Cloth', quantity: '1 set', notes: 'Optional for liver pack support.', optional: 'optional' },
+                    { name: 'Enema Kit', quantity: '1', notes: 'Optional. Only if this is already part of your practice.', optional: 'optional' },
                 ],
             },
         ],
@@ -121,10 +147,11 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
             {
                 category: 'Fungal Support Supplements',
                 emoji: '💊',
+                guidance: 'Oregano oil and caprylic acid are the core buys here. Pau d\'Arco is optional if you want to keep this phase simpler.',
                 items: [
                     { name: 'Oregano Oil Capsules', quantity: '7-day supply', notes: '2-3 caps, 2x daily' },
                     { name: 'Caprylic Acid', quantity: '7-day supply', notes: '1000-1500mg daily' },
-                    { name: 'Pau d\'Arco', quantity: '7-day supply', notes: 'Tea or 500mg capsules', optional: 'optional' },
+                    { name: 'Pau d\'Arco', quantity: '7-day supply', notes: 'Optional. Tea or 500mg capsules.', optional: 'optional' },
                     { name: 'Probiotics 50+ billion CFU', quantity: '21-day supply', notes: 'Continue through all phases' },
                     { name: 'Digestive Enzymes', quantity: '21-day supply', notes: 'With each meal' },
                 ],
@@ -180,9 +207,10 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
             {
                 category: 'Chelation Supplements',
                 emoji: '💊',
+                guidance: 'Spirulina is optional if you want to keep this phase leaner. The rest are your main heavy metal support items.',
                 items: [
                     { name: 'Chlorella (cracked cell wall)', quantity: '7-day supply', notes: '9000mg/day (3000mg 3x)' },
-                    { name: 'Spirulina', quantity: '7-day supply', notes: '4000mg daily', optional: 'optional' },
+                    { name: 'Spirulina', quantity: '7-day supply', notes: 'Optional if you want to keep this phase simpler.', optional: 'optional' },
                     { name: 'Modified Citrus Pectin', quantity: '7-day supply', notes: '4500mg/day (1500mg 3x)' },
                     { name: 'Zeolite (micronized)', quantity: '7-day supply', notes: '1600mg daily' },
                     { name: 'Vitamin C (liposomal)', quantity: '7-day supply', notes: '3000mg daily' },
@@ -195,16 +223,16 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
 
 const FOUNDATION_ITEMS: ChecklistItem[] = [
     { key: 'tongue_scrape', label: 'Tongue scrape (before anything else)', timeOfDay: 'morning', emoji: '👅' },
-    { key: 'lemon_salt_water', label: 'Warm lemon water + pinch of sea salt (16oz)', timeOfDay: 'morning', emoji: '🍋' },
-    { key: 'binder_morning', label: 'Take binder (empty stomach, wait 30min)', timeOfDay: 'morning', emoji: '🧲' },
-    { key: 'probiotics', label: 'Take probiotics (away from binder)', timeOfDay: 'morning', emoji: '🦠' },
+    { key: 'lemon_salt_water', label: 'Morning elixir of choice', timeOfDay: 'morning', emoji: '🍋' },
+    { key: 'binder_morning', label: 'First binder window: take 2 hrs before or after food/supplements', timeOfDay: 'anytime', emoji: '🧲' },
     { key: 'breakfast_compliant', label: 'Eat compliant breakfast', timeOfDay: 'morning', emoji: '🥗' },
-    { key: 'supplements_am', label: 'Morning supplements with food', timeOfDay: 'morning', emoji: '💊' },
+    { key: 'supplements_am', label: 'Breakfast liver support: milk thistle + dandelion root', timeOfDay: 'morning', emoji: '💊' },
     { key: 'hydration_goal', label: 'Stay hydrated — half body weight in oz', timeOfDay: 'afternoon', emoji: '💧' },
     { key: 'lunch_compliant', label: 'Eat compliant lunch', timeOfDay: 'afternoon', emoji: '🥗' },
-    { key: 'supplements_pm', label: 'Afternoon supplements', timeOfDay: 'afternoon', emoji: '💊' },
+    { key: 'supplements_pm', label: 'Lunch liver support: NAC + alpha-lipoic acid + selenium + B-complex', timeOfDay: 'afternoon', emoji: '💊' },
     { key: 'dinner_compliant', label: 'Eat compliant dinner', timeOfDay: 'evening', emoji: '🥗' },
-    { key: 'binder_evening', label: 'Evening binder (2hrs after food)', timeOfDay: 'evening', emoji: '🧲' },
+    { key: 'supplements_dinner', label: 'Dinner liver support: milk thistle + artichoke extract', timeOfDay: 'evening', emoji: '💊' },
+    { key: 'binder_evening', label: 'Second binder window: take 2 hrs before or after food/supplements', timeOfDay: 'evening', emoji: '🧲' },
     { key: 'sleep_routine', label: 'Bedtime routine by 10pm', timeOfDay: 'evening', emoji: '🌙' },
 ];
 
@@ -219,9 +247,10 @@ const PHASE_SPECIFIC_ITEMS: Record<number, ChecklistItem[]> = {
     ],
     2: [
         // Phase 2 = Days 1-7 (Fungal)
-        { key: 'oregano_oil', label: 'Oregano oil with lunch', timeOfDay: 'afternoon', emoji: '🌿' },
-        { key: 'caprylic_acid', label: 'Caprylic acid with meals', timeOfDay: 'afternoon', emoji: '🥥' },
-        { key: 'garlic_supplement', label: 'Garlic extract with dinner', timeOfDay: 'evening', emoji: '🧄' },
+        { key: 'oregano_oil', label: 'Breakfast antifungals: oregano oil + caprylic acid', timeOfDay: 'morning', emoji: '🌿' },
+        { key: 'caprylic_acid', label: 'Breakfast gut support: probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '🦠' },
+        { key: 'liver_juice_support', label: 'Support drink later in the day: liver juice (beet-based if choosing one)', timeOfDay: 'afternoon', emoji: '🥤' },
+        { key: 'garlic_supplement', label: 'Dinner antifungals: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🧄' },
         { key: 'no_sugar', label: 'Zero sugar / sweeteners today', timeOfDay: 'anytime', emoji: '🚫' },
         { key: 'herx_check', label: 'Log any die-off symptoms', timeOfDay: 'evening', emoji: '📝' },
         // Shopping reminder for Phase 3 — appears Day 5+
@@ -229,20 +258,24 @@ const PHASE_SPECIFIC_ITEMS: Record<number, ChecklistItem[]> = {
     ],
     3: [
         // Phase 3 = Days 8-14 (Parasites)
-        { key: 'mimosa_pudica', label: 'Mimosa pudica seed', timeOfDay: 'morning', emoji: '🌱' },
-        { key: 'wormwood', label: 'Wormwood complex', timeOfDay: 'afternoon', emoji: '🌿' },
-        { key: 'black_walnut', label: 'Black walnut hull', timeOfDay: 'afternoon', emoji: '🥜' },
-        { key: 'clove', label: 'Clove supplement', timeOfDay: 'evening', emoji: '🫚' },
-        { key: 'moon_cycle', label: 'Check moon cycle (full moon = peak)', timeOfDay: 'anytime', emoji: '🌕' },
+        { key: 'mimosa_pudica', label: 'Breakfast parasite stack: black walnut + wormwood + clove', timeOfDay: 'morning', emoji: '🌱' },
+        { key: 'wormwood', label: 'Continue breakfast support: oregano oil + caprylic acid + probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '🌿' },
+        { key: 'parasite_juice_support', label: 'Support drink later in the morning: parasite juice', timeOfDay: 'morning', emoji: '🍍' },
+        { key: 'black_walnut', label: 'Lunch parasite support: berberine + grapefruit seed extract', timeOfDay: 'afternoon', emoji: '🥜' },
+        { key: 'clove', label: 'Dinner parasite stack: black walnut + wormwood + clove', timeOfDay: 'evening', emoji: '🫚' },
+        { key: 'moon_cycle', label: 'Afternoon binder support: diatomaceous earth (2hrs away from food/supplements)', timeOfDay: 'afternoon', emoji: '🌕' },
+        { key: 'parasite_dinner_support', label: 'Dinner support: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🍽️' },
         // Shopping reminder for Phase 4 — appears Day 12+
         { key: 'shop_phase4', label: 'Shop for Phase 4 (Heavy Metal) supplies', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 12 },
     ],
     4: [
         // Phase 4 = Days 15-21 (Heavy Metals)
-        { key: 'chlorella', label: 'Chlorella (start low, increase)', timeOfDay: 'morning', emoji: '🟢' },
-        { key: 'cilantro', label: 'Cilantro tincture / fresh cilantro', timeOfDay: 'afternoon', emoji: '🌿' },
-        { key: 'zeolite', label: 'Zeolite / clinoptilolite', timeOfDay: 'afternoon', emoji: '⚡' },
-        { key: 'selenium', label: 'Selenium with dinner', timeOfDay: 'evening', emoji: '💎' },
+        { key: 'chlorella', label: 'Breakfast support drink: heavy metal smoothie', timeOfDay: 'morning', emoji: '🟢' },
+        { key: 'cilantro_detox', label: 'Support drink later in the morning: Cilantro Detox', timeOfDay: 'morning', emoji: '🌿' },
+        { key: 'cilantro', label: 'Breakfast chelators: chlorella + spirulina + modified citrus pectin', timeOfDay: 'morning', emoji: '🌿' },
+        { key: 'zeolite', label: 'Continue breakfast support: milk thistle + NAC + alpha-lipoic acid + reduced oregano oil + probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '⚡' },
+        { key: 'selenium', label: 'Lunch chelators: chlorella + zeolite + modified citrus pectin + vitamin C + selenium + B-complex', timeOfDay: 'afternoon', emoji: '💎' },
+        { key: 'heavy_metal_dinner', label: 'Dinner chelators: chlorella + spirulina + modified citrus pectin + glutathione', timeOfDay: 'evening', emoji: '🌌' },
         { key: 'sauna_sweat', label: 'Sweat session (sauna/exercise)', timeOfDay: 'anytime', emoji: '🔥' },
     ],
 };
@@ -255,7 +288,7 @@ export const PHASE_INFO: Record<number, PhaseInfo> = {
         bgColor: 'bg-emerald-50',
         borderColor: 'border-emerald-200',
         description: 'Set up your environment, gather supplies, and prepare mentally for the journey ahead.',
-        supplements: ['Binders (activated charcoal or bentonite clay)', 'Probiotics', 'Digestive enzymes', 'Magnesium citrate'],
+        supplements: ['Milk thistle', 'Dandelion root', 'NAC', 'Alpha-lipoic acid', 'Artichoke extract', 'Selenium', 'B-complex', 'Binders'],
         tips: ['Remove sugar, gluten, dairy, and processed foods', 'Stock your kitchen with compliant foods', 'Set up a supplement organizer'],
     },
     2: {
@@ -265,7 +298,7 @@ export const PHASE_INFO: Record<number, PhaseInfo> = {
         bgColor: 'bg-amber-50',
         borderColor: 'border-amber-200',
         description: 'Target candida and fungal overgrowth with antifungal herbs and strict dietary control.',
-        supplements: ['Oregano oil', 'Caprylic acid', 'Garlic extract', 'Pau d\'arco', 'Binders (continue)'],
+        supplements: ['Oregano oil', 'Caprylic acid', 'Probiotic', 'Digestive enzyme', 'Pau d\'arco'],
         tips: ['Die-off symptoms are normal — headaches, fatigue, brain fog', 'Drink extra water to flush toxins', 'Take binders 2 hours away from other supplements'],
     },
     3: {
@@ -275,8 +308,8 @@ export const PHASE_INFO: Record<number, PhaseInfo> = {
         bgColor: 'bg-rose-50',
         borderColor: 'border-rose-200',
         description: 'Eliminate parasites with targeted anti-parasitic herbs. Full moon cycle enhances effectiveness.',
-        supplements: ['Mimosa pudica seed', 'Wormwood complex', 'Black walnut hull', 'Clove', 'Binders (continue)'],
-        tips: ['Full moon = parasites are most active, best time to cleanse', 'Strange bowel movements are normal', 'Keep up with binders to manage detox reactions'],
+        supplements: ['Black walnut hull', 'Wormwood', 'Clove', 'Berberine', 'Grapefruit seed extract', 'Diatomaceous earth'],
+        tips: ['Full moon can intensify symptoms', 'Strange bowel movements are normal', 'Keep up with binders to manage detox reactions'],
     },
     4: {
         name: 'Heavy Metal Detox',
@@ -285,7 +318,7 @@ export const PHASE_INFO: Record<number, PhaseInfo> = {
         bgColor: 'bg-violet-50',
         borderColor: 'border-violet-200',
         description: 'Chelate and remove heavy metals accumulated in tissues. Go slow and support your liver.',
-        supplements: ['Chlorella', 'Cilantro tincture', 'Zeolite / clinoptilolite', 'Selenium', 'Binders (continue)'],
+        supplements: ['Chlorella', 'Spirulina', 'Modified citrus pectin', 'Zeolite', 'Vitamin C', 'Glutathione'],
         tips: ['Start chlorella at a low dose and increase gradually', 'Sweating helps mobilize metals — sauna or exercise', 'Support liver with milk thistle or NAC'],
     },
 };
@@ -323,4 +356,40 @@ export function getDayLabel(day: number): string {
 
 export function getPhaseForDay(day: number): PhaseInfo {
     return PHASE_INFO[calculatePhase(day)];
+}
+
+const CHAT_TIME_LABELS: Record<ChecklistItem['timeOfDay'], string> = {
+    morning: 'Morning',
+    afternoon: 'Afternoon',
+    evening: 'Evening',
+    anytime: 'Anytime',
+};
+
+export const FULL_PROTOCOL_CHAT_REFERENCE = [
+    'AUTHORITATIVE FULL PROTOCOL REFERENCE: If any older shorthand conflicts with this, follow this reference.',
+    'Day 0 is prep only. No active detox on Day 0.',
+    'Binder timing rule: take binders in a clean 2-hour window before or after food and supplements. Do not assume they have to be taken immediately after waking if that timing does not fit the day.',
+    'Morning ritual choice for every active day: keep this simple by default. Treat sole water, baking soda alkalizer, and the complete elixir as minor variations on the same morning elixir, not three separate required tasks. Only break down the differences if the user asks.',
+    'Foundation schedule for EVERY active day (Days 1-21): Breakfast liver support = milk thistle + dandelion root. Lunch liver support = NAC + alpha-lipoic acid + selenium + B-complex. Dinner liver support = milk thistle + artichoke extract.',
+    'Drink and formula support from the written protocol exists, but it is optional support rather than the main checklist. Do not surface juice rotations unless the user asks specifically about drinks, juices, or formulas.',
+    'Phase 2 (Days 1-7): Breakfast antifungals = oregano oil + caprylic acid. Breakfast gut support = probiotic + digestive enzyme. Support drink later in the day = liver juice, with the afternoon beet-based option as the simplest default if they only want one. Dinner antifungals = oregano oil + digestive enzyme. Keep sugar at zero. Pau d\'arco is optional support.',
+    'Phase 3 (Days 8-14): Breakfast parasite stack = black walnut + wormwood + clove. Continue oregano oil + caprylic acid + probiotic + digestive enzyme at breakfast. Support drink later in the morning = parasite juice after breakfast. Lunch parasite support = berberine + grapefruit seed extract. Afternoon binder support = diatomaceous earth 2 hours away from food and supplements. Dinner parasite stack = black walnut + wormwood + clove, plus oregano oil + digestive enzyme.',
+    'Phase 4 (Days 15-21): Breakfast support drink = heavy metal smoothie. Support drink later in the morning = Cilantro Detox. Breakfast chelators = chlorella + spirulina + modified citrus pectin. Continue milk thistle + NAC + alpha-lipoic acid + reduced oregano oil + probiotic + digestive enzyme in the morning. Lunch chelators = chlorella + zeolite + modified citrus pectin + vitamin C + selenium + B-complex. Dinner chelators = chlorella + spirulina + modified citrus pectin + glutathione, plus milk thistle + artichoke extract.',
+    'Day-specific notes from the full protocol: Day 2 adds artichoke extract at breakfast. Day 3 increases oregano oil and caprylic acid. Day 9 adds diatomaceous earth directly to the morning water. Days 10-14 increase black walnut, wormwood, clove, oregano oil, and probiotics. Day 15 starts the heavy metal phase.',
+].join('\n');
+
+export function buildProtocolChatContext(day: number): string {
+    const checklist = getChecklistForDay(day)
+        .map((item) => `- ${CHAT_TIME_LABELS[item.timeOfDay]}: ${item.label}`)
+        .join('\n');
+
+    return [
+        FULL_PROTOCOL_CHAT_REFERENCE,
+        '',
+        `CURRENT DAY: ${getDayLabel(day)} (Phase ${calculatePhase(day)})`,
+        'TODAY\'S CHECKLIST:',
+        checklist,
+        '',
+        'When the user asks what they need today, answer from the checklist and protocol above. If a checklist label is broad, spell out the exact supplements named in this reference.',
+    ].join('\n');
 }

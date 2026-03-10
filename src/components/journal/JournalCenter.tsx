@@ -1,11 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
-import { MessageSquare, Bot, ArrowDown, Trash2, Download, Sparkles } from 'lucide-react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { MessageSquare, Bot, ArrowDown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ChatMessage } from '@/components/chat/ChatMessage';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { JournalEntry, UserProgress } from '@/hooks/useJournalStore';
 import { streamChat } from '@/utils/streamChat';
-import { getDayLabel, getPhaseInfo } from '@/hooks/useProtocolData';
+import { buildProtocolChatContext, getDayLabel, getPhaseInfo } from '@/hooks/useProtocolData';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -15,22 +15,18 @@ interface JournalCenterProps {
     onAddEntry: (role: 'user' | 'assistant', content: string) => Promise<JournalEntry>;
     onUpdateLastEntry: (content: string) => void;
     onFinalizeLastEntry: (content: string) => void;
-    onClearEntries: () => void;
-    onExportChat: () => void;
     onOpenSymptomLogger: () => void;
     onOpenMoodTracker: () => void;
-    onExtractActions?: (aiResponse: string) => string[];
-    onAddCustomItem?: (label: string, source?: 'ai' | 'manual') => void;
     pendingPrompt?: string | null;
     onPendingPromptConsumed?: () => void;
     isMobile?: boolean;
 }
 
 const SUGGESTED_PROMPTS = [
-    "What should I focus on today?",
-    "How am I doing so far in this phase?",
-    "What can I eat for dinner tonight?",
-    "I'm feeling some die-off symptoms — is this normal?",
+    "What are the 3 most important things for today?",
+    "Explain the next checklist item in plain English.",
+    "What can I eat today that stays on plan?",
+    "Are these symptoms expected in this phase?",
 ];
 
 export const JournalCenter = ({
@@ -39,12 +35,8 @@ export const JournalCenter = ({
     onAddEntry,
     onUpdateLastEntry,
     onFinalizeLastEntry,
-    onClearEntries,
-    onExportChat,
     onOpenSymptomLogger,
     onOpenMoodTracker,
-    onExtractActions,
-    onAddCustomItem,
     pendingPrompt,
     onPendingPromptConsumed,
     isMobile = false,
@@ -55,6 +47,31 @@ export const JournalCenter = ({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const phase = getPhaseInfo(progress.currentPhase);
 
+    const sanitizeAssistantText = useCallback((value: string) => {
+        return value
+            .replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/g, '')
+            .replace(/[‘’]/g, "'")
+            .replace(/[“”]/g, '"')
+            .replace(/[–—]/g, '-')
+            .replace(/…/g, '...')
+            .replace(/•/g, '-')
+            .replace(/→/g, '->')
+            .replace(/¼/g, '1/4')
+            .replace(/½/g, '1/2')
+            .replace(/¾/g, '3/4')
+            .replace(/⅓/g, '1/3')
+            .replace(/⅔/g, '2/3')
+            .replace(/⅛/g, '1/8')
+            .replace(/⅜/g, '3/8')
+            .replace(/⅝/g, '5/8')
+            .replace(/⅞/g, '7/8')
+            .replace(/\u00A0/g, ' ')
+            .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, '')
+            .replace(/[ \t]{2,}/g, ' ')
+            .replace(/\n{3,}/g, '\n\n')
+            .trimStart();
+    }, []);
+
     // Auto-scroll on new messages
     useEffect(() => {
         if (scrollRef.current) {
@@ -62,13 +79,81 @@ export const JournalCenter = ({
         }
     }, [entries, isLoading]);
 
+    const handleSend = useCallback(async (content: string) => {
+        await onAddEntry('user', content);
+        setIsLoading(true);
+
+        let assistantContent = '';
+        await onAddEntry('assistant', '');
+
+        const phaseNames = ['Prep & Foundation', 'Fungal Elimination', 'Parasite Cleanse', 'Heavy Metal Detox'];
+        const dayLabel = getDayLabel(progress.currentDay);
+        const enhancedContext = [
+            `${dayLabel}, Phase ${progress.currentPhase}: ${phaseNames[progress.currentPhase - 1]}`,
+            'Reply in a natural, conversational tone.',
+            'Use plain English and make the next step feel simple.',
+            'Use English only.',
+            'Use only standard ASCII keyboard characters. No non-English words, accented text, curly quotes, emoji, or non-Latin scripts.',
+            'Keep the morning elixir simple by default. Do not list every variation unless the user asks for the differences.',
+            'Never show internal markers or hidden tags.',
+            buildProtocolChatContext(progress.currentDay),
+        ].join(' ');
+
+        const mappedMsgs = entries.map(e => ({
+            id: e.id,
+            role: e.role,
+            content: e.content,
+            timestamp: new Date(e.createdAt).getTime(),
+        }));
+
+        try {
+            await streamChat({
+                messages: [...mappedMsgs, { id: 'new', role: 'user' as const, content, timestamp: Date.now() }],
+                context: enhancedContext,
+                onDelta: (chunk) => {
+                    assistantContent += chunk;
+                    assistantContent = sanitizeAssistantText(assistantContent);
+                    onUpdateLastEntry(assistantContent);
+                },
+                onDone: () => {
+                    assistantContent = sanitizeAssistantText(assistantContent).trim();
+                    onFinalizeLastEntry(assistantContent);
+                    setIsLoading(false);
+                },
+                onError: (error) => {
+                    setIsLoading(false);
+                    toast({
+                        title: "Error",
+                        description: error.message,
+                        variant: "destructive",
+                    });
+                },
+            });
+        } catch {
+            setIsLoading(false);
+            toast({
+                title: "Error",
+                description: "Failed to send message. Please try again.",
+                variant: "destructive",
+            });
+        }
+    }, [
+        entries,
+        onAddEntry,
+        onFinalizeLastEntry,
+        onUpdateLastEntry,
+        progress.currentDay,
+        progress.currentPhase,
+        sanitizeAssistantText,
+    ]);
+
     // Consume pending prompts from checklist taps
     useEffect(() => {
         if (pendingPrompt && !isLoading) {
             handleSend(pendingPrompt);
             onPendingPromptConsumed?.();
         }
-    }, [pendingPrompt]);
+    }, [pendingPrompt, isLoading, handleSend, onPendingPromptConsumed]);
 
     // Scroll listener for "scroll to bottom" button
     useEffect(() => {
@@ -88,107 +173,19 @@ export const JournalCenter = ({
         }
     };
 
-    const handleSend = async (content: string) => {
-        await onAddEntry('user', content);
-        setIsLoading(true);
-
-        let assistantContent = '';
-        await onAddEntry('assistant', '');
-
-        const phaseNames = ['Prep & Foundation', 'Fungal Elimination', 'Parasite Cleanse', 'Heavy Metal Detox'];
-        const dayLabel = getDayLabel(progress.currentDay);
-        const enhancedContext = `${dayLabel}, Phase ${progress.currentPhase}: ${phaseNames[progress.currentPhase - 1]}`;
-
-        const mappedMsgs = entries.map(e => ({
-            id: e.id,
-            role: e.role,
-            content: e.content,
-            timestamp: new Date(e.createdAt).getTime(),
-        }));
-
-        try {
-            await streamChat({
-                messages: [...mappedMsgs, { id: 'new', role: 'user' as const, content, timestamp: Date.now() }],
-                context: enhancedContext,
-                onDelta: (chunk) => {
-                    assistantContent += chunk;
-                    onUpdateLastEntry(assistantContent);
-                },
-                onDone: () => {
-                    onFinalizeLastEntry(assistantContent);
-                    setIsLoading(false);
-                    // Extract actionable items from AI response and add to checklist
-                    if (onExtractActions && assistantContent) {
-                        const extracted = onExtractActions(assistantContent);
-                        if (extracted.length > 0) {
-                            toast({
-                                title: `📋 ${extracted.length} task${extracted.length > 1 ? 's' : ''} added to your checklist`,
-                                description: extracted[0] + (extracted.length > 1 ? ` +${extracted.length - 1} more` : ''),
-                            });
-                        }
-                    }
-                },
-                onError: (error) => {
-                    setIsLoading(false);
-                    toast({
-                        title: "Error",
-                        description: error.message,
-                        variant: "destructive",
-                    });
-                },
-            });
-        } catch {
-            setIsLoading(false);
-            toast({
-                title: "Error",
-                description: "Failed to send message. Please try again.",
-                variant: "destructive",
-            });
-        }
-    };
-
-    const handleClear = () => {
-        if (confirm("Clear today's journal entries? This cannot be undone.")) {
-            onClearEntries();
-            toast({ title: "Cleared", description: "Today's entries have been removed." });
-        }
-    };
-
     return (
-        <div className="flex flex-col h-full">
+        <div data-tour="today-space" className="flex flex-col h-full">
             {/* Header — hidden on mobile (TopBar handles it) */}
             {!isMobile && (
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
+                <div className="flex items-center px-4 py-3 border-b border-border/50">
                     <div className="flex items-center gap-2">
                         <MessageSquare className="w-4 h-4 text-primary" />
                         <div>
-                            <h3 className="font-semibold text-sm">Your Journal</h3>
+                            <h3 className="font-semibold text-sm">Today</h3>
                             <p className="text-xs text-muted-foreground">
-                                {getDayLabel(progress.currentDay)} · {phase.shortName} Phase
+                                {getDayLabel(progress.currentDay)} · Ask for help or log what changed
                             </p>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <Button
-                            onClick={onExportChat}
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            disabled={entries.length === 0}
-                            title="Export journal"
-                        >
-                            <Download className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                            onClick={handleClear}
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            disabled={entries.length === 0}
-                            title="Clear today's entries"
-                        >
-                            <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
                     </div>
                 </div>
             )}
@@ -206,14 +203,14 @@ export const JournalCenter = ({
                             </div>
                             <h4 className="font-semibold text-base mb-1">
                                 {progress.currentDay === 0
-                                    ? "Welcome to Your Healing Journey"
+                                    ? "Prep Day starts here"
                                     : `Good ${getTimeOfDay()}! Ready for ${getDayLabel(progress.currentDay)}?`
                                 }
                             </h4>
                             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
                                 {progress.currentDay === 0
-                                    ? "I'm your personal nutrition coach. Let's get you set up for the 21-day protocol."
-                                    : "Tell me how you're feeling, ask questions, or log your progress. I'm here for you."
+                                    ? "Start by getting organized. Ask about shopping, supplements, or what matters most before Day 1."
+                                    : "Use this space when you need clarity, meal ideas, or a quick way to log what changed today."
                                 }
                             </p>
                             <div className="flex flex-col gap-2 w-full max-w-sm">
@@ -240,7 +237,7 @@ export const JournalCenter = ({
                                     <ChatMessage
                                         key={entry.id}
                                         role={entry.role}
-                                        content={entry.content}
+                                        content={entry.role === 'assistant' ? sanitizeAssistantText(entry.content) : entry.content}
                                         timestamp={new Date(entry.createdAt).getTime()}
                                         isStreaming={isStreaming}
                                     />
@@ -278,30 +275,43 @@ export const JournalCenter = ({
                 )}
             </div>
 
-            {/* Quick actions bar — hidden on mobile (bottom nav handles it) */}
-            {!isMobile && (
-                <div className="px-4 py-2 border-t border-border/30 flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs h-7 gap-1"
-                        onClick={onOpenSymptomLogger}
-                    >
-                        📝 Log Symptom
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs h-7 gap-1"
-                        onClick={onOpenMoodTracker}
-                    >
-                        😊 Mood Check
-                    </Button>
-                </div>
-            )}
+            <div
+                data-tour="today-actions"
+                className={cn(
+                    "px-4 py-2 border-t border-border/30 flex items-center gap-2",
+                    isMobile && "overflow-x-auto"
+                )}
+            >
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                        "text-xs gap-1",
+                        isMobile ? "h-8 px-3 rounded-full flex-none" : "h-7"
+                    )}
+                    onClick={onOpenSymptomLogger}
+                >
+                    📝 Log symptom
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                        "text-xs gap-1",
+                        isMobile ? "h-8 px-3 rounded-full flex-none" : "h-7"
+                    )}
+                    onClick={onOpenMoodTracker}
+                >
+                    😊 Mood check
+                </Button>
+            </div>
 
             {/* Input */}
-            <ChatInput onSend={handleSend} disabled={isLoading} />
+            <ChatInput
+                onSend={handleSend}
+                disabled={isLoading}
+                placeholder="Ask about today's plan, food, symptoms, or what to do next..."
+            />
         </div>
     );
 };
