@@ -252,7 +252,7 @@ const PHASE_SPECIFIC_ITEMS: Record<number, ChecklistItem[]> = {
         { key: 'liver_juice_support', label: 'Support drink later in the day: liver juice (beet-based if choosing one)', timeOfDay: 'afternoon', emoji: '🥤' },
         { key: 'garlic_supplement', label: 'Dinner antifungals: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🧄' },
         { key: 'no_sugar', label: 'Zero sugar / sweeteners today', timeOfDay: 'anytime', emoji: '🚫' },
-        { key: 'herx_check', label: 'Log any die-off symptoms', timeOfDay: 'evening', emoji: '📝' },
+        { key: 'herx_check', label: 'Note any die-off changes (mention them in chat)', timeOfDay: 'evening', emoji: '📝' },
         // Shopping reminder for Phase 3 — appears Day 5+
         { key: 'shop_phase3', label: 'Shop for Phase 3 (Parasite) supplies', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 5 },
     ],

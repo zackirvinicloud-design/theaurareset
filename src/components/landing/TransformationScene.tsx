@@ -186,7 +186,7 @@ export const TransformationScene = () => {
               <div className="space-y-3 text-left">
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span className="text-base sm:text-lg"><span className="font-bold">2-day FREE trial</span> — Test drive it before you pay a cent</span>
+                  <span className="text-base sm:text-lg"><span className="font-bold">Personalized setup first</span> — See your plan before you commit</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
@@ -208,7 +208,7 @@ export const TransformationScene = () => {
             </Button>
 
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Try it free for 2 days. See for yourself. Then decide. Zero risk.
+              See your personalized plan, then decide. Zero subscription games.
             </p>
           </Card>
         </motion.div>

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+const OFFER_PRICE = '$79';
+
 export const PricingSection = () => {
   const navigate = useNavigate();
 
@@ -21,13 +23,13 @@ export const PricingSection = () => {
           className="text-center mb-20"
         >
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-            Simple Scope.{' '}
+            Clear Offer.{' '}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              One Payment.
+              Better Economics.
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Pay for a guided protocol companion, not a sprawling wellness platform.
+            Pay for a gut health execution system, not another pile of wellness content.
           </p>
         </motion.div>
 
@@ -44,9 +46,9 @@ export const PricingSection = () => {
               <div className="text-center mb-8">
                 <div className="inline-block">
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-7xl font-bold">$19</span>
+                    <span className="text-7xl font-bold">{OFFER_PRICE}</span>
                   </div>
-                  <div className="text-lg text-muted-foreground mt-2">One-time payment</div>
+                  <div className="text-lg text-muted-foreground mt-2">One-time payment. No recurring subscription.</div>
                 </div>
               </div>
 
@@ -55,19 +57,19 @@ export const PricingSection = () => {
                 onClick={() => navigate('/signup')}
                 className="w-full mb-8 h-16 text-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                Get Lifetime Access Now
+                Start My Personalized Plan
               </Button>
 
               {/* Features */}
               <div className="space-y-4 mb-8">
-                <h3 className="text-xl font-bold text-center mb-6">Everything Included:</h3>
+                <h3 className="text-xl font-bold text-center mb-6">What You Get:</h3>
                 {[
+                  'A 21-day gut health cleanse command center',
                   'Prep Day setup and shopping guidance',
-                  'Daily plan for the current protocol day',
-                  'Phase-by-phase guide and supplement reminders',
-                  'AI help for step clarification and troubleshooting',
-                  'Symptom, mood, and note logging',
-                  'A focused app experience instead of a static PDF',
+                  'A daily plan grouped by morning, afternoon, and evening',
+                  'Protocol-specific help for questions and troubleshooting',
+                  'Budget protection so you know what to buy first',
+                  'Lifetime access after the one-time payment',
                 ].map((feature, i) => (
                   <motion.div
                     key={i}
@@ -87,7 +89,7 @@ export const PricingSection = () => {
 
               <div className="pt-8 border-t border-border text-center">
                 <p className="text-sm text-muted-foreground">
-                  The scope is intentionally narrow so the product stays clear, actionable, and easy to finish.
+                  This offer is intentionally narrow so the product stays clear, actionable, and easier to finish.
                 </p>
               </div>
             </div>

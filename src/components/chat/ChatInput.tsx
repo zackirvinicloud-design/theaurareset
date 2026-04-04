@@ -8,9 +8,15 @@ interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  compact?: boolean;
 }
 
-export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the program..." }: ChatInputProps) => {
+export const ChatInput = ({
+  onSend,
+  disabled,
+  placeholder = "Ask about the program...",
+  compact = false,
+}: ChatInputProps) => {
   const [input, setInput] = useState('');
 
   const handleSend = () => {
@@ -29,7 +35,10 @@ export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the progr
   };
 
   return (
-    <div className="flex gap-2 p-4 pb-safe border-t border-border bg-background">
+    <div className={cn(
+      "flex gap-2 border-t border-border bg-background pb-safe",
+      compact ? "p-3" : "p-4"
+    )}>
       <Textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -37,7 +46,9 @@ export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the progr
         placeholder={placeholder}
         disabled={disabled}
         className={cn(
-          "min-h-[60px] max-h-[120px] resize-none text-base md:text-sm",
+          compact
+            ? "min-h-[52px] max-h-[112px] resize-none text-[15px]"
+            : "min-h-[60px] max-h-[120px] resize-none text-base md:text-sm",
           disabled && "opacity-50 cursor-not-allowed"
         )}
       />
@@ -45,7 +56,10 @@ export const ChatInput = ({ onSend, disabled, placeholder = "Ask about the progr
         onClick={handleSend}
         disabled={disabled || !input.trim()}
         size="icon"
-        className="h-[60px] w-12 flex-shrink-0"
+        className={cn(
+          "flex-shrink-0",
+          compact ? "h-[52px] w-11" : "h-[60px] w-12"
+        )}
       >
         <Send className="w-4 h-4" />
       </Button>

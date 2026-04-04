@@ -15,13 +15,13 @@ const steps = [
   {
     number: '03',
     title: 'Ask and log',
-    description: 'Use AI for clarification and keep lightweight notes on symptoms and mood as you go.',
+    description: 'Use AI for clarification and keep lightweight notes in your journal as you go.',
   },
 ];
 
 const goodFit = [
   'People who want a clear daily plan instead of more research.',
-  'People willing to follow a structured 21-day reset.',
+  'People willing to follow a structured 21-day cleanse.',
   'People who want guidance without hiring a coach.',
 ];
 
@@ -49,7 +49,7 @@ export const TransformationProof = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            The reset is straightforward when the product stays focused on the job: prep, follow, and keep moving.
+            The cleanse gets easier when the product stays focused on the job: prep, follow, and keep moving.
           </p>
         </motion.div>
 

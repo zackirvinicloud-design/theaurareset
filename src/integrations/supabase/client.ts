@@ -9,5 +9,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // Avoid cross-tab lock contention that can stall auth requests in local dev.
+    lock: async (_name, _acquireTimeout, fn) => await fn(),
   }
 });

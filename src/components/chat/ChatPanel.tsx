@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { MessageSquare, Download, Trash2, Bot, ArrowDown } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { MessageSquare, Download, Trash2, Leaf, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
@@ -10,11 +9,16 @@ import { ProgressCard } from './ProgressCard';
 import { JournalHistory } from './JournalHistory';
 import { InsightsDrawer } from '../insights/InsightsDrawer';
 import { useChatStore } from '@/hooks/useChatStore';
-import { useAutoInsights } from '@/hooks/useAutoInsights';
+import { useGutBrainProfile } from '@/hooks/useGutBrainProfile';
 import { streamChat } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { buildProtocolChatContext } from '@/hooks/useProtocolData';
+import {
+  GUT_BRAIN_AI_NAME,
+  GUT_BRAIN_SUGGESTED_PROMPTS,
+  type GutBrainConversationEntry,
+} from '@/lib/gutbrain';
 
 interface ChatPanelProps {
   className?: string;
@@ -22,26 +26,120 @@ interface ChatPanelProps {
   onClose?: () => void;
 }
 
-const SUGGESTED_PROMPTS = [
-  "How do I talk to you to get the best guidance?",
-  "What should I share with you to stay on track?",
-  "What can I order on DoorDash that's compliant?",
-  "Walk me through how this 21-day journey works",
-];
-
-export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
+export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
+  const gutBrain = useGutBrainProfile(null);
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const dailyMotivationHandledRef = useRef(false);
 
-  // Auto-generate insights every 5 messages
-  useAutoInsights({ messages, userProgress });
+  const handleSend = useCallback(async (content: string) => {
+    addMessage({ role: 'user', content });
+    setIsLoading(true);
+
+    let assistantContent = '';
+    let nextDay = userProgress.currentDay;
+    let nextPhase = userProgress.currentPhase;
+    addMessage({ role: 'assistant', content: '' });
+
+    // Build enhanced context with user progress
+    const phaseNames = ['Preliminary (Prep)', 'Fungal + Foundation', 'Parasites + Foundation', 'Heavy Metals + Foundation'];
+    const dayLabel = userProgress.currentDay === 0 ? 'Day 0 (Prep)' : `Day ${userProgress.currentDay} of 21`;
+    const enhancedContext = [
+      `${dayLabel}, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`,
+      buildProtocolChatContext(userProgress.currentDay),
+    ].join(' ');
+
+    try {
+      await streamChat({
+        messages: [...messages, { id: '0', role: 'user', content, timestamp: Date.now() }],
+        context: enhancedContext,
+        brainProfile: gutBrain.profile,
+        brainSnapshot: gutBrain.snapshot,
+        onDelta: (chunk) => {
+          assistantContent += chunk;
+          
+          // Check for progress update marker
+          const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
+          if (progressMatch) {
+            const newDay = Math.min(Math.max(parseInt(progressMatch[1]), 0), 21);
+            const newPhase = newDay === 0 ? 1 : (newDay <= 7 ? 2 : (newDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
+            nextDay = newDay;
+            nextPhase = newPhase;
+            updateProgress({ currentDay: newDay, currentPhase: newPhase });
+            
+            // Remove the marker from the displayed content
+            assistantContent = assistantContent.replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/, '');
+          }
+          
+          updateLastMessage(assistantContent);
+        },
+        onDone: () => {
+          const insightEntries: GutBrainConversationEntry[] = [
+            ...messages.map((message) => ({
+              id: message.id,
+              role: message.role,
+              content: message.content,
+              createdAt: new Date(message.timestamp).toISOString(),
+            })),
+            {
+              id: `user-${Date.now()}`,
+              role: 'user',
+              content,
+              createdAt: new Date().toISOString(),
+            },
+            {
+              id: `assistant-${Date.now()}`,
+              role: 'assistant',
+              content: assistantContent,
+              createdAt: new Date().toISOString(),
+            },
+          ];
+
+          void gutBrain.refreshBrain(
+            insightEntries,
+            { currentDay: nextDay, currentPhase: nextPhase },
+            { silent: true },
+          );
+          setIsLoading(false);
+        },
+        onError: (error) => {
+          setIsLoading(false);
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        },
+      });
+    } catch (error) {
+      setIsLoading(false);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [
+    addMessage,
+    context,
+    gutBrain,
+    messages,
+    updateLastMessage,
+    updateProgress,
+    userProgress.currentDay,
+    userProgress.currentPhase,
+  ]);
 
   // Daily motivation message
   useEffect(() => {
+    if (dailyMotivationHandledRef.current) {
+      return;
+    }
+
     const today = new Date().toDateString();
     const lastMotivationDate = localStorage.getItem('LAST_MOTIVATION_DATE');
     
@@ -56,13 +154,15 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
       
       const randomPrompt = motivationPrompts[Math.floor(Math.random() * motivationPrompts.length)];
       localStorage.setItem('LAST_MOTIVATION_DATE', today);
-      
-      // Auto-send motivation request after a brief delay
-      setTimeout(() => {
-        handleSend(randomPrompt);
+      dailyMotivationHandledRef.current = true;
+
+      const timeoutId = window.setTimeout(() => {
+        void handleSend(randomPrompt);
       }, 500);
+
+      return () => window.clearTimeout(timeoutId);
     }
-  }, []); // Only run once on mount
+  }, [handleSend, messages.length, userProgress.currentDay, userProgress.currentPhase]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -91,63 +191,6 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     }
   };
 
-  const handleSend = async (content: string) => {
-    addMessage({ role: 'user', content });
-    setIsLoading(true);
-
-    let assistantContent = '';
-    const assistantMsg = addMessage({ role: 'assistant', content: '' });
-
-    // Build enhanced context with user progress
-    const phaseNames = ['Preliminary (Prep)', 'Fungal + Foundation', 'Parasites + Foundation', 'Heavy Metals + Foundation'];
-    const dayLabel = userProgress.currentDay === 0 ? 'Day 0 (Prep)' : `Day ${userProgress.currentDay} of 21`;
-    const enhancedContext = [
-      `${dayLabel}, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`,
-      buildProtocolChatContext(userProgress.currentDay),
-    ].join(' ');
-
-    try {
-      await streamChat({
-        messages: [...messages, { id: '0', role: 'user', content, timestamp: Date.now() }],
-        context: enhancedContext,
-        onDelta: (chunk) => {
-          assistantContent += chunk;
-          
-          // Check for progress update marker
-          const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
-          if (progressMatch) {
-            const newDay = Math.min(Math.max(parseInt(progressMatch[1]), 0), 21);
-            const newPhase = newDay === 0 ? 1 : (newDay <= 7 ? 2 : (newDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
-            updateProgress({ currentDay: newDay, currentPhase: newPhase });
-            
-            // Remove the marker from the displayed content
-            assistantContent = assistantContent.replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/, '');
-          }
-          
-          updateLastMessage(assistantContent);
-        },
-        onDone: () => {
-          setIsLoading(false);
-        },
-        onError: (error) => {
-          setIsLoading(false);
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
-      });
-    } catch (error) {
-      setIsLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleClear = () => {
     if (confirm('Clear all chat history? This cannot be undone.')) {
       clearMessages();
@@ -169,19 +212,6 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
     });
   };
 
-  const handleDailyMotivation = () => {
-    const phase = userProgress.currentPhase;
-    const motivationPrompts = [
-      `Give me my daily motivation for day ${userProgress.currentDay}`,
-      `What's my morning routine for phase ${phase}?`,
-      `Motivate me for today's protocol`,
-      `What should I focus on today?`
-    ];
-    
-    const randomPrompt = motivationPrompts[Math.floor(Math.random() * motivationPrompts.length)];
-    handleSend(randomPrompt);
-  };
-
   return (
     <TooltipProvider>
       <div className={cn("flex flex-col h-full bg-background chat-panel", className)}>
@@ -190,14 +220,27 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm truncate">Gut Brain Journal</h3>
+              <h3 className="font-semibold text-sm truncate">{GUT_BRAIN_AI_NAME}</h3>
               <p className="text-xs text-muted-foreground truncate">
                 Day {userProgress.currentDay} · Phase {userProgress.currentPhase}
               </p>
             </div>
           </div>
         <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
-          <InsightsDrawer />
+          <InsightsDrawer
+            brain={gutBrain}
+            entries={messages.map((message) => ({
+              id: message.id,
+              role: message.role,
+              content: message.content,
+              createdAt: new Date(message.timestamp).toISOString(),
+            }))}
+            progress={{
+              currentDay: userProgress.currentDay,
+              currentPhase: userProgress.currentPhase,
+            }}
+            compact
+          />
           <JournalHistory />
           <Tooltip>
             <TooltipTrigger asChild>
@@ -248,12 +291,12 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
           {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6">
             <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
-            <h4 className="font-semibold text-sm mb-2">Your Personal Nutrition Coach</h4>
+            <h4 className="font-semibold text-sm mb-2">{GUT_BRAIN_AI_NAME}</h4>
             <p className="text-xs text-muted-foreground mb-4 max-w-[240px]">
-              I'm here to guide you through every step of your healing journey - ask me anything.
+              Ask for today's plan, friction support, or a clearer next step. The goal is consistency, not perfect wellness theater.
             </p>
             <div className="flex flex-col gap-2 w-full max-w-[240px]">
-              {SUGGESTED_PROMPTS.map((prompt, i) => (
+              {GUT_BRAIN_SUGGESTED_PROMPTS.map((prompt, i) => (
                 <Button
                   key={i}
                   variant="outline"
@@ -277,13 +320,17 @@ export const ChatPanel = ({ className, context, onClose }: ChatPanelProps) => {
                   key={msg.id} 
                   {...msg} 
                   isStreaming={isStreamingMessage}
+                  enableChoices={msg.role === 'assistant' && isLastMessage && !isLoading}
+                  onChoiceSelect={(choice) => {
+                    void handleSend(choice);
+                  }}
                 />
               );
             })}
             {isLoading && (
               <div className="flex gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-secondary-foreground" />
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/30 ring-1 ring-emerald-500/20 flex items-center justify-center">
+                  <Leaf className="w-4 h-4 text-emerald-400" />
                 </div>
                 <div className="bg-muted rounded-lg px-4 py-2">
                   <div className="flex gap-1">

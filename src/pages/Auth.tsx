@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/hooks/use-toast";
+import { getDefaultPostAuthDestination, isEmailVerified, withAuthTimeout } from "@/lib/auth-routing";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
@@ -21,23 +22,49 @@ const Auth = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   useEffect(() => {
-    // Check if already logged in
+    let cancelled = false;
     const redirectPath = searchParams.get("redirect");
-    const redirectUrl = redirectPath || "/protocol";
-    
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate(redirectUrl);
+    const resolveDestination = async (userId: string) => {
+      if (redirectPath) {
+        if (!cancelled) {
+          navigate(redirectPath, { replace: true });
+        }
+        return;
       }
+
+      const destination = await getDefaultPostAuthDestination(userId);
+      if (!cancelled) {
+        navigate(destination, { replace: true });
+      }
+    };
+
+    const handleSession = async (session: Awaited<ReturnType<typeof supabase.auth.getSession>>["data"]["session"]) => {
+      if (!session) return;
+
+      if (!isEmailVerified(session.user)) {
+        if (!cancelled) {
+          navigate("/signup", { replace: true });
+        }
+        return;
+      }
+
+      await resolveDestination(session.user.id);
+    };
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      await handleSession(session);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate(redirectUrl);
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      window.setTimeout(() => {
+        void handleSession(session);
+      }, 0);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, [navigate, searchParams]);
 
   const validateInputs = () => {
@@ -63,19 +90,53 @@ const Auth = () => {
 
     setIsLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error } = await withAuthTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        }),
+        "Sign-in timed out. Please try again.",
+      );
 
-    setIsLoading(false);
+      if (error) {
+        toast({
+          title: "Sign in failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
 
-    if (error) {
+      if (!data.user || !data.session) {
+        toast({
+          title: "Sign in failed",
+          description: "No active session was returned. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!isEmailVerified(data.user)) {
+        toast({
+          title: "Verify your email first",
+          description: "Open your confirmation email, then continue.",
+        });
+        navigate("/signup", { replace: true });
+        return;
+      }
+
+      const destination = await getDefaultPostAuthDestination(data.user.id);
+      navigate(destination, { replace: true });
+    } catch (error) {
+      console.error("Sign in error:", error);
       toast({
         title: "Sign in failed",
-        description: error.message,
+        description: "Something went wrong while signing in. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,34 +154,46 @@ const Auth = () => {
 
     setIsResettingPassword(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth`,
-    });
+    try {
+      const { error } = await withAuthTimeout(
+        supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth`,
+        }),
+        "Password reset timed out. Please try again.",
+      );
 
-    setIsResettingPassword(false);
-
-    if (error) {
+      if (error) {
+        toast({
+          title: "Password reset failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Check your email",
+          description: "We sent you a password reset link",
+        });
+      }
+    } catch (error) {
+      console.error("Password reset error:", error);
       toast({
         title: "Password reset failed",
-        description: error.message,
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Check your email",
-        description: "We sent you a password reset link",
-      });
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="app-shell-dark min-h-screen flex items-center justify-center p-4">
+      <Card className="app-panel-dark w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
             Welcome Back
           </CardTitle>
-          <CardDescription>Sign in to continue to The Gut Brain Journal</CardDescription>
+          <CardDescription>Sign in to access your protocol workspace</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignIn} className="space-y-4">
@@ -160,14 +233,14 @@ const Auth = () => {
             </Button>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-2">
+        <CardFooter className="flex flex-col gap-2 border-t border-border/60 pt-6">
           <div className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Need to create an account?{" "}
             <Link 
               to={`/signup${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}
               className="text-primary hover:underline"
             >
-              Create Account
+              Create account
             </Link>
           </div>
           <Button variant="link" onClick={() => navigate("/")}>

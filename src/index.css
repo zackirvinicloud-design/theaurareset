@@ -9,7 +9,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Modern neutral backgrounds */
-    --background: 0 0% 99%;
+    --background: 215 20% 97%;
     --foreground: 240 10% 8%;
 
     --card: 0 0% 100%;
@@ -68,45 +68,50 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Deep, sophisticated dark mode */
-    --background: 240 10% 4%;
+    /* True-black shell tuned to the landing page */
+    --background: 0 0% 2%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 6%;
+    --card: 160 12% 7%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 6%;
+    --popover: 160 12% 7%;
     --popover-foreground: 0 0% 98%;
 
-    /* Vibrant emerald green in dark mode */
-    --primary: 160 84% 45%;
+    /* Emerald accent stays bright without turning the shell green */
+    --primary: 160 84% 44%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 4% 16%;
+    --secondary: 160 8% 12%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 160 8% 10%;
+    --muted-foreground: 160 6% 67%;
 
-    --accent: 240 4% 16%;
+    --accent: 160 10% 14%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 160 84% 45%;
+    --border: 160 8% 15%;
+    --input: 160 8% 15%;
+    --ring: 160 84% 44%;
+
+    --glass-bg: 160 12% 7%;
+    --glass-border: 160 8% 15%;
+    --gradient-start: 160 84% 44%;
+    --gradient-end: 173 80% 42%;
 
     /* Dark mode sidebar */
-    --sidebar-background: 240 10% 6%;
+    --sidebar-background: 160 12% 6%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 160 84% 45%;
+    --sidebar-primary: 160 84% 44%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent: 160 8% 12%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 4% 16%;
-    --sidebar-ring: 160 84% 45%;
+    --sidebar-border: 160 8% 15%;
+    --sidebar-ring: 160 84% 44%;
   }
 }
 
@@ -127,27 +132,131 @@ All colors MUST be HSL.
     font-weight: 600;
     letter-spacing: -0.02em;
   }
+
+  html.dark {
+    color-scheme: dark;
+  }
 }
 
 /* Modern glass effects */
 .glass {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid hsl(var(--border));
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .glass-dark {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid hsl(var(--border));
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.3);
 }
 
 /* Modern gradient */
 .gradient-primary {
   background: linear-gradient(135deg, hsl(var(--gradient-start)) 0%, hsl(var(--gradient-end)) 100%);
+}
+
+.app-shell-dark {
+  background:
+    radial-gradient(circle at top, hsl(var(--primary) / 0.18) 0%, transparent 32%),
+    radial-gradient(circle at bottom right, hsl(var(--primary) / 0.12) 0%, transparent 26%),
+    linear-gradient(180deg, hsl(0 0% 2%) 0%, hsl(0 0% 3%) 46%, hsl(160 18% 4%) 100%);
+}
+
+.app-panel-dark {
+  background: linear-gradient(180deg, hsl(var(--card) / 0.96) 0%, hsl(var(--card) / 0.88) 100%);
+  border: 1px solid hsl(var(--border) / 0.9);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 24px 80px -36px hsl(0 0% 0% / 0.85), inset 0 1px 0 hsl(0 0% 100% / 0.05);
+}
+
+.app-panel-muted {
+  background: linear-gradient(180deg, hsl(var(--muted) / 0.8) 0%, hsl(var(--card) / 0.82) 100%);
+  border: 1px solid hsl(var(--border) / 0.78);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.04);
+}
+
+[data-advertorial-dark] {
+  background:
+    radial-gradient(circle at top, hsl(var(--primary) / 0.14) 0%, transparent 28%),
+    linear-gradient(180deg, hsl(0 0% 2%) 0%, hsl(0 0% 3%) 100%);
+  color: hsl(var(--foreground));
+}
+
+[data-advertorial-dark] .bg-white,
+[data-advertorial-dark] .bg-slate-800,
+[data-advertorial-dark] .bg-slate-900 {
+  background-color: hsl(var(--card)) !important;
+}
+
+[data-advertorial-dark] .bg-slate-50,
+[data-advertorial-dark] .bg-slate-100,
+[data-advertorial-dark] .bg-slate-200,
+[data-advertorial-dark] .bg-emerald-50,
+[data-advertorial-dark] .bg-sky-50,
+[data-advertorial-dark] .bg-amber-50 {
+  background-color: hsl(var(--muted)) !important;
+}
+
+[data-advertorial-dark] .border-slate-100,
+[data-advertorial-dark] .border-slate-200,
+[data-advertorial-dark] .border-emerald-100,
+[data-advertorial-dark] .border-emerald-200,
+[data-advertorial-dark] .border-sky-200,
+[data-advertorial-dark] .border-amber-200 {
+  border-color: hsl(var(--border)) !important;
+}
+
+[data-advertorial-dark] .border-emerald-400,
+[data-advertorial-dark] .border-emerald-500 {
+  border-color: hsl(var(--primary) / 0.45) !important;
+}
+
+[data-advertorial-dark] .text-slate-950,
+[data-advertorial-dark] .text-slate-900,
+[data-advertorial-dark] .text-slate-800,
+[data-advertorial-dark] .text-amber-900,
+[data-advertorial-dark] .text-sky-900,
+[data-advertorial-dark] .text-emerald-900 {
+  color: hsl(var(--foreground)) !important;
+}
+
+[data-advertorial-dark] .text-slate-700,
+[data-advertorial-dark] .text-slate-600,
+[data-advertorial-dark] .text-slate-500,
+[data-advertorial-dark] .text-slate-400,
+[data-advertorial-dark] .text-slate-300 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+[data-advertorial-dark] .text-emerald-500,
+[data-advertorial-dark] .text-emerald-600,
+[data-advertorial-dark] .text-emerald-700,
+[data-advertorial-dark] .text-amber-400,
+[data-advertorial-dark] .text-red-400 {
+  color: hsl(var(--primary)) !important;
+}
+
+[data-advertorial-dark] .from-emerald-50 {
+  --tw-gradient-from: hsl(var(--muted)) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: hsl(var(--muted) / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+[data-advertorial-dark] .to-teal-50 {
+  --tw-gradient-to: hsl(var(--card)) var(--tw-gradient-to-position) !important;
+}
+
+[data-advertorial-dark] .placeholder-slate-400::placeholder {
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 1;
 }
 
 /* Green glow effects */
@@ -185,4 +294,10 @@ All colors MUST be HSL.
     border: 1px solid #ddd;
     box-shadow: none;
   }
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }

@@ -20,15 +20,6 @@ export interface JournalEntry {
     createdAt: string;
 }
 
-export interface SymptomLog {
-    id: string;
-    dayNumber: number;
-    symptomType: string;
-    severity: number;
-    notes: string | null;
-    createdAt: string;
-}
-
 export interface ChecklistState {
     [itemKey: string]: boolean;
 }
@@ -54,7 +45,6 @@ const DEFAULT_PROGRESS: UserProgress = {
 
 const LS_PROGRESS_KEY = 'gbj-progress';
 const LS_ENTRIES_KEY = 'gbj-journal-entries';
-const LS_SYMPTOMS_KEY = 'gbj-symptom-logs';
 const LS_CHECKLIST_KEY = 'gbj-checklist';
 const LS_CUSTOM_ITEMS_KEY = 'gbj-custom-items';
 
@@ -79,7 +69,6 @@ export function useJournalStore() {
     const [userId, setUserId] = useState<string | null>(null);
     const [progress, setProgress] = useState<UserProgress>(DEFAULT_PROGRESS);
     const [entries, setEntries] = useState<JournalEntry[]>([]);
-    const [symptoms, setSymptoms] = useState<SymptomLog[]>([]);
     const [checklist, setChecklist] = useState<ChecklistState>({});
     const [customItems, setCustomItems] = useState<CustomChecklistItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -105,7 +94,6 @@ export function useJournalStore() {
             // Load offline data
             setProgress(lsGet(LS_PROGRESS_KEY, DEFAULT_PROGRESS));
             setEntries(lsGet(LS_ENTRIES_KEY, []));
-            setSymptoms(lsGet(LS_SYMPTOMS_KEY, []));
             setChecklist(lsGet(LS_CHECKLIST_KEY, {}));
             setCustomItems(lsGet(LS_CUSTOM_ITEMS_KEY, []));
             setIsLoading(false);
@@ -138,13 +126,11 @@ export function useJournalStore() {
                 setProgress(DEFAULT_PROGRESS);
             }
 
-            // Load today's journal entries
-            const currentDay = prog?.current_day ?? 0;
+            // Load all journal entries (not just current day — keeps chat persistent)
             const { data: ents } = await supabase
                 .from('journal_entries')
                 .select('*')
                 .eq('user_id', userId)
-                .eq('day_number', currentDay)
                 .order('created_at', { ascending: true });
 
             const mappedEntries: JournalEntry[] = (ents || []).map(e => ({
@@ -157,25 +143,8 @@ export function useJournalStore() {
             setEntries(mappedEntries);
             lsSet(LS_ENTRIES_KEY, mappedEntries);
 
-            // Load symptoms
-            const { data: syms } = await supabase
-                .from('symptom_logs')
-                .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: true });
-
-            const mappedSymptoms: SymptomLog[] = (syms || []).map(s => ({
-                id: s.id,
-                dayNumber: s.day_number,
-                symptomType: s.symptom_type,
-                severity: s.severity,
-                notes: s.notes,
-                createdAt: s.created_at,
-            }));
-            setSymptoms(mappedSymptoms);
-            lsSet(LS_SYMPTOMS_KEY, mappedSymptoms);
-
             // Load checklist for current day
+            const currentDay = prog?.current_day ?? 0;
             const { data: checks } = await supabase
                 .from('daily_checklists')
                 .select('*')
@@ -398,39 +367,6 @@ export function useJournalStore() {
         }
     }, [userId, progress.currentDay]);
 
-    // ── Symptom Logging ────────────────────────────────
-
-    const logSymptom = useCallback(async (
-        symptomType: string,
-        severity: number,
-        notes?: string
-    ) => {
-        const log: SymptomLog = {
-            id: `${Date.now()}-${Math.random()}`,
-            dayNumber: progress.currentDay,
-            symptomType,
-            severity,
-            notes: notes || null,
-            createdAt: new Date().toISOString(),
-        };
-
-        setSymptoms(prev => [...prev, log]);
-
-        if (userId) {
-            const { data } = await supabase.from('symptom_logs').insert({
-                user_id: userId,
-                day_number: progress.currentDay,
-                symptom_type: symptomType,
-                severity,
-                notes: notes || null,
-            }).select('id').single();
-
-            if (data) log.id = data.id;
-        }
-
-        lsSet(LS_SYMPTOMS_KEY, [...symptoms, log]);
-    }, [progress.currentDay, userId, symptoms]);
-
     // ── Checklist ──────────────────────────────────────
 
     const toggleChecklistItem = useCallback(async (itemKey: string) => {
@@ -511,7 +447,6 @@ export function useJournalStore() {
         userId,
         progress,
         entries,
-        symptoms,
         checklist,
         customItems,
 
@@ -526,9 +461,6 @@ export function useJournalStore() {
         finalizeLastEntry,
         clearEntries,
         exportChat,
-
-        // Symptoms
-        logSymptom,
 
         // Checklist
         toggleChecklistItem,

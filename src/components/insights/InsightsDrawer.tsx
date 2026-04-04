@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -10,31 +10,60 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { ConversationInsights } from './ConversationInsights';
+import type { GutBrainState } from '@/hooks/useGutBrainProfile';
+import type { GutBrainConversationEntry, GutBrainProfile, GutBrainProgressState } from '@/lib/gutbrain';
 
-export const InsightsDrawer = () => {
+interface InsightsDrawerProps {
+  brain: GutBrainState;
+  entries: GutBrainConversationEntry[];
+  progress: GutBrainProgressState;
+  buttonLabel?: string;
+  compact?: boolean;
+  onUpdateProfile?: (updates: Partial<GutBrainProfile>) => Promise<void>;
+}
+
+export const InsightsDrawer = ({
+  brain,
+  entries,
+  progress,
+  buttonLabel = 'Insights',
+  compact = false,
+  onUpdateProfile,
+}: InsightsDrawerProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          title="AI Insights"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-        </Button>
+        {compact ? (
+          <Button variant="ghost" size="icon" className="h-8 w-8" title="Coach insights">
+            <Brain className="w-4 h-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" className="gap-2">
+            <Brain className="w-4 h-4" />
+            {buttonLabel}
+          </Button>
+        )}
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] sm:w-[600px] overflow-y-auto">
+      <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-2xl">
         <SheetHeader>
-          <SheetTitle>Journey Insights</SheetTitle>
+          <SheetTitle>Inside your pattern</SheetTitle>
           <SheetDescription>
-            Advanced deep analysis of your journey patterns
+            A deeper read on behavior, friction, motivation, and what matters most for staying on track.
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-6 pb-6">
-          <ConversationInsights />
+        <div className="mt-6 pb-8">
+          <ConversationInsights
+            entries={entries}
+            progress={progress}
+            profile={brain.profile}
+            snapshot={brain.snapshot}
+            isLoading={brain.isLoading}
+            isRefreshing={brain.isRefreshing}
+            onRefresh={(options) => brain.refreshBrain(entries, progress, options)}
+            onUpdateProfile={onUpdateProfile}
+          />
         </div>
       </SheetContent>
     </Sheet>

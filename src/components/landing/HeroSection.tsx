@@ -50,7 +50,7 @@ export const HeroSection = () => {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
         >
           <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Guided protocol companion</span>
+          <span className="text-sm font-medium text-primary">Built for gut health buyers who need execution</span>
         </motion.div>
 
         {/* Main headline */}
@@ -61,11 +61,11 @@ export const HeroSection = () => {
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
         >
           <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-            A 21-day gut reset
+            A 21-day gut health cleanse
           </span>
           <br />
           <span className="bg-gradient-to-r from-primary via-primary to-primary/60 bg-clip-text text-transparent">
-            you can actually follow.
+            you can actually finish.
           </span>
         </motion.h1>
 
@@ -92,7 +92,7 @@ export const HeroSection = () => {
             size="lg"
             className="text-lg h-16 px-8 gap-3 shadow-xl hover:shadow-2xl transition-all duration-300 group"
           >
-            Start the protocol
+            Start My Personalized Plan
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
           <Button

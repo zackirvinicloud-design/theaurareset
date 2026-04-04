@@ -29,7 +29,7 @@ const features = [
   {
     icon: Brain,
     title: 'Log What Changes',
-    description: 'Keep lightweight notes on symptoms and mood so you can stay aware of patterns without turning this into a data project.',
+    description: 'Keep lightweight notes in your journal so you can stay aware of patterns without turning this into a data project.',
     stat: 'Simple logs',
     color: 'from-purple-500/20 to-pink-500/20',
     iconColor: 'text-purple-500'

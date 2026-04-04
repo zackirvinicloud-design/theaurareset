@@ -11,7 +11,6 @@ interface ProtocolReferenceProps {
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
-    onStartTutorial: () => void;
     isOpen: boolean;
     onToggle: () => void;
 }
@@ -37,7 +36,7 @@ const PHASE_ROADMAP = [
         highlights: [
             'Keep meals compliant and sugar out.',
             'Take antifungal supports with the right meal timing.',
-            'Log die-off symptoms instead of guessing about them.',
+            'Notice die-off changes and mention them in chat instead of guessing.',
         ],
         nextMove: 'By around Day 5, start buying Phase 3 supplies.',
     },
@@ -77,7 +76,6 @@ export const ProtocolReference = ({
     currentDay,
     onOpenShoppingView,
     onOpenFullProtocolView,
-    onStartTutorial,
     isOpen,
     onToggle,
 }: ProtocolReferenceProps) => {
@@ -154,7 +152,6 @@ export const ProtocolReference = ({
                                     currentPhase={currentPhase}
                                     onOpenShoppingView={onOpenShoppingView}
                                     onOpenFullProtocolView={onOpenFullProtocolView}
-                                    onStartTutorial={onStartTutorial}
                                     activeTab={activeTab}
                                 />
                             </div>
@@ -171,13 +168,11 @@ export function MobileProtocolReferenceContent({
     currentDay,
     onOpenShoppingView,
     onOpenFullProtocolView,
-    onStartTutorial,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
-    onStartTutorial: () => void;
 }) {
     return (
         <div className="space-y-6 px-1">
@@ -185,7 +180,6 @@ export function MobileProtocolReferenceContent({
                 currentDay={currentDay}
                 onOpenShoppingView={onOpenShoppingView}
                 onOpenFullProtocolView={onOpenFullProtocolView}
-                onStartTutorial={onStartTutorial}
                 showActionCards={false}
             />
             <TodayTab currentDay={currentDay} currentPhase={currentPhase} />
@@ -200,14 +194,12 @@ function GuideSections({
     currentPhase,
     onOpenShoppingView,
     onOpenFullProtocolView,
-    onStartTutorial,
     activeTab,
 }: {
     currentDay: number;
     currentPhase: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
-    onStartTutorial: () => void;
     activeTab: GuideTab;
 }) {
     return (
@@ -217,7 +209,6 @@ function GuideSections({
                     currentDay={currentDay}
                     onOpenShoppingView={onOpenShoppingView}
                     onOpenFullProtocolView={onOpenFullProtocolView}
-                    onStartTutorial={onStartTutorial}
                     showActionCards={true}
                 />
             )}
@@ -232,13 +223,11 @@ function StartTab({
     currentDay,
     onOpenShoppingView,
     onOpenFullProtocolView,
-    onStartTutorial,
     showActionCards,
 }: {
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
-    onStartTutorial: () => void;
     showActionCards: boolean;
 }) {
     return (
@@ -276,20 +265,6 @@ function StartTab({
                     </Button>
                 </InfoCard>
             )}
-
-            <InfoCard title="Need a walkthrough?">
-                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                    Run the tutorial for the fastest overview of today's plan, how checklist items work with the chat, where the references live, and how to move day by day.
-                </p>
-                <Button
-                    variant="outline"
-                    className="w-full justify-between"
-                    onClick={onStartTutorial}
-                >
-                    Run tutorial again
-                    <BookOpen className="w-4 h-4" />
-                </Button>
-            </InfoCard>
 
             <div className="p-3 rounded-lg border border-primary/20 bg-primary/5">
                 <p className="text-xs font-semibold text-primary mb-1">Right now</p>
@@ -481,7 +456,7 @@ function InfoCard({ title, children }: { title: string; children: ReactNode }) {
     );
 }
 
-function getTodayFocus(day: number, phase: number) {
+export function getTodayFocus(day: number, phase: number) {
     if (day === 0) {
         return 'Prep today so the real protocol feels straightforward tomorrow. Shopping, setup, and mental clarity matter more than trying to do everything at once.';
     }
@@ -497,7 +472,7 @@ function getTodayFocus(day: number, phase: number) {
     return 'This final stretch is about finishing calmly. Keep the base routine strong, support elimination, and avoid adding extra experiments.';
 }
 
-function getTodayBrief(day: number, phase: number) {
+export function getTodayBrief(day: number, phase: number) {
     if (day === 0) {
         return {
             focus: [
@@ -533,7 +508,7 @@ function getTodayBrief(day: number, phase: number) {
             keepSimple: [
                 'Stay on-plan with food before adding complexity.',
                 'Protect binder timing and water intake.',
-                'If symptoms spike, log them and simplify instead of improvising.',
+                'If symptoms spike, mention it in chat and simplify instead of improvising.',
             ],
         };
     }

@@ -1,0 +1,634 @@
+/* ═══════════════════════════════════════════════════
+   OPEN-STYLE LANDING PAGE
+   Cinematic minimalism. True black. Premium spacing.
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Base ─── */
+.open-landing {
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Fixed Header / Logo ─── */
+.open-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.open-header--hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.open-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.open-logo-space {
+  width: 0.35em;
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════ */
+.open-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 clamp(24px, 5vw, 80px);
+  padding-bottom: 120px;
+  overflow: hidden;
+}
+
+.open-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.open-hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  filter: brightness(0.7) contrast(1.1) saturate(1.1);
+}
+
+.open-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0.6) 70%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+}
+
+.open-hero__content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+}
+
+.open-hero__left {
+  flex: 1;
+}
+
+.open-hero__title {
+  font-size: clamp(40px, 8vw, 96px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+}
+
+.open-hero__line-stop,
+.open-hero__line-verb,
+.open-hero__line-rest {
+  display: block;
+}
+
+.open-hero__line-verb {
+  min-height: 1.05em;
+}
+
+.open-hero__cycling-word {
+  display: inline;
+  position: relative;
+  color: #ffffff;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.4);
+  padding-bottom: 2px;
+}
+
+.open-hero__cursor {
+  display: inline;
+  font-weight: 300;
+  opacity: 1;
+  animation: blink 0.8s step-end infinite;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: -2px;
+}
+
+.open-hero__pills {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.open-hero__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.open-hero__pill:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.open-hero__subtitle {
+  max-width: 380px;
+  font-size: clamp(15px, 1.8vw, 20px);
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: right;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   21-DAY PROGRAM SECTION
+   ═══════════════════════════════════════════════════ */
+.open-program {
+  position: relative;
+  background: #0a0a0a;
+  padding: clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px);
+}
+
+.open-program__inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Subtle header row */
+.open-program__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.open-program__heading {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+  line-height: 1;
+}
+
+.open-program__heading-right {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Image area */
+.open-program__image-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.open-program__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* Tabs */
+.open-program__tabs {
+  display: flex;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.open-program__tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 12px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.open-program__tab--active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  margin: -1px;
+}
+
+.open-program__tab-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.open-program__tab-name {
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Details */
+.open-program__details {
+  margin-top: 8px;
+}
+
+.open-program__description {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 clamp(28px, 4vw, 48px) 0;
+}
+
+.open-program__meta {
+  display: flex;
+  gap: clamp(40px, 6vw, 80px);
+}
+
+.open-program__meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.open-program__meta-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 6px;
+}
+
+.open-program__meta-value {
+  font-size: clamp(15px, 1.6vw, 18px);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════
+   YOUR DAILY PRACTICE SECTION
+   ═══════════════════════════════════════════════════ */
+.open-daily {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(40px, 5vw, 80px) clamp(24px, 5vw, 80px);
+  overflow: hidden;
+}
+
+.open-daily__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.open-daily__bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.5) saturate(1.2);
+}
+
+.open-daily__bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+}
+
+.open-daily__content {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  margin-bottom: clamp(40px, 6vw, 80px);
+}
+
+.open-daily__heading {
+  font-size: clamp(14px, 1.8vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 16px 0;
+}
+
+.open-daily__subheading {
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 800px;
+  margin: 0;
+}
+
+.open-daily__footer {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  gap: clamp(24px, 4vw, 60px);
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.open-daily__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.open-daily__stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.open-daily__stat-value {
+  font-size: clamp(13px, 1.5vw, 16px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ═══════════════════════════════════════════════════
+   FAQ SECTION
+   ═══════════════════════════════════════════════════ */
+.open-faq {
+  background: #000000;
+  padding: clamp(60px, 10vw, 120px) clamp(24px, 5vw, 80px);
+  padding-bottom: 160px; /* room for sticky CTA */
+}
+
+.open-faq__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: clamp(40px, 6vw, 100px);
+  align-items: start;
+}
+
+.open-faq__left {
+  position: sticky;
+  top: 120px;
+}
+
+.open-faq__heading {
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+}
+
+.open-faq__right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* FAQ Items */
+.faq-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.faq-item:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.faq-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.faq-trigger:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.faq-question {
+  font-size: clamp(15px, 1.6vw, 18px);
+  font-weight: 400;
+  line-height: 1.4;
+  color: inherit;
+}
+
+.faq-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.faq-icon--open {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.faq-answer-wrapper {
+  overflow: hidden;
+}
+
+.faq-answer {
+  font-size: clamp(14px, 1.4vw, 16px);
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.55);
+  padding-bottom: 20px;
+  max-width: 600px;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   STICKY CTA
+   ═══════════════════════════════════════════════════ */
+.open-sticky-cta {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+}
+
+.open-sticky-cta__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 48px;
+  background: #f5f0eb;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 100px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.open-sticky-cta__button:hover {
+  background: #ffffff;
+  transform: scale(1.03);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════
+   MOBILE / RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .open-hero__content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .open-hero__subtitle {
+    text-align: left;
+    max-width: 100%;
+  }
+
+  .open-hero__title {
+    font-size: clamp(24px, 8.5vw, 64px);
+  }
+
+
+
+  .open-faq__inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .open-faq__left {
+    position: static;
+  }
+
+  .open-faq__heading {
+    font-size: 48px;
+  }
+
+  .open-daily__footer {
+    flex-wrap: wrap;
+  }
+
+  .open-sticky-cta__button {
+    padding: 16px 36px;
+    font-size: 15px;
+  }
+
+  .open-hero {
+    padding-bottom: 100px;
+  }
+
+  .open-logo {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .open-hero__pills {
+    gap: 6px;
+  }
+
+  .open-hero__pill {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .open-program__tabs {
+    border-radius: 8px;
+  }
+
+  .open-program__tab {
+    padding: 12px 8px;
+  }
+
+  .open-program__meta {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

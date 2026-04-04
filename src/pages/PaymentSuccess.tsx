@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { rememberPostAuthDestination } from "@/lib/auth-routing";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const PaymentSuccess = () => {
           variant: "destructive",
         });
       } else {
+        rememberPostAuthDestination(session.data.session.user.id, "/protocol");
         toast({
           title: "Welcome!",
           description: "Your subscription has been activated successfully.",
@@ -57,10 +59,10 @@ const PaymentSuccess = () => {
   }, [navigate, searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="app-shell-dark min-h-screen flex items-center justify-center p-4">
+      <Card className="app-panel-dark w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-primary/25 bg-primary/15">
             {isProcessing ? (
               <Loader2 className="w-8 h-8 text-primary animate-spin" />
             ) : (
@@ -82,13 +84,13 @@ const PaymentSuccess = () => {
           ) : (
             <>
               <p className="text-muted-foreground font-medium">
-                Please create your account to complete activation
+                Create and verify your account to complete activation
               </p>
               <Button onClick={() => {
                 const provider = searchParams.get("provider") || "whop";
                 navigate(`/signup?redirect=/payment-success&provider=${provider}`);
               }} className="w-full">
-                Create Your Account
+                Create Account And Continue
               </Button>
             </>
           )}

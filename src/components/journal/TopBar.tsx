@@ -8,7 +8,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Flame, ArrowLeft, ArrowRight, Settings, LogOut, Download, Trash2 } from 'lucide-react';
+import { Flame, ArrowLeft, ArrowRight, Settings, LogOut, Download, Trash2, Sparkles, FileText } from 'lucide-react';
 import { UserProgress } from '@/hooks/useJournalStore';
 import { getPhaseInfo, getDayLabel } from '@/hooks/useProtocolData';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,9 @@ interface TopBarProps {
     onNextDay: () => void;
     onExportJournal: () => void;
     onClearJournal: () => void;
+    onRunTutorialAgain: () => void;
+    onReadFullProtocol?: () => void;
+    showReadFullProtocol?: boolean;
     onSignOut: () => void;
 }
 
@@ -30,6 +33,9 @@ export const TopBar = ({
     onNextDay,
     onExportJournal,
     onClearJournal,
+    onRunTutorialAgain,
+    onReadFullProtocol,
+    showReadFullProtocol = false,
     onSignOut,
 }: TopBarProps) => {
     const phase = getPhaseInfo(progress.currentPhase);
@@ -103,6 +109,23 @@ export const TopBar = ({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={onRunTutorialAgain}
+                                className="gap-2"
+                            >
+                                <Sparkles className="w-4 h-4" />
+                                Run tutorial again
+                            </DropdownMenuItem>
+                            {showReadFullProtocol && onReadFullProtocol && (
+                                <DropdownMenuItem
+                                    onClick={onReadFullProtocol}
+                                    className="gap-2"
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    Read full protocol
+                                </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={onExportJournal}
                                 disabled={!hasJournalEntries}

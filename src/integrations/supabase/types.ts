@@ -78,6 +78,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_onboarding_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          onboarding_version: string
+          entry_source: string
+          current_day_selected: number
+          protocol_goal: string | null
+          why_now: string | null
+          primary_blocker: string | null
+          routine_type: string | null
+          diet_pattern: string | null
+          health_flags: string[]
+          support_style: string | null
+          completed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          onboarding_version?: string
+          entry_source?: string
+          current_day_selected?: number
+          protocol_goal?: string | null
+          why_now?: string | null
+          primary_blocker?: string | null
+          routine_type?: string | null
+          diet_pattern?: string | null
+          health_flags?: string[]
+          support_style?: string | null
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          onboarding_version?: string
+          entry_source?: string
+          current_day_selected?: number
+          protocol_goal?: string | null
+          why_now?: string | null
+          primary_blocker?: string | null
+          routine_type?: string | null
+          diet_pattern?: string | null
+          health_flags?: string[]
+          support_style?: string | null
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       journal_entries: {
         Row: {
           id: string
@@ -161,6 +215,87 @@ export type Database = {
           item_key?: string
           completed?: boolean
           completed_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      user_brain_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          assistant_name: string
+          preferred_name: string | null
+          protocol_goal: string | null
+          why_now: string | null
+          motivation_style: string | null
+          barriers: string[]
+          support_preferences: string[]
+          wins: string[]
+          conversation_summary: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          assistant_name?: string
+          preferred_name?: string | null
+          protocol_goal?: string | null
+          why_now?: string | null
+          motivation_style?: string | null
+          barriers?: string[]
+          support_preferences?: string[]
+          wins?: string[]
+          conversation_summary?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          assistant_name?: string
+          preferred_name?: string | null
+          protocol_goal?: string | null
+          why_now?: string | null
+          motivation_style?: string | null
+          barriers?: string[]
+          support_preferences?: string[]
+          wins?: string[]
+          conversation_summary?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      journey_insight_snapshots: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          phase_number: number
+          summary: string
+          next_step: string | null
+          signals: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          phase_number: number
+          summary: string
+          next_step?: string | null
+          signals?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          phase_number?: number
+          summary?: string
+          next_step?: string | null
+          signals?: Json
           created_at?: string
         }
         Relationships: []

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, User, Bot } from 'lucide-react';
+import { Calendar, User, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -73,11 +73,11 @@ export const JournalHistory = ({ trigger }: JournalHistoryProps) => {
                 <div className="space-y-3 pl-2">
                   {groupedMessages[date].map((msg) => (
                     <div key={msg.id} className="flex gap-3 text-sm">
-                      <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center flex-shrink-0 mt-1">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/30 flex items-center justify-center flex-shrink-0 mt-1">
                         {msg.role === 'user' ? (
                           <User className="w-3 h-3 text-secondary-foreground" />
                         ) : (
-                          <Bot className="w-3 h-3 text-secondary-foreground" />
+                          <Leaf className="w-3 h-3 text-emerald-400" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">

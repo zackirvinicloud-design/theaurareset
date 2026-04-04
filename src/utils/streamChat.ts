@@ -1,8 +1,11 @@
 import { ChatMessage } from '@/hooks/useChatStore';
+import { buildChatSystemPrompt, type GutBrainProfile, type GutBrainSnapshot } from '@/lib/gutbrain';
 
 interface StreamChatOptions {
   messages: ChatMessage[];
   context?: string;
+  brainProfile?: GutBrainProfile | null;
+  brainSnapshot?: GutBrainSnapshot | null;
   onDelta: (chunk: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -11,11 +14,16 @@ interface StreamChatOptions {
 export const streamChat = async ({
   messages,
   context,
+  brainProfile,
+  brainSnapshot,
   onDelta,
   onDone,
   onError,
 }: StreamChatOptions) => {
   const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL || 'https://mergwwrhcqzbogtnhxus.supabase.co'}/functions/v1/protocol-chat`;
+
+  // Build the system prompt client-side so updates take effect immediately
+  const systemPrompt = buildChatSystemPrompt(context || '', brainProfile, brainSnapshot);
 
   try {
     const response = await fetch(CHAT_URL, {
@@ -25,8 +33,14 @@ export const streamChat = async ({
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lcmd3d3JoY3F6Ym9ndG5oeHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTc0NTgsImV4cCI6MjA3ODc3MzQ1OH0.t0f8RGXnEPaAVC63bKFcHGg9xrVt9gIsW8fMxI7uJ-I'}`,
       },
       body: JSON.stringify({
-        messages: messages.map(m => ({ role: m.role, content: m.content })),
+        messages: [
+          // Prepend system prompt as first message — this overrides the stale edge function prompt
+          { role: 'system', content: systemPrompt },
+          ...messages.map(m => ({ role: m.role, content: m.content })),
+        ],
         context,
+        brainProfile,
+        brainSnapshot,
       }),
     });
 

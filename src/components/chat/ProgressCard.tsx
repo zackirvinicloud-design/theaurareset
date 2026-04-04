@@ -1,8 +1,6 @@
-import { ArrowRight, Settings, BookOpen } from 'lucide-react';
+import { ArrowRight, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useState } from 'react';
-import { PhaseTutorial } from '@/components/onboarding/PhaseTutorial';
 
 interface ProgressCardProps {
   currentDay: number;
@@ -19,7 +17,7 @@ const PHASE_INFO = {
 } as const;
 
 export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: ProgressCardProps) => {
-  const [showTutorial, setShowTutorial] = useState(false);
+
   
   // Calculate phase based on new 22-day structure (Day 0-21)
   // Phase 1: Day 0 (Preliminary - prep and mindset)
@@ -64,16 +62,7 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
           
           {/* Bottom row - Action buttons */}
           <div className="flex gap-1.5 justify-end">
-            <Button
-              onClick={() => setShowTutorial(true)}
-              variant="outline"
-              size="sm"
-              className="gap-1.5 text-xs h-9 px-3 hover-scale"
-              title="Learn about this phase"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              Learn
-            </Button>
+
             {!isLastDay && (
               <Button
                 onClick={onNextDay}
@@ -95,13 +84,6 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
             </Button>
           </div>
         </div>
-      </Card>
-      
-      <PhaseTutorial 
-        phase={validPhase} 
-        isOpen={showTutorial} 
-        onClose={() => setShowTutorial(false)} 
-      />
-    </>
+    </Card>
   );
 };
