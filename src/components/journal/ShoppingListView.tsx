@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     buildShopKey,
     SHOPPING_LIST,
@@ -19,6 +19,7 @@ import {
     CheckCircle2,
     ChevronDown,
     Circle,
+    GitBranch,
     Plus,
     X,
 } from 'lucide-react';
@@ -72,6 +73,46 @@ function getCategoryEmoji(phaseName: string, categoryName: string) {
         ?.categories.find((category) => category.category === categoryName);
 
     return match?.emoji ?? '📝';
+}
+
+function getShoppingTreeMeta(phaseName: string) {
+    if (phaseName === 'Foundation') {
+        return {
+            week: 'Week 1',
+            branch: 'Root',
+            node: 'Prep foundation',
+        };
+    }
+
+    if (phaseName === 'Fungal Elimination') {
+        return {
+            week: 'Week 1',
+            branch: 'Branch A',
+            node: 'Fungal elimination',
+        };
+    }
+
+    if (phaseName === 'Parasite Elimination') {
+        return {
+            week: 'Week 2',
+            branch: 'Branch B',
+            node: 'Parasite elimination',
+        };
+    }
+
+    if (phaseName === 'Heavy Metal Detox') {
+        return {
+            week: 'Week 3',
+            branch: 'Branch C',
+            node: 'Heavy metal detox',
+        };
+    }
+
+    return {
+        week: 'Reference',
+        branch: 'Branch',
+        node: phaseName,
+    };
 }
 
 function buildResolvedShoppingPhases(overrides: ShoppingListOverride[] = []): ResolvedShoppingPhase[] {
@@ -253,6 +294,20 @@ export function ShoppingReferenceContent({
     const [draftQuantity, setDraftQuantity] = useState('');
     const [isSavingDraft, setIsSavingDraft] = useState(false);
 
+    useEffect(() => {
+        const nextCategories: Record<string, boolean> = {};
+        defaultExpandedCategories.forEach((key) => {
+            nextCategories[key] = true;
+        });
+        setExpandedCategories(nextCategories);
+
+        const nextPhases: Record<string, boolean> = {};
+        shoppingPhases.forEach((phase) => {
+            nextPhases[phase.phase] = defaultExpandedCategories.some((key) => key.startsWith(`${phase.phase}_`));
+        });
+        setExpandedPhases(nextPhases);
+    }, [defaultExpandedCategories, shoppingPhases]);
+
     const toggleCategory = (key: string) => {
         setExpandedCategories((prev) => ({ ...prev, [key]: !prev[key] }));
     };
@@ -295,6 +350,7 @@ export function ShoppingReferenceContent({
                 const isPhaseExpanded = expandedPhases[phase.phase] ?? false;
                 const phaseKeys = phase.categories.flatMap((category) => category.items.map((item) => item.key));
                 const phaseChecked = phaseKeys.filter((key) => checklist[key]).length;
+                const treeMeta = getShoppingTreeMeta(phase.phase);
 
                 return (
                     <section key={phase.phase} className="space-y-2">
@@ -309,8 +365,21 @@ export function ShoppingReferenceContent({
                         >
                             <span className="text-base">{phase.emoji}</span>
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-semibold text-foreground">{phase.phase}</span>
+                                <div className="flex items-start gap-2">
+                                    <GitBranch className="mt-0.5 h-3.5 w-3.5 text-muted-foreground/70" />
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                                            {treeMeta.week} · {treeMeta.branch}
+                                        </p>
+                                        <p className="text-sm font-semibold text-foreground">
+                                            {treeMeta.node}
+                                        </p>
+                                        <p className="text-[11px] text-muted-foreground">
+                                            {phase.phase}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="mt-1.5 flex items-center gap-2">
                                     {phaseStatus === 'current' && (
                                         <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-medium">
                                             Buy now

@@ -11,6 +11,11 @@ export interface ChecklistItem {
     showFromDay?: number; // Only show this item on or after this day
 }
 
+export interface ChecklistSupport {
+    why: string;
+    timingHint?: string;
+}
+
 export interface PhaseInfo {
     name: string;
     shortName: string;
@@ -420,11 +425,150 @@ export const PHASE_INFO: Record<number, PhaseInfo> = {
     },
 };
 
+const CHECKLIST_SUPPORT: Partial<Record<string, ChecklistSupport>> = {
+    shopping: {
+        why: 'Prep only works if the buying is handled before Day 1. This removes decision fatigue once the protocol starts.',
+    },
+    remove_foods: {
+        why: 'Getting off-plan food out of your space makes the next 21 days dramatically easier to follow.',
+    },
+    prep_meals: {
+        why: 'A little prep now prevents panic meals once cravings or low energy hit.',
+    },
+    organize_supps: {
+        why: 'If the supplements are organized ahead of time, the protocol feels like a routine instead of a puzzle.',
+    },
+    set_intention: {
+        why: 'Your why is what keeps the plan steady when motivation drops later.',
+    },
+    tongue_scrape: {
+        why: 'This clears overnight buildup first thing and helps the morning routine feel clean and deliberate.',
+        timingHint: 'Do it before drinks, food, or supplements.',
+    },
+    lemon_salt_water: {
+        why: 'The morning elixir gets hydration and digestion moving without overcomplicating the start of the day.',
+        timingHint: 'Use one simple morning elixir option and move on.',
+    },
+    binder_morning: {
+        why: 'The binder gives your body a place to carry out the junk you are stirring up instead of recirculating it.',
+        timingHint: 'Keep it in a clean 2-hour window away from food and supplements.',
+    },
+    breakfast_compliant: {
+        why: 'A compliant breakfast sets the tone early and keeps blood sugar swings from knocking you off later.',
+    },
+    supplements_am: {
+        why: 'This is your base liver support. It keeps the rest of the protocol from feeling heavier than it needs to.',
+    },
+    hydration_goal: {
+        why: 'Hydration is what helps your body move waste out instead of letting detox symptoms pile up.',
+        timingHint: 'Spread it across the day instead of chugging all at once.',
+    },
+    lunch_compliant: {
+        why: 'A steady lunch keeps energy and cravings from crashing in the afternoon.',
+    },
+    supplements_pm: {
+        why: 'This midday support keeps detox pathways open while the active phase compounds do their work.',
+    },
+    dinner_compliant: {
+        why: 'A simple compliant dinner protects the evening and makes the next morning easier.',
+    },
+    supplements_dinner: {
+        why: 'Dinner support helps you finish the day without asking your liver to do all the cleanup overnight alone.',
+    },
+    binder_evening: {
+        why: 'The second binder window helps clean up what built up through the day so symptoms do not stack overnight.',
+        timingHint: 'Give it the same 2-hour buffer away from food and supplements.',
+    },
+    sleep_routine: {
+        why: 'This protocol goes better when recovery is steady. Sleep is part of the protocol, not a bonus.',
+    },
+    oregano_oil: {
+        why: 'This is one of your main fungal elimination levers. Missing it weakens the whole first week.',
+    },
+    caprylic_acid: {
+        why: 'This keeps the gut-support side of the plan steady so the antifungal phase does not feel as rough.',
+    },
+    liver_juice_support: {
+        why: 'The support drink is optional help, but it can make the day feel smoother when detox symptoms are louder.',
+    },
+    garlic_supplement: {
+        why: 'This keeps fungal pressure on through the evening instead of letting the day trail off early.',
+    },
+    no_sugar: {
+        why: 'Sugar is the fastest way to feed the exact thing this phase is trying to starve out.',
+    },
+    herx_check: {
+        why: 'A quick note helps you separate normal die-off from spiraling and gives Coach something real to work with.',
+    },
+    shop_phase3: {
+        why: 'Buying Week 2 supplies early prevents the phase change from turning into a scramble.',
+    },
+    mimosa_pudica: {
+        why: 'This is part of the parasite stack that makes Week 2 meaningfully different from Week 1.',
+    },
+    wormwood: {
+        why: 'Keeping the breakfast support steady protects the foundation while the parasite phase ramps up.',
+    },
+    parasite_juice_support: {
+        why: 'This is optional support, but it can make the parasite phase feel less harsh if mornings are rough.',
+    },
+    black_walnut: {
+        why: 'This lunch support keeps parasite pressure up instead of letting the middle of the day go soft.',
+    },
+    clove: {
+        why: 'The dinner parasite stack helps you finish the day with the full phase intent still intact.',
+    },
+    moon_cycle: {
+        why: 'This binder-style support helps absorb some of the extra mess this phase can stir up.',
+        timingHint: 'Keep it clearly separated from food and supplements.',
+    },
+    parasite_dinner_support: {
+        why: 'Dinner support keeps the parasite phase consistent instead of making it breakfast-heavy only.',
+    },
+    shop_phase4: {
+        why: 'Getting Week 3 supplies ready now protects your finish. Do not wait until Day 15 to start hunting for them.',
+    },
+    chlorella: {
+        why: 'The heavy metal smoothie is the soft entry into the final phase and keeps the morning structured.',
+    },
+    cilantro_detox: {
+        why: 'This extra support can help the metals phase feel steadier without changing the backbone of the plan.',
+    },
+    cilantro: {
+        why: 'These breakfast chelators are core Week 3 work. They are not a nice-to-have add-on.',
+    },
+    zeolite: {
+        why: 'This keeps the morning support broad enough to mobilize and bind instead of only stirring things up.',
+    },
+    selenium: {
+        why: 'The lunch chelators keep the heavy metal phase active through the middle of the day, not just at breakfast.',
+    },
+    heavy_metal_dinner: {
+        why: 'This closes the day with the full Week 3 intent and helps the final stretch feel complete.',
+    },
+    sauna_sweat: {
+        why: 'Sweating is a simple way to support elimination in the final phase without adding more pills.',
+    },
+};
+
 export function calculatePhase(day: number): 1 | 2 | 3 | 4 {
     if (day === 0) return 1;
     if (day <= 7) return 2;
     if (day <= 14) return 3;
     return 4;
+}
+
+export function getChecklistSupport(itemKey: string, day: number): ChecklistSupport {
+    const directSupport = CHECKLIST_SUPPORT[itemKey];
+    if (directSupport) {
+        return directSupport;
+    }
+
+    const phase = getPhaseForDay(day);
+    return {
+        why: `${phase.description} This step matters because it keeps today's plan aligned with that goal.`,
+        timingHint: phase.tips[0],
+    };
 }
 
 export function getChecklistForDay(day: number): ChecklistItem[] {
@@ -477,7 +621,7 @@ export const FULL_PROTOCOL_CHAT_REFERENCE = [
 
 export function buildProtocolChatContext(day: number): string {
     const checklist = getChecklistForDay(day)
-        .map((item) => `- ${CHAT_TIME_LABELS[item.timeOfDay]}: ${item.label}`)
+        .map((item) => `- ${CHAT_TIME_LABELS[item.timeOfDay]} [key=${item.key}]: ${item.label}`)
         .join('\n');
 
     return [
@@ -488,5 +632,6 @@ export function buildProtocolChatContext(day: number): string {
         checklist,
         '',
         'When the user asks what they need today, answer from the checklist and protocol above. If a checklist label is broad, spell out the exact supplements named in this reference.',
+        'If you use app action tags for a checklist step, use the exact checklist key shown above when obvious.',
     ].join('\n');
 }

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Leaf, User, ChevronRight, PenLine, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getGutBrainDisplayText, parseGutBrainClarifier } from '@/lib/gutbrain';
+import { getGutBrainDisplayText, parseCoachActions, parseGutBrainClarifier, type CoachAction } from '@/lib/gutbrain';
 import { AnimatedText } from './AnimatedText';
 
 interface ChatMessageProps {
@@ -11,6 +11,7 @@ interface ChatMessageProps {
   isStreaming?: boolean;
   enableChoices?: boolean;
   onChoiceSelect?: (choice: string) => void;
+  onActionSelect?: (action: CoachAction) => void;
 }
 
 const isOtherOption = (option: string) => {
@@ -25,12 +26,19 @@ export const ChatMessage = ({
   isStreaming = false,
   enableChoices = false,
   onChoiceSelect,
+  onActionSelect,
 }: ChatMessageProps) => {
   const isUser = role === 'user';
   const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const clarifier = isUser ? null : parseGutBrainClarifier(content);
+  const coachActions = isUser ? [] : parseCoachActions(content);
   const displayContent = isUser ? content : getGutBrainDisplayText(content);
   const showInteractiveChoices = Boolean(!isUser && clarifier && !isStreaming && enableChoices && onChoiceSelect);
+  const shoppingActionChips = coachActions.filter((action) => (
+    action.type === 'open_shopping'
+    || (action.type === 'open_view' && action.view === 'shopping')
+  ));
+  const showShoppingActionChip = Boolean(!isUser && !isStreaming && shoppingActionChips.length && onActionSelect);
 
   const [otherExpanded, setOtherExpanded] = useState(false);
   const [otherText, setOtherText] = useState('');
@@ -98,6 +106,19 @@ export const ChatMessage = ({
                       i < stepInfo.current ? 'bg-emerald-500/60' : 'bg-border/40'
                     )}
                   />
+                ))}
+              </div>
+            )}
+            {showShoppingActionChip && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {shoppingActionChips.map((action, index) => (
+                  <button
+                    key={`${action.type}-${action.label}-${index}`}
+                    onClick={() => onActionSelect?.(action)}
+                    className="rounded-full border border-primary/25 bg-primary/8 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/14"
+                  >
+                    {action.label || 'Open shopping list'}
+                  </button>
                 ))}
               </div>
             )}
@@ -208,24 +229,39 @@ export const ChatMessage = ({
             </div>
           </>
         ) : (
-          <div className={cn(
-            'rounded-lg px-4 py-2 max-w-[85%]',
-            isUser 
-              ? 'bg-primary text-primary-foreground' 
-              : 'bg-muted text-foreground'
-          )}>
-            <p className="text-sm whitespace-pre-wrap break-words">
-              {isUser ? (
-                content
-              ) : (
-                <AnimatedText 
-                  targetText={displayContent} 
-                  isComplete={!isStreaming}
-                  speed={50}
-                />
-              )}
-            </p>
-          </div>
+          <>
+            <div className={cn(
+              'rounded-lg px-4 py-2 max-w-[85%]',
+              isUser 
+                ? 'bg-primary text-primary-foreground' 
+                : 'bg-muted text-foreground'
+            )}>
+              <p className="text-sm whitespace-pre-wrap break-words">
+                {isUser ? (
+                  content
+                ) : (
+                  <AnimatedText 
+                    targetText={displayContent} 
+                    isComplete={!isStreaming}
+                    speed={50}
+                  />
+                )}
+              </p>
+            </div>
+            {showShoppingActionChip && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {shoppingActionChips.map((action, index) => (
+                  <button
+                    key={`${action.type}-${action.label}-${index}`}
+                    onClick={() => onActionSelect?.(action)}
+                    className="rounded-full border border-primary/25 bg-primary/8 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/14"
+                  >
+                    {action.label || 'Open shopping list'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
         )}
         <span className="text-xs text-muted-foreground mt-1">{time}</span>
       </div>

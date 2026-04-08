@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { BookOpen, ChevronDown, ChevronLeft, ShoppingCart, X } from 'lucide-react';
@@ -16,6 +16,7 @@ interface ProtocolReferenceProps {
     onOpenFullProtocolView: () => void;
     isOpen: boolean;
     onToggle: () => void;
+    normalTodayAutoOpenSignal?: number;
 }
 
 const getGuideQuoteSeed = (currentDay: number, date = new Date()) => {
@@ -40,6 +41,7 @@ export const ProtocolReference = ({
     onOpenFullProtocolView,
     isOpen,
     onToggle,
+    normalTodayAutoOpenSignal,
 }: ProtocolReferenceProps) => {
     return (
         <>
@@ -87,6 +89,7 @@ export const ProtocolReference = ({
                                     currentPhase={currentPhase}
                                     onOpenShoppingView={onOpenShoppingView}
                                     onOpenFullProtocolView={onOpenFullProtocolView}
+                                    normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
                                 />
                             </div>
                         </ScrollArea>
@@ -102,11 +105,13 @@ export function MobileProtocolReferenceContent({
     currentDay,
     onOpenShoppingView,
     onOpenFullProtocolView,
+    normalTodayAutoOpenSignal,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
+    normalTodayAutoOpenSignal?: number;
 }) {
     return (
         <GuideContent
@@ -114,6 +119,7 @@ export function MobileProtocolReferenceContent({
             currentDay={currentDay}
             onOpenShoppingView={onOpenShoppingView}
             onOpenFullProtocolView={onOpenFullProtocolView}
+            normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
         />
     );
 }
@@ -123,15 +129,18 @@ function GuideContent({
     currentDay,
     onOpenShoppingView,
     onOpenFullProtocolView,
+    normalTodayAutoOpenSignal,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
+    normalTodayAutoOpenSignal?: number;
 }) {
     const [isNormalTodayOpen, setIsNormalTodayOpen] = useState(false);
     const [quoteSeed, setQuoteSeed] = useState(() => getGuideQuoteSeed(currentDay));
     const quoteSeedDayRef = useRef(currentDay);
+    const normalTodayCardRef = useRef<HTMLElement | null>(null);
     const normalToday = getNormalToday(currentDay);
     const stageLabel = getJourneyStageLabel(currentDay, currentPhase);
     const dailyNote = getCoachDailyNote(currentDay, new Date(), quoteSeed);
@@ -144,6 +153,32 @@ function GuideContent({
         quoteSeedDayRef.current = currentDay;
         setQuoteSeed(getGuideQuoteSeed(currentDay));
     }, [currentDay]);
+
+    useEffect(() => {
+        if (normalTodayAutoOpenSignal) {
+            setIsNormalTodayOpen(true);
+            const scrollToNormalToday = () => {
+                normalTodayCardRef.current?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                });
+            };
+
+            // Run on successive frames so this works both when the guide is already open
+            // and when it just mounted from a Coach action.
+            let raf1 = 0;
+            let raf2 = 0;
+            raf1 = window.requestAnimationFrame(() => {
+                scrollToNormalToday();
+                raf2 = window.requestAnimationFrame(scrollToNormalToday);
+            });
+
+            return () => {
+                window.cancelAnimationFrame(raf1);
+                window.cancelAnimationFrame(raf2);
+            };
+        }
+    }, [normalTodayAutoOpenSignal]);
 
     return (
         <div className="space-y-3.5">
@@ -176,6 +211,7 @@ function GuideContent({
             />
 
             <GuideDisclosureCard
+                sectionRef={normalTodayCardRef}
                 title="What's normal today"
                 description={`${getDayLabel(currentDay)} · ${stageLabel}`}
                 isOpen={isNormalTodayOpen}
@@ -268,12 +304,14 @@ function GuideQuoteCard({
 }
 
 function GuideDisclosureCard({
+    sectionRef,
     title,
     description,
     isOpen,
     onToggle,
     children,
 }: {
+    sectionRef?: RefObject<HTMLElement | null>;
     title: string;
     description: string;
     isOpen: boolean;
@@ -281,7 +319,7 @@ function GuideDisclosureCard({
     children: ReactNode;
 }) {
     return (
-        <section className="rounded-xl border border-border/60 bg-card/55">
+        <section ref={sectionRef} className="rounded-xl border border-border/60 bg-card/55">
             <button
                 type="button"
                 onClick={onToggle}

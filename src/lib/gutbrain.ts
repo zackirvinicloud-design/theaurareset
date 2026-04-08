@@ -66,6 +66,22 @@ export interface GutBrainShoppingAction {
   quantity?: string;
 }
 
+export type CoachActionType =
+  | 'open_view'
+  | 'focus_checklist_item'
+  | 'open_normal_today'
+  | 'set_reminder'
+  | 'open_shopping';
+
+export interface CoachAction {
+  type: CoachActionType;
+  label: string;
+  view?: 'today' | 'guide' | 'shopping' | 'protocol' | 'help';
+  checklistKey?: string;
+  phase?: string;
+  category?: string;
+}
+
 export const EMPTY_GUT_BRAIN_PROFILE: GutBrainProfile = {
   assistantName: GUT_BRAIN_AI_NAME,
   preferredName: null,
@@ -376,6 +392,45 @@ export const parseGutBrainShoppingActions = (content: string): GutBrainShoppingA
   });
 };
 
+export const parseCoachActions = (content: string): CoachAction[] => {
+  const matches = [...content.matchAll(/\[COACH_ACTION\]([\s\S]*?)\[\/COACH_ACTION\]/gi)];
+  const validTypes: CoachActionType[] = [
+    'open_view',
+    'focus_checklist_item',
+    'open_normal_today',
+    'set_reminder',
+    'open_shopping',
+  ];
+
+  return matches.flatMap((match) => {
+    const lines = match[1]
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    const getValue = (prefix: string) => lines.find((line) => line.toLowerCase().startsWith(prefix))?.slice(prefix.length).trim();
+    const type = getValue('type:') as CoachActionType | undefined;
+    const label = getValue('label:');
+    const view = getValue('view:') as CoachAction['view'] | undefined;
+    const checklistKey = getValue('checklist_key:');
+    const phase = getValue('phase:');
+    const category = getValue('category:');
+
+    if (!type || !label || !validTypes.includes(type)) {
+      return [];
+    }
+
+    return [{
+      type,
+      label,
+      view,
+      checklistKey,
+      phase,
+      category,
+    }];
+  });
+};
+
 export const parseGutBrainClarifier = (content: string): GutBrainClarifier | null => {
   const match = content.match(/\[CLARIFY\]([\s\S]*?)\[\/CLARIFY\]/i);
   if (!match) {
@@ -388,6 +443,7 @@ export const parseGutBrainClarifier = (content: string): GutBrainClarifier | nul
     ? content.slice(0, clarifyIndex).trim()
     : '';
   const preamble = rawPreamble
+    .replace(/\[COACH_ACTION\][\s\S]*?\[\/COACH_ACTION\]/gi, '')
     .replace(/\[SHOP_ACTION\][\s\S]*?\[\/SHOP_ACTION\]/gi, '')
     .replace(/\[PROGRESS_UPDATE:[^\]]*\]/gi, '')
     .trim();
@@ -415,9 +471,10 @@ export const parseGutBrainClarifier = (content: string): GutBrainClarifier | nul
 };
 
 export const getGutBrainDisplayText = (content: string) => {
-  // Strip [CLARIFY], [SHOP_ACTION], and [PROGRESS_UPDATE] blocks from display
+  // Strip action and helper blocks from display
   return content
     .replace(/\[CLARIFY\][\s\S]*?\[\/CLARIFY\]/gi, '')
+    .replace(/\[COACH_ACTION\][\s\S]*?\[\/COACH_ACTION\]/gi, '')
     .replace(/\[SHOP_ACTION\][\s\S]*?\[\/SHOP_ACTION\]/gi, '')
     .replace(/\[PROGRESS_UPDATE:[^\]]*\]/gi, '')
     .trim();
@@ -541,6 +598,37 @@ SHOPPING LIST ACTIONS
 - Only use these when the user asks about shopping, or when your recommendation naturally leads to a product change.
 - Always explain WHY you are suggesting the change.
 
+APP ACTION TAGS
+- This app already has Today, Guide, Shopping, and "What's normal today" surfaces. Use them.
+- If the app can answer the question faster than chat alone, include one or more [COACH_ACTION] blocks before the [CLARIFY] block.
+- Keep these action labels short and useful. Think button copy, not explanation.
+- Format each action exactly like this:
+[COACH_ACTION]
+type: open_view
+view: today
+label: Open today's plan
+[/COACH_ACTION]
+- Supported action types:
+  * open_view -> include view: today | guide | shopping | protocol | help
+  * focus_checklist_item -> include checklist_key when you know the exact key from CURRENT CONTEXT
+  * open_normal_today -> no extra fields needed
+  * set_reminder -> include checklist_key when you know the exact step
+  * open_shopping -> include optional phase and category when you can
+- For shopping actions, include these optional fields whenever possible:
+  * phase: exact phase name from the shopping list (Foundation, Fungal Elimination, Parasite Elimination, Heavy Metal Detox)
+  * category: exact shopping category label when known
+- Keep shopping actions narrow:
+  * If user asks for one part of the list, send one shopping action pointing to that part.
+  * Do not dump the full shopping list in prose if an open_shopping action can handle it.
+- Use actions by default when relevant:
+  * Symptoms, die-off, "is this normal" -> include open_normal_today
+  * Questions about what to do now -> include open_view today
+  * Questions about a specific listed step -> include focus_checklist_item when the exact checklist key is obvious
+  * Timing or "remind me later" requests -> include set_reminder
+  * Shopping or supplies -> include open_shopping or open_view shopping
+- Do not mention the tags in normal prose. They are hidden app instructions.
+- Do not invent checklist keys. If you are not sure, skip the checklist_key field and use a broader action.
+
 BOUNDARIES (NON-NEGOTIABLE)
 - Do not diagnose diseases or medical conditions.
 - Do not claim this protocol cures cancer, autoimmune diseases, or mental health conditions.
@@ -560,7 +648,8 @@ OUTPUT FORMAT
 RESPONSE STRUCTURE (CRITICAL -- YOU MUST FOLLOW THIS)
 Every response MUST follow this pattern:
 1. A brief, direct answer (1-3 sentences max). Hit the core of their question immediately. No essays.
-2. Then ALWAYS end with a [CLARIFY] block that branches the conversation deeper.
+2. Then add any helpful [COACH_ACTION] or [SHOP_ACTION] blocks.
+3. Then ALWAYS end with a [CLARIFY] block that branches the conversation deeper.
 
 The [CLARIFY] block format:
 [CLARIFY]

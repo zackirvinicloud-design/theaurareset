@@ -1,21 +1,40 @@
-import { CheckCircle2, ShoppingCart } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { AlertCircle, CheckCircle2, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ChecklistSections, buildChecklistViewModel } from '@/components/journal/DailyChecklist';
-import type { ChecklistState, CustomChecklistItem } from '@/hooks/useJournalStore';
-import { getDayLabel, getJourneyStageLabel, getPhaseInfo } from '@/hooks/useProtocolData';
+import type {
+    ChecklistState,
+    CustomChecklistItem,
+    MaintenanceHandoff,
+    RecoveryState,
+    TaskReminder,
+} from '@/hooks/useJournalStore';
+import { getChecklistSupport, getDayLabel, getJourneyStageLabel, getPhaseInfo } from '@/hooks/useProtocolData';
 import { getTodayFocus } from '@/components/journal/ProtocolReference';
 import { cn } from '@/lib/utils';
+import { TaskReminderPicker } from '@/components/journal/TaskReminderPicker';
 
 interface MobileTodayViewProps {
     currentDay: number;
     currentPhase: number;
     checklist: ChecklistState;
     customItems: CustomChecklistItem[];
+    taskReminders: TaskReminder[];
+    recoveryState: RecoveryState | null;
+    maintenanceHandoff: MaintenanceHandoff | null;
+    focusedItemKey?: string | null;
+    reminderComposerTargetKey?: string | null;
     onToggle: (itemKey: string) => void;
     onRemoveCustomItem: (key: string) => void;
     onAskAbout: (label: string) => void;
     onOpenShoppingView: () => void;
+    onResumeToday: () => void;
+    onAskCoachAboutRecovery: () => void;
+    onAskCoachAboutMaintenance: () => void;
+    onReminderComposerOpenChange?: (itemKey: string, open: boolean) => void;
+    onSetReminder: (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => Promise<void> | void;
+    onClearReminder: (checklistKey: string) => void;
 }
 
 export const MobileTodayView = ({
@@ -23,10 +42,21 @@ export const MobileTodayView = ({
     currentPhase,
     checklist,
     customItems,
+    taskReminders,
+    recoveryState,
+    maintenanceHandoff,
+    focusedItemKey,
+    reminderComposerTargetKey,
     onToggle,
     onRemoveCustomItem,
     onAskAbout,
     onOpenShoppingView,
+    onResumeToday,
+    onAskCoachAboutRecovery,
+    onAskCoachAboutMaintenance,
+    onReminderComposerOpenChange,
+    onSetReminder,
+    onClearReminder,
 }: MobileTodayViewProps) => {
     const phase = getPhaseInfo(currentPhase);
     const dayLabel = getDayLabel(currentDay);
@@ -48,6 +78,21 @@ export const MobileTodayView = ({
             ? 'Line up Week 3 buys before Day 15.'
             : 'Line up Week 2 buys before Day 8.';
     const stageLabel = getJourneyStageLabel(currentDay, currentPhase);
+    const [showWhyThisMatters, setShowWhyThisMatters] = useState(false);
+    const nextItemSupport = useMemo(
+        () => (nextItem ? getChecklistSupport(nextItem.key, currentDay) : null),
+        [currentDay, nextItem],
+    );
+    const nextReminder = nextItem
+        ? taskReminders.find((reminder) => reminder.active && reminder.checklistKey === nextItem.key)
+        : undefined;
+    const listReminderComposerTargetKey = reminderComposerTargetKey === nextItem?.key
+        ? null
+        : reminderComposerTargetKey;
+
+    useEffect(() => {
+        setShowWhyThisMatters(false);
+    }, [nextItem?.key]);
 
     return (
         <div className="flex h-full flex-col bg-background">
@@ -82,7 +127,36 @@ export const MobileTodayView = ({
                         </div>
                     </section>
 
-
+                    {recoveryState?.shouldShow && (
+                        <section className="rounded-2xl border border-amber-300/40 bg-amber-500/[0.06] px-4 py-4 shadow-sm">
+                            <div className="flex items-start gap-3">
+                                <div className="mt-0.5 rounded-full bg-amber-500/12 p-2 text-amber-700">
+                                    <AlertCircle className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0 space-y-2">
+                                    <div>
+                                        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700/80">
+                                            Missed today?
+                                        </p>
+                                        <p className="mt-1 text-sm font-medium text-foreground">
+                                            {recoveryState.daysOff === 1 ? 'You are one day off.' : `You are ${recoveryState.daysOff} days off.`}
+                                        </p>
+                                    </div>
+                                    <p className="text-sm leading-6 text-muted-foreground">
+                                        {recoveryState.recoveryMessage}
+                                    </p>
+                                    <div className="flex flex-wrap gap-2 pt-1">
+                                        <Button size="sm" className="h-8 rounded-full px-3" onClick={onResumeToday}>
+                                            Reset this day cleanly
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 rounded-full px-3" onClick={onAskCoachAboutRecovery}>
+                                            Ask Coach if I should adjust
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
                     <section
                         className={cn(
@@ -109,14 +183,44 @@ export const MobileTodayView = ({
                                         Done
                                     </Button>
                                 </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-auto px-0 text-xs font-medium text-primary hover:bg-transparent hover:text-primary"
-                                    onClick={() => onAskAbout(nextItem.label)}
-                                >
-                                    Need context on this step?
-                                </Button>
+                                <div className="flex flex-wrap gap-2">
+                                    <TaskReminderPicker
+                                        itemKey={nextItem.key}
+                                        label={nextItem.label}
+                                        timeOfDay={nextItem.timeOfDay}
+                                        reminder={nextReminder}
+                                        onSetReminder={onSetReminder}
+                                        onClearReminder={onClearReminder}
+                                        open={reminderComposerTargetKey === nextItem.key ? true : undefined}
+                                        onOpenChange={reminderComposerTargetKey === nextItem.key ? (open) => onReminderComposerOpenChange?.(nextItem.key, open) : undefined}
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 rounded-full px-3 text-xs font-medium text-primary hover:bg-primary/8 hover:text-primary"
+                                        onClick={() => setShowWhyThisMatters((value) => !value)}
+                                    >
+                                        Why this matters
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 rounded-full px-3 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                                        onClick={() => onAskAbout(nextItem.label)}
+                                    >
+                                        Ask Coach
+                                    </Button>
+                                </div>
+                                {showWhyThisMatters && nextItemSupport && (
+                                    <div className="rounded-2xl border border-primary/10 bg-primary/[0.04] px-3 py-3">
+                                        <p className="text-sm leading-6 text-foreground">{nextItemSupport.why}</p>
+                                        {nextItemSupport.timingHint && (
+                                            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                                                {nextItemSupport.timingHint}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="flex items-center gap-3">
@@ -146,6 +250,39 @@ export const MobileTodayView = ({
                         </section>
                     )}
 
+                    {maintenanceHandoff && (
+                        <section className="rounded-2xl border border-primary/20 bg-primary/[0.05] px-4 py-4 shadow-sm">
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/80">
+                                        After Day 21
+                                    </p>
+                                    <p className="mt-1 text-sm font-medium text-foreground">
+                                        Keep the reset from fading the second you finish.
+                                    </p>
+                                </div>
+                                <div className="space-y-2 text-sm text-muted-foreground">
+                                    {maintenanceHandoff.coreHabitsToKeep.map((habit) => (
+                                        <p key={habit}>- {habit}</p>
+                                    ))}
+                                </div>
+                                <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                                        Watch for
+                                    </p>
+                                    <div className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+                                        {maintenanceHandoff.watchFors.map((item) => (
+                                            <p key={item}>- {item}</p>
+                                        ))}
+                                    </div>
+                                </div>
+                                <Button variant="outline" size="sm" className="h-8 rounded-full px-3" onClick={onAskCoachAboutMaintenance}>
+                                    Build my maintenance week
+                                </Button>
+                            </div>
+                        </section>
+                    )}
+
                     <section className="space-y-3">
                         <div className="flex items-center justify-between">
                             <div>
@@ -165,6 +302,12 @@ export const MobileTodayView = ({
                             onToggle={onToggle}
                             onAskAbout={onAskAbout}
                             onRemoveCustomItem={onRemoveCustomItem}
+                            taskReminders={taskReminders}
+                            focusedItemKey={focusedItemKey}
+                            reminderComposerTargetKey={listReminderComposerTargetKey}
+                            onReminderComposerOpenChange={onReminderComposerOpenChange}
+                            onSetReminder={onSetReminder}
+                            onClearReminder={onClearReminder}
                             variant="inline"
                         />
                     </section>

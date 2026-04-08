@@ -12,7 +12,9 @@ import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import {
     GUT_BRAIN_AI_NAME,
+    getGutBrainDisplayText,
     getGutBrainStarterState,
+    type CoachAction,
     parseGutBrainShoppingActions,
     type GutBrainShoppingAction,
     type GutBrainStarterState,
@@ -26,6 +28,7 @@ interface JournalCenterProps {
     onUpdateEntry: (entryId: string, content: string) => void;
     onFinalizeEntry: (entryId: string, content: string) => Promise<void> | void;
     onApplyShoppingActions?: (actions: GutBrainShoppingAction[]) => Promise<void> | void;
+    onCoachAction?: (action: CoachAction) => void;
     threads?: ChatThread[];
     activeThreadId?: string | null;
     onStartNewChat?: () => Promise<void> | void;
@@ -45,6 +48,7 @@ export const JournalCenter = ({
     onUpdateEntry,
     onFinalizeEntry,
     onApplyShoppingActions,
+    onCoachAction,
     threads,
     activeThreadId,
     onStartNewChat,
@@ -111,6 +115,7 @@ export const JournalCenter = ({
             `${dayLabel}, Phase ${progress.currentPhase}: ${phaseNames[progress.currentPhase - 1]}`,
             'Reply in a natural, conversational tone.',
             'Use plain English and make the next step feel simple.',
+            'Default to redirect-first behavior when the app already has the answer.',
             'Use English only.',
             'Use only standard ASCII keyboard characters. No non-English words, accented text, curly quotes, emoji, or non-Latin scripts.',
             'Keep the morning elixir simple by default. Do not list every variation unless the user asks for the differences.',
@@ -159,7 +164,7 @@ export const JournalCenter = ({
                                     userEntry,
                                     {
                                         ...assistantEntry,
-                                        content: assistantContent,
+                                        content: getGutBrainDisplayText(assistantContent),
                                     },
                                 ],
                                 { currentDay: nextDay, currentPhase: nextPhase },
@@ -328,6 +333,7 @@ export const JournalCenter = ({
                                         onChoiceSelect={(choice) => {
                                             void handleSend(choice);
                                         }}
+                                        onActionSelect={onCoachAction}
                                     />
                                 );
                             })}

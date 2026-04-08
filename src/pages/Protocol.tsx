@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { findShoppingCategoryMatch, getDayLabel, getShoppingPhaseForDay } from "@/hooks/useProtocolData";
+import { findShoppingCategoryMatch, getDayLabel, getShoppingPhaseForDay, SHOPPING_LIST } from "@/hooks/useProtocolData";
 import { useJournalStore } from "@/hooks/useJournalStore";
 import { toast } from "@/hooks/use-toast";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
 import { cn } from "@/lib/utils";
-import type { GutBrainShoppingAction } from "@/lib/gutbrain";
+import { parseLocalDateTime } from "@/lib/taskReminders";
+import type { CoachAction, GutBrainShoppingAction } from "@/lib/gutbrain";
 
 import { TopBar } from "@/components/journal/TopBar";
-import { DailyChecklist } from "@/components/journal/DailyChecklist";
+import { DailyChecklist, buildChecklistViewModel } from "@/components/journal/DailyChecklist";
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
@@ -35,9 +36,17 @@ const Protocol = () => {
   // Pending prompt for auto-sending from checklist tap
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<ActiveView>('today');
+  const [focusedChecklistKey, setFocusedChecklistKey] = useState<string | null>(null);
+  const [reminderComposerTargetKey, setReminderComposerTargetKey] = useState<string | null>(null);
+  const [normalTodayAutoOpenSignal, setNormalTodayAutoOpenSignal] = useState(0);
+  const [shoppingDefaultExpandedCategories, setShoppingDefaultExpandedCategories] = useState<string[]>([]);
 
   // Journal store (Supabase-backed)
   const store = useJournalStore();
+  const checklistViewModel = useMemo(
+    () => buildChecklistViewModel(store.progress.currentDay, store.checklist, store.customItems),
+    [store.checklist, store.customItems, store.progress.currentDay],
+  );
 
   // Persist ref panel state
   useEffect(() => {
@@ -98,6 +107,204 @@ const Protocol = () => {
     navigate("/");
   };
 
+  const openNormalToday = useCallback(() => {
+    setNormalTodayAutoOpenSignal((value) => value + 1);
+    if (isMobile) {
+      setActiveView('guide');
+      return;
+    }
+    setRefOpen(true);
+  }, [isMobile]);
+
+  const resolveChecklistTargetKey = useCallback((preferredKey?: string | null) => {
+    if (preferredKey && checklistViewModel.allItems.some((item) => item.key === preferredKey)) {
+      return preferredKey;
+    }
+
+    return checklistViewModel.nextItem?.key ?? checklistViewModel.allItems[0]?.key ?? null;
+  }, [checklistViewModel.allItems, checklistViewModel.nextItem]);
+
+  const focusChecklistItem = useCallback((itemKey: string, options?: { openReminderComposer?: boolean }) => {
+    setFocusedChecklistKey(itemKey);
+    if (options?.openReminderComposer) {
+      setReminderComposerTargetKey(itemKey);
+    }
+    if (isMobile) {
+      setActiveView('today');
+    }
+  }, [isMobile]);
+
+  const openReminderTarget = useCallback(async (itemKey: string, reminderDayNumber?: number | null) => {
+    if (
+      typeof reminderDayNumber === 'number'
+      && reminderDayNumber !== store.progress.currentDay
+      && reminderDayNumber >= 0
+      && reminderDayNumber <= 21
+    ) {
+      await store.setCurrentDay(reminderDayNumber);
+    }
+
+    focusChecklistItem(itemKey);
+  }, [focusChecklistItem, store.progress.currentDay, store.setCurrentDay]);
+
+  const handleReminderComposerOpenChange = useCallback((itemKey: string, open: boolean) => {
+    setReminderComposerTargetKey((current) => {
+      if (open) {
+        return itemKey;
+      }
+      return current === itemKey ? null : current;
+    });
+  }, []);
+
+  const handleSetReminder = useCallback(async (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+      try {
+        await Notification.requestPermission();
+      } catch {
+        // Ignore permission prompt failures and keep the in-app reminder.
+      }
+    }
+
+    await store.setTaskReminder({
+      ...input,
+      dayNumber: store.progress.currentDay,
+    });
+
+    setReminderComposerTargetKey(null);
+
+    toast({
+      title: "Reminder set",
+      description: `${input.label} will bring you back to the right step.`,
+    });
+  }, [store.progress.currentDay, store.setTaskReminder]);
+
+  const handleResumeToday = useCallback(() => {
+    const targetKey = resolveChecklistTargetKey();
+    if (!targetKey) {
+      return;
+    }
+
+    focusChecklistItem(targetKey);
+  }, [focusChecklistItem, resolveChecklistTargetKey]);
+
+  const handleAskCoachAboutRecovery = useCallback(() => {
+    setActiveView('help');
+    setPendingPrompt(
+      store.progress.currentDay === 0
+        ? 'I lost momentum on Prep Day. Tell me what to do first now and what I can ignore.'
+        : 'I missed time in the protocol. Should I simply repeat this day or adjust anything? Keep it simple.',
+    );
+  }, [store.progress.currentDay]);
+
+  const handleAskCoachAboutMaintenance = useCallback(() => {
+    setActiveView('help');
+    setPendingPrompt('I am finishing Day 21. Turn this into a simple 7-day maintenance plan.');
+  }, []);
+
+  const handleCoachAction = useCallback((action: CoachAction) => {
+    const resolveShoppingCategoryKey = () => {
+      if (action.category) {
+        const categoryMatch = findShoppingCategoryMatch(action.category);
+        if (categoryMatch) {
+          return `${categoryMatch.phase}_${categoryMatch.category.category}`;
+        }
+      }
+
+      const normalizedPhase = action.phase?.toLowerCase().trim() ?? "";
+      let phaseName: string | null = null;
+
+      if (normalizedPhase.includes("week 1") || normalizedPhase.includes("fungal")) {
+        phaseName = "Fungal Elimination";
+      } else if (normalizedPhase.includes("week 2") || normalizedPhase.includes("parasite")) {
+        phaseName = "Parasite Elimination";
+      } else if (normalizedPhase.includes("week 3") || normalizedPhase.includes("metal")) {
+        phaseName = "Heavy Metal Detox";
+      } else if (normalizedPhase.includes("prep") || normalizedPhase.includes("foundation")) {
+        phaseName = "Foundation";
+      } else if (action.phase) {
+        phaseName = SHOPPING_LIST.find((phase) => phase.phase.toLowerCase() === normalizedPhase)?.phase ?? null;
+      }
+
+      if (!phaseName) {
+        const fallbackPhase = getShoppingPhaseForDay(store.progress.currentDay);
+        const fallbackCategory = SHOPPING_LIST.find((phase) => phase.phase === fallbackPhase)?.categories[0];
+        if (!fallbackCategory) {
+          return null;
+        }
+        return `${fallbackPhase}_${fallbackCategory.category}`;
+      }
+
+      const firstCategory = SHOPPING_LIST.find((phase) => phase.phase === phaseName)?.categories[0];
+      if (!firstCategory) {
+        return null;
+      }
+
+      return `${phaseName}_${firstCategory.category}`;
+    };
+
+    const openShoppingWithFocus = () => {
+      const focusedKey = resolveShoppingCategoryKey();
+      setShoppingDefaultExpandedCategories(focusedKey ? [focusedKey] : []);
+      setActiveView("shopping");
+    };
+
+    if (action.type === 'open_normal_today') {
+      openNormalToday();
+      return;
+    }
+
+    if (action.type === 'open_shopping') {
+      openShoppingWithFocus();
+      return;
+    }
+
+    if (action.type === 'open_view') {
+      if (action.view === 'shopping') {
+        openShoppingWithFocus();
+        return;
+      }
+      if (action.view === 'protocol') {
+        setActiveView('protocol');
+        return;
+      }
+      if (action.view === 'guide') {
+        setActiveView('guide');
+        if (!isMobile) {
+          setRefOpen(true);
+        }
+        return;
+      }
+      if (action.view === 'help') {
+        setActiveView('help');
+        return;
+      }
+      if (action.view === 'today') {
+        const targetKey = resolveChecklistTargetKey();
+        if (targetKey) {
+          focusChecklistItem(targetKey);
+        } else if (isMobile) {
+          setActiveView('today');
+        }
+      }
+      return;
+    }
+
+    if (action.type === 'focus_checklist_item') {
+      const targetKey = resolveChecklistTargetKey(action.checklistKey);
+      if (targetKey) {
+        focusChecklistItem(targetKey);
+      }
+      return;
+    }
+
+    if (action.type === 'set_reminder') {
+      const targetKey = resolveChecklistTargetKey(action.checklistKey);
+      if (targetKey) {
+        focusChecklistItem(targetKey, { openReminderComposer: true });
+      }
+    }
+  }, [focusChecklistItem, isMobile, openNormalToday, resolveChecklistTargetKey, store.progress.currentDay]);
+
   const handlePreviousDay = async () => {
     const targetDay = Math.max(store.progress.currentDay - 1, 0);
     if (targetDay === store.progress.currentDay) return;
@@ -137,6 +344,7 @@ const Protocol = () => {
   };
 
   const handleOpenShoppingFromGuide = () => {
+    setShoppingDefaultExpandedCategories([]);
     setActiveView('shopping');
   };
 
@@ -215,6 +423,64 @@ const Protocol = () => {
     });
   };
 
+  useEffect(() => {
+    if (!focusedChecklistKey) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setFocusedChecklistKey((current) => (current === focusedChecklistKey ? null : current));
+    }, 5000);
+
+    return () => window.clearTimeout(timeout);
+  }, [focusedChecklistKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !store.taskReminders.length) {
+      return;
+    }
+
+    const fireDueReminders = () => {
+      const now = Date.now();
+
+      store.taskReminders
+        .filter((reminder) => reminder.active)
+        .forEach((reminder) => {
+          const scheduled = parseLocalDateTime(reminder.scheduledLocalTime);
+          if (!scheduled || scheduled.getTime() > now) {
+            return;
+          }
+
+          store.markTaskReminderDelivered(reminder.id);
+
+          if (document.visibilityState === 'visible') {
+            void openReminderTarget(reminder.checklistKey, reminder.dayNumber);
+          }
+
+          toast({
+            title: "Time to act",
+            description: reminder.label,
+          });
+
+          if ('Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification('Time for your next step', {
+              body: reminder.label,
+            });
+            notification.onclick = () => {
+              window.focus();
+              void openReminderTarget(reminder.checklistKey, reminder.dayNumber);
+              notification.close();
+            };
+          }
+        });
+    };
+
+    fireDueReminders();
+    const interval = window.setInterval(fireDueReminders, 30000);
+
+    return () => window.clearInterval(interval);
+  }, [openReminderTarget, store.markTaskReminderDelivered, store.taskReminders]);
+
   // Loading states
   if (isAuthLoading || store.isLoading) {
     return (
@@ -261,6 +527,12 @@ const Protocol = () => {
             onAddCustomItem={store.addCustomItem}
             onRemoveCustomItem={store.removeCustomItem}
             onAskAbout={handleAskAbout}
+            taskReminders={store.taskReminders}
+            focusedItemKey={focusedChecklistKey}
+            reminderComposerTargetKey={reminderComposerTargetKey}
+            onReminderComposerOpenChange={handleReminderComposerOpenChange}
+            onSetReminder={handleSetReminder}
+            onClearReminder={store.clearTaskReminder}
           />
         </aside>
 
@@ -276,6 +548,7 @@ const Protocol = () => {
                 onRemoveItem={store.removeShoppingItem}
                 onBack={() => setActiveView('guide')}
                 onAskAI={handleShoppingAskAI}
+                defaultExpandedCategories={shoppingDefaultExpandedCategories}
               />
             ) : activeView === 'protocol' ? (
               <FullProtocolView
@@ -296,6 +569,7 @@ const Protocol = () => {
                       currentDay={store.progress.currentDay}
                       onOpenShoppingView={handleOpenShoppingFromGuide}
                       onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
+                      normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
                     />
                   </div>
                 </div>
@@ -306,10 +580,21 @@ const Protocol = () => {
                 currentPhase={store.progress.currentPhase}
                 checklist={store.checklist}
                 customItems={store.customItems}
+                taskReminders={store.taskReminders}
+                recoveryState={store.recoveryState}
+                maintenanceHandoff={store.maintenanceHandoff}
+                focusedItemKey={focusedChecklistKey}
+                reminderComposerTargetKey={reminderComposerTargetKey}
                 onToggle={store.toggleChecklistItem}
                 onRemoveCustomItem={store.removeCustomItem}
                 onAskAbout={handleAskAbout}
                 onOpenShoppingView={handleOpenShoppingFromGuide}
+                onResumeToday={handleResumeToday}
+                onAskCoachAboutRecovery={handleAskCoachAboutRecovery}
+                onAskCoachAboutMaintenance={handleAskCoachAboutMaintenance}
+                onReminderComposerOpenChange={handleReminderComposerOpenChange}
+                onSetReminder={handleSetReminder}
+                onClearReminder={store.clearTaskReminder}
               />
             ) : (
               <JournalCenter
@@ -325,6 +610,7 @@ const Protocol = () => {
                 onUpdateEntry={store.updateJournalEntry}
                 onFinalizeEntry={store.finalizeJournalEntry}
                 onApplyShoppingActions={handleApplyShoppingActions}
+                onCoachAction={handleCoachAction}
                 pendingPrompt={pendingPrompt}
                 onPendingPromptConsumed={() => setPendingPrompt(null)}
                 isMobile={true}
@@ -341,6 +627,7 @@ const Protocol = () => {
               onRemoveItem={store.removeShoppingItem}
               onBack={() => setActiveView('help')}
               onAskAI={handleShoppingAskAI}
+              defaultExpandedCategories={shoppingDefaultExpandedCategories}
             />
           ) : activeView === 'protocol' ? (
             <FullProtocolView
@@ -360,6 +647,7 @@ const Protocol = () => {
               onUpdateEntry={store.updateJournalEntry}
               onFinalizeEntry={store.finalizeJournalEntry}
               onApplyShoppingActions={handleApplyShoppingActions}
+              onCoachAction={handleCoachAction}
               pendingPrompt={pendingPrompt}
               onPendingPromptConsumed={() => setPendingPrompt(null)}
               isMobile={false}
@@ -376,6 +664,7 @@ const Protocol = () => {
             onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
             isOpen={refOpen}
             onToggle={() => setRefOpen(prev => !prev)}
+            normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
           />
         )}
       </div>

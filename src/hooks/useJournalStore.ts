@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 import { buildShopKey, calculatePhase, findDefaultShoppingItem } from './useProtocolData';
@@ -82,6 +82,34 @@ export interface CustomChecklistItem {
     createdAt: string;
 }
 
+export interface TaskReminder {
+    id: string;
+    userId: string | null;
+    checklistKey: string;
+    label: string;
+    scheduledLocalTime: string;
+    timezone: string;
+    active: boolean;
+    createdAt: string;
+    deliveredAt?: string | null;
+    dayNumber?: number;
+}
+
+export interface RecoveryState {
+    lastActiveDate: string | null;
+    daysOff: number;
+    recommendedResumeDay: number;
+    recoveryMessage: string;
+    shouldShow: boolean;
+}
+
+export interface MaintenanceHandoff {
+    completionDate: string;
+    coreHabitsToKeep: string[];
+    watchFors: string[];
+    nextPhasePrompt: string;
+}
+
 // ── Default Progress ───────────────────────────────────
 
 const DEFAULT_PROGRESS: UserProgress = {
@@ -103,6 +131,7 @@ const LS_CUSTOM_ITEMS_KEY = 'gbj-custom-items';
 const LS_SYMPTOMS_KEY = 'gbj-symptoms';
 const LS_CHECKIN_KEY = 'gbj-checkin';
 const LS_SHOPPING_OVERRIDES_KEY = 'gbj-shopping-overrides';
+const LS_TASK_REMINDERS_KEY = 'gbj-task-reminders';
 
 function mapJournalEntryRow(row: Tables<'journal_entries'>): JournalEntry {
     return {
@@ -172,6 +201,32 @@ function lsSet(key: string, value: unknown) {
     } catch { /* ignore */ }
 }
 
+function getTaskReminderStorageKey(userId: string | null) {
+    return `${LS_TASK_REMINDERS_KEY}:${userId ?? 'guest'}`;
+}
+
+function getLocalTaskReminders(userId: string | null) {
+    return lsGet<TaskReminder[]>(getTaskReminderStorageKey(userId), []);
+}
+
+function setLocalTaskReminders(userId: string | null, reminders: TaskReminder[]) {
+    lsSet(getTaskReminderStorageKey(userId), reminders);
+}
+
+function parseProgressDate(value: string | null) {
+    if (!value) {
+        return null;
+    }
+
+    const hasExplicitTime = value.includes('T');
+    const parsed = new Date(hasExplicitTime ? value : `${value}T00:00:00`);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function formatDateOnly(date: Date) {
+    return date.toISOString().split('T')[0];
+}
+
 function createLocalThread(title = 'New chat'): ChatThread {
     const now = new Date().toISOString();
     return {
@@ -218,6 +273,7 @@ export function useJournalStore() {
     const [shoppingOverrides, setShoppingOverrides] = useState<ShoppingListOverride[]>([]);
     const [symptoms, setSymptoms] = useState<string[]>([]);
     const [checkIn, setCheckIn] = useState<DailyCheckIn | null>(null);
+    const [taskReminders, setTaskReminders] = useState<TaskReminder[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const threadLoadRequestRef = useRef(0);
     const activeThreadIdRef = useRef<string | null>(null);
@@ -333,6 +389,7 @@ export function useJournalStore() {
             setShoppingOverrides(lsGet(LS_SHOPPING_OVERRIDES_KEY, []));
             setSymptoms(lsGet(LS_SYMPTOMS_KEY, []));
             setCheckIn(lsGet(LS_CHECKIN_KEY, null));
+            setTaskReminders(getLocalTaskReminders(null));
             setIsLoading(false);
             return;
         }
@@ -461,6 +518,8 @@ export function useJournalStore() {
                 lsSet(LS_CHECKIN_KEY, null);
             }
 
+            setTaskReminders(getLocalTaskReminders(userId));
+
             setIsLoading(false);
         };
 
@@ -527,10 +586,32 @@ export function useJournalStore() {
         setCheckIn(savedCheckIn);
     }, [checklist, userId]);
 
+    const touchLastActiveDate = useCallback(async (value?: string) => {
+        const nextDate = value ?? formatDateOnly(new Date());
+
+        setProgress((prev) => {
+            const next = { ...prev, lastActiveDate: nextDate };
+            lsSet(LS_PROGRESS_KEY, next);
+            return next;
+        });
+
+        if (userId) {
+            await supabase
+                .from('user_progress')
+                .update({ last_active_date: nextDate })
+                .eq('user_id', userId);
+        }
+    }, [userId]);
+
     // ── Progress Updates ───────────────────────────────
 
     const updateProgress = useCallback(async (updates: Partial<UserProgress>) => {
-        const newProgress = { ...progress, ...updates };
+        const touchedDate = updates.lastActiveDate ?? formatDateOnly(new Date());
+        const newProgress = {
+            ...progress,
+            ...updates,
+            lastActiveDate: touchedDate,
+        };
 
         // Auto-calculate phase from day
         if (updates.currentDay !== undefined) {
@@ -545,7 +626,7 @@ export function useJournalStore() {
                 current_day: newProgress.currentDay,
                 current_phase: newProgress.currentPhase,
                 streak_count: newProgress.streakCount,
-                last_active_date: new Date().toISOString().split('T')[0],
+                last_active_date: newProgress.lastActiveDate,
             }).eq('user_id', userId);
         }
     }, [progress, userId]);
@@ -779,24 +860,27 @@ export function useJournalStore() {
                     .eq('id', threadId)
                     .eq('user_id', userId);
             }
+
+            await touchLastActiveDate();
         }
 
         return returnEntry;
-    }, [createThread, progress.currentDay, userId]);
+    }, [createThread, progress.currentDay, touchLastActiveDate, userId]);
 
     const updateJournalEntry = useCallback((entryId: string, content: string) => {
         setEntries(prev => {
             const updated = prev.map((entry) =>
                 entry.id === entryId ? { ...entry, content } : entry,
             );
-            if (activeThreadId) {
-                mergeThreadEntriesIntoLocalCache(activeThreadId, updated);
-            } else {
-                setLocalEntries(updated);
+            const updatedEntry = updated.find((entry) => entry.id === entryId);
+            const threadIdForUpdate = updatedEntry?.threadId ?? activeThreadIdRef.current ?? updated[0]?.threadId ?? null;
+
+            if (threadIdForUpdate) {
+                mergeThreadEntriesIntoLocalCache(threadIdForUpdate, updated);
             }
             return updated;
         });
-    }, [activeThreadId]);
+    }, []);
 
     const finalizeJournalEntry = useCallback(async (entryId: string, content: string) => {
         let persistedId: string | null = null;
@@ -814,10 +898,11 @@ export function useJournalStore() {
                 return { ...entry, content };
             });
 
-            if (activeThreadId) {
-                mergeThreadEntriesIntoLocalCache(activeThreadId, updated);
-            } else {
-                setLocalEntries(updated);
+            const updatedEntry = updated.find((entry) => entry.id === entryId);
+            const threadIdForUpdate = updatedEntry?.threadId ?? activeThreadIdRef.current ?? updated[0]?.threadId ?? null;
+
+            if (threadIdForUpdate) {
+                mergeThreadEntriesIntoLocalCache(threadIdForUpdate, updated);
             }
             return updated;
         });
@@ -828,7 +913,7 @@ export function useJournalStore() {
                 .update({ content })
                 .eq('id', persistedId);
         }
-    }, [activeThreadId, userId]);
+    }, [userId]);
 
     const clearEntries = useCallback(async () => {
         if (!activeThreadId) {
@@ -855,6 +940,14 @@ export function useJournalStore() {
         setChecklist(newChecklist);
         lsSet(LS_CHECKLIST_KEY, newChecklist);
 
+        if (newValue) {
+            setTaskReminders((prev) => {
+                const next = prev.filter((reminder) => reminder.checklistKey !== itemKey);
+                setLocalTaskReminders(userId, next);
+                return next;
+            });
+        }
+
         if (userId) {
             await supabase.from('daily_checklists').upsert({
                 user_id: userId,
@@ -864,7 +957,8 @@ export function useJournalStore() {
                 completed_at: newValue ? new Date().toISOString() : null,
             }, { onConflict: 'user_id,day_number,item_key' });
         }
-    }, [checklist, progress.currentDay, userId]);
+        await touchLastActiveDate();
+    }, [checklist, progress.currentDay, touchLastActiveDate, userId]);
 
     const getChecklistCompletion = useCallback((totalItems: number): number => {
         const completed = Object.values(checklist).filter(Boolean).length;
@@ -1082,6 +1176,112 @@ export function useJournalStore() {
         return nextItem;
     }, [shoppingOverrides, upsertShoppingOverrideLocally, userId]);
 
+    // ── Task Reminders ─────────────────────────────────
+
+    const setTaskReminder = useCallback(async (input: {
+        checklistKey: string;
+        label: string;
+        scheduledLocalTime: string;
+        dayNumber?: number;
+    }) => {
+        const nextReminder: TaskReminder = {
+            id: `reminder_${input.checklistKey}_${Date.now()}`,
+            userId,
+            checklistKey: input.checklistKey,
+            label: input.label.trim(),
+            scheduledLocalTime: input.scheduledLocalTime,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            active: true,
+            createdAt: new Date().toISOString(),
+            deliveredAt: null,
+            dayNumber: input.dayNumber ?? progress.currentDay,
+        };
+
+        setTaskReminders((prev) => {
+            const next = [
+                ...prev.filter((reminder) => reminder.checklistKey !== input.checklistKey),
+                nextReminder,
+            ];
+            setLocalTaskReminders(userId, next);
+            return next;
+        });
+
+        await touchLastActiveDate();
+        return nextReminder;
+    }, [progress.currentDay, touchLastActiveDate, userId]);
+
+    const clearTaskReminder = useCallback((checklistKey: string) => {
+        setTaskReminders((prev) => {
+            const next = prev.filter((reminder) => reminder.checklistKey !== checklistKey);
+            setLocalTaskReminders(userId, next);
+            return next;
+        });
+    }, [userId]);
+
+    const markTaskReminderDelivered = useCallback((reminderId: string) => {
+        setTaskReminders((prev) => {
+            const next = prev.map((reminder) => (
+                reminder.id === reminderId
+                    ? { ...reminder, active: false, deliveredAt: new Date().toISOString() }
+                    : reminder
+            ));
+            setLocalTaskReminders(userId, next);
+            return next;
+        });
+    }, [userId]);
+
+    const recoveryState = useMemo<RecoveryState | null>(() => {
+        const lastActive = parseProgressDate(progress.lastActiveDate);
+        if (!lastActive || progress.currentDay < 0) {
+            return null;
+        }
+
+        const today = parseProgressDate(formatDateOnly(new Date()));
+        if (!today) {
+            return null;
+        }
+
+        const daysOff = Math.floor((today.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysOff <= 0) {
+            return null;
+        }
+
+        const recoveryMessage = progress.currentDay === 0
+            ? 'Prep does not need perfection. Re-open the shopping and setup basics first, then start Day 1 when that foundation feels handled.'
+            : daysOff === 1
+                ? 'Do not make up yesterday. Repeat this day, restart with the next unchecked step, and keep the rest of the day simple.'
+                : 'Do not double up supplements or try to sprint. Repeat this day, hydrate, hit the basics first, and ask Coach only if you need to adjust.';
+
+        return {
+            lastActiveDate: progress.lastActiveDate,
+            daysOff,
+            recommendedResumeDay: progress.currentDay,
+            recoveryMessage,
+            shouldShow: true,
+        };
+    }, [progress.currentDay, progress.lastActiveDate]);
+
+    const maintenanceHandoff = useMemo<MaintenanceHandoff | null>(() => {
+        if (progress.currentDay < 21) {
+            return null;
+        }
+
+        return {
+            completionDate: progress.lastActiveDate ?? formatDateOnly(new Date()),
+            coreHabitsToKeep: [
+                'Keep breakfast and hydration boring and consistent.',
+                'Keep sugar and ultra-processed food from creeping back in daily.',
+                'Keep one simple check-in habit so you catch drift early.',
+            ],
+            watchFors: [
+                'Old bloating, cravings, brain fog, or constipation patterns returning for several days in a row.',
+                'Trying to replace structure with random new supplements.',
+                'Treating the protocol finish like a green light to swing wildly off-plan.',
+            ],
+            nextPhasePrompt: 'Ask Coach to turn what worked into a simple 7-day maintenance rhythm.',
+        };
+    }, [progress.currentDay, progress.lastActiveDate]);
+
     // ── Symptoms & Check-Ins ───────────────────────────
 
     const toggleSymptom = useCallback(async (key: string) => {
@@ -1103,7 +1303,8 @@ export function useJournalStore() {
                 .from('daily_symptoms')
                 .upsert(payload, { onConflict: 'user_id,day_number' });
         }
-    }, [symptoms, progress.currentDay, userId]);
+        await touchLastActiveDate();
+    }, [symptoms, progress.currentDay, touchLastActiveDate, userId]);
 
     const saveCheckIn = useCallback(async (data: Partial<DailyCheckIn>) => {
         const newCheckIn: DailyCheckIn = {
@@ -1133,7 +1334,8 @@ export function useJournalStore() {
                 .from('daily_checkins')
                 .upsert(payload, { onConflict: 'user_id,day_number' });
         }
-    }, [checkIn, progress.currentDay, userId]);
+        await touchLastActiveDate();
+    }, [checkIn, progress.currentDay, touchLastActiveDate, userId]);
 
     // ── Export Chat ────────────────────────────────────
 
@@ -1174,6 +1376,9 @@ export function useJournalStore() {
         shoppingOverrides,
         symptoms,
         checkIn,
+        taskReminders,
+        recoveryState,
+        maintenanceHandoff,
 
         // Progress
         updateProgress,
@@ -1197,6 +1402,9 @@ export function useJournalStore() {
         removeCustomItem,
         addShoppingItem,
         removeShoppingItem,
+        setTaskReminder,
+        clearTaskReminder,
+        markTaskReminderDelivered,
 
         // Daily Checks
         toggleSymptom,
