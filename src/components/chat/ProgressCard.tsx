@@ -17,8 +17,6 @@ const PHASE_INFO = {
 } as const;
 
 export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: ProgressCardProps) => {
-
-  
   // Calculate phase based on new 22-day structure (Day 0-21)
   // Phase 1: Day 0 (Preliminary - prep and mindset)
   // Phase 2: Days 1-7 (Fungal + Foundation)
@@ -39,51 +37,47 @@ export const ProgressCard = ({ currentDay, currentPhase, onNextDay, onAdjust }: 
   const isLastDay = currentDay >= 21;
 
   return (
-    <>
-      <Card className="mx-3 mt-3 p-4 bg-muted/50 border-primary/20 animate-fade-in progress-card">
-        <div className="flex flex-col gap-3">
-          {/* Top row - Day and Phase info */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Day</span>
-              <h4 className="font-bold text-2xl leading-none">{currentDay}</h4>
-              <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 21</span>
-            </div>
-            
-            <div className="text-right">
-              <p className={`text-sm font-semibold ${phase.color} leading-tight`}>
-                Phase {validPhase}:
-              </p>
-              <p className={`text-sm font-semibold ${phase.color} leading-tight`}>
-                {phase.name}
-              </p>
-            </div>
+    <Card className="mx-3 mt-3 p-4 bg-muted/50 border-primary/20 animate-fade-in progress-card">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Day</span>
+            <h4 className="font-bold text-2xl leading-none">{currentDay}</h4>
+            <span className="text-sm text-muted-foreground leading-none self-end pb-0.5">/ 21</span>
           </div>
-          
-          {/* Bottom row - Action buttons */}
-          <div className="flex gap-1.5 justify-end">
 
-            {!isLastDay && (
-              <Button
-                onClick={onNextDay}
-                size="sm"
-                className="gap-1.5 text-xs h-9 px-4"
-              >
-                Next Day
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-            )}
-            <Button
-              onClick={onAdjust}
-              variant="outline"
-              size="icon"
-              className="h-9 w-9"
-              title="Adjust progress"
-            >
-              <Settings className="w-3.5 h-3.5" />
-            </Button>
+          <div className="text-right">
+            <p className={`text-sm font-semibold ${phase.color} leading-tight`}>
+              Phase {validPhase}:
+            </p>
+            <p className={`text-sm font-semibold ${phase.color} leading-tight`}>
+              {phase.name}
+            </p>
           </div>
         </div>
+
+        <div className="flex gap-1.5 justify-end">
+          {!isLastDay && (
+            <Button
+              onClick={onNextDay}
+              size="sm"
+              className="gap-1.5 text-xs h-9 px-4"
+            >
+              Next Day
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          )}
+          <Button
+            onClick={onAdjust}
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            title="Adjust progress"
+          >
+            <Settings className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
     </Card>
   );
 };

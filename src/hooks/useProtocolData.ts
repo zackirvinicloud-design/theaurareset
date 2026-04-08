@@ -43,6 +43,22 @@ export interface ShoppingPhase {
     categories: ShoppingCategory[];
 }
 
+export interface ShoppingCategoryMatch {
+  phase: string;
+  category: ShoppingCategory;
+}
+
+export interface DefaultShoppingItemMatch {
+    key: string;
+    phase: string;
+    phaseEmoji: string;
+    category: string;
+    categoryEmoji: string;
+    guidance?: string;
+    item: ShoppingItem;
+    index: number;
+}
+
 export const SHOPPING_LIST: ShoppingPhase[] = [
     {
         phase: 'Foundation',
@@ -221,6 +237,87 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
     },
 ];
 
+const normalizeShoppingValue = (value: string) => value.trim().toLowerCase();
+
+export function buildShopKey(phase: string, category: string, index: number) {
+    return `shop_${phase}_${category}_${index}`;
+}
+
+export function getShoppingPhaseForDay(day: number): string {
+  if (day <= 0) return 'Foundation';
+  if (day <= 7) return 'Fungal Elimination';
+  if (day <= 14) return 'Parasite Elimination';
+  return 'Heavy Metal Detox';
+}
+
+export function getJourneyWeek(day: number): 1 | 2 | 3 | null {
+  if (day === 0) return null;
+  if (day <= 7) return 1;
+  if (day <= 14) return 2;
+  return 3;
+}
+
+export function getJourneyStageLabel(day: number, currentPhase?: number) {
+  if (day === 0) {
+    return 'Prep Day';
+  }
+
+  const week = getJourneyWeek(day);
+  const phase = currentPhase ?? calculatePhase(day);
+  return `Week ${week}: ${PHASE_INFO[phase].shortName}`;
+}
+
+export function findShoppingCategoryMatch(categoryName: string): ShoppingCategoryMatch | null {
+    const normalizedCategory = normalizeShoppingValue(categoryName);
+
+    for (const phase of SHOPPING_LIST) {
+        const category = phase.categories.find((entry) => normalizeShoppingValue(entry.category) === normalizedCategory);
+        if (category) {
+            return { phase: phase.phase, category };
+        }
+    }
+
+    return null;
+}
+
+export function findDefaultShoppingItem(params: {
+    name: string;
+    phase?: string;
+    category?: string;
+}): DefaultShoppingItemMatch | null {
+    const normalizedName = normalizeShoppingValue(params.name);
+    const normalizedPhase = params.phase ? normalizeShoppingValue(params.phase) : null;
+    const normalizedCategory = params.category ? normalizeShoppingValue(params.category) : null;
+
+    for (const phase of SHOPPING_LIST) {
+        if (normalizedPhase && normalizeShoppingValue(phase.phase) !== normalizedPhase) {
+            continue;
+        }
+
+        for (const category of phase.categories) {
+            if (normalizedCategory && normalizeShoppingValue(category.category) !== normalizedCategory) {
+                continue;
+            }
+
+            const index = category.items.findIndex((item) => normalizeShoppingValue(item.name) === normalizedName);
+            if (index !== -1) {
+                return {
+                    key: buildShopKey(phase.phase, category.category, index),
+                    phase: phase.phase,
+                    phaseEmoji: phase.emoji,
+                    category: category.category,
+                    categoryEmoji: category.emoji,
+                    guidance: category.guidance,
+                    item: category.items[index],
+                    index,
+                };
+            }
+        }
+    }
+
+    return null;
+}
+
 const FOUNDATION_ITEMS: ChecklistItem[] = [
     { key: 'tongue_scrape', label: 'Tongue scrape (before anything else)', timeOfDay: 'morning', emoji: '👅' },
     { key: 'lemon_salt_water', label: 'Morning elixir of choice', timeOfDay: 'morning', emoji: '🍋' },
@@ -254,7 +351,7 @@ const PHASE_SPECIFIC_ITEMS: Record<number, ChecklistItem[]> = {
         { key: 'no_sugar', label: 'Zero sugar / sweeteners today', timeOfDay: 'anytime', emoji: '🚫' },
         { key: 'herx_check', label: 'Note any die-off changes (mention them in chat)', timeOfDay: 'evening', emoji: '📝' },
         // Shopping reminder for Phase 3 — appears Day 5+
-        { key: 'shop_phase3', label: 'Shop for Phase 3 (Parasite) supplies', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 5 },
+        { key: 'shop_phase3', label: 'Get Week 2 supplies ready', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 5 },
     ],
     3: [
         // Phase 3 = Days 8-14 (Parasites)
@@ -266,7 +363,7 @@ const PHASE_SPECIFIC_ITEMS: Record<number, ChecklistItem[]> = {
         { key: 'moon_cycle', label: 'Afternoon binder support: diatomaceous earth (2hrs away from food/supplements)', timeOfDay: 'afternoon', emoji: '🌕' },
         { key: 'parasite_dinner_support', label: 'Dinner support: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🍽️' },
         // Shopping reminder for Phase 4 — appears Day 12+
-        { key: 'shop_phase4', label: 'Shop for Phase 4 (Heavy Metal) supplies', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 12 },
+        { key: 'shop_phase4', label: 'Get Week 3 supplies ready', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 12 },
     ],
     4: [
         // Phase 4 = Days 15-21 (Heavy Metals)

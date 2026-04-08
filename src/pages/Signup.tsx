@@ -15,7 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/hooks/use-toast";
-import { getDefaultPostAuthDestination, isEmailVerified, withAuthTimeout } from "@/lib/auth-routing";
+import {
+  getDefaultPostAuthDestination,
+  isEmailVerified,
+  mergeRedirectParams,
+  sanitizeRedirectPath,
+  withAuthTimeout,
+} from "@/lib/auth-routing";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
@@ -26,9 +32,14 @@ type Step = "create" | "verify";
 const Signup = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectPath = searchParams.get("redirect");
+  const redirectPath = sanitizeRedirectPath(searchParams.get("redirect"));
   const provider = searchParams.get("provider");
-  const isLegacyActivationFlow = redirectPath === "/payment-success";
+  const paymentId = searchParams.get("payment_id");
+  const redirectDestination = mergeRedirectParams(redirectPath, {
+    provider,
+    payment_id: paymentId,
+  });
+  const isLegacyActivationFlow = redirectPath?.startsWith("/payment-success") ?? false;
 
   const [step, setStep] = useState<Step>("create");
   const [email, setEmail] = useState("");
@@ -79,8 +90,8 @@ const Signup = () => {
         return;
       }
 
-      if (redirectPath) {
-        navigate(redirectPath + (provider ? `?provider=${provider}` : ""), { replace: true });
+      if (redirectDestination) {
+        navigate(redirectDestination, { replace: true });
         return;
       }
 
@@ -114,7 +125,7 @@ const Signup = () => {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, [completeSetup, navigate, provider, redirectPath]);
+  }, [completeSetup, navigate, redirectDestination]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,8 +148,9 @@ const Signup = () => {
 
     const search = new URLSearchParams();
     search.set("verified", "1");
-    if (redirectPath) search.set("redirect", redirectPath);
+    if (redirectDestination) search.set("redirect", redirectDestination);
     if (provider) search.set("provider", provider);
+    if (paymentId) search.set("payment_id", paymentId);
 
     try {
       const { error } = await withAuthTimeout(
@@ -190,8 +202,8 @@ const Signup = () => {
       return;
     }
 
-    if (redirectPath) {
-      navigate(redirectPath + (provider ? `?provider=${provider}` : ""), { replace: true });
+    if (redirectDestination) {
+      navigate(redirectDestination, { replace: true });
       return;
     }
 

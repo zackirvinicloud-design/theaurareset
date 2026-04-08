@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ClipboardList, Loader2, MessageSquare, ShoppingCart, Sparkles } from "lucide-react";
+import { BookOpen, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { getDayLabel } from "@/hooks/useProtocolData";
+import { findShoppingCategoryMatch, getDayLabel, getShoppingPhaseForDay } from "@/hooks/useProtocolData";
 import { useJournalStore } from "@/hooks/useJournalStore";
 import { toast } from "@/hooks/use-toast";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
 import { cn } from "@/lib/utils";
+import type { GutBrainShoppingAction } from "@/lib/gutbrain";
 
 import { TopBar } from "@/components/journal/TopBar";
 import { DailyChecklist } from "@/components/journal/DailyChecklist";
@@ -15,7 +16,7 @@ import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
 import { FullProtocolView } from "@/components/journal/FullProtocolView";
-import { ProtocolReference } from "@/components/journal/ProtocolReference";
+import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
 
 type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'protocol';
 
@@ -33,12 +34,7 @@ const Protocol = () => {
 
   // Pending prompt for auto-sending from checklist tap
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<ActiveView>(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      return 'today';
-    }
-    return 'help';
-  });
+  const [activeView, setActiveView] = useState<ActiveView>('today');
 
   // Journal store (Supabase-backed)
   const store = useJournalStore();
@@ -49,20 +45,6 @@ const Protocol = () => {
       localStorage.setItem('protocol-ref-open', JSON.stringify(refOpen));
     }
   }, [refOpen, isMobile]);
-
-  useEffect(() => {
-    setActiveView((current) => {
-      if (isMobile) {
-        return current;
-      }
-
-      if (current === 'today') {
-        return 'help';
-      }
-
-      return current;
-    });
-  }, [isMobile]);
 
   // Auth + access check
   useEffect(() => {
@@ -162,6 +144,54 @@ const Protocol = () => {
     setActiveView('protocol');
   };
 
+  const handleApplyShoppingActions = async (actions: GutBrainShoppingAction[]) => {
+    const added: string[] = [];
+    const removed: string[] = [];
+
+    for (const action of actions) {
+      const categoryMatch = findShoppingCategoryMatch(action.category);
+      const phase = categoryMatch?.phase ?? getShoppingPhaseForDay(store.progress.currentDay);
+      const category = categoryMatch?.category.category ?? action.category;
+
+      if (action.type === 'add') {
+        const result = await store.addShoppingItem({
+          phase,
+          category,
+          name: action.itemName,
+          quantity: action.quantity,
+          source: 'ai',
+        });
+
+        if (result) {
+          added.push(result.name ?? action.itemName);
+        }
+        continue;
+      }
+
+      const result = await store.removeShoppingItem({
+        phase,
+        category,
+        name: action.itemName,
+      });
+
+      if (result) {
+        removed.push(result.name);
+      }
+    }
+
+    if (added.length || removed.length) {
+      const description = [
+        added.length ? `Added: ${added.join(', ')}` : null,
+        removed.length ? `Removed: ${removed.join(', ')}` : null,
+      ].filter(Boolean).join(' ');
+
+      toast({
+        title: "Shopping list updated",
+        description,
+      });
+    }
+  };
+
   const handleStartTutorial = () => {
     setActiveView(isMobile ? 'today' : 'help');
     if (!isMobile) {
@@ -174,14 +204,14 @@ const Protocol = () => {
   };
 
   const handleClearJournal = async () => {
-    if (!confirm("Clear today's journal entries? This cannot be undone.")) {
+    if (!confirm('Clear the current chat? This cannot be undone.')) {
       return;
     }
 
     await store.clearEntries();
     toast({
       title: "Cleared",
-      description: "Today's entries have been removed.",
+      description: "Current chat messages have been removed.",
     });
   };
 
@@ -240,14 +270,36 @@ const Protocol = () => {
               <ShoppingListView
                 currentDay={store.progress.currentDay}
                 checklist={store.checklist}
+                shoppingOverrides={store.shoppingOverrides}
                 onToggle={store.toggleChecklistItem}
-                onBack={() => setActiveView('today')}
+                onAddItem={store.addShoppingItem}
+                onRemoveItem={store.removeShoppingItem}
+                onBack={() => setActiveView('guide')}
                 onAskAI={handleShoppingAskAI}
               />
             ) : activeView === 'protocol' ? (
               <FullProtocolView
-                onBack={() => setActiveView('today')}
+                onBack={() => setActiveView('guide')}
               />
+            ) : activeView === 'guide' ? (
+              <div className="flex h-full flex-col bg-background">
+                <div className="flex-1 overflow-y-auto px-4 py-4 pb-6">
+                  <div className="space-y-5">
+                    <div className="border-b border-border/50 pb-4">
+                      <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Guide</h2>
+                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                        Open the shopping list, the full protocol guide, or the quick reference you actually need.
+                      </p>
+                    </div>
+                    <MobileProtocolReferenceContent
+                      currentPhase={store.progress.currentPhase}
+                      currentDay={store.progress.currentDay}
+                      onOpenShoppingView={handleOpenShoppingFromGuide}
+                      onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
+                    />
+                  </div>
+                </div>
+              </div>
             ) : activeView === 'today' ? (
               <MobileTodayView
                 currentDay={store.progress.currentDay}
@@ -264,9 +316,15 @@ const Protocol = () => {
                 userId={store.userId}
                 progress={store.progress}
                 entries={store.entries}
+                threads={store.threads}
+                activeThreadId={store.activeThreadId}
+                onStartNewChat={store.startNewChat}
+                onSelectChatThread={store.selectChatThread}
+                onRenameChatThread={store.renameChatThread}
                 onAddEntry={store.addJournalEntry}
-                onUpdateLastEntry={store.updateLastEntry}
-                onFinalizeLastEntry={store.finalizeLastEntry}
+                onUpdateEntry={store.updateJournalEntry}
+                onFinalizeEntry={store.finalizeJournalEntry}
+                onApplyShoppingActions={handleApplyShoppingActions}
                 pendingPrompt={pendingPrompt}
                 onPendingPromptConsumed={() => setPendingPrompt(null)}
                 isMobile={true}
@@ -277,7 +335,10 @@ const Protocol = () => {
             <ShoppingListView
               currentDay={store.progress.currentDay}
               checklist={store.checklist}
+              shoppingOverrides={store.shoppingOverrides}
               onToggle={store.toggleChecklistItem}
+              onAddItem={store.addShoppingItem}
+              onRemoveItem={store.removeShoppingItem}
               onBack={() => setActiveView('help')}
               onAskAI={handleShoppingAskAI}
             />
@@ -290,9 +351,15 @@ const Protocol = () => {
               userId={store.userId}
               progress={store.progress}
               entries={store.entries}
+              threads={store.threads}
+              activeThreadId={store.activeThreadId}
+              onStartNewChat={store.startNewChat}
+              onSelectChatThread={store.selectChatThread}
+              onRenameChatThread={store.renameChatThread}
               onAddEntry={store.addJournalEntry}
-              onUpdateLastEntry={store.updateLastEntry}
-              onFinalizeLastEntry={store.finalizeLastEntry}
+              onUpdateEntry={store.updateJournalEntry}
+              onFinalizeEntry={store.finalizeJournalEntry}
+              onApplyShoppingActions={handleApplyShoppingActions}
               pendingPrompt={pendingPrompt}
               onPendingPromptConsumed={() => setPendingPrompt(null)}
               isMobile={false}
@@ -321,7 +388,7 @@ const Protocol = () => {
               onClick={() => setActiveView('today')}
               className={cn(
                 "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                activeView === 'today' || activeView === 'protocol' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+                activeView === 'today' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
               )}
             >
               <ClipboardList className="w-5 h-5" />
@@ -340,14 +407,16 @@ const Protocol = () => {
             </button>
 
             <button
-              onClick={() => setActiveView('shopping')}
+              onClick={() => setActiveView('guide')}
               className={cn(
                 "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                activeView === 'shopping' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
+                activeView === 'guide' || activeView === 'shopping' || activeView === 'protocol'
+                  ? "bg-primary/10 text-primary"
+                  : "hover:bg-muted/50"
               )}
             >
-              <ShoppingCart className="w-5 h-5" />
-              <span className="text-[10px] font-medium">Shop</span>
+              <BookOpen className="w-5 h-5" />
+              <span className="text-[10px] font-medium">Guide</span>
             </button>
           </div>
         </div>

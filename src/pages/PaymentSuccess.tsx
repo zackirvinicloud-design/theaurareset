@@ -1,62 +1,84 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { rememberPostAuthDestination } from "@/lib/auth-routing";
+import { isEmailVerified, rememberPostAuthDestination } from "@/lib/auth-routing";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(true);
+  const [needsAccount, setNeedsAccount] = useState(false);
+
+  const paymentId = searchParams.get("payment_id");
+  const provider = searchParams.get("provider") || "whop";
+  const currentPath = useMemo(() => {
+    const query = searchParams.toString();
+    return `/payment-success${query ? `?${query}` : ""}`;
+  }, [searchParams]);
 
   useEffect(() => {
-    const checkAndActivate = async () => {
-      // First, show we're processing
+    let cancelled = false;
+
+    const activate = async () => {
       setIsProcessing(true);
-      
-      // Wait a moment to let user see the success message
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const session = await supabase.auth.getSession();
-      
-      if (!session.data.session) {
-        // User not logged in - stop processing and show signup button
+
+      if (!paymentId) {
         setIsProcessing(false);
+        toast({
+          title: "Missing payment reference",
+          description: "This link does not include a verified payment id.",
+          variant: "destructive",
+        });
         return;
       }
 
-      // User is logged in - activate subscription
-      const { data, error } = await supabase.functions.invoke("activate-subscription", {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || !isEmailVerified(session.user)) {
+        if (!cancelled) {
+          setNeedsAccount(true);
+          setIsProcessing(false);
+        }
+        return;
+      }
+
+      const { error } = await supabase.functions.invoke("activate-subscription", {
         body: {
-          payment_id: searchParams.get("payment_id") || "manual",
-          payment_provider: searchParams.get("provider") || "external",
+          payment_id: paymentId,
+          payment_provider: provider,
         },
       });
+
+      if (cancelled) return;
 
       setIsProcessing(false);
 
       if (error) {
         toast({
           title: "Activation failed",
-          description: "Please contact support if this persists.",
+          description: "We could not verify this payment. Please contact support if this persists.",
           variant: "destructive",
         });
-      } else {
-        rememberPostAuthDestination(session.data.session.user.id, "/protocol");
-        toast({
-          title: "Welcome!",
-          description: "Your subscription has been activated successfully.",
-        });
-        // Redirect to protocol after 2 seconds
-        setTimeout(() => navigate("/protocol"), 2000);
+        return;
       }
+
+      rememberPostAuthDestination(session.user.id, "/protocol");
+      toast({
+        title: "Access unlocked",
+        description: "Opening your protocol workspace now.",
+      });
+      navigate("/protocol", { replace: true });
     };
 
-    checkAndActivate();
-  }, [navigate, searchParams]);
+    void activate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate, paymentId, provider]);
 
   return (
     <div className="app-shell-dark min-h-screen flex items-center justify-center p-4">
@@ -70,27 +92,34 @@ const PaymentSuccess = () => {
             )}
           </div>
           <CardTitle className="text-3xl font-bold">
-            {isProcessing ? "Processing Payment..." : "Payment Successful!"}
+            {isProcessing ? "Verifying payment..." : "Payment received"}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">
-            Your payment has been received successfully!
+            {isProcessing
+              ? "Checking your payment with Whop and preparing your access."
+              : "Your purchase is confirmed."}
           </p>
-          {isProcessing ? (
-            <p className="text-muted-foreground">
-              Activating your subscription...
-            </p>
-          ) : (
+
+          {needsAccount && (
             <>
               <p className="text-muted-foreground font-medium">
-                Create and verify your account to complete activation
+                Create or verify your account to attach this payment to your workspace.
               </p>
-              <Button onClick={() => {
-                const provider = searchParams.get("provider") || "whop";
-                navigate(`/signup?redirect=/payment-success&provider=${provider}`);
-              }} className="w-full">
-                Create Account And Continue
+              <Button
+                onClick={() => {
+                  const next = new URLSearchParams();
+                  next.set("redirect", currentPath);
+                  next.set("provider", provider);
+                  if (paymentId) {
+                    next.set("payment_id", paymentId);
+                  }
+                  navigate(`/signup?${next.toString()}`);
+                }}
+                className="w-full"
+              >
+                Continue to account setup
               </Button>
             </>
           )}

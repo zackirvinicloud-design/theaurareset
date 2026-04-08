@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight, Plus, X } from 'lucide-react';
 import './Landing.css';
-import { Plus, X, ArrowRight } from 'lucide-react';
-
-/* ═══════════════════════════════════════════════════
-   DATA
-   ═══════════════════════════════════════════════════ */
 
 const CYCLING_WORDS = [
   'GUESSING',
@@ -90,12 +86,9 @@ const FAQS = [
   },
 ];
 
-/* ═══════════════════════════════════════════════════
-   SUB-COMPONENTS
-   ═══════════════════════════════════════════════════ */
-
 const FaqItem = ({ q, a }: { q: string; a: string }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="faq-item">
       <button
@@ -125,10 +118,6 @@ const FaqItem = ({ q, a }: { q: string; a: string }) => {
   );
 };
 
-/* ═══════════════════════════════════════════════════
-   LANDING
-   ═══════════════════════════════════════════════════ */
-
 const Landing = () => {
   const navigate = useNavigate();
   const [activeWeek, setActiveWeek] = useState(0);
@@ -141,22 +130,20 @@ const Landing = () => {
     const handleScroll = () => {
       setLogoVisible(window.scrollY < window.innerHeight * 0.6);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Typewriter cycling effect
   useEffect(() => {
     const currentFull = CYCLING_WORDS[wordIndex.current];
 
     if (!isDeleting && displayWord === currentFull) {
-      // Pause before deleting
       const pause = setTimeout(() => setIsDeleting(true), 2000);
       return () => clearTimeout(pause);
     }
 
     if (isDeleting && displayWord === '') {
-      // Move to the next word
       wordIndex.current = (wordIndex.current + 1) % CYCLING_WORDS.length;
       setIsDeleting(false);
       return;
@@ -179,7 +166,6 @@ const Landing = () => {
 
   return (
     <div className="open-landing">
-      {/* ─── Fixed Logo ─── */}
       <header className={`open-header ${!logoVisible ? 'open-header--hidden' : ''}`}>
         <div className="open-logo">
           <span>T</span>
@@ -206,9 +192,6 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* ═════════════════════════════════════════════
-         SECTION 1 — HERO (Full-bleed cinematic)
-         ═════════════════════════════════════════════ */}
       <section className="open-hero">
         <div className="open-hero__bg">
           <img
@@ -261,18 +244,13 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ═════════════════════════════════════════════
-         SECTION 2 — 21-DAY PROGRAM (Tabs + Image)
-         ═════════════════════════════════════════════ */}
       <section className="open-program">
         <div className="open-program__inner">
-          {/* Subtle header row */}
           <div className="open-program__header-row">
             <span className="open-program__heading">21-DAY PROGRAM</span>
             <span className="open-program__heading-right">GUT RESET • PROTOCOL</span>
           </div>
 
-          {/* Image first */}
           <div className="open-program__image-area">
             <AnimatePresence mode="wait">
               <motion.img
@@ -288,13 +266,12 @@ const Landing = () => {
             </AnimatePresence>
           </div>
 
-          {/* Tabs */}
           <div className="open-program__tabs">
-            {WEEKS.map((week, i) => (
+            {WEEKS.map((week, index) => (
               <button
                 key={week.id}
-                onClick={() => setActiveWeek(i)}
-                className={`open-program__tab ${activeWeek === i ? 'open-program__tab--active' : ''}`}
+                onClick={() => setActiveWeek(index)}
+                className={`open-program__tab ${activeWeek === index ? 'open-program__tab--active' : ''}`}
               >
                 <span className="open-program__tab-label">{week.label}</span>
                 <span className="open-program__tab-name">{week.name}</span>
@@ -302,7 +279,6 @@ const Landing = () => {
             ))}
           </div>
 
-          {/* Dynamic Content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeWeek}
@@ -317,14 +293,14 @@ const Landing = () => {
               <div className="open-program__meta">
                 <div className="open-program__meta-group">
                   <span className="open-program__meta-label">GOAL</span>
-                  {currentWeek.goal.map((g) => (
-                    <span key={g} className="open-program__meta-value">{g}</span>
+                  {currentWeek.goal.map((goal) => (
+                    <span key={goal} className="open-program__meta-value">{goal}</span>
                   ))}
                 </div>
                 <div className="open-program__meta-group">
                   <span className="open-program__meta-label">WHAT YOU GET</span>
-                  {currentWeek.techniques.map((t) => (
-                    <span key={t} className="open-program__meta-value">{t}</span>
+                  {currentWeek.techniques.map((technique) => (
+                    <span key={technique} className="open-program__meta-value">{technique}</span>
                   ))}
                 </div>
               </div>
@@ -333,9 +309,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ═════════════════════════════════════════════
-         SECTION 3 — YOUR DAILY PRACTICE
-         ═════════════════════════════════════════════ */}
       <section className="open-daily">
         <div className="open-daily__bg">
           <img
@@ -348,7 +321,7 @@ const Landing = () => {
         <div className="open-daily__content">
           <h2 className="open-daily__heading">YOUR DAILY PLAN</h2>
           <p className="open-daily__subheading">
-            Wake up. Open the journal. Follow today's checklist. Supplements, meals, timing — all organized so you never have to think about what comes next.
+            Wake up. Open the journal. Follow today&apos;s checklist. Supplements, meals, timing — all organized so you never have to think about what comes next.
           </p>
         </div>
         <div className="open-daily__footer">
@@ -367,9 +340,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ═════════════════════════════════════════════
-         SECTION 4 — FAQ
-         ═════════════════════════════════════════════ */}
       <section className="open-faq">
         <div className="open-faq__inner">
           <div className="open-faq__left">
@@ -383,9 +353,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ═════════════════════════════════════════════
-         STICKY CTA
-         ═════════════════════════════════════════════ */}
       <div className="open-sticky-cta">
         <button
           className="open-sticky-cta__button"

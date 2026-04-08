@@ -1,10 +1,13 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { getDayLabel, getPhaseInfo } from '@/hooks/useProtocolData';
-import { BookOpen, ChevronLeft, Info, Lightbulb, Pill, ShoppingCart, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { BookOpen, ChevronDown, ChevronLeft, ShoppingCart, X } from 'lucide-react';
+import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
+import { getNormalToday } from '@/hooks/normalToday';
+import { ProtocolRoadmap } from '@/components/journal/ProtocolRoadmap';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { getCoachDailyNote } from '@/lib/coach-daily-note';
 
 interface ProtocolReferenceProps {
     currentPhase: number;
@@ -15,61 +18,20 @@ interface ProtocolReferenceProps {
     onToggle: () => void;
 }
 
-type GuideTab = 'start' | 'today' | 'phases' | 'tips';
+const getGuideQuoteSeed = (currentDay: number, date = new Date()) => {
+    if (typeof window === 'undefined') {
+        return 0;
+    }
 
-const PHASE_ROADMAP = [
-    {
-        phase: 1 as const,
-        days: 'Prep Day',
-        objective: 'Get the kitchen, supplements, and headspace ready before Day 1 starts.',
-        highlights: [
-            'Finish shopping and remove obvious off-plan foods.',
-            'Organize supplements and prep your first few meals.',
-            'Set a simple reason for why you are doing this.',
-        ],
-        nextMove: 'Buy Foundation and Fungal supplies before Day 1.',
-    },
-    {
-        phase: 2 as const,
-        days: 'Days 1-7',
-        objective: 'Run the base daily rhythm and layer in fungal support without adding chaos.',
-        highlights: [
-            'Keep meals compliant and sugar out.',
-            'Take antifungal supports with the right meal timing.',
-            'Notice die-off changes and mention them in chat instead of guessing.',
-        ],
-        nextMove: 'By around Day 5, start buying Phase 3 supplies.',
-    },
-    {
-        phase: 3 as const,
-        days: 'Days 8-14',
-        objective: 'Keep the same base routine while parasite-focused supports come in.',
-        highlights: [
-            'Do not drop the foundation habits just because the phase changed.',
-            'Expect stronger detox signals and keep binders consistent.',
-            'Treat this as steady execution, not a reason to improvise.',
-        ],
-        nextMove: 'By around Day 12, start buying Phase 4 supplies.',
-    },
-    {
-        phase: 4 as const,
-        days: 'Days 15-21',
-        objective: 'Finish the reset with heavy metal support and a calmer, steadier pace.',
-        highlights: [
-            'Go slower if symptoms feel too intense.',
-            'Keep hydration, sleep, and elimination support high.',
-            'Finish the protocol cleanly instead of adding extra experiments.',
-        ],
-        nextMove: 'Your job here is to finish strong and notice what changed by Day 21.',
-    },
-] as const;
+    const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    const storageKey = `guide-quote-seed:${dateKey}:day-${currentDay}`;
+    const rawSeed = window.localStorage.getItem(storageKey);
+    const parsedSeed = rawSeed ? Number.parseInt(rawSeed, 10) : 0;
+    const safeSeed = Number.isFinite(parsedSeed) && parsedSeed >= 0 ? parsedSeed : 0;
 
-const FOUNDATION_ANCHORS = [
-    'Start the day with the morning routine before improvising.',
-    'Keep meals compliant and hydration consistent.',
-    'Take binders away from food and other supplements.',
-    'Protect sleep so the protocol stays doable tomorrow too.',
-];
+    window.localStorage.setItem(storageKey, String(safeSeed + 1));
+    return safeSeed;
+};
 
 export const ProtocolReference = ({
     currentPhase,
@@ -79,15 +41,6 @@ export const ProtocolReference = ({
     isOpen,
     onToggle,
 }: ProtocolReferenceProps) => {
-    const [activeTab, setActiveTab] = useState<GuideTab>('start');
-
-    const tabs = [
-        { key: 'start', label: 'Start', icon: Info },
-        { key: 'today', label: 'Today', icon: Pill },
-        { key: 'phases', label: 'Plan', icon: BookOpen },
-        { key: 'tips', label: 'Tips', icon: Lightbulb },
-    ] as const;
-
     return (
         <>
             {!isOpen && (
@@ -127,32 +80,13 @@ export const ProtocolReference = ({
                             </Button>
                         </div>
 
-                        <div className="flex border-b border-border/50">
-                            {tabs.map(({ key, label, icon: Icon }) => (
-                                <button
-                                    key={key}
-                                    onClick={() => setActiveTab(key)}
-                                    className={cn(
-                                        'flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors border-b-2',
-                                        activeTab === key
-                                            ? 'border-primary text-primary'
-                                            : 'border-transparent text-muted-foreground hover:text-foreground'
-                                    )}
-                                >
-                                    <Icon className="w-3.5 h-3.5" />
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-
                         <ScrollArea className="flex-1">
                             <div className="p-4">
-                                <GuideSections
+                                <GuideContent
                                     currentDay={currentDay}
                                     currentPhase={currentPhase}
                                     onOpenShoppingView={onOpenShoppingView}
                                     onOpenFullProtocolView={onOpenFullProtocolView}
-                                    activeTab={activeTab}
                                 />
                             </div>
                         </ScrollArea>
@@ -175,283 +109,226 @@ export function MobileProtocolReferenceContent({
     onOpenFullProtocolView: () => void;
 }) {
     return (
-        <div className="space-y-6 px-1">
-            <StartTab
-                currentDay={currentDay}
-                onOpenShoppingView={onOpenShoppingView}
-                onOpenFullProtocolView={onOpenFullProtocolView}
-                showActionCards={false}
-            />
-            <TodayTab currentDay={currentDay} currentPhase={currentPhase} />
-            <PlanTab currentPhase={currentPhase} />
-            <TipsTab currentPhase={currentPhase} />
-        </div>
+        <GuideContent
+            currentPhase={currentPhase}
+            currentDay={currentDay}
+            onOpenShoppingView={onOpenShoppingView}
+            onOpenFullProtocolView={onOpenFullProtocolView}
+        />
     );
 }
 
-function GuideSections({
-    currentDay,
+function GuideContent({
     currentPhase,
-    onOpenShoppingView,
-    onOpenFullProtocolView,
-    activeTab,
-}: {
-    currentDay: number;
-    currentPhase: number;
-    onOpenShoppingView: () => void;
-    onOpenFullProtocolView: () => void;
-    activeTab: GuideTab;
-}) {
-    return (
-        <>
-            {activeTab === 'start' && (
-                <StartTab
-                    currentDay={currentDay}
-                    onOpenShoppingView={onOpenShoppingView}
-                    onOpenFullProtocolView={onOpenFullProtocolView}
-                    showActionCards={true}
-                />
-            )}
-            {activeTab === 'today' && <TodayTab currentDay={currentDay} currentPhase={currentPhase} />}
-            {activeTab === 'phases' && <PlanTab currentPhase={currentPhase} />}
-            {activeTab === 'tips' && <TipsTab currentPhase={currentPhase} />}
-        </>
-    );
-}
-
-function StartTab({
     currentDay,
     onOpenShoppingView,
     onOpenFullProtocolView,
-    showActionCards,
 }: {
+    currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenFullProtocolView: () => void;
-    showActionCards: boolean;
+}) {
+    const [isNormalTodayOpen, setIsNormalTodayOpen] = useState(false);
+    const [quoteSeed, setQuoteSeed] = useState(() => getGuideQuoteSeed(currentDay));
+    const quoteSeedDayRef = useRef(currentDay);
+    const normalToday = getNormalToday(currentDay);
+    const stageLabel = getJourneyStageLabel(currentDay, currentPhase);
+    const dailyNote = getCoachDailyNote(currentDay, new Date(), quoteSeed);
+
+    useEffect(() => {
+        if (quoteSeedDayRef.current === currentDay) {
+            return;
+        }
+
+        quoteSeedDayRef.current = currentDay;
+        setQuoteSeed(getGuideQuoteSeed(currentDay));
+    }, [currentDay]);
+
+    return (
+        <div className="space-y-3.5">
+            <GuideQuoteCard
+                dateLabel={dailyNote.dateLabel}
+                quote={dailyNote.quote}
+                author={dailyNote.author}
+                support={dailyNote.support}
+            />
+
+            <PrimaryGuideCard
+                title="Shopping List"
+                description="Edit the list, check things off, and buy only what fits your version of the protocol."
+                actionLabel="Open shopping list"
+                icon={<ShoppingCart className="h-3.5 w-3.5 text-muted-foreground" />}
+                onClick={onOpenShoppingView}
+            />
+
+            <PrimaryGuideCard
+                title="Full Protocol"
+                description="Open the full dark-mode guide when you want the complete protocol reference in one place."
+                actionLabel="Open full guide"
+                icon={<BookOpen className="h-3.5 w-3.5 text-muted-foreground" />}
+                onClick={onOpenFullProtocolView}
+            />
+
+            <ProtocolRoadmap
+                currentDay={currentDay}
+                currentPhase={currentPhase}
+            />
+
+            <GuideDisclosureCard
+                title="What's normal today"
+                description={`${getDayLabel(currentDay)} · ${stageLabel}`}
+                isOpen={isNormalTodayOpen}
+                onToggle={() => setIsNormalTodayOpen((value) => !value)}
+            >
+                <p className="text-sm font-medium text-foreground">{normalToday.headline}</p>
+                <div className="space-y-3">
+                    <GuideBulletSection
+                        title="Expected"
+                        items={normalToday.normal}
+                    />
+                    <GuideBulletSection
+                        title="Red flags"
+                        items={normalToday.redFlags}
+                        tone="warning"
+                    />
+                    <GuideBulletSection
+                        title="Safe to ignore"
+                        items={normalToday.ignore}
+                    />
+                </div>
+            </GuideDisclosureCard>
+        </div>
+    );
+}
+
+function PrimaryGuideCard({
+    title,
+    description,
+    actionLabel,
+    icon,
+    onClick,
+}: {
+    title: string;
+    description: string;
+    actionLabel: string;
+    icon: ReactNode;
+    onClick: () => void;
 }) {
     return (
-        <div className="space-y-5">
-            {showActionCards && (
-                <InfoCard title="Need the shopping list?">
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                        Use this when you want the full protocol shopping list in the main workspace, with checkoffs and later-phase items kept visible.
-                    </p>
-                    <Button
-                        variant="outline"
-                        className="w-full justify-between"
-                        onClick={onOpenShoppingView}
-                        data-tour="shopping-trigger"
-                    >
-                        Open shopping list
-                        <ShoppingCart className="w-4 h-4" />
-                    </Button>
-                </InfoCard>
-            )}
-
-            {showActionCards && (
-                <InfoCard title="Need the original written protocol?">
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                        Use the app for execution. Open the full protocol here when you want to read the original written source in the main workspace.
-                    </p>
-                    <Button
-                        variant="outline"
-                        className="w-full justify-between"
-                        onClick={onOpenFullProtocolView}
-                        data-tour="protocol-trigger"
-                    >
-                        Open full protocol
-                        <BookOpen className="w-4 h-4" />
-                    </Button>
-                </InfoCard>
-            )}
-
-            <div className="p-3 rounded-lg border border-primary/20 bg-primary/5">
-                <p className="text-xs font-semibold text-primary mb-1">Right now</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                    {currentDay === 0
-                        ? 'You are on Prep Day. Focus on setup, shopping, and making Day 1 feel easy.'
-                        : `You are on ${getDayLabel(currentDay)}. Finish today's rhythm before you spend energy reading ahead.`}
-                </p>
-            </div>
+        <div className="rounded-xl border border-border/60 bg-card/60 px-3 py-3">
+            <p className="text-sm font-semibold text-foreground">{title}</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+            <Button
+                variant="outline"
+                size="sm"
+                className="mt-2.5 h-8 w-full justify-between rounded-lg border-border/60 bg-background/30 px-2.5 text-xs font-medium hover:bg-muted/25"
+                onClick={onClick}
+            >
+                {actionLabel}
+                {icon}
+            </Button>
         </div>
     );
 }
 
-function TodayTab({ currentDay, currentPhase }: { currentDay: number; currentPhase: number }) {
-    const phase = getPhaseInfo(currentPhase);
-    const todayBrief = getTodayBrief(currentDay, currentPhase);
-
+function GuideQuoteCard({
+    dateLabel,
+    quote,
+    author,
+    support,
+}: {
+    dateLabel: string;
+    quote: string;
+    author: string;
+    support: string;
+}) {
     return (
-        <div className="space-y-5">
-            <div className={cn('p-3 rounded-lg border', phase.bgColor, phase.borderColor)}>
-                <p className={cn('text-sm font-semibold mb-1', phase.color)}>
-                    {getDayLabel(currentDay)} · Phase {currentPhase}
+        <section className="relative overflow-hidden rounded-xl border border-border/60 bg-card/70 px-3 py-3 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.14),transparent_58%)]" />
+            <div className="relative">
+                <div className="flex items-center justify-between gap-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85">
+                        Daily quote
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">{dateLabel}</p>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-foreground">
+                    "{quote}"
                 </p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                    {getTodayFocus(currentDay, currentPhase)}
+                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/85">
+                    {author}
+                </p>
+                <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+                    {support}
                 </p>
             </div>
+        </section>
+    );
+}
 
-            <InfoCard title="What today is really about">
-                <div className="space-y-3">
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                        The checklist is your exact plan. This section is here to tell you how to approach the day so it feels less random.
-                    </p>
-                    <div className="space-y-2">
-                        {todayBrief.focus.map((item) => (
-                            <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                                <span className="text-primary mt-0.5">•</span>
-                                <span>{item}</span>
-                            </div>
-                        ))}
+function GuideDisclosureCard({
+    title,
+    description,
+    isOpen,
+    onToggle,
+    children,
+}: {
+    title: string;
+    description: string;
+    isOpen: boolean;
+    onToggle: () => void;
+    children: ReactNode;
+}) {
+    return (
+        <section className="rounded-xl border border-border/60 bg-card/55">
+            <button
+                type="button"
+                onClick={onToggle}
+                className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted/20"
+            >
+                <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-[11px] leading-5 text-muted-foreground">{description}</p>
+                </div>
+                <ChevronDown
+                    className={cn(
+                        'h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform',
+                        isOpen && 'rotate-180',
+                    )}
+                />
+            </button>
+            {isOpen && (
+                <div className="space-y-3 px-3 pb-3 pt-0.5">
+                    {children}
+                </div>
+            )}
+        </section>
+    );
+}
+
+function GuideBulletSection({
+    title,
+    items,
+    tone = 'default',
+}: {
+    title: string;
+    items: string[];
+    tone?: 'default' | 'warning';
+}) {
+    return (
+        <div className="space-y-1.5">
+            <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${tone === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
+                {title}
+            </p>
+            <div className="space-y-1.5">
+                {items.map((item) => (
+                    <div key={item} className="flex items-start gap-2 text-xs leading-5 text-muted-foreground">
+                        <span className={`mt-1.5 h-1 w-1 flex-shrink-0 rounded-full ${tone === 'warning' ? 'bg-amber-500' : 'bg-primary/60'}`} />
+                        <span>{item}</span>
                     </div>
-                </div>
-            </InfoCard>
-
-            <InfoCard title="Watch for">
-                <div className="space-y-2">
-                    {todayBrief.watchFor.map((item) => (
-                        <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                            <span className="text-primary mt-0.5">•</span>
-                            <span>{item}</span>
-                        </div>
-                    ))}
-                </div>
-            </InfoCard>
-
-            <InfoCard title="Keep it simple">
-                <div className="space-y-2">
-                    {todayBrief.keepSimple.map((item) => (
-                        <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                            <span className="text-primary mt-0.5">•</span>
-                            <span>{item}</span>
-                        </div>
-                    ))}
-                </div>
-            </InfoCard>
-        </div>
-    );
-}
-
-function PlanTab({ currentPhase }: { currentPhase: number }) {
-    const nextPhase = PHASE_ROADMAP.find((item) => item.phase === currentPhase + 1);
-
-    return (
-        <div className="space-y-5">
-            <InfoCard title="Where you are in the reset">
-                <div className="space-y-2 text-xs text-muted-foreground leading-relaxed">
-                    <p>
-                        <span className="font-semibold text-foreground">Current:</span>{' '}
-                        {PHASE_ROADMAP.find((item) => item.phase === currentPhase)?.days} · {getPhaseInfo(currentPhase).name}
-                    </p>
-                    <p>
-                        <span className="font-semibold text-foreground">Next:</span>{' '}
-                        {nextPhase ? `${nextPhase.days} · ${getPhaseInfo(nextPhase.phase).name}` : 'Finish and review what changed by Day 21.'}
-                    </p>
-                </div>
-            </InfoCard>
-
-            <InfoCard title="What stays steady">
-                <div className="space-y-2">
-                    {FOUNDATION_ANCHORS.map((item) => (
-                        <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                            <span className="text-primary mt-0.5">•</span>
-                            <span>{item}</span>
-                        </div>
-                    ))}
-                </div>
-            </InfoCard>
-
-            <div className="space-y-3">
-                {PHASE_ROADMAP.map((item) => {
-                    const isCurrent = item.phase === currentPhase;
-                    const isComplete = item.phase < currentPhase;
-                    const isNext = item.phase === currentPhase + 1;
-                    const phase = getPhaseInfo(item.phase);
-
-                    return (
-                        <div
-                            key={item.phase}
-                            className={cn(
-                                'p-3 rounded-lg border transition-all',
-                                isCurrent
-                                    ? cn(phase.bgColor, phase.borderColor, 'shadow-sm')
-                                    : 'border-border/50 bg-background'
-                            )}
-                        >
-                            <div className="flex items-center justify-between gap-2 mb-1">
-                                <p className={cn('text-sm font-semibold', isCurrent ? phase.color : 'text-foreground')}>
-                                    Phase {item.phase}: {phase.shortName}
-                                </p>
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                                    {isCurrent ? 'Current' : isNext ? 'Next' : isComplete ? 'Done' : item.days}
-                                </span>
-                            </div>
-                            <p className="text-[11px] text-muted-foreground mb-2">{item.days}</p>
-                            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                                {item.objective}
-                            </p>
-                            <div className="space-y-1.5 mb-3">
-                                {item.highlights.map((highlight) => (
-                                    <div key={highlight} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                                        <span className="text-primary mt-0.5">•</span>
-                                        <span>{highlight}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="p-2 rounded-md bg-muted/50 border border-border/40">
-                                <p className="text-[11px] font-medium text-foreground mb-0.5">Planning cue</p>
-                                <p className="text-[11px] text-muted-foreground leading-relaxed">{item.nextMove}</p>
-                            </div>
-                        </div>
-                    );
-                })}
+                ))}
             </div>
-        </div>
-    );
-}
-
-function TipsTab({ currentPhase }: { currentPhase: number }) {
-    const phase = getPhaseInfo(currentPhase);
-
-    return (
-        <div className="space-y-5">
-            <InfoCard title={`Phase ${currentPhase} tips`}>
-                <div className="space-y-2">
-                    {phase.tips.map((tip) => (
-                        <div key={tip} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                            <Lightbulb className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
-                            <span>{tip}</span>
-                        </div>
-                    ))}
-                </div>
-            </InfoCard>
-
-            <InfoCard title="General guidelines">
-                <div className="space-y-2">
-                    {[
-                        'Drink at least 64oz of water daily. More if detox symptoms climb.',
-                        'Avoid sugar, gluten, dairy, and processed foods for the full reset.',
-                        'Go to bed on time. A late night can make the next day feel much harder.',
-                        'If symptoms spike, simplify. Stay on plan before adding more variables.',
-                    ].map((tip) => (
-                        <div key={tip} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                            <span className="text-primary mt-0.5">✓</span>
-                            <span>{tip}</span>
-                        </div>
-                    ))}
-                </div>
-            </InfoCard>
-        </div>
-    );
-}
-
-function InfoCard({ title, children }: { title: string; children: ReactNode }) {
-    return (
-        <div className="p-3 rounded-lg border border-border/60 bg-muted/30">
-            <h4 className="text-sm font-semibold mb-2">{title}</h4>
-            {children}
         </div>
     );
 }

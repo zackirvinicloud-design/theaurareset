@@ -59,6 +59,13 @@ export interface GutBrainClarifier {
   options: string[];
 }
 
+export interface GutBrainShoppingAction {
+  type: 'add' | 'remove';
+  category: string;
+  itemName: string;
+  quantity?: string;
+}
+
 export const EMPTY_GUT_BRAIN_PROFILE: GutBrainProfile = {
   assistantName: GUT_BRAIN_AI_NAME,
   preferredName: null,
@@ -166,7 +173,7 @@ const getProtocolStagePrompts = (
     pushStagePrompt(profile?.whyNow
       ? {
         label: 'How do I stay anchored to my why?',
-        prompt: `Tie today\'s prep back to why I am doing this: ${profile.whyNow}`,
+        prompt: `Tie today's prep back to why I am doing this: ${profile.whyNow}`,
       }
       : {
         label: 'How do I make this feel worth it?',
@@ -225,7 +232,7 @@ const getProtocolStagePrompts = (
     });
   } else if (progress.currentPhase === 2) {
     pushStagePrompt({
-      label: 'What are today\'s non-negotiables?',
+      label: "What are today's non-negotiables?",
       prompt: 'What are my three non-negotiables today in this phase?',
     });
     pushStagePrompt({
@@ -300,7 +307,7 @@ const getProtocolStagePrompts = (
   if (profile?.whyNow && progress.currentDay > 0) {
     pushPersonalizedPrompt({
       label: 'How do I stay connected to my why?',
-      prompt: `Reconnect today\'s plan to why I started this: ${profile.whyNow}`,
+      prompt: `Reconnect today's plan to why I started this: ${profile.whyNow}`,
     });
   }
 
@@ -334,12 +341,39 @@ export const getGutBrainStarterState = (
 
   return {
     eyebrow: `Day ${progress.currentDay}`,
-    title: `Let\'s make ${progress.currentDay === 1 ? 'Day 1' : 'today'} feel simple.`,
+    title: `Let's make ${progress.currentDay === 1 ? 'Day 1' : 'today'} feel simple.`,
     description: snapshot?.summary
       ? snapshot.summary
       : 'Start with the clearest next move, then let GutBrain adapt as it learns how you work.',
     prompts: basePrompts.slice(0, promptCount),
   };
+};
+
+export const parseGutBrainShoppingActions = (content: string): GutBrainShoppingAction[] => {
+  const matches = [...content.matchAll(/\[SHOP_ACTION\]([\s\S]*?)\[\/SHOP_ACTION\]/gi)];
+
+  return matches.flatMap((match) => {
+    const parts = match[1]
+      .split(':')
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    if (parts.length < 3) {
+      return [];
+    }
+
+    const [rawType, category, itemName, quantity] = parts;
+    if ((rawType !== 'add' && rawType !== 'remove') || !category || !itemName) {
+      return [];
+    }
+
+    return [{
+      type: rawType,
+      category,
+      itemName,
+      quantity,
+    }];
+  });
 };
 
 export const parseGutBrainClarifier = (content: string): GutBrainClarifier | null => {
@@ -437,9 +471,11 @@ export const buildChatSystemPrompt = (
   context: string,
   profile?: GutBrainProfile | null,
   snapshot?: GutBrainSnapshot | null,
+  symptoms?: string[],
 ) => {
   const memoryContext = buildGutBrainMemoryContext(profile, snapshot);
   const userName = profile?.preferredName || 'friend';
+  const symptomText = symptoms?.length ? `\nCURRENT SYMPTOMS TODAY: ${symptoms.join(', ')}` : '';
 
   return `You are Coach, the personal gut health guide inside The Gut Brain Journal app.
 

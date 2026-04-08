@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { ExternalLink, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
-
-const OFFER_PRICE = "$79";
+import { getWhopCheckoutUrl, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_PRIMARY_CTA } from "@/lib/product";
 
 const PAYWALL = {
-  headline: "Your gut protocol workspace is ready.",
-  description: "You already know the protocol is hard to execute cleanly. This is the one-time purchase that keeps the daily structure intact.",
+  headline: "Your protocol workspace is ready.",
+  description: "You already know the reset is hard to execute cleanly. This one-time purchase keeps the daily structure, shopping, and coaching in one place.",
   bullets: [
     "Day-by-day protocol guidance that answers what matters today, not generic wellness advice.",
     "GutBrain coaching tied to your protocol day, your friction, and your real routine.",
@@ -60,6 +60,20 @@ const PaymentRequired = () => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
+  };
+
+  const handleCheckout = () => {
+    const checkoutUrl = getWhopCheckoutUrl();
+    if (!checkoutUrl) {
+      toast({
+        title: "Checkout is not configured yet",
+        description: "Add `VITE_WHOP_CHECKOUT_URL` before sending traffic to this page.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    window.open(checkoutUrl, "_blank", "noopener,noreferrer");
   };
 
   if (isLoading) {
@@ -114,12 +128,12 @@ const PaymentRequired = () => {
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
               Founder pricing
             </p>
-            <p className="mt-4 text-4xl font-bold text-primary">{OFFER_PRICE}</p>
+            <p className="mt-4 text-4xl font-bold text-primary">{PRODUCT_PRICE}</p>
             <p className="mt-2 text-base font-semibold text-foreground">
               One payment. Lifetime access. No subscription.
             </p>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              This is not another pile of wellness theory. It is the full protocol workspace built to get you through the cleanse without unnecessary confusion.
+              {PRODUCT_NAME} is not another pile of wellness theory. It is the execution layer built to get you through the reset without unnecessary confusion.
             </p>
           </div>
 
@@ -136,11 +150,9 @@ const PaymentRequired = () => {
             <Button
               size="lg"
               className="w-full text-base sm:text-lg py-6 sm:py-8 h-auto font-bold"
-              onClick={() => {
-                window.open("YOUR_PAYMENT_LINK_HERE", "_blank");
-              }}
+              onClick={handleCheckout}
             >
-              Unlock Full Access
+              {PRODUCT_PRIMARY_CTA}
               <ExternalLink className="ml-2 w-5 h-5" />
             </Button>
             <p className="text-xs sm:text-sm text-muted-foreground mt-4">

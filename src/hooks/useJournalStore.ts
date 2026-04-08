@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { calculatePhase } from './useProtocolData';
+import type { Tables } from '@/integrations/supabase/types';
+import { buildShopKey, calculatePhase, findDefaultShoppingItem } from './useProtocolData';
 
 // ── Types ──────────────────────────────────────────────
 
@@ -14,9 +15,59 @@ export interface UserProgress {
 
 export interface JournalEntry {
     id: string;
+    threadId: string;
     dayNumber: number;
     role: 'user' | 'assistant';
     content: string;
+    createdAt: string;
+}
+
+export interface ChatThread {
+    id: string;
+    title: string;
+    isArchived: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+type DailySymptomsRow = Tables<'daily_symptoms'>;
+type DailyCheckinRow = Tables<'daily_checkins'>;
+type ShoppingListItemRow = Tables<'shopping_list_items'>;
+type ChatThreadRow = Tables<'chat_threads'>;
+
+export type ShoppingListItemSource = 'protocol' | 'manual' | 'ai';
+
+export interface ShoppingListOverride {
+    id: string;
+    key: string;
+    phase: string;
+    category: string;
+    name: string;
+    quantity?: string;
+    notes?: string;
+    optional?: string;
+    source: ShoppingListItemSource;
+    isHidden: boolean;
+    createdAt: string;
+}
+
+export interface ShoppingListItemInput {
+    phase: string;
+    category: string;
+    name: string;
+    quantity?: string;
+    notes?: string;
+    optional?: string;
+    source?: Extract<ShoppingListItemSource, 'manual' | 'ai'>;
+}
+
+export interface DailyCheckIn {
+    id: string;
+    dayNumber: number;
+    energy?: number;
+    adherence?: 'nailed' | 'mostly' | 'rough';
+    mood?: 'great' | 'okay' | 'tough';
+    note?: string;
     createdAt: string;
 }
 
@@ -45,8 +96,66 @@ const DEFAULT_PROGRESS: UserProgress = {
 
 const LS_PROGRESS_KEY = 'gbj-progress';
 const LS_ENTRIES_KEY = 'gbj-journal-entries';
+const LS_THREADS_KEY = 'gbj-chat-threads';
+const LS_ACTIVE_THREAD_KEY = 'gbj-active-chat-thread';
 const LS_CHECKLIST_KEY = 'gbj-checklist';
 const LS_CUSTOM_ITEMS_KEY = 'gbj-custom-items';
+const LS_SYMPTOMS_KEY = 'gbj-symptoms';
+const LS_CHECKIN_KEY = 'gbj-checkin';
+const LS_SHOPPING_OVERRIDES_KEY = 'gbj-shopping-overrides';
+
+function mapJournalEntryRow(row: Tables<'journal_entries'>): JournalEntry {
+    return {
+        id: row.id,
+        threadId: row.thread_id,
+        dayNumber: row.day_number,
+        role: row.role as 'user' | 'assistant',
+        content: row.content,
+        createdAt: row.created_at,
+    };
+}
+
+function mapChatThreadRow(row: ChatThreadRow): ChatThread {
+    return {
+        id: row.id,
+        title: row.title,
+        isArchived: row.is_archived,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+    };
+}
+
+function mapDailyCheckInRow(row: DailyCheckinRow): DailyCheckIn {
+    return {
+        id: row.id,
+        dayNumber: row.day_number,
+        energy: row.energy ?? undefined,
+        adherence: row.adherence as DailyCheckIn['adherence'],
+        mood: row.mood as DailyCheckIn['mood'],
+        note: row.note ?? undefined,
+        createdAt: row.created_at || new Date().toISOString(),
+    };
+}
+
+function mapShoppingOverrideRow(row: ShoppingListItemRow): ShoppingListOverride {
+    return {
+        id: row.id,
+        key: row.item_key,
+        phase: row.phase_name,
+        category: row.category_name,
+        name: row.item_name,
+        quantity: row.quantity ?? undefined,
+        notes: row.notes ?? undefined,
+        optional: row.optional ?? undefined,
+        source: row.source as ShoppingListItemSource,
+        isHidden: row.is_hidden,
+        createdAt: row.created_at,
+    };
+}
+
+function normalizeShoppingMatch(value: string) {
+    return value.trim().toLowerCase();
+}
 
 function lsGet<T>(key: string, fallback: T): T {
     try {
@@ -63,15 +172,55 @@ function lsSet(key: string, value: unknown) {
     } catch { /* ignore */ }
 }
 
+function createLocalThread(title = 'New chat'): ChatThread {
+    const now = new Date().toISOString();
+    return {
+        id: `local-thread-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        title,
+        isArchived: false,
+        createdAt: now,
+        updatedAt: now,
+    };
+}
+
+function normalizeLocalEntries(entries: JournalEntry[], fallbackThreadId: string): JournalEntry[] {
+    return entries.map((entry) => ({
+        ...entry,
+        threadId: entry.threadId || fallbackThreadId,
+    }));
+}
+
+function getLocalEntries(): JournalEntry[] {
+    return lsGet<JournalEntry[]>(LS_ENTRIES_KEY, []);
+}
+
+function setLocalEntries(entries: JournalEntry[]) {
+    lsSet(LS_ENTRIES_KEY, entries);
+}
+
+function mergeThreadEntriesIntoLocalCache(threadId: string, threadEntries: JournalEntry[]) {
+    const existing = getLocalEntries();
+    const normalizedExisting = normalizeLocalEntries(existing, threadId);
+    const preserved = normalizedExisting.filter((entry) => entry.threadId !== threadId);
+    setLocalEntries([...preserved, ...threadEntries]);
+}
+
 // ── Hook ───────────────────────────────────────────────
 
 export function useJournalStore() {
     const [userId, setUserId] = useState<string | null>(null);
     const [progress, setProgress] = useState<UserProgress>(DEFAULT_PROGRESS);
+    const [threads, setThreads] = useState<ChatThread[]>([]);
+    const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
     const [entries, setEntries] = useState<JournalEntry[]>([]);
     const [checklist, setChecklist] = useState<ChecklistState>({});
     const [customItems, setCustomItems] = useState<CustomChecklistItem[]>([]);
+    const [shoppingOverrides, setShoppingOverrides] = useState<ShoppingListOverride[]>([]);
+    const [symptoms, setSymptoms] = useState<string[]>([]);
+    const [checkIn, setCheckIn] = useState<DailyCheckIn | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const threadLoadRequestRef = useRef(0);
+    const activeThreadIdRef = useRef<string | null>(null);
 
     // ── Auth listener ──────────────────────────────────
 
@@ -87,15 +236,103 @@ export function useJournalStore() {
         return () => subscription.unsubscribe();
     }, []);
 
+    const loadEntriesForThread = useCallback(async (threadId: string | null) => {
+        const requestId = ++threadLoadRequestRef.current;
+        const isStaleRequest = () => threadLoadRequestRef.current !== requestId;
+
+        if (!threadId) {
+            if (!isStaleRequest()) {
+                setEntries([]);
+            }
+            return;
+        }
+
+        const localEntriesRaw = getLocalEntries();
+        const normalizedLocalEntries = normalizeLocalEntries(localEntriesRaw, threadId);
+        const localThreadEntries = normalizedLocalEntries.filter((entry) => entry.threadId === threadId);
+        const hadMissingThreadId = localEntriesRaw.some((entry) => !entry.threadId);
+
+        if (!isStaleRequest()) {
+            setEntries(localThreadEntries);
+        }
+
+        if (hadMissingThreadId) {
+            setLocalEntries(normalizedLocalEntries);
+        }
+
+        if (userId) {
+            const { data: ents, error } = await supabase
+                .from('journal_entries')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('thread_id', threadId)
+                .order('created_at', { ascending: true });
+
+            if (isStaleRequest()) {
+                return;
+            }
+
+            if (!error) {
+                const mappedEntries = (ents || []).map(mapJournalEntryRow);
+                if (mappedEntries.length > 0 || localThreadEntries.length === 0) {
+                    setEntries(mappedEntries);
+                }
+
+                if (mappedEntries.length > 0) {
+                    mergeThreadEntriesIntoLocalCache(threadId, mappedEntries);
+                }
+                return;
+            }
+
+            if (!localThreadEntries.length) {
+                setEntries([]);
+            }
+            return;
+        }
+
+        if (!isStaleRequest()) {
+            setEntries(localThreadEntries);
+        }
+    }, [userId]);
+
     // ── Load from Supabase (or localStorage fallback) ──
 
     useEffect(() => {
         if (userId === null) {
             // Load offline data
             setProgress(lsGet(LS_PROGRESS_KEY, DEFAULT_PROGRESS));
-            setEntries(lsGet(LS_ENTRIES_KEY, []));
+            const localEntries = getLocalEntries();
+            const localThreadIds = new Set(
+                localEntries
+                    .filter((entry) => entry.role === 'user' && entry.content.trim().length > 0)
+                    .map((entry) => entry.threadId)
+                    .filter((threadId): threadId is string => Boolean(threadId))
+            );
+            const savedThreads = lsGet<ChatThread[]>(LS_THREADS_KEY, []);
+            const threadsToUse = savedThreads.filter((thread) => localThreadIds.has(thread.id));
+            const savedActiveThreadId = lsGet<string | null>(LS_ACTIVE_THREAD_KEY, null);
+            const activeId = savedActiveThreadId && threadsToUse.some((thread) => thread.id === savedActiveThreadId)
+                ? savedActiveThreadId
+                : threadsToUse[0]?.id ?? null;
+
+            setThreads(threadsToUse);
+            setActiveThreadId(activeId);
+            activeThreadIdRef.current = activeId;
+            lsSet(LS_THREADS_KEY, threadsToUse);
+            lsSet(LS_ACTIVE_THREAD_KEY, activeId);
+
+            if (activeId) {
+                const normalizedEntries = normalizeLocalEntries(localEntries, activeId);
+                setEntries(normalizedEntries.filter((entry) => entry.threadId === activeId));
+                setLocalEntries(normalizedEntries);
+            } else {
+                setEntries([]);
+            }
             setChecklist(lsGet(LS_CHECKLIST_KEY, {}));
             setCustomItems(lsGet(LS_CUSTOM_ITEMS_KEY, []));
+            setShoppingOverrides(lsGet(LS_SHOPPING_OVERRIDES_KEY, []));
+            setSymptoms(lsGet(LS_SYMPTOMS_KEY, []));
+            setCheckIn(lsGet(LS_CHECKIN_KEY, null));
             setIsLoading(false);
             return;
         }
@@ -124,27 +361,58 @@ export function useJournalStore() {
                 // First time — create row
                 await supabase.from('user_progress').insert({ user_id: userId });
                 setProgress(DEFAULT_PROGRESS);
+                lsSet(LS_PROGRESS_KEY, DEFAULT_PROGRESS);
             }
 
-            // Load all journal entries (not just current day — keeps chat persistent)
-            const { data: ents } = await supabase
-                .from('journal_entries')
+            const currentDay = prog?.current_day ?? DEFAULT_PROGRESS.currentDay;
+            const { data: threadRows, error: threadLoadError } = await supabase
+                .from('chat_threads')
                 .select('*')
                 .eq('user_id', userId)
-                .order('created_at', { ascending: true });
+                .eq('is_archived', false)
+                .order('updated_at', { ascending: false });
 
-            const mappedEntries: JournalEntry[] = (ents || []).map(e => ({
-                id: e.id,
-                dayNumber: e.day_number,
-                role: e.role as 'user' | 'assistant',
-                content: e.content,
-                createdAt: e.created_at,
-            }));
-            setEntries(mappedEntries);
-            lsSet(LS_ENTRIES_KEY, mappedEntries);
+            let loadedThreads = threadLoadError
+                ? lsGet<ChatThread[]>(LS_THREADS_KEY, [])
+                : (threadRows || []).map(mapChatThreadRow);
+
+            const { data: entryThreadRows, error: entryThreadError } = await supabase
+                .from('journal_entries')
+                .select('thread_id, role, content')
+                .eq('user_id', userId);
+
+            if (!entryThreadError) {
+                const nonEmptyThreadIds = new Set(
+                    (entryThreadRows || [])
+                        .filter((row) => row.role === 'user' && (row.content || '').trim().length > 0)
+                        .map((row) => row.thread_id)
+                        .filter((threadId): threadId is string => Boolean(threadId))
+                );
+                loadedThreads = loadedThreads.filter((thread) => nonEmptyThreadIds.has(thread.id));
+            } else {
+                const localThreadIds = new Set(
+                    getLocalEntries()
+                        .filter((entry) => entry.role === 'user' && entry.content.trim().length > 0)
+                        .map((entry) => entry.threadId)
+                        .filter((threadId): threadId is string => Boolean(threadId))
+                );
+                loadedThreads = loadedThreads.filter((thread) => localThreadIds.has(thread.id));
+            }
+
+            const savedActiveThreadId = lsGet<string | null>(LS_ACTIVE_THREAD_KEY, null);
+            const initialThreadId = savedActiveThreadId && loadedThreads.some((thread) => thread.id === savedActiveThreadId)
+                ? savedActiveThreadId
+                : loadedThreads[0]?.id ?? null;
+
+            setThreads(loadedThreads);
+            setActiveThreadId(initialThreadId);
+            activeThreadIdRef.current = initialThreadId;
+            lsSet(LS_THREADS_KEY, loadedThreads);
+            lsSet(LS_ACTIVE_THREAD_KEY, initialThreadId);
+
+            await loadEntriesForThread(initialThreadId);
 
             // Load checklist for current day
-            const currentDay = prog?.current_day ?? 0;
             const { data: checks } = await supabase
                 .from('daily_checklists')
                 .select('*')
@@ -156,11 +424,48 @@ export function useJournalStore() {
             setChecklist(checkState);
             lsSet(LS_CHECKLIST_KEY, checkState);
 
+            const { data: shoppingRows } = await supabase
+                .from('shopping_list_items')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: true });
+
+            const loadedShoppingOverrides = (shoppingRows || []).map(mapShoppingOverrideRow);
+            setShoppingOverrides(loadedShoppingOverrides);
+            lsSet(LS_SHOPPING_OVERRIDES_KEY, loadedShoppingOverrides);
+
+            // Load symptoms for current day
+            const { data: sym } = await supabase
+                .from('daily_symptoms')
+                .select('symptom_keys')
+                .eq('user_id', userId)
+                .eq('day_number', currentDay)
+                .single();
+            const loadedSymptoms = sym?.symptom_keys || [];
+            setSymptoms(loadedSymptoms);
+            lsSet(LS_SYMPTOMS_KEY, loadedSymptoms);
+
+            // Load check-in for current day
+            const { data: checkInOut } = await supabase
+                .from('daily_checkins')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('day_number', currentDay)
+                .single();
+            if (checkInOut) {
+                const loadedCheckIn = mapDailyCheckInRow(checkInOut);
+                setCheckIn(loadedCheckIn);
+                lsSet(LS_CHECKIN_KEY, loadedCheckIn);
+            } else {
+                setCheckIn(null);
+                lsSet(LS_CHECKIN_KEY, null);
+            }
+
             setIsLoading(false);
         };
 
         load();
-    }, [userId]);
+    }, [loadEntriesForThread, userId]);
 
     const loadDayState = useCallback(async (targetDay: number, shoppingItems?: ChecklistState) => {
         const persistentShopping = shoppingItems ?? Object.fromEntries(
@@ -168,23 +473,6 @@ export function useJournalStore() {
         );
 
         if (userId) {
-            const { data: ents } = await supabase
-                .from('journal_entries')
-                .select('*')
-                .eq('user_id', userId)
-                .eq('day_number', targetDay)
-                .order('created_at', { ascending: true });
-
-            const mappedEntries: JournalEntry[] = (ents || []).map(e => ({
-                id: e.id,
-                dayNumber: e.day_number,
-                role: e.role as 'user' | 'assistant',
-                content: e.content,
-                createdAt: e.created_at,
-            }));
-            setEntries(mappedEntries);
-            lsSet(LS_ENTRIES_KEY, mappedEntries);
-
             const { data: checks } = await supabase
                 .from('daily_checklists')
                 .select('*')
@@ -196,16 +484,47 @@ export function useJournalStore() {
             const mergedChecklist = { ...dayChecklist, ...persistentShopping };
             setChecklist(mergedChecklist);
             lsSet(LS_CHECKLIST_KEY, mergedChecklist);
+
+            // Load symptoms
+            const { data: sym } = await supabase
+                .from('daily_symptoms')
+                .select('symptom_keys')
+                .eq('user_id', userId)
+                .eq('day_number', targetDay)
+                .single();
+            const loadedSymptoms = sym?.symptom_keys || [];
+            setSymptoms(loadedSymptoms);
+            lsSet(LS_SYMPTOMS_KEY, loadedSymptoms);
+
+            // Load check-in
+            const { data: checkInOut } = await supabase
+                .from('daily_checkins')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('day_number', targetDay)
+                .single();
+            if (checkInOut) {
+                const loadedCheckIn = mapDailyCheckInRow(checkInOut);
+                setCheckIn(loadedCheckIn);
+                lsSet(LS_CHECKIN_KEY, loadedCheckIn);
+            } else {
+                setCheckIn(null);
+                lsSet(LS_CHECKIN_KEY, null);
+            }
+
             return;
         }
-
-        const savedEntries = lsGet<JournalEntry[]>(LS_ENTRIES_KEY, []).filter((entry) => entry.dayNumber === targetDay);
-        setEntries(savedEntries);
 
         const savedChecklist = lsGet<ChecklistState>(LS_CHECKLIST_KEY, {});
         const mergedChecklist = { ...savedChecklist, ...persistentShopping };
         setChecklist(mergedChecklist);
         lsSet(LS_CHECKLIST_KEY, mergedChecklist);
+
+        const savedSymptoms = lsGet<string[]>(LS_SYMPTOMS_KEY, []);
+        setSymptoms(savedSymptoms);
+
+        const savedCheckIn = lsGet<DailyCheckIn | null>(LS_CHECKIN_KEY, null);
+        setCheckIn(savedCheckIn);
     }, [checklist, userId]);
 
     // ── Progress Updates ───────────────────────────────
@@ -231,6 +550,88 @@ export function useJournalStore() {
         }
     }, [progress, userId]);
 
+    // ── Chat Threads ───────────────────────────────────
+
+    const createThread = useCallback(async () => {
+        if (userId) {
+            const { data } = await supabase
+                .from('chat_threads')
+                .insert({
+                    user_id: userId,
+                    title: 'New chat',
+                })
+                .select('*')
+                .single();
+
+            if (data) {
+                const thread = mapChatThreadRow(data);
+                setThreads((prev) => {
+                    const next = [thread, ...prev];
+                    lsSet(LS_THREADS_KEY, next);
+                    return next;
+                });
+                setActiveThreadId(thread.id);
+                activeThreadIdRef.current = thread.id;
+                lsSet(LS_ACTIVE_THREAD_KEY, thread.id);
+                setEntries([]);
+                return thread;
+            }
+        }
+
+        const localThread = createLocalThread('New chat');
+        setThreads((prev) => {
+            const next = [localThread, ...prev];
+            lsSet(LS_THREADS_KEY, next);
+            return next;
+        });
+        setActiveThreadId(localThread.id);
+        activeThreadIdRef.current = localThread.id;
+        lsSet(LS_ACTIVE_THREAD_KEY, localThread.id);
+        setEntries([]);
+        return localThread;
+    }, [userId]);
+
+    const startNewChat = useCallback(() => {
+        setActiveThreadId(null);
+        activeThreadIdRef.current = null;
+        lsSet(LS_ACTIVE_THREAD_KEY, null);
+        setEntries([]);
+    }, []);
+
+    const selectChatThread = useCallback(async (threadId: string) => {
+        setActiveThreadId(threadId);
+        activeThreadIdRef.current = threadId;
+        lsSet(LS_ACTIVE_THREAD_KEY, threadId);
+        await loadEntriesForThread(threadId);
+    }, [loadEntriesForThread]);
+
+    const renameChatThread = useCallback(async (threadId: string, title: string) => {
+        const trimmedTitle = title.trim();
+        if (!trimmedTitle) {
+            return;
+        }
+
+        setThreads((prev) => {
+            const next = prev.map((thread) =>
+                thread.id === threadId
+                    ? { ...thread, title: trimmedTitle, updatedAt: new Date().toISOString() }
+                    : thread,
+            );
+            lsSet(LS_THREADS_KEY, next);
+            return next;
+        });
+
+        if (userId) {
+            await supabase
+                .from('chat_threads')
+                .update({ title: trimmedTitle })
+                .eq('id', threadId)
+                .eq('user_id', userId);
+        }
+    }, [userId]);
+
+    // ── Progress Updates ───────────────────────────────
+
     const setCurrentDay = useCallback(async (targetDay: number) => {
         const newDay = Math.min(Math.max(targetDay, 0), 21);
         if (newDay === progress.currentDay) return;
@@ -241,7 +642,8 @@ export function useJournalStore() {
 
         await updateProgress({ currentDay: newDay });
         await loadDayState(newDay, shoppingItems);
-    }, [checklist, loadDayState, progress.currentDay, updateProgress]);
+        startNewChat();
+    }, [checklist, loadDayState, progress.currentDay, startNewChat, updateProgress]);
 
     const advanceDay = useCallback(async () => {
         const newDay = Math.min(progress.currentDay + 1, 21);
@@ -269,103 +671,181 @@ export function useJournalStore() {
             lastActiveDate: today,
         });
 
-        // Clear checklist for new day — but KEEP shopping items (shop_* keys persist across days)
         const shoppingItems = Object.fromEntries(
-            Object.entries(checklist).filter(([key]) => key.startsWith('shop_'))
+            Object.entries(checklist).filter(([key, value]) => key.startsWith('shop_') && value)
         );
-        setChecklist(shoppingItems);
-        lsSet(LS_CHECKLIST_KEY, shoppingItems);
-
-        // Load new day's entries
-        if (userId) {
-            const { data: ents } = await supabase
-                .from('journal_entries')
-                .select('*')
-                .eq('user_id', userId)
-                .eq('day_number', newDay)
-                .order('created_at', { ascending: true });
-
-            const mapped: JournalEntry[] = (ents || []).map(e => ({
-                id: e.id,
-                dayNumber: e.day_number,
-                role: e.role as 'user' | 'assistant',
-                content: e.content,
-                createdAt: e.created_at,
-            }));
-            setEntries(mapped);
-        } else {
-            setEntries([]);
-        }
-    }, [progress, userId, updateProgress]);
+        await loadDayState(newDay, shoppingItems);
+        startNewChat();
+    }, [checklist, loadDayState, progress, startNewChat, updateProgress]);
 
     // ── Journal Entries ────────────────────────────────
 
     const addJournalEntry = useCallback(async (role: 'user' | 'assistant', content: string): Promise<JournalEntry> => {
+        let threadId = activeThreadIdRef.current;
+
+        if (!threadId) {
+            const thread = await createThread();
+            threadId = thread.id;
+        }
+
+        const tempId = `temp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
         const entry: JournalEntry = {
-            id: `${Date.now()}-${Math.random()}`,
+            id: tempId,
+            threadId,
             dayNumber: progress.currentDay,
             role,
             content,
             createdAt: new Date().toISOString(),
         };
 
-        setEntries(prev => [...prev, entry]);
+        setEntries(prev => {
+            const next = [...prev, entry];
+            mergeThreadEntriesIntoLocalCache(threadId, next);
+            return next;
+        });
 
+        let returnEntry: JournalEntry = entry;
         if (userId) {
             const { data } = await supabase.from('journal_entries').insert({
                 user_id: userId,
+                thread_id: threadId,
                 day_number: progress.currentDay,
                 role,
                 content,
-            }).select('id').single();
+            }).select('id, created_at').single();
 
             if (data) {
-                entry.id = data.id;
+                const persistedEntry: JournalEntry = {
+                    ...entry,
+                    id: data.id,
+                    createdAt: data.created_at ?? entry.createdAt,
+                };
+
+                setEntries(prev => {
+                    const next = prev.map((currentEntry) =>
+                        currentEntry.id === tempId ? persistedEntry : currentEntry,
+                    );
+                    mergeThreadEntriesIntoLocalCache(threadId, next);
+                    return next;
+                });
+                returnEntry = persistedEntry;
             }
         }
 
-        lsSet(LS_ENTRIES_KEY, [...entries, entry]);
-        return entry;
-    }, [progress.currentDay, userId, entries]);
-
-    const updateLastEntry = useCallback((content: string) => {
-        setEntries(prev => {
-            if (prev.length === 0) return prev;
-            const updated = [...prev];
-            updated[updated.length - 1] = { ...updated[updated.length - 1], content };
-            lsSet(LS_ENTRIES_KEY, updated);
-            return updated;
-        });
-    }, []);
-
-    const finalizeLastEntry = useCallback(async (content: string) => {
-        // Called when streaming finishes — save the final content to Supabase
-        setEntries(prev => {
-            const updated = [...prev];
-            if (updated.length > 0) {
-                updated[updated.length - 1] = { ...updated[updated.length - 1], content };
-            }
-            lsSet(LS_ENTRIES_KEY, updated);
-            return updated;
+        const touchTime = new Date().toISOString();
+        setThreads((prev) => {
+            const updated = prev.map((thread) =>
+                thread.id === threadId ? { ...thread, updatedAt: touchTime } : thread,
+            );
+            const reordered = [...updated].sort((a, b) => (
+                new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+            ));
+            lsSet(LS_THREADS_KEY, reordered);
+            return reordered;
         });
 
-        if (userId && entries.length > 0) {
-            const lastEntry = entries[entries.length - 1];
-            if (lastEntry && lastEntry.id && !lastEntry.id.includes('-')) {
-                await supabase.from('journal_entries').update({ content }).eq('id', lastEntry.id);
+        if (userId) {
+            await supabase
+                .from('chat_threads')
+                .update({ updated_at: touchTime })
+                .eq('id', threadId)
+                .eq('user_id', userId);
+        }
+
+        if (role === 'user') {
+            const autoTitle = content.trim().slice(0, 60) || 'New chat';
+            let shouldPersistRename = false;
+            setThreads((prev) => {
+                const next = prev.map((thread) => {
+                    if (thread.id === threadId && thread.title === 'New chat') {
+                        shouldPersistRename = true;
+                        return { ...thread, title: autoTitle };
+                    }
+                    return thread;
+                });
+
+                if (shouldPersistRename) {
+                    lsSet(LS_THREADS_KEY, next);
+                    return next;
+                }
+
+                return prev;
+            });
+
+            if (userId && shouldPersistRename) {
+                await supabase
+                    .from('chat_threads')
+                    .update({ title: autoTitle })
+                    .eq('id', threadId)
+                    .eq('user_id', userId);
             }
         }
-    }, [userId, entries]);
+
+        return returnEntry;
+    }, [createThread, progress.currentDay, userId]);
+
+    const updateJournalEntry = useCallback((entryId: string, content: string) => {
+        setEntries(prev => {
+            const updated = prev.map((entry) =>
+                entry.id === entryId ? { ...entry, content } : entry,
+            );
+            if (activeThreadId) {
+                mergeThreadEntriesIntoLocalCache(activeThreadId, updated);
+            } else {
+                setLocalEntries(updated);
+            }
+            return updated;
+        });
+    }, [activeThreadId]);
+
+    const finalizeJournalEntry = useCallback(async (entryId: string, content: string) => {
+        let persistedId: string | null = null;
+
+        setEntries(prev => {
+            const updated = prev.map((entry) => {
+                if (entry.id !== entryId) {
+                    return entry;
+                }
+
+                if (!entry.id.startsWith('temp_')) {
+                    persistedId = entry.id;
+                }
+
+                return { ...entry, content };
+            });
+
+            if (activeThreadId) {
+                mergeThreadEntriesIntoLocalCache(activeThreadId, updated);
+            } else {
+                setLocalEntries(updated);
+            }
+            return updated;
+        });
+
+        if (userId && persistedId) {
+            await supabase
+                .from('journal_entries')
+                .update({ content })
+                .eq('id', persistedId);
+        }
+    }, [activeThreadId, userId]);
 
     const clearEntries = useCallback(async () => {
+        if (!activeThreadId) {
+            setEntries([]);
+            return;
+        }
+
         setEntries([]);
-        lsSet(LS_ENTRIES_KEY, []);
+        const remaining = normalizeLocalEntries(getLocalEntries(), activeThreadId)
+            .filter((entry) => entry.threadId !== activeThreadId);
+        setLocalEntries(remaining);
         if (userId) {
             await supabase.from('journal_entries').delete()
                 .eq('user_id', userId)
-                .eq('day_number', progress.currentDay);
+                .eq('thread_id', activeThreadId);
         }
-    }, [userId, progress.currentDay]);
+    }, [activeThreadId, userId]);
 
     // ── Checklist ──────────────────────────────────────
 
@@ -422,9 +902,249 @@ export function useJournalStore() {
         lsSet(LS_CHECKLIST_KEY, newChecklist);
     }, [customItems, checklist]);
 
+    const upsertShoppingOverrideLocally = useCallback((nextItem: ShoppingListOverride) => {
+        setShoppingOverrides((prev) => {
+            const existingIndex = prev.findIndex((item) => item.key === nextItem.key);
+            const next = existingIndex === -1
+                ? [...prev, nextItem]
+                : prev.map((item) => (item.key === nextItem.key ? nextItem : item));
+            lsSet(LS_SHOPPING_OVERRIDES_KEY, next);
+            return next;
+        });
+    }, []);
+
+    const addShoppingItem = useCallback(async ({
+        phase,
+        category,
+        name,
+        quantity,
+        notes,
+        optional,
+        source = 'manual',
+    }: ShoppingListItemInput) => {
+        const trimmedName = name.trim();
+        if (trimmedName.length < 2) {
+            return null;
+        }
+
+        const normalizedPhase = normalizeShoppingMatch(phase);
+        const normalizedCategory = normalizeShoppingMatch(category);
+        const normalizedName = normalizeShoppingMatch(trimmedName);
+
+        const existing = shoppingOverrides.find((item) =>
+            normalizeShoppingMatch(item.phase) === normalizedPhase
+            && normalizeShoppingMatch(item.category) === normalizedCategory
+            && normalizeShoppingMatch(item.name) === normalizedName,
+        );
+        const defaultMatch = findDefaultShoppingItem({ phase, category, name: trimmedName });
+
+        if (defaultMatch && !existing?.isHidden) {
+            return {
+                key: defaultMatch.key,
+                phase: defaultMatch.phase,
+                category: defaultMatch.category,
+                name: defaultMatch.item.name,
+            };
+        }
+
+        const key = existing?.key ?? defaultMatch?.key ?? `shop_custom_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const nextItem: ShoppingListOverride = {
+            id: existing?.id ?? key,
+            key,
+            phase: defaultMatch?.phase ?? phase.trim(),
+            category: defaultMatch?.category ?? category.trim(),
+            name: defaultMatch?.item.name ?? trimmedName,
+            quantity: quantity?.trim() || defaultMatch?.item.quantity || undefined,
+            notes: notes?.trim() || defaultMatch?.item.notes || undefined,
+            optional: optional?.trim() || defaultMatch?.item.optional || undefined,
+            source: defaultMatch ? 'protocol' : source,
+            isHidden: false,
+            createdAt: existing?.createdAt ?? new Date().toISOString(),
+        };
+
+        upsertShoppingOverrideLocally(nextItem);
+
+        if (userId) {
+            const payload: ShoppingListItemRow['Insert'] = {
+                user_id: userId,
+                item_key: nextItem.key,
+                phase_name: nextItem.phase,
+                category_name: nextItem.category,
+                item_name: nextItem.name,
+                quantity: nextItem.quantity ?? null,
+                notes: nextItem.notes ?? null,
+                optional: nextItem.optional ?? null,
+                source: nextItem.source,
+                is_hidden: false,
+            };
+
+            const { data } = await supabase
+                .from('shopping_list_items')
+                .upsert(payload, { onConflict: 'user_id,item_key' })
+                .select('*')
+                .single();
+
+            if (data) {
+                upsertShoppingOverrideLocally(mapShoppingOverrideRow(data));
+            }
+        }
+
+        return nextItem;
+    }, [shoppingOverrides, upsertShoppingOverrideLocally, userId]);
+
+    const removeShoppingItem = useCallback(async (item: {
+        key?: string;
+        phase?: string;
+        category: string;
+        name: string;
+        quantity?: string;
+        notes?: string;
+        optional?: string;
+        source?: ShoppingListItemSource;
+    }) => {
+        const existing = item.key
+            ? shoppingOverrides.find((entry) => entry.key === item.key)
+            : shoppingOverrides.find((entry) =>
+                normalizeShoppingMatch(entry.category) === normalizeShoppingMatch(item.category)
+                && normalizeShoppingMatch(entry.name) === normalizeShoppingMatch(item.name)
+                && (!item.phase || normalizeShoppingMatch(entry.phase) === normalizeShoppingMatch(item.phase)),
+            );
+
+        const defaultMatch = findDefaultShoppingItem({
+            phase: item.phase,
+            category: item.category,
+            name: item.name,
+        });
+
+        const nextItem: ShoppingListOverride | null = existing
+            ? { ...existing, isHidden: true }
+            : defaultMatch
+                ? {
+                    id: defaultMatch.key,
+                    key: defaultMatch.key,
+                    phase: defaultMatch.phase,
+                    category: defaultMatch.category,
+                    name: defaultMatch.item.name,
+                    quantity: defaultMatch.item.quantity,
+                    notes: defaultMatch.item.notes,
+                    optional: defaultMatch.item.optional,
+                    source: 'protocol',
+                    isHidden: true,
+                    createdAt: new Date().toISOString(),
+                }
+                : item.phase
+                    ? {
+                        id: item.key ?? `shop_hidden_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                        key: item.key ?? buildShopKey(item.phase, item.category, 0),
+                        phase: item.phase,
+                        category: item.category,
+                        name: item.name,
+                        quantity: item.quantity,
+                        notes: item.notes,
+                        optional: item.optional,
+                        source: item.source ?? 'manual',
+                        isHidden: true,
+                        createdAt: new Date().toISOString(),
+                    }
+                    : null;
+
+        if (!nextItem) {
+            return null;
+        }
+
+        upsertShoppingOverrideLocally(nextItem);
+
+        if (userId) {
+            const payload: ShoppingListItemRow['Insert'] = {
+                user_id: userId,
+                item_key: nextItem.key,
+                phase_name: nextItem.phase,
+                category_name: nextItem.category,
+                item_name: nextItem.name,
+                quantity: nextItem.quantity ?? null,
+                notes: nextItem.notes ?? null,
+                optional: nextItem.optional ?? null,
+                source: nextItem.source,
+                is_hidden: true,
+            };
+
+            const { data } = await supabase
+                .from('shopping_list_items')
+                .upsert(payload, { onConflict: 'user_id,item_key' })
+                .select('*')
+                .single();
+
+            if (data) {
+                upsertShoppingOverrideLocally(mapShoppingOverrideRow(data));
+            }
+        }
+
+        return nextItem;
+    }, [shoppingOverrides, upsertShoppingOverrideLocally, userId]);
+
+    // ── Symptoms & Check-Ins ───────────────────────────
+
+    const toggleSymptom = useCallback(async (key: string) => {
+        const newSymptoms = symptoms.includes(key)
+            ? symptoms.filter(s => s !== key)
+            : [...symptoms, key];
+
+        setSymptoms(newSymptoms);
+        lsSet(LS_SYMPTOMS_KEY, newSymptoms);
+
+        if (userId) {
+            const payload: DailySymptomsRow['Insert'] = {
+                user_id: userId,
+                day_number: progress.currentDay,
+                symptom_keys: newSymptoms,
+            };
+
+            await supabase
+                .from('daily_symptoms')
+                .upsert(payload, { onConflict: 'user_id,day_number' });
+        }
+    }, [symptoms, progress.currentDay, userId]);
+
+    const saveCheckIn = useCallback(async (data: Partial<DailyCheckIn>) => {
+        const newCheckIn: DailyCheckIn = {
+            id: checkIn?.id ?? `checkin_${progress.currentDay}`,
+            dayNumber: progress.currentDay,
+            energy: data.energy ?? checkIn?.energy,
+            adherence: data.adherence ?? checkIn?.adherence,
+            mood: data.mood ?? checkIn?.mood,
+            note: data.note ?? checkIn?.note,
+            createdAt: checkIn?.createdAt ?? new Date().toISOString(),
+        };
+        setCheckIn(newCheckIn);
+        lsSet(LS_CHECKIN_KEY, newCheckIn);
+
+        if (userId) {
+            const payload: DailyCheckinRow['Insert'] = {
+                user_id: userId,
+                day_number: progress.currentDay,
+                energy: newCheckIn.energy,
+                adherence: newCheckIn.adherence,
+                mood: newCheckIn.mood,
+                note: newCheckIn.note,
+                created_at: newCheckIn.createdAt,
+            };
+
+            await supabase
+                .from('daily_checkins')
+                .upsert(payload, { onConflict: 'user_id,day_number' });
+        }
+    }, [checkIn, progress.currentDay, userId]);
+
     // ── Export Chat ────────────────────────────────────
 
     const exportChat = useCallback(() => {
+        const activeThreadTitle = threads.find((thread) => thread.id === activeThreadId)?.title ?? 'chat';
+        const safeTitle = activeThreadTitle
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .slice(0, 40) || 'chat';
+
         const text = entries
             .map(e => {
                 const date = new Date(e.createdAt).toLocaleString();
@@ -436,19 +1156,24 @@ export function useJournalStore() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `gut-brain-journal-day${progress.currentDay}-${new Date().toISOString().split('T')[0]}.txt`;
+        a.download = `gut-brain-journal-${safeTitle}-${new Date().toISOString().split('T')[0]}.txt`;
         a.click();
         URL.revokeObjectURL(url);
-    }, [entries, progress.currentDay]);
+    }, [activeThreadId, entries, threads]);
 
     return {
         // State
         isLoading,
         userId,
         progress,
+        threads,
+        activeThreadId,
         entries,
         checklist,
         customItems,
+        shoppingOverrides,
+        symptoms,
+        checkIn,
 
         // Progress
         updateProgress,
@@ -456,9 +1181,12 @@ export function useJournalStore() {
         advanceDay,
 
         // Journal
+        startNewChat,
+        selectChatThread,
+        renameChatThread,
         addJournalEntry,
-        updateLastEntry,
-        finalizeLastEntry,
+        updateJournalEntry,
+        finalizeJournalEntry,
         clearEntries,
         exportChat,
 
@@ -467,5 +1195,11 @@ export function useJournalStore() {
         getChecklistCompletion,
         addCustomItem,
         removeCustomItem,
+        addShoppingItem,
+        removeShoppingItem,
+
+        // Daily Checks
+        toggleSymptom,
+        saveCheckIn,
     };
 }

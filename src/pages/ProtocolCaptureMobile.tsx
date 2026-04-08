@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { BookOpen, ClipboardList, MessageSquare, ShoppingCart } from 'lucide-react';
+import { BookOpen, ClipboardList, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JournalCenter } from '@/components/journal/JournalCenter';
 import { MobileTodayView } from '@/components/journal/MobileTodayView';
@@ -13,6 +13,7 @@ import type {
   ChecklistState,
   CustomChecklistItem,
   JournalEntry,
+  ShoppingListOverride,
   UserProgress,
 } from '@/hooks/useJournalStore';
 
@@ -127,6 +128,7 @@ export default function ProtocolCaptureMobile() {
   const [entries, setEntries] = useState<JournalEntry[]>(() => buildEntries(activeScene, day));
   const [checklist, setChecklist] = useState<ChecklistState>(() => buildChecklist(activeScene));
   const [customItems] = useState<CustomChecklistItem[]>(() => buildCustomItems(activeScene));
+  const [shoppingOverrides] = useState<ShoppingListOverride[]>([]);
   const [activeView, setActiveView] = useState<ActiveView>(() => getInitialView(activeScene));
 
   const addJournalEntry = async (role: 'user' | 'assistant', content: string) => {
@@ -135,10 +137,10 @@ export default function ProtocolCaptureMobile() {
     return entry;
   };
 
-  const updateLastEntry = (content: string) => {
+  const updateEntry = (entryId: string, content: string) => {
     setEntries((prev) =>
-      prev.map((entry, index) =>
-        index === prev.length - 1 ? { ...entry, content } : entry,
+      prev.map((entry) =>
+        entry.id === entryId ? { ...entry, content } : entry,
       ),
     );
   };
@@ -175,8 +177,11 @@ export default function ProtocolCaptureMobile() {
           <ShoppingListView
             currentDay={progress.currentDay}
             checklist={checklist}
+            shoppingOverrides={shoppingOverrides}
             onToggle={(key) => setChecklist((prev) => ({ ...prev, [key]: !prev[key] }))}
-            onBack={() => setActiveView('today')}
+            onAddItem={() => Promise.resolve(null)}
+            onRemoveItem={() => Promise.resolve(null)}
+            onBack={() => setActiveView('guide')}
             onAskAI={() => setActiveView('help')}
           />
         ) : activeView === 'protocol' ? (
@@ -188,7 +193,7 @@ export default function ProtocolCaptureMobile() {
                 <div className="border-b border-border/50 pb-4">
                   <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Guide</h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Read the quick brief for this phase, then get back to the steps in front of you.
+                    Open the shopping list, the full protocol guide, or the quick reference you actually need.
                   </p>
                 </div>
                 <MobileProtocolReferenceContent
@@ -210,7 +215,6 @@ export default function ProtocolCaptureMobile() {
             onRemoveCustomItem={() => undefined}
             onAskAbout={handleAskAbout}
             onOpenShoppingView={() => setActiveView('shopping')}
-            onOpenGuideView={() => setActiveView('guide')}
           />
         ) : (
           <JournalCenter
@@ -218,8 +222,8 @@ export default function ProtocolCaptureMobile() {
             progress={progress}
             entries={entries}
             onAddEntry={addJournalEntry}
-            onUpdateLastEntry={updateLastEntry}
-            onFinalizeLastEntry={updateLastEntry}
+            onUpdateEntry={updateEntry}
+            onFinalizeEntry={updateEntry}
             isMobile={true}
             mobileVariant="help"
           />
@@ -227,7 +231,7 @@ export default function ProtocolCaptureMobile() {
       </main>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50">
-        <div className="grid grid-cols-4 gap-1 px-2 py-1.5">
+        <div className="grid grid-cols-3 gap-1 px-2 py-1.5">
           <button
             onClick={() => setActiveView('today')}
             className={cn(
@@ -240,14 +244,14 @@ export default function ProtocolCaptureMobile() {
           </button>
 
           <button
-            onClick={() => setActiveView('shopping')}
+            onClick={() => setActiveView('help')}
             className={cn(
               'flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors',
-              activeView === 'shopping' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
+              activeView === 'help' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
             )}
           >
-            <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Shop</span>
+            <MessageSquare className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Coach</span>
           </button>
 
           <button
@@ -259,17 +263,6 @@ export default function ProtocolCaptureMobile() {
           >
             <BookOpen className="w-5 h-5" />
             <span className="text-[10px] font-medium">Guide</span>
-          </button>
-
-          <button
-            onClick={() => setActiveView('help')}
-            className={cn(
-              'flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors',
-              activeView === 'help' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
-            )}
-          >
-            <MessageSquare className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Help</span>
           </button>
         </div>
       </div>

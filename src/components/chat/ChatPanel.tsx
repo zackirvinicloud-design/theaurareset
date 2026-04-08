@@ -16,7 +16,6 @@ import { cn } from '@/lib/utils';
 import { buildProtocolChatContext } from '@/hooks/useProtocolData';
 import {
   GUT_BRAIN_AI_NAME,
-  GUT_BRAIN_SUGGESTED_PROMPTS,
   type GutBrainConversationEntry,
 } from '@/lib/gutbrain';
 
@@ -292,23 +291,9 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-6">
             <MessageSquare className="w-10 h-10 text-muted-foreground mb-3" />
             <h4 className="font-semibold text-sm mb-2">{GUT_BRAIN_AI_NAME}</h4>
-            <p className="text-xs text-muted-foreground mb-4 max-w-[240px]">
-              Ask for today's plan, friction support, or a clearer next step. The goal is consistency, not perfect wellness theater.
+            <p className="text-xs text-muted-foreground max-w-[260px]">
+              Ask for today&apos;s plan, friction support, or a clearer next step. Use the input below to start.
             </p>
-            <div className="flex flex-col gap-2 w-full max-w-[240px]">
-              {GUT_BRAIN_SUGGESTED_PROMPTS.map((prompt, i) => (
-                <Button
-                  key={i}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSend(prompt)}
-                  disabled={isLoading}
-                  className="text-xs justify-start h-auto py-2.5 px-3 whitespace-normal text-left leading-relaxed"
-                >
-                  {prompt}
-                </Button>
-              ))}
-            </div>
           </div>
         ) : (
           <>

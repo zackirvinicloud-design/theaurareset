@@ -44,6 +44,429 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          id: string
+          user_id: string
+          current_day: number
+          current_phase: number
+          streak_count: number
+          last_active_date: string | null
+          start_date: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          current_day?: number
+          current_phase?: number
+          streak_count?: number
+          last_active_date?: string | null
+          start_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          current_day?: number
+          current_phase?: number
+          streak_count?: number
+          last_active_date?: string | null
+          start_date?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_onboarding_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          onboarding_version: string
+          entry_source: string
+          current_day_selected: number
+          protocol_goal: string | null
+          why_now: string | null
+          primary_blocker: string | null
+          routine_type: string | null
+          diet_pattern: string | null
+          health_flags: string[]
+          support_style: string | null
+          completed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          onboarding_version?: string
+          entry_source?: string
+          current_day_selected?: number
+          protocol_goal?: string | null
+          why_now?: string | null
+          primary_blocker?: string | null
+          routine_type?: string | null
+          diet_pattern?: string | null
+          health_flags?: string[]
+          support_style?: string | null
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          onboarding_version?: string
+          entry_source?: string
+          current_day_selected?: number
+          protocol_goal?: string | null
+          why_now?: string | null
+          primary_blocker?: string | null
+          routine_type?: string | null
+          diet_pattern?: string | null
+          health_flags?: string[]
+          support_style?: string | null
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      journal_entries: {
+        Row: {
+          id: string
+          user_id: string
+          thread_id: string
+          day_number: number
+          role: string
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          thread_id: string
+          day_number: number
+          role: string
+          content: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          thread_id?: string
+          day_number?: number
+          role?: string
+          content?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      chat_threads: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          is_archived: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title?: string
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      symptom_logs: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          symptom_type: string
+          severity: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          symptom_type: string
+          severity: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          symptom_type?: string
+          severity?: number
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      daily_checklists: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          item_key: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          item_key: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          item_key?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      daily_checkins: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          energy: number | null
+          adherence: string | null
+          mood: string | null
+          note: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          energy?: number | null
+          adherence?: string | null
+          mood?: string | null
+          note?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          energy?: number | null
+          adherence?: string | null
+          mood?: string | null
+          note?: string | null
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      daily_symptoms: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          symptom_keys: string[]
+          notes: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          symptom_keys?: string[]
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          symptom_keys?: string[]
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      shopping_list_items: {
+        Row: {
+          category_name: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          item_key: string
+          item_name: string
+          notes: string | null
+          optional: string | null
+          phase_name: string
+          quantity: string | null
+          source: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_name: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          item_key: string
+          item_name: string
+          notes?: string | null
+          optional?: string | null
+          phase_name: string
+          quantity?: string | null
+          source?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_name?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          item_key?: string
+          item_name?: string
+          notes?: string | null
+          optional?: string | null
+          phase_name?: string
+          quantity?: string | null
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_brain_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          assistant_name: string
+          preferred_name: string | null
+          protocol_goal: string | null
+          why_now: string | null
+          motivation_style: string | null
+          barriers: string[]
+          support_preferences: string[]
+          wins: string[]
+          conversation_summary: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          assistant_name?: string
+          preferred_name?: string | null
+          protocol_goal?: string | null
+          why_now?: string | null
+          motivation_style?: string | null
+          barriers?: string[]
+          support_preferences?: string[]
+          wins?: string[]
+          conversation_summary?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          assistant_name?: string
+          preferred_name?: string | null
+          protocol_goal?: string | null
+          why_now?: string | null
+          motivation_style?: string | null
+          barriers?: string[]
+          support_preferences?: string[]
+          wins?: string[]
+          conversation_summary?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lead_captures: {
+        Row: {
+          id: string
+          email: string
+          source: string
+          captured_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          source?: string
+          captured_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          source?: string
+          captured_at?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      journey_insight_snapshots: {
+        Row: {
+          id: string
+          user_id: string
+          day_number: number
+          phase_number: number
+          summary: string
+          next_step: string | null
+          signals: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          day_number: number
+          phase_number: number
+          summary: string
+          next_step?: string | null
+          signals?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          day_number?: number
+          phase_number?: number
+          summary?: string
+          next_step?: string | null
+          signals?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

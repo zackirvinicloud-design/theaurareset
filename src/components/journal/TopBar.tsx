@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Flame, ArrowLeft, ArrowRight, Settings, LogOut, Download, Trash2, Sparkles, FileText } from 'lucide-react';
 import { UserProgress } from '@/hooks/useJournalStore';
-import { getPhaseInfo, getDayLabel } from '@/hooks/useProtocolData';
+import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
 import { cn } from '@/lib/utils';
 
 interface TopBarProps {
@@ -38,8 +38,8 @@ export const TopBar = ({
     showReadFullProtocol = false,
     onSignOut,
 }: TopBarProps) => {
-    const phase = getPhaseInfo(progress.currentPhase);
     const dayLabel = getDayLabel(progress.currentDay);
+    const stageLabel = getJourneyStageLabel(progress.currentDay, progress.currentPhase);
     const progressPercent = Math.round((progress.currentDay / 21) * 100);
     const isFirstDay = progress.currentDay <= 0;
     const isLastDay = progress.currentDay >= 21;
@@ -47,13 +47,13 @@ export const TopBar = ({
     return (
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
             <div className="flex items-center justify-between px-4 lg:px-6 h-14">
-                {/* Left: Day & Phase */}
+                {/* Left: Day & Week */}
                 <div className="flex items-center gap-4 min-w-0">
                     <div className="flex items-center gap-2">
                         <div className="flex flex-col">
                             <span className="text-sm font-bold leading-none">{dayLabel}</span>
-                            <span className={cn("text-xs font-medium leading-none mt-0.5", phase.color)}>
-                                Phase {progress.currentPhase}: {phase.shortName}
+                            <span className={cn("text-xs font-medium leading-none mt-0.5", progress.currentDay === 0 ? "text-primary" : "text-muted-foreground")}>
+                                {stageLabel}
                             </span>
                         </div>
                     </div>

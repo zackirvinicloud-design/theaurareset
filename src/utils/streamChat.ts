@@ -1,8 +1,14 @@
-import { ChatMessage } from '@/hooks/useChatStore';
 import { buildChatSystemPrompt, type GutBrainProfile, type GutBrainSnapshot } from '@/lib/gutbrain';
 
+interface StreamChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: number;
+}
+
 interface StreamChatOptions {
-  messages: ChatMessage[];
+  messages: StreamChatMessage[];
   context?: string;
   brainProfile?: GutBrainProfile | null;
   brainSnapshot?: GutBrainSnapshot | null;

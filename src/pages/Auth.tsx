@@ -7,7 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/password-input";
 import { toast } from "@/hooks/use-toast";
-import { getDefaultPostAuthDestination, isEmailVerified, withAuthTimeout } from "@/lib/auth-routing";
+import {
+  getDefaultPostAuthDestination,
+  isEmailVerified,
+  mergeRedirectParams,
+  sanitizeRedirectPath,
+  withAuthTimeout,
+} from "@/lib/auth-routing";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
@@ -16,6 +22,11 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const redirectPath = sanitizeRedirectPath(searchParams.get("redirect"));
+  const redirectDestination = mergeRedirectParams(redirectPath, {
+    provider: searchParams.get("provider"),
+    payment_id: searchParams.get("payment_id"),
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,11 +34,10 @@ const Auth = () => {
 
   useEffect(() => {
     let cancelled = false;
-    const redirectPath = searchParams.get("redirect");
     const resolveDestination = async (userId: string) => {
-      if (redirectPath) {
+      if (redirectDestination) {
         if (!cancelled) {
-          navigate(redirectPath, { replace: true });
+          navigate(redirectDestination, { replace: true });
         }
         return;
       }
@@ -43,7 +53,11 @@ const Auth = () => {
 
       if (!isEmailVerified(session.user)) {
         if (!cancelled) {
-          navigate("/signup", { replace: true });
+          const params = new URLSearchParams();
+          if (redirectDestination) {
+            params.set("redirect", redirectDestination);
+          }
+          navigate(`/signup${params.toString() ? `?${params.toString()}` : ""}`, { replace: true });
         }
         return;
       }
@@ -65,7 +79,7 @@ const Auth = () => {
       cancelled = true;
       subscription.unsubscribe();
     };
-  }, [navigate, searchParams]);
+  }, [navigate, redirectDestination]);
 
   const validateInputs = () => {
     try {
@@ -122,11 +136,15 @@ const Auth = () => {
           title: "Verify your email first",
           description: "Open your confirmation email, then continue.",
         });
-        navigate("/signup", { replace: true });
+        const params = new URLSearchParams();
+        if (redirectDestination) {
+          params.set("redirect", redirectDestination);
+        }
+        navigate(`/signup${params.toString() ? `?${params.toString()}` : ""}`, { replace: true });
         return;
       }
 
-      const destination = await getDefaultPostAuthDestination(data.user.id);
+      const destination = redirectDestination || await getDefaultPostAuthDestination(data.user.id);
       navigate(destination, { replace: true });
     } catch (error) {
       console.error("Sign in error:", error);
@@ -237,7 +255,7 @@ const Auth = () => {
           <div className="text-sm text-muted-foreground">
             Need to create an account?{" "}
             <Link 
-              to={`/signup${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`}
+              to={`/signup${redirectDestination ? `?redirect=${encodeURIComponent(redirectDestination)}` : ""}`}
               className="text-primary hover:underline"
             >
               Create account

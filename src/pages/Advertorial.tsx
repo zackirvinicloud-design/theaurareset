@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 /* ═══════════════════════════════════════════════════
@@ -104,16 +105,25 @@ const Advertorial = () => {
     if (!leadEmail.trim()) return;
     setLeadSubmitting(true);
     try {
-      await (supabase as any).from('lead_captures').insert({
+      const { error } = await supabase.from('lead_captures').insert({
         email: leadEmail.trim().toLowerCase(),
         source: 'advertorial',
         captured_at: new Date().toISOString(),
       });
+      if (error) {
+        throw error;
+      }
+
+      setLeadSubmitted(true);
     } catch {
-      // Insert may fail if table doesn't exist yet — still show success
+      toast({
+        title: 'Could not save your email',
+        description: 'Please try again in a moment.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLeadSubmitting(false);
     }
-    setLeadSubmitted(true);
-    setLeadSubmitting(false);
   };
 
   return (

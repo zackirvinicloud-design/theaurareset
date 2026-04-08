@@ -11,6 +11,7 @@ import type {
   ChecklistState,
   CustomChecklistItem,
   JournalEntry,
+  ShoppingListOverride,
   UserProgress,
 } from '@/hooks/useJournalStore';
 
@@ -245,6 +246,7 @@ export default function ProtocolCapture() {
   const [customItems, setCustomItems] = useState<CustomChecklistItem[]>(() =>
     buildCustomItems(activeScene)
   );
+  const [shoppingOverrides] = useState<ShoppingListOverride[]>([]);
   const [activeView, setActiveView] = useState<ActiveView>(activeScene === 'prep' ? 'shopping' : 'chat');
   const [refOpen, setRefOpen] = useState(activeScene !== 'prep');
 
@@ -368,16 +370,12 @@ export default function ProtocolCapture() {
     return entry;
   };
 
-  const updateLastEntry = (content: string) => {
+  const updateEntry = (entryId: string, content: string) => {
     setEntries((prev) =>
-      prev.map((entry, index) =>
-        index === prev.length - 1 ? { ...entry, content } : entry,
+      prev.map((entry) =>
+        entry.id === entryId ? { ...entry, content } : entry,
       ),
     );
-  };
-
-  const finalizeLastEntry = (content: string) => {
-    updateLastEntry(content);
   };
 
   const handleAskAbout = (label: string) => {
@@ -457,7 +455,10 @@ export default function ProtocolCapture() {
             <ShoppingListView
               currentDay={progress.currentDay}
               checklist={checklist}
+              shoppingOverrides={shoppingOverrides}
               onToggle={(key) => setChecklist((prev) => ({ ...prev, [key]: !prev[key] }))}
+              onAddItem={() => Promise.resolve(null)}
+              onRemoveItem={() => Promise.resolve(null)}
               onBack={() => setActiveView('chat')}
               onAskAI={handleShoppingAskAI}
               defaultExpandedCategories={PREP_EXPANDED_CATEGORIES}
@@ -470,8 +471,8 @@ export default function ProtocolCapture() {
               progress={progress}
               entries={entries}
               onAddEntry={addJournalEntry}
-              onUpdateLastEntry={updateLastEntry}
-              onFinalizeLastEntry={finalizeLastEntry}
+              onUpdateEntry={updateEntry}
+              onFinalizeEntry={updateEntry}
             />
           )}
         </main>

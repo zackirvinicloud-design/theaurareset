@@ -39,6 +39,39 @@ export const rememberPostAuthDestination = (userId: string, destination: PostAut
   }
 };
 
+export const sanitizeRedirectPath = (value: string | null) => {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) {
+    return null;
+  }
+
+  return value;
+};
+
+export const mergeRedirectParams = (
+  path: string | null,
+  params: Record<string, string | null | undefined>,
+) => {
+  const safePath = sanitizeRedirectPath(path);
+  if (!safePath) {
+    return null;
+  }
+
+  const hashIndex = safePath.indexOf('#');
+  const hash = hashIndex >= 0 ? safePath.slice(hashIndex) : '';
+  const withoutHash = hashIndex >= 0 ? safePath.slice(0, hashIndex) : safePath;
+  const [pathname, rawQuery = ''] = withoutHash.split('?');
+  const search = new URLSearchParams(rawQuery);
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) {
+      search.set(key, value);
+    }
+  });
+
+  const query = search.toString();
+  return `${pathname}${query ? `?${query}` : ''}${hash}`;
+};
+
 export const getDefaultPostAuthDestination = async (userId: string): Promise<PostAuthDestination> => {
   const fallbackDestination = readCachedPostAuthDestination(userId) ?? DEFAULT_POST_AUTH_DESTINATION;
   const controller = new AbortController();

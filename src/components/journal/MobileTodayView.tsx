@@ -1,12 +1,10 @@
-import { useState } from 'react';
-import { CheckCircle2, ChevronDown, ShoppingCart } from 'lucide-react';
+import { CheckCircle2, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ChecklistSections, buildChecklistViewModel } from '@/components/journal/DailyChecklist';
 import type { ChecklistState, CustomChecklistItem } from '@/hooks/useJournalStore';
-import { getDayLabel, getPhaseInfo } from '@/hooks/useProtocolData';
-import { getTodayBrief, getTodayFocus } from '@/components/journal/ProtocolReference';
-import { ProtocolRoadmap } from '@/components/journal/ProtocolRoadmap';
+import { getDayLabel, getJourneyStageLabel, getPhaseInfo } from '@/hooks/useProtocolData';
+import { getTodayFocus } from '@/components/journal/ProtocolReference';
 import { cn } from '@/lib/utils';
 
 interface MobileTodayViewProps {
@@ -30,10 +28,8 @@ export const MobileTodayView = ({
     onAskAbout,
     onOpenShoppingView,
 }: MobileTodayViewProps) => {
-    const [briefOpen, setBriefOpen] = useState(false);
     const phase = getPhaseInfo(currentPhase);
     const dayLabel = getDayLabel(currentDay);
-    const todayBrief = getTodayBrief(currentDay, currentPhase);
     const { completedCount, totalCount, completionPercent, nextItem } = buildChecklistViewModel(
         currentDay,
         checklist,
@@ -44,14 +40,14 @@ export const MobileTodayView = ({
     const shoppingLabel = currentDay === 0
         ? 'Open shopping list'
         : currentDay >= 12
-            ? 'Shop Phase 4 supplies'
-            : 'Shop Phase 3 supplies';
+            ? 'Get Week 3 supplies ready'
+            : 'Get Week 2 supplies ready';
     const shoppingHint = currentDay === 0
         ? 'Buy the starter stack now so Day 1 feels easy.'
         : currentDay >= 12
-            ? 'Get the heavy metal phase ready before Day 15.'
-            : 'Get the parasite phase ready before Day 8.';
-
+            ? 'Line up Week 3 buys before Day 15.'
+            : 'Line up Week 2 buys before Day 8.';
+    const stageLabel = getJourneyStageLabel(currentDay, currentPhase);
 
     return (
         <div className="flex h-full flex-col bg-background">
@@ -61,7 +57,7 @@ export const MobileTodayView = ({
                         <div className="flex items-end justify-between gap-4">
                             <div className="min-w-0">
                                 <p className={cn('text-[11px] font-semibold uppercase tracking-[0.18em]', phase.color)}>
-                                    Phase {currentPhase}: {phase.shortName}
+                                    {stageLabel}
                                 </p>
                                 <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-foreground">
                                     {dayLabel}
@@ -85,6 +81,8 @@ export const MobileTodayView = ({
                             </div>
                         </div>
                     </section>
+
+
 
                     <section
                         className={cn(
@@ -171,73 +169,8 @@ export const MobileTodayView = ({
                         />
                     </section>
 
-                    <section className="border-t border-border/50 pt-4">
-                        <button
-                            onClick={() => setBriefOpen((value) => !value)}
-                            className="flex w-full items-center justify-between text-left"
-                        >
-                            <div>
-                                <h3 className="text-sm font-semibold text-foreground">Today brief</h3>
-                                <p className="text-xs text-muted-foreground">
-                                    What to watch and how to keep the day simple.
-                                </p>
-                            </div>
-                            <ChevronDown
-                                className={cn(
-                                    'h-4 w-4 text-muted-foreground transition-transform',
-                                    briefOpen && 'rotate-180',
-                                )}
-                            />
-                        </button>
-
-                        {briefOpen && (
-                            <div className="mt-4 space-y-4">
-                                <BriefSection
-                                    title="What matters"
-                                    items={todayBrief.focus}
-                                />
-                                <BriefSection
-                                    title="Watch for"
-                                    items={todayBrief.watchFor}
-                                />
-                                <BriefSection
-                                    title="Keep it simple"
-                                    items={todayBrief.keepSimple}
-                                />
-                            </div>
-                        )}
-                    </section>
-
-                    <ProtocolRoadmap
-                        currentDay={currentDay}
-                        currentPhase={currentPhase}
-                    />
                 </div>
             </div>
         </div>
     );
 };
-
-function BriefSection({
-    title,
-    items,
-}: {
-    title: string;
-    items: string[];
-}) {
-    return (
-        <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                {title}
-            </p>
-            <div className="space-y-2">
-                {items.map((item) => (
-                    <div key={item} className="flex items-start gap-2 text-sm leading-6 text-muted-foreground">
-                        <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary" />
-                        <span>{item}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
