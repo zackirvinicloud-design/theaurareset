@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DailyChecklist } from '@/components/journal/DailyChecklist';
 import { JournalCenter } from '@/components/journal/JournalCenter';
+import { NormalTodayView } from '@/components/journal/NormalTodayView';
 import { ProtocolReference } from '@/components/journal/ProtocolReference';
 import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExplorer';
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
@@ -16,7 +17,7 @@ import type {
 } from '@/hooks/useJournalStore';
 
 type CaptureScene = 'prep' | 'today' | 'journey';
-type ActiveView = 'chat' | 'shopping' | 'roadmap';
+type ActiveView = 'chat' | 'shopping' | 'roadmap' | 'normal';
 
 const PREP_EXPANDED_CATEGORIES = [
   'Foundation_Morning Ritual Essentials',
@@ -415,12 +416,8 @@ export default function ProtocolCapture() {
       `}</style>
       <TopBar
         progress={progress}
-        hasJournalEntries={entries.length > 0}
         onPreviousDay={() => undefined}
         onNextDay={() => undefined}
-        onExportJournal={() => undefined}
-        onClearJournal={() => undefined}
-        onRunTutorialAgain={() => undefined}
         onSignOut={() => undefined}
       />
 
@@ -470,7 +467,14 @@ export default function ProtocolCapture() {
               onBack={() => setActiveView('chat')}
               onOpenShoppingView={() => setActiveView('shopping')}
               onAskCoach={() => setActiveView('chat')}
-              onOpenNormalToday={() => setRefOpen(true)}
+              onOpenNormalToday={() => setActiveView('normal')}
+            />
+          ) : activeView === 'normal' ? (
+            <NormalTodayView
+              currentDay={progress.currentDay}
+              currentPhase={progress.currentPhase}
+              onBack={() => setActiveView('chat')}
+              onAskCoach={() => setActiveView('chat')}
             />
           ) : (
             <JournalCenter
@@ -489,6 +493,7 @@ export default function ProtocolCapture() {
           currentDay={progress.currentDay}
           onOpenShoppingView={() => setActiveView('shopping')}
           onOpenRoadmapView={() => setActiveView('roadmap')}
+          onOpenNormalTodayView={() => setActiveView('normal')}
           isOpen={refOpen}
           onToggle={() => setRefOpen((prev) => !prev)}
         />

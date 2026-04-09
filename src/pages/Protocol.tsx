@@ -15,11 +15,12 @@ import { TopBar } from "@/components/journal/TopBar";
 import { DailyChecklist, buildChecklistViewModel } from "@/components/journal/DailyChecklist";
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
+import { NormalTodayView } from "@/components/journal/NormalTodayView";
 import { ProtocolRoadmapExplorer } from "@/components/journal/ProtocolRoadmapExplorer";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
 import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
 
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap';
+type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap' | 'normal';
 
 const Protocol = () => {
   const navigate = useNavigate();
@@ -38,7 +39,6 @@ const Protocol = () => {
   const [activeView, setActiveView] = useState<ActiveView>('today');
   const [focusedChecklistKey, setFocusedChecklistKey] = useState<string | null>(null);
   const [reminderComposerTargetKey, setReminderComposerTargetKey] = useState<string | null>(null);
-  const [normalTodayAutoOpenSignal, setNormalTodayAutoOpenSignal] = useState(0);
   const [shoppingDefaultExpandedCategories, setShoppingDefaultExpandedCategories] = useState<string[]>([]);
 
   // Journal store (Supabase-backed)
@@ -108,13 +108,8 @@ const Protocol = () => {
   };
 
   const openNormalToday = useCallback(() => {
-    setNormalTodayAutoOpenSignal((value) => value + 1);
-    if (isMobile) {
-      setActiveView('guide');
-      return;
-    }
-    setRefOpen(true);
-  }, [isMobile]);
+    setActiveView('normal');
+  }, []);
 
   const resolveChecklistTargetKey = useCallback((preferredKey?: string | null) => {
     if (preferredKey && checklistViewModel.allItems.some((item) => item.key === preferredKey)) {
@@ -361,9 +356,18 @@ const Protocol = () => {
     setActiveView('roadmap');
   };
 
+  const handleOpenNormalTodayFromGuide = () => {
+    setActiveView('normal');
+  };
+
   const handleAskCoachFromRoadmap = (prompt: string) => {
     setActiveView('help');
     setPendingPrompt(prompt);
+  };
+
+  const handleAskCoachFromNormalToday = (prompt?: string) => {
+    setActiveView('help');
+    setPendingPrompt(prompt ?? 'Use my symptoms today and tell me what is expected vs what means I should pause.');
   };
 
   const handleApplyShoppingActions = async (actions: GutBrainShoppingAction[]) => {
@@ -412,29 +416,6 @@ const Protocol = () => {
         description,
       });
     }
-  };
-
-  const handleStartTutorial = () => {
-    setActiveView(isMobile ? 'today' : 'help');
-    if (!isMobile) {
-      setRefOpen(true);
-    }
-  };
-
-  const handleExportJournal = () => {
-    store.exportChat();
-  };
-
-  const handleClearJournal = async () => {
-    if (!confirm('Clear the current chat? This cannot be undone.')) {
-      return;
-    }
-
-    await store.clearEntries();
-    toast({
-      title: "Cleared",
-      description: "Current chat messages have been removed.",
-    });
   };
 
   useEffect(() => {
@@ -514,12 +495,8 @@ const Protocol = () => {
       {/* Top Bar */}
       <TopBar
         progress={store.progress}
-        hasJournalEntries={store.entries.length > 0}
         onPreviousDay={handlePreviousDay}
         onNextDay={handleNextDay}
-        onExportJournal={handleExportJournal}
-        onClearJournal={handleClearJournal}
-        onRunTutorialAgain={handleStartTutorial}
         onSignOut={handleSignOut}
       />
 
@@ -571,24 +548,29 @@ const Protocol = () => {
                 onAskCoach={handleAskCoachFromRoadmap}
                 onOpenNormalToday={openNormalToday}
               />
+            ) : activeView === 'normal' ? (
+              <NormalTodayView
+                currentDay={store.progress.currentDay}
+                currentPhase={store.progress.currentPhase}
+                onBack={() => setActiveView('guide')}
+                onAskCoach={handleAskCoachFromNormalToday}
+                onAskCoachPrompt={handleAskCoachFromNormalToday}
+                symptoms={store.symptoms}
+                onToggleSymptom={store.toggleSymptom}
+              />
             ) : activeView === 'guide' ? (
               <div className="flex h-full flex-col bg-background">
-                <div className="flex-1 overflow-y-auto px-4 py-4 pb-6">
-                  <div className="space-y-5">
-                    <div className="border-b border-border/50 pb-4">
-                      <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Guide</h2>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        Open the roadmap, shopping list, or the quick reference you actually need today.
-                      </p>
-                    </div>
-                    <MobileProtocolReferenceContent
-                      currentPhase={store.progress.currentPhase}
-                      currentDay={store.progress.currentDay}
-                      onOpenShoppingView={handleOpenShoppingFromGuide}
-                      onOpenRoadmapView={handleOpenRoadmapFromGuide}
-                      normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
-                    />
+                <div className="flex-1 overflow-y-auto px-4 py-3.5 pb-6">
+                  <div className="mb-2">
+                    <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-foreground">Guide</h2>
                   </div>
+                  <MobileProtocolReferenceContent
+                    currentPhase={store.progress.currentPhase}
+                    currentDay={store.progress.currentDay}
+                    onOpenShoppingView={handleOpenShoppingFromGuide}
+                    onOpenRoadmapView={handleOpenRoadmapFromGuide}
+                    onOpenNormalTodayView={handleOpenNormalTodayFromGuide}
+                  />
                 </div>
               </div>
             ) : activeView === 'today' ? (
@@ -603,6 +585,7 @@ const Protocol = () => {
                 focusedItemKey={focusedChecklistKey}
                 reminderComposerTargetKey={reminderComposerTargetKey}
                 onToggle={store.toggleChecklistItem}
+                onAddCustomItem={store.addCustomItem}
                 onRemoveCustomItem={store.removeCustomItem}
                 onAskAbout={handleAskAbout}
                 onOpenShoppingView={handleOpenShoppingFromGuide}
@@ -655,6 +638,16 @@ const Protocol = () => {
               onAskCoach={handleAskCoachFromRoadmap}
               onOpenNormalToday={openNormalToday}
             />
+          ) : activeView === 'normal' ? (
+            <NormalTodayView
+              currentDay={store.progress.currentDay}
+              currentPhase={store.progress.currentPhase}
+              onBack={() => setActiveView('help')}
+              onAskCoach={handleAskCoachFromNormalToday}
+              onAskCoachPrompt={handleAskCoachFromNormalToday}
+              symptoms={store.symptoms}
+              onToggleSymptom={store.toggleSymptom}
+            />
           ) : (
             <JournalCenter
               userId={store.userId}
@@ -684,9 +677,9 @@ const Protocol = () => {
             currentDay={store.progress.currentDay}
             onOpenShoppingView={handleOpenShoppingFromGuide}
             onOpenRoadmapView={handleOpenRoadmapFromGuide}
+            onOpenNormalTodayView={handleOpenNormalTodayFromGuide}
             isOpen={refOpen}
             onToggle={() => setRefOpen(prev => !prev)}
-            normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
           />
         )}
       </div>
@@ -721,7 +714,7 @@ const Protocol = () => {
               onClick={() => setActiveView('guide')}
               className={cn(
                 "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap'
+                activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap' || activeView === 'normal'
                   ? "bg-primary/10 text-primary"
                   : "hover:bg-muted/50"
               )}

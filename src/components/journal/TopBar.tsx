@@ -4,38 +4,24 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Flame, ArrowLeft, ArrowRight, Settings, LogOut, Download, Trash2, Sparkles, FileText } from 'lucide-react';
+import { Flame, ArrowLeft, ArrowRight, Settings, LogOut } from 'lucide-react';
 import { UserProgress } from '@/hooks/useJournalStore';
 import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
 import { cn } from '@/lib/utils';
 
 interface TopBarProps {
     progress: UserProgress;
-    hasJournalEntries: boolean;
     onPreviousDay: () => void;
     onNextDay: () => void;
-    onExportJournal: () => void;
-    onClearJournal: () => void;
-    onRunTutorialAgain: () => void;
-    onReadFullProtocol?: () => void;
-    showReadFullProtocol?: boolean;
     onSignOut: () => void;
 }
 
 export const TopBar = ({
     progress,
-    hasJournalEntries,
     onPreviousDay,
     onNextDay,
-    onExportJournal,
-    onClearJournal,
-    onRunTutorialAgain,
-    onReadFullProtocol,
-    showReadFullProtocol = false,
     onSignOut,
 }: TopBarProps) => {
     const dayLabel = getDayLabel(progress.currentDay);
@@ -46,13 +32,13 @@ export const TopBar = ({
 
     return (
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
-            <div className="flex items-center justify-between px-4 lg:px-6 h-14">
+            <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 h-14">
                 {/* Left: Day & Week */}
-                <div className="flex items-center gap-4 min-w-0">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 min-w-0 sm:gap-4">
+                    <div className="flex items-center gap-1.5">
                         <div className="flex flex-col">
-                            <span className="text-sm font-bold leading-none">{dayLabel}</span>
-                            <span className={cn("text-xs font-medium leading-none mt-0.5", progress.currentDay === 0 ? "text-primary" : "text-muted-foreground")}>
+                            <span className="text-[15px] font-semibold leading-none tracking-[-0.01em]">{dayLabel}</span>
+                            <span className={cn("text-[11px] font-medium leading-none mt-0.5", progress.currentDay === 0 ? "text-primary" : "text-muted-foreground")}>
                                 {stageLabel}
                             </span>
                         </div>
@@ -74,26 +60,30 @@ export const TopBar = ({
                 </div>
 
                 {/* Right: Actions */}
-                <div data-tour="day-controls" className="flex items-center gap-1.5">
+                <div
+                    data-tour="day-controls"
+                    className="flex items-center gap-1 rounded-xl border border-border/60 bg-card/70 p-1 shadow-[inset_0_1px_0_hsl(var(--background)/0.45)] sm:rounded-none sm:border-none sm:bg-transparent sm:p-0 sm:shadow-none sm:gap-1.5"
+                >
                     <Button
                         onClick={onPreviousDay}
                         size="sm"
-                        variant="outline"
-                        className="gap-1.5 text-xs h-8"
+                        variant="ghost"
+                        className="h-8 w-8 rounded-lg p-0 text-muted-foreground hover:bg-muted/40 hover:text-foreground disabled:opacity-45 sm:h-8 sm:w-auto sm:px-2 sm:gap-1.5 sm:text-xs"
                         disabled={isFirstDay}
+                        aria-label="Previous day"
                     >
                         <ArrowLeft className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Previous day</span>
-                        <span className="sm:hidden">Prev</span>
+                        <span className="hidden sm:inline">Prev</span>
                     </Button>
                     <Button
                         onClick={onNextDay}
                         size="sm"
-                        className="gap-1.5 text-xs h-8"
+                        variant="ghost"
+                        className="h-8 w-8 rounded-lg p-0 text-primary hover:bg-primary/12 hover:text-primary disabled:opacity-45 sm:h-8 sm:w-auto sm:px-2 sm:gap-1.5 sm:text-xs sm:text-foreground"
                         disabled={isLastDay}
+                        aria-label="Next day"
                     >
-                        <span className="hidden sm:inline">Next day</span>
-                        <span className="sm:hidden">Next</span>
+                        <span className="hidden sm:inline">Next</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                     </Button>
                     <DropdownMenu>
@@ -101,48 +91,13 @@ export const TopBar = ({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8"
+                                className="h-8 w-8 rounded-lg text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                                 title="Settings"
                             >
                                 <Settings className="w-4 h-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={onRunTutorialAgain}
-                                className="gap-2"
-                            >
-                                <Sparkles className="w-4 h-4" />
-                                Run tutorial again
-                            </DropdownMenuItem>
-                            {showReadFullProtocol && onReadFullProtocol && (
-                                <DropdownMenuItem
-                                    onClick={onReadFullProtocol}
-                                    className="gap-2"
-                                >
-                                    <FileText className="w-4 h-4" />
-                                    Read full protocol
-                                </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                onClick={onExportJournal}
-                                disabled={!hasJournalEntries}
-                                className="gap-2"
-                            >
-                                <Download className="w-4 h-4" />
-                                Export journal
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={onClearJournal}
-                                disabled={!hasJournalEntries}
-                                className="gap-2 text-destructive focus:text-destructive"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                                Clear today's journal
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
+                        <DropdownMenuContent align="end" className="w-44">
                             <DropdownMenuItem
                                 onClick={onSignOut}
                                 className="gap-2 text-destructive focus:text-destructive"

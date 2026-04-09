@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Activity, AlertTriangle, BookOpen, ChevronDown, ChevronLeft, CheckCircle2, ShoppingCart, X } from 'lucide-react';
+import { Activity, BookOpen, ChevronLeft, ShoppingCart, X } from 'lucide-react';
 import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
 import { getNormalToday } from '@/hooks/normalToday';
 import { ProtocolRoadmap } from '@/components/journal/ProtocolRoadmap';
@@ -14,9 +14,9 @@ interface ProtocolReferenceProps {
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenRoadmapView: () => void;
+    onOpenNormalTodayView: () => void;
     isOpen: boolean;
     onToggle: () => void;
-    normalTodayAutoOpenSignal?: number;
 }
 
 const getGuideQuoteSeed = (currentDay: number, date = new Date()) => {
@@ -39,9 +39,9 @@ export const ProtocolReference = ({
     currentDay,
     onOpenShoppingView,
     onOpenRoadmapView,
+    onOpenNormalTodayView,
     isOpen,
     onToggle,
-    normalTodayAutoOpenSignal,
 }: ProtocolReferenceProps) => {
     return (
         <>
@@ -89,7 +89,7 @@ export const ProtocolReference = ({
                                     currentPhase={currentPhase}
                                     onOpenShoppingView={onOpenShoppingView}
                                     onOpenRoadmapView={onOpenRoadmapView}
-                                    normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
+                                    onOpenNormalTodayView={onOpenNormalTodayView}
                                 />
                             </div>
                         </ScrollArea>
@@ -105,13 +105,13 @@ export function MobileProtocolReferenceContent({
     currentDay,
     onOpenShoppingView,
     onOpenRoadmapView,
-    normalTodayAutoOpenSignal,
+    onOpenNormalTodayView,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenRoadmapView: () => void;
-    normalTodayAutoOpenSignal?: number;
+    onOpenNormalTodayView: () => void;
 }) {
     return (
         <GuideContent
@@ -119,7 +119,7 @@ export function MobileProtocolReferenceContent({
             currentDay={currentDay}
             onOpenShoppingView={onOpenShoppingView}
             onOpenRoadmapView={onOpenRoadmapView}
-            normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
+            onOpenNormalTodayView={onOpenNormalTodayView}
         />
     );
 }
@@ -129,59 +129,31 @@ function GuideContent({
     currentDay,
     onOpenShoppingView,
     onOpenRoadmapView,
-    normalTodayAutoOpenSignal,
+    onOpenNormalTodayView,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenRoadmapView: () => void;
-    normalTodayAutoOpenSignal?: number;
+    onOpenNormalTodayView: () => void;
 }) {
-    const [isNormalTodayOpen, setIsNormalTodayOpen] = useState(false);
     const [quoteSeed, setQuoteSeed] = useState(() => getGuideQuoteSeed(currentDay));
-    const quoteSeedDayRef = useRef(currentDay);
-    const normalTodayCardRef = useRef<HTMLElement | null>(null);
+    const [quoteSeedDay, setQuoteSeedDay] = useState(currentDay);
     const normalToday = getNormalToday(currentDay);
     const stageLabel = getJourneyStageLabel(currentDay, currentPhase);
     const dailyNote = getCoachDailyNote(currentDay, new Date(), quoteSeed);
 
     useEffect(() => {
-        if (quoteSeedDayRef.current === currentDay) {
+        if (quoteSeedDay === currentDay) {
             return;
         }
 
-        quoteSeedDayRef.current = currentDay;
+        setQuoteSeedDay(currentDay);
         setQuoteSeed(getGuideQuoteSeed(currentDay));
-    }, [currentDay]);
-
-    useEffect(() => {
-        if (normalTodayAutoOpenSignal) {
-            setIsNormalTodayOpen(true);
-            const scrollToNormalToday = () => {
-                normalTodayCardRef.current?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start',
-                });
-            };
-
-            // Run on successive frames so this works both when the guide is already open
-            // and when it just mounted from a Coach action.
-            let raf1 = 0;
-            let raf2 = 0;
-            raf1 = window.requestAnimationFrame(() => {
-                scrollToNormalToday();
-                raf2 = window.requestAnimationFrame(scrollToNormalToday);
-            });
-
-            return () => {
-                window.cancelAnimationFrame(raf1);
-                window.cancelAnimationFrame(raf2);
-            };
-        }
-    }, [normalTodayAutoOpenSignal]);
+    }, [currentDay, quoteSeedDay]);
 
     return (
-        <div className="space-y-3.5">
+        <div className="space-y-2.5">
             <GuideQuoteCard
                 dateLabel={dailyNote.dateLabel}
                 quote={dailyNote.quote}
@@ -190,25 +162,23 @@ function GuideContent({
             />
 
             <PrimaryGuideCard
-                eyebrow="Buy by phase"
+                eyebrow="Quick access"
                 tone="emerald"
                 title="Shopping list"
-                description="Foundation first, then Week 1, Week 2, and Week 3. Edit it, trim it, and buy only what fits your version of the cleanse."
+                description="Open by week, buy what you need now, and keep the rest collapsed until you need it."
                 actionLabel="Open shopping list"
                 icon={<ShoppingCart className="h-3.5 w-3.5 text-primary/85" />}
                 onClick={onOpenShoppingView}
             />
 
-            <GuideNormalTodayCard
-                sectionRef={normalTodayCardRef}
-                title="What's normal today"
-                description={`${getDayLabel(currentDay)} · ${stageLabel}`}
-                headline={normalToday.headline}
-                isOpen={isNormalTodayOpen}
-                onToggle={() => setIsNormalTodayOpen((value) => !value)}
-                normal={normalToday.normal}
-                redFlags={normalToday.redFlags}
-                ignore={normalToday.ignore}
+            <PrimaryGuideCard
+                eyebrow="Quick context"
+                tone="emerald"
+                title="Symptom tracker"
+                description={`${getDayLabel(currentDay)} · ${stageLabel}. ${normalToday.headline}`}
+                actionLabel="Open symptom tracker"
+                icon={<Activity className="h-3.5 w-3.5 text-primary/85" />}
+                onClick={onOpenNormalTodayView}
             />
 
             <ProtocolRoadmap
@@ -240,35 +210,29 @@ function PrimaryGuideCard({
     return (
         <section
             className={cn(
-                'relative overflow-hidden rounded-2xl border px-3 py-3',
+                'rounded-2xl border px-3 py-3 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]',
                 tone === 'emerald'
-                    ? 'border-primary/25 bg-card/72 shadow-[0_0_0_1px_hsl(var(--primary)/0.14),inset_0_1px_0_hsl(var(--background)/0.35)]'
-                    : 'border-border/60 bg-card/60 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]',
+                    ? 'border-primary/28 bg-card/80'
+                    : 'border-border/60 bg-card/72',
             )}
         >
-            {tone === 'emerald' && (
-                <>
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_55%)]" />
-                    <div className="pointer-events-none absolute inset-[1px] rounded-[15px] border border-primary/10" />
-                </>
-            )}
-            <div className="relative">
+            <div>
                 {eyebrow && (
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary/80">
                         {eyebrow}
                     </p>
                 )}
-                <p className="mt-1 text-sm font-semibold text-foreground">{title}</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+                <p className="mt-1 text-[15px] font-semibold leading-5 text-foreground">{title}</p>
+                <p className="mt-1 text-[12px] leading-5 text-muted-foreground">{description}</p>
             </div>
             <Button
                 variant="outline"
                 size="sm"
                 className={cn(
-                    'relative mt-2.5 h-8 w-full justify-between rounded-xl px-2.5 text-xs font-medium',
+                    'mt-2.5 h-9 w-full justify-between rounded-xl px-3 text-[12px] font-medium',
                     tone === 'emerald'
-                        ? 'border-primary/25 bg-background/40 hover:bg-primary/8'
-                        : 'border-border/60 bg-background/30 hover:bg-muted/25',
+                        ? 'border-primary/25 bg-primary/[0.06] hover:bg-primary/[0.10]'
+                        : 'border-border/60 bg-background/40 hover:bg-muted/25',
                 )}
                 onClick={onClick}
             >
@@ -291,197 +255,29 @@ function GuideQuoteCard({
     support: string;
 }) {
     return (
-        <section className="relative overflow-hidden rounded-xl border border-border/60 bg-card/70 px-3 py-3 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.14),transparent_58%)]" />
-            <div className="relative">
+        <section className="px-1 py-0.5">
+            <div className="border-l border-primary/35 pl-3">
                 <div className="flex items-center justify-between gap-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary/80">
                         Daily quote
                     </p>
                     <p className="text-[10px] text-muted-foreground">{dateLabel}</p>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-foreground">
+
+                <p className="mt-1.5 text-[13px] leading-6 text-foreground/90">
                     "{quote}"
                 </p>
-                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-primary/85">
+
+                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary/80">
                     {author}
                 </p>
-                <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+                <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground/95">
                     {support}
                 </p>
             </div>
+
+            <div className="mt-2 h-px bg-gradient-to-r from-primary/30 via-border/50 to-transparent" />
         </section>
-    );
-}
-
-function GuideNormalTodayCard({
-    sectionRef,
-    title,
-    description,
-    headline,
-    isOpen,
-    onToggle,
-    normal,
-    redFlags,
-    ignore,
-}: {
-    sectionRef?: RefObject<HTMLElement | null>;
-    title: string;
-    description: string;
-    headline: string;
-    isOpen: boolean;
-    onToggle: () => void;
-    normal: string[];
-    redFlags: string[];
-    ignore: string[];
-}) {
-    const [activeTab, setActiveTab] = useState<'normal' | 'red' | 'ignore'>('normal');
-
-    useEffect(() => {
-        if (isOpen) {
-            setActiveTab('normal');
-        }
-    }, [isOpen, description]);
-
-    const tabConfig = {
-        normal: {
-            label: 'Expected',
-            icon: <Activity className="h-4 w-4 text-primary/80" />,
-            items: normal,
-            tone: 'normal' as const,
-        },
-        red: {
-            label: 'Pause',
-            icon: <AlertTriangle className="h-4 w-4 text-rose-500" />,
-            items: redFlags,
-            tone: 'alert' as const,
-        },
-        ignore: {
-            label: 'Ignore',
-            icon: <CheckCircle2 className="h-4 w-4 text-muted-foreground" />,
-            items: ignore,
-            tone: 'muted' as const,
-        },
-    };
-
-    const active = tabConfig[activeTab];
-
-    return (
-        <section
-            ref={sectionRef}
-            className="relative overflow-hidden rounded-2xl border border-primary/25 bg-card/72 shadow-[0_0_0_1px_hsl(var(--primary)/0.14),inset_0_1px_0_hsl(var(--background)/0.35)]"
-        >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_56%)]" />
-            <div className="pointer-events-none absolute inset-[1px] rounded-[15px] border border-primary/10" />
-            <button
-                type="button"
-                onClick={onToggle}
-                className="relative flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/20"
-            >
-                <div className="min-w-0">
-                    <p className="text-sm font-semibold text-foreground">{title}</p>
-                    <p className="mt-1 text-[11px] leading-5 text-muted-foreground">{description}</p>
-                    <p className="mt-2 max-w-[34ch] text-[14px] leading-7 text-foreground/85">
-                        {headline}
-                    </p>
-                    <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
-                        Tap to see what is typical vs when to pause.
-                    </p>
-                </div>
-                <ChevronDown
-                    className={cn(
-                        'h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform',
-                        isOpen && 'rotate-180',
-                    )}
-                />
-            </button>
-            {isOpen && (
-                <div className="relative space-y-3 px-3 pb-3 pt-0.5">
-                    <div className="grid grid-cols-3 gap-1 rounded-xl border border-border/60 bg-background/35 p-1">
-                        {(
-                            [
-                                { id: 'normal' as const, label: tabConfig.normal.label },
-                                { id: 'red' as const, label: tabConfig.red.label },
-                                { id: 'ignore' as const, label: tabConfig.ignore.label },
-                            ] as const
-                        ).map((tab) => (
-                            <button
-                                key={tab.id}
-                                type="button"
-                                onClick={() => setActiveTab(tab.id)}
-                                className={cn(
-                                    'h-8 rounded-lg text-[11px] font-medium transition-colors',
-                                    activeTab === tab.id
-                                        ? 'bg-primary/12 text-foreground shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]'
-                                        : 'text-muted-foreground hover:bg-muted/25',
-                                )}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-
-                    <GuideSignalBlock
-                        title={active.label}
-                        items={active.items}
-                        icon={active.icon}
-                        tone={active.tone}
-                    />
-                </div>
-            )}
-        </section>
-    );
-}
-
-function GuideSignalBlock({
-    title,
-    items,
-    icon,
-    tone = 'normal',
-}: {
-    title: string;
-    items: string[];
-    icon: ReactNode;
-    tone?: 'normal' | 'alert' | 'muted';
-}) {
-    return (
-        <div
-            className={cn(
-                'rounded-[18px] border px-3 py-3',
-                tone === 'normal' && 'border-primary/20 bg-background/70',
-                tone === 'alert' && 'border-rose-500/20 bg-rose-500/6',
-                tone === 'muted' && 'border-border/60 bg-background/70',
-            )}
-        >
-            <div className="flex items-center gap-2">
-                {icon}
-                <p
-                    className={cn(
-                        'text-[12px] font-semibold',
-                        tone === 'normal' && 'text-foreground',
-                        tone === 'alert' && 'text-rose-500',
-                        tone === 'muted' && 'text-foreground',
-                    )}
-                >
-                    {title}
-                </p>
-            </div>
-            <div className="mt-2 space-y-2">
-                {items.map((item) => (
-                    <div key={item} className="flex items-start gap-2.5 text-[13px] leading-6 text-muted-foreground">
-                        <span
-                            className={cn(
-                                'mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full',
-                                tone === 'normal' && 'bg-primary/70',
-                                tone === 'alert' && 'bg-rose-500',
-                                tone === 'muted' && 'bg-muted-foreground/50',
-                            )}
-                        />
-                        <span className="text-foreground/82">{item}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
     );
 }
 

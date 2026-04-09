@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { MessageSquare, Leaf, ArrowDown, Sparkles, Plus } from 'lucide-react';
+import { MessageSquare, Leaf, ArrowDown, Sparkles, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ChatMessage } from '@/components/chat/ChatMessage';
 import { ChatInput } from '@/components/chat/ChatInput';
@@ -306,6 +306,9 @@ export const JournalCenter = ({
                                 <CoachStarterPanel
                                     starterState={starterState}
                                     compact
+                                    onPromptSelect={(prompt) => {
+                                        void handleSend(prompt);
+                                    }}
                                 />
                             </div>
                         ) : (
@@ -313,6 +316,9 @@ export const JournalCenter = ({
                                 <div className="w-full max-w-xl">
                                     <CoachStarterPanel
                                         starterState={starterState}
+                                        onPromptSelect={(prompt) => {
+                                            void handleSend(prompt);
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -382,17 +388,16 @@ export const JournalCenter = ({
 function CoachStarterPanel({
     starterState,
     compact = false,
+    onPromptSelect,
 }: {
     starterState: GutBrainStarterState;
     compact?: boolean;
+    onPromptSelect?: (prompt: string) => void;
 }) {
     return (
-        <div className={cn(
-            'rounded-[28px] border border-border/60 bg-card/95 shadow-sm',
-            compact ? 'p-4' : 'p-6',
-        )}>
+        <div className={cn(compact ? 'space-y-3 px-0.5 py-1' : 'space-y-3 px-1 py-1')}>
             <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/6 text-primary">
                     <Sparkles className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-2 text-left">
@@ -410,9 +415,35 @@ function CoachStarterPanel({
                     </p>
                 </div>
             </div>
-            <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-                Ask Coach for today&apos;s plan, friction support, or the clearest next step.
-            </p>
+            {starterState.prompts.length > 0 && (
+                <div className="grid gap-2">
+                    {starterState.prompts.map((starterPrompt, index) => (
+                        <button
+                            key={`${starterPrompt.label}-${index}`}
+                            type="button"
+                            onClick={() => onPromptSelect?.(starterPrompt.prompt)}
+                            className={cn(
+                                'group relative flex items-center gap-3 w-full rounded-xl border px-4 py-3 text-left text-sm',
+                                'bg-background/60 backdrop-blur-sm',
+                                'border-border/60 hover:border-emerald-500/40',
+                                'hover:bg-emerald-500/5',
+                                'transition-all duration-200 ease-out',
+                                'active:scale-[0.98]',
+                            )}
+                        >
+                            <span className={cn(
+                                'flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold flex-shrink-0',
+                                'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20',
+                                'group-hover:bg-emerald-500/20 group-hover:ring-emerald-500/40 transition-colors',
+                            )}>
+                                {String.fromCharCode(65 + (index % 26))}
+                            </span>
+                            <span className="flex-1 font-medium text-foreground">{starterPrompt.label}</span>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-emerald-400 transition-colors" />
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

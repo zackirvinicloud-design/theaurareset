@@ -22,82 +22,70 @@ interface ProtocolRoadmapExplorerProps {
 }
 
 function getWhyNowDescription(phase: ProtocolRoadmapPhase) {
-    if (phase.id === 'prep') {
-        return 'Prep Day is about reducing chaos. Cleaner food, clear timing, and elimination support make the rest of the cleanse easier to follow and easier to interpret.';
-    }
-
-    if (phase.id === 'week-1') {
-        return 'Week 1 lowers fungal overgrowth and sugar-driven pressure first. A calmer gut environment makes the parasite week less chaotic for most people.';
-    }
-
-    if (phase.id === 'week-2') {
-        return 'Week 2 is usually louder. By now, meals and timing are steadier, so the body has more support in place when the focus shifts to parasites.';
-    }
-
-    return 'Week 3 is slower and more control-heavy. With a steady rhythm in place, it is easier to finish with calmer bind-and-clear support without crashing your energy.';
+    return phase.why;
 }
 
-function getFocusPoints(phase: ProtocolRoadmapPhase): string[] {
+function getTargetPoints(phase: ProtocolRoadmapPhase): string[] {
     if (phase.id === 'prep') {
         return [
-            'Shop the basics so tomorrow feels simple.',
-            'Pick a realistic breakfast and lunch for Day 1.',
-            'Organize supplements so you are not guessing.',
+            'Reduce high-sugar, high-trigger inputs that feed microbial overgrowth.',
+            'Set bowel, hydration, and binder rhythm before active elimination starts.',
+            'Convert the protocol from theory into a repeatable daily system.',
         ];
     }
 
     if (phase.id === 'week-1') {
         return [
-            'Keep meals clean and simple (lower sugar).',
-            'Stay steady with timing, hydration, and binders.',
-            'Keep elimination moving before you add intensity.',
+            'Lower fungal overgrowth and biofilm-like terrain in the gut.',
+            'Reduce fuel sources that keep fungal colonies active.',
+            'Prepare cleaner terrain before parasite-focused pressure starts.',
         ];
     }
 
     if (phase.id === 'week-2') {
         return [
-            'Keep the Week 1 foundation steady.',
-            'Hydration and binder timing matter more now.',
-            'Do not panic and freelance when symptoms flare.',
+            'Apply parasite-focused pressure after Week 1 terrain cleanup.',
+            'Disrupt active parasite burden and reduce cycle persistence.',
+            'Keep debris clearance high so the phase is tolerable and controlled.',
         ];
     }
 
     return [
-        'Go slower and prioritize sleep and recovery.',
-        'Keep bowel regularity a priority.',
-        'Finish clean: avoid adding extra experiments.',
+        'Bind and clear remaining toxic burden with tighter control.',
+        'Support liver-bile-gut clearance while reducing system stress.',
+        'Stabilize the body before maintenance instead of forcing intensity.',
     ];
 }
 
-function getExpectPoints(phase: ProtocolRoadmapPhase): string[] {
+function getScienceOutlinePoints(phase: ProtocolRoadmapPhase): string[] {
     if (phase.id === 'prep') {
         return [
-            'Overwhelm from setup is normal.',
-            'Cravings when you remove off-plan foods.',
-            'Relief once tomorrow is planned.',
+            'Detox output has to leave through bowel, bile, urine, and sweat; Prep protects those exits first.',
+            'Meal timing and hydration stabilize glucose and cortisol swings that amplify symptom noise.',
+            'A stable baseline makes later phase signals easier to interpret.',
         ];
     }
 
     if (phase.id === 'week-1') {
         return [
-            'Cravings or headaches as sugar drops.',
-            'Energy dips and brain fog waves early on.',
-            'Symptoms often level off once the routine stabilizes.',
+            'Fungal organisms can form protective biofilm communities that are harder to clear when fed by sugar.',
+            'Protocol logic: weaken fungal terrain first so downstream parasite targeting is cleaner.',
+            'Week 1 focuses on terrain + elimination, not brute force intensity.',
         ];
     }
 
     if (phase.id === 'week-2') {
         return [
-            'More noticeable bathroom changes.',
-            'Energy and mood can come in waves.',
-            'Days 10-14 are often the loudest stretch.',
+            'Parasite-focused compounds are introduced after terrain pressure is reduced.',
+            'Protocol premise: once fungal terrain is lower, parasite load and egg-cycle persistence are easier to disrupt.',
+            'The same clearance tools stay in place to remove mobilized debris and inflammatory byproducts.',
         ];
     }
 
     return [
-        'Tiredness if sleep and hydration slip.',
-        'Sensitivity to timing and stress goes up.',
-        'Some people feel clearer as the finish calms down.',
+        'Heavy-metal burden is associated with microbiome disruption and oxidative stress in toxicology literature.',
+        'Week 3 uses a bind-and-clear approach to lower residual burden without destabilizing the nervous system.',
+        'The finish is designed for controlled clearance and recovery, not escalation.',
     ];
 }
 
@@ -115,6 +103,38 @@ function getCommonTrap(phase: ProtocolRoadmapPhase): string {
     }
 
     return 'Trying to force a dramatic finish instead of finishing calm.';
+}
+
+function getNavigationPoints(phase: ProtocolRoadmapPhase): string[] {
+    if (phase.id === 'prep') {
+        return [
+            'Win condition: tomorrow feels obvious, not overwhelming.',
+            'Do first: shopping essentials, kitchen cleanup, and supplement layout.',
+            'Avoid: overbuying and overreading.',
+        ];
+    }
+
+    if (phase.id === 'week-1') {
+        return [
+            'Win condition: clean food and consistent timing every day.',
+            'Do first: lower sugar, keep hydration high, protect binder windows.',
+            'Avoid: changing the plan every time discomfort appears.',
+        ];
+    }
+
+    if (phase.id === 'week-2') {
+        return [
+            'Win condition: maintain Week 1 foundation while phase focus shifts.',
+            'Do first: keep meals stable and clearance support predictable.',
+            'Avoid: panic pivots and research spirals.',
+        ];
+    }
+
+    return [
+        'Win condition: finish steady with recovery capacity intact.',
+        'Do first: sleep quality, elimination regularity, and consistency.',
+        'Avoid: adding new “stronger” interventions late.',
+    ];
 }
 
 function RoadmapMiniCard({ title, points }: { title: string; points: string[] }) {
@@ -164,7 +184,7 @@ export function ProtocolRoadmapExplorer({
                             </h2>
                         </div>
                         <p className="mt-1 text-[13px] leading-6 text-muted-foreground sm:text-[15px]">
-                            Tap a phase to get the quick context: what it is doing, what you might notice, and what matters most.
+                            Tap a phase for protocol logic: what it targets, why the order matters, and how to navigate the journey clearly.
                         </p>
                     </div>
                 </div>
@@ -222,6 +242,15 @@ export function ProtocolRoadmapExplorer({
                                                     <div className="space-y-3">
                                                         <div className="rounded-[18px] border border-border/60 bg-background/40 px-3 py-3 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]">
                                                             <p className="text-[11px] font-semibold text-muted-foreground">
+                                                                Phase deep dive
+                                                            </p>
+                                                            <p className="mt-1 text-[14px] leading-7 text-foreground/85">
+                                                                {phase.overview}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="rounded-[18px] border border-border/60 bg-background/40 px-3 py-3 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]">
+                                                            <p className="text-[11px] font-semibold text-muted-foreground">
                                                                 Why this phase comes now
                                                             </p>
                                                             <p className="mt-1 text-[14px] leading-7 text-foreground/85">
@@ -230,9 +259,11 @@ export function ProtocolRoadmapExplorer({
                                                         </div>
 
                                                         <div className="grid gap-2 sm:grid-cols-2">
-                                                            <RoadmapMiniCard title="Focus" points={getFocusPoints(phase)} />
-                                                            <RoadmapMiniCard title="What you might notice" points={getExpectPoints(phase)} />
+                                                            <RoadmapMiniCard title="What this phase targets" points={getTargetPoints(phase)} />
+                                                            <RoadmapMiniCard title="How to navigate this phase" points={getNavigationPoints(phase)} />
                                                         </div>
+
+                                                        <RoadmapMiniCard title="Science outline" points={getScienceOutlinePoints(phase)} />
 
                                                         <p className="text-[12px] leading-6 text-muted-foreground">
                                                             <span className="font-medium text-foreground">Common trap:</span> {getCommonTrap(phase)}

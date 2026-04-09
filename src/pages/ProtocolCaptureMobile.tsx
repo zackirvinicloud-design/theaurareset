@@ -4,6 +4,7 @@ import { BookOpen, ClipboardList, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JournalCenter } from '@/components/journal/JournalCenter';
 import { MobileTodayView } from '@/components/journal/MobileTodayView';
+import { NormalTodayView } from '@/components/journal/NormalTodayView';
 import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExplorer';
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
 import { MobileProtocolReferenceContent } from '@/components/journal/ProtocolReference';
@@ -28,7 +29,7 @@ function makeEntry(day: number, role: 'user' | 'assistant', content: string, min
 }
 
 type CaptureScene = 'prep' | 'today' | 'help' | 'guide';
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap';
+type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap' | 'normal';
 
 function normalizeScene(value?: string): CaptureScene {
   if (value === 'prep' || value === 'today' || value === 'help' || value === 'guide') return value;
@@ -161,12 +162,8 @@ export default function ProtocolCaptureMobile() {
 
       <TopBar
         progress={progress}
-        hasJournalEntries={entries.length > 0}
         onPreviousDay={() => undefined}
         onNextDay={() => undefined}
-        onExportJournal={() => undefined}
-        onClearJournal={() => undefined}
-        onRunTutorialAgain={() => undefined}
         onSignOut={() => undefined}
       />
 
@@ -189,25 +186,28 @@ export default function ProtocolCaptureMobile() {
             onBack={() => setActiveView('guide')}
             onOpenShoppingView={() => setActiveView('shopping')}
             onAskCoach={() => setActiveView('help')}
-            onOpenNormalToday={() => setActiveView('guide')}
+            onOpenNormalToday={() => setActiveView('normal')}
+          />
+        ) : activeView === 'normal' ? (
+          <NormalTodayView
+            currentDay={progress.currentDay}
+            currentPhase={progress.currentPhase}
+            onBack={() => setActiveView('guide')}
+            onAskCoach={() => setActiveView('help')}
           />
         ) : activeView === 'guide' ? (
           <div className="flex h-full flex-col bg-background">
-            <div className="flex-1 overflow-y-auto px-4 py-4 pb-6">
-              <div className="space-y-5">
-                <div className="border-b border-border/50 pb-4">
-                  <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Guide</h2>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Open the roadmap, shopping list, or the quick reference you actually need today.
-                  </p>
-                </div>
-                <MobileProtocolReferenceContent
-                  currentPhase={progress.currentPhase}
-                  currentDay={progress.currentDay}
-                  onOpenShoppingView={() => setActiveView('shopping')}
-                  onOpenRoadmapView={() => setActiveView('roadmap')}
-                />
+            <div className="flex-1 overflow-y-auto px-4 py-3.5 pb-6">
+              <div className="mb-2">
+                <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-foreground">Guide</h2>
               </div>
+              <MobileProtocolReferenceContent
+                currentPhase={progress.currentPhase}
+                currentDay={progress.currentDay}
+                onOpenShoppingView={() => setActiveView('shopping')}
+                onOpenRoadmapView={() => setActiveView('roadmap')}
+                onOpenNormalTodayView={() => setActiveView('normal')}
+              />
             </div>
           </div>
         ) : activeView === 'today' ? (
@@ -263,7 +263,9 @@ export default function ProtocolCaptureMobile() {
             onClick={() => setActiveView('guide')}
             className={cn(
               'flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors',
-              activeView === 'guide' || activeView === 'roadmap' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
+              activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap' || activeView === 'normal'
+                ? 'bg-primary/10 text-primary'
+                : 'hover:bg-muted/50',
             )}
           >
             <BookOpen className="w-5 h-5" />

@@ -96,10 +96,10 @@ export const EMPTY_GUT_BRAIN_PROFILE: GutBrainProfile = {
 };
 
 export const GUT_BRAIN_SUGGESTED_PROMPTS = [
-  'What is the one thing most likely to knock me off today?',
-  'What do you think I need to hear to stay consistent?',
-  'What pattern are you noticing in how I am doing this?',
-  'Help me make today feel easier, not perfect.',
+  "TMI: my stomach feels wrecked. Is this normal or a red flag?",
+  "I messed up yesterday. Be honest: did I ruin it? What do I do today?",
+  "I'm bloated and not pooping. Give me a 12-hour rescue plan.",
+  "I'm overwhelmed. Give me the simplest plan for today (what to do and what to ignore).",
 ];
 
 const includesAny = (value: string | null | undefined, terms: string[]) => {
@@ -111,35 +111,276 @@ const includesAny = (value: string | null | undefined, terms: string[]) => {
   return terms.some((term) => normalized.includes(term));
 };
 
+const countTermMatches = (value: string, terms: string[]) => {
+  const normalized = value.toLowerCase();
+  return terms.reduce((count, term) => (
+    normalized.includes(term) ? count + 1 : count
+  ), 0);
+};
+
+const rotatePromptsBySeed = (prompts: GutBrainStarterPrompt[], seed: number) => {
+  if (prompts.length <= 1) {
+    return prompts;
+  }
+
+  const safeSeed = Number.isFinite(seed) ? Math.abs(Math.trunc(seed)) : 0;
+  const offset = safeSeed % prompts.length;
+  if (offset === 0) {
+    return prompts;
+  }
+
+  return [...prompts.slice(offset), ...prompts.slice(0, offset)];
+};
+
+const getMemoryAdaptivePrompts = (
+  progress: GutBrainProgressState,
+  profile?: GutBrainProfile | null,
+  snapshot?: GutBrainSnapshot | null,
+) => {
+  const memoryChunks = [
+    profile?.protocolGoal ?? '',
+    profile?.whyNow ?? '',
+    profile?.conversationSummary ?? '',
+    profile?.barriers.join(' ') ?? '',
+    profile?.supportPreferences.join(' ') ?? '',
+    profile?.wins.join(' ') ?? '',
+    snapshot?.summary ?? '',
+    snapshot?.nextStep ?? '',
+    ...(snapshot?.signals ?? []).flatMap((signal) => [signal.title, signal.observation, ...signal.evidence]),
+  ];
+  const memoryText = memoryChunks.join(' ').toLowerCase();
+  const prompts: GutBrainStarterPrompt[] = [];
+
+  const digestiveScore = countTermMatches(memoryText, [
+    'bloat',
+    'bloated',
+    'constipation',
+    'stool',
+    'bowel',
+    'digestion',
+    'gut',
+    'cramp',
+    'nausea',
+    'diarrhea',
+  ]);
+  const energyScore = countTermMatches(memoryText, [
+    'energy',
+    'fatigue',
+    'tired',
+    'brain fog',
+    'focus',
+    'clarity',
+    'motivation',
+  ]);
+  const routineScore = countTermMatches(memoryText, [
+    'busy',
+    'schedule',
+    'time',
+    'travel',
+    'work',
+    'kids',
+    'overwhelm',
+    'overthink',
+    'consistency',
+  ]);
+  const symptomAnxietyScore = countTermMatches(memoryText, [
+    'normal',
+    'die-off',
+    'die off',
+    'anxious',
+    'anxiety',
+    'worried',
+    'fear',
+    'panic',
+    'symptom',
+    'safe',
+  ]);
+  const cycleScore = countTermMatches(memoryText, [
+    'period',
+    'cycle',
+    'pms',
+    'hormone',
+    'hormonal',
+  ]);
+  const sleepScore = countTermMatches(memoryText, [
+    'sleep',
+    'insomnia',
+    'awake',
+    'waking',
+    'wired',
+  ]);
+  const cravingScore = countTermMatches(memoryText, [
+    'craving',
+    'sugar',
+    'sweet',
+    'carb',
+    'snack',
+    'hungry',
+  ]);
+  const coffeeScore = countTermMatches(memoryText, [
+    'coffee',
+    'caffeine',
+    'latte',
+    'espresso',
+    'energy drink',
+  ]);
+  const socialScore = countTermMatches(memoryText, [
+    'party',
+    'wedding',
+    'date',
+    'dinner',
+    'restaurant',
+    'weekend',
+    'travel',
+    'trip',
+    'vacation',
+    'birthday',
+    'drinks',
+    'alcohol',
+  ]);
+  const grossSymptomScore = countTermMatches(memoryText, [
+    'breath',
+    'tongue',
+    'white tongue',
+    'coated tongue',
+    'thrush',
+    'odor',
+    'smell',
+    'body odor',
+  ]);
+
+  if (digestiveScore > 0) {
+    prompts.push({
+      label: "TMI: I'm bloated, gassy, and not pooping. What do I do today?",
+      prompt: "I'm bloated, gassy, and constipated. Can you give me a same-day rescue (hydration, food, timing) and tell me what warning signs mean I should pause and get medical guidance?",
+    });
+  }
+
+  if (energyScore > 0) {
+    prompts.push({
+      label: 'I feel like a zombie. Is this die-off or did I under-eat?',
+      prompt: "I'm exhausted and foggy. Can you separate likely die-off fatigue from under-fueling or poor sleep, then give me the fastest practical fixes I can do today?",
+    });
+  }
+
+  if (routineScore > 0) {
+    prompts.push({
+      label: 'My life is chaos. Give me the minimum-effective version.',
+      prompt: "My day is messy. Can you build a realistic salvage plan with exact timing windows so I can stay effective without doing everything perfectly?",
+    });
+  }
+
+  if (symptomAnxietyScore > 0) {
+    prompts.push({
+      label: 'Be honest: is this normal, or do I need to pause?',
+      prompt: "I'm worried my symptoms mean something is wrong. Based on my phase and recent symptoms, what is common cleanse reaction vs a true caution sign that means I should pause and get professional guidance?",
+    });
+  }
+
+  if (cycleScore > 0) {
+    prompts.push({
+      label: 'My period/PMS is hitting hard. Do I adjust anything?',
+      prompt: "I'm on my period/PMS. Based on my current phase, what should I adjust (if anything) to stay safe and still keep momentum?",
+    });
+  }
+
+  if (sleepScore > 0) {
+    prompts.push({
+      label: "I'm wired at night and sleep is trash. What do I change today?",
+      prompt: "I'm wired at night and sleeping badly. Can you give me a tonight plan to calm down and a small change for tomorrow so this stops repeating?",
+    });
+  }
+
+  if (coffeeScore > 0) {
+    prompts.push({
+      label: 'Be real: do I have to quit coffee, or can I keep it?',
+      prompt: "I don't want to quit coffee. On this protocol, what is ok, what should I avoid, and what are clean alternatives if I should cut back?",
+    });
+  }
+
+  if (socialScore > 0) {
+    prompts.push({
+      label: "I have plans coming up. What can I eat/drink and still stay on track?",
+      prompt: "I have a social thing coming up. What can I order and what should I avoid? Also give me a recovery plan if I slip.",
+    });
+  }
+
+  if (grossSymptomScore > 0) {
+    prompts.push({
+      label: 'Embarrassing: my breath/tongue feels gross. Is that a cleanse thing?',
+      prompt: "This is embarrassing, but my breath/tongue feels gross. Is that common on a cleanse? What can I do today, and what red flags should make me get medical guidance?",
+    });
+  }
+
+  if (cravingScore > 0) {
+    prompts.push({
+      label: "I want sugar so bad I'm about to cave. What do I eat today?",
+      prompt: "I'm craving sugar and carbs. Can you build a same-day meal structure that kills cravings and keeps me compliant?",
+    });
+  }
+
+  if (profile?.wins.length) {
+    const latestWin = profile.wins[profile.wins.length - 1];
+    prompts.push({
+      label: 'I had one good day. How do I repeat it when I feel messy?',
+      prompt: `I had a good day doing this: ${latestWin}. Tell me exactly what to repeat today and what to keep identical.`,
+    });
+  }
+
+  if (snapshot?.nextStep) {
+    prompts.push({
+      label: 'Tell me what to do next, literally right now.',
+      prompt: `Give me a right-now checklist in order: first step, second step, third step, and what to ignore. Use this: ${snapshot.nextStep}`,
+    });
+  }
+
+  if (snapshot?.signals.length) {
+    const topSignal = snapshot.signals[0];
+    prompts.push({
+      label: "Call me out: what's the pattern slowing my progress?",
+      prompt: `You flagged this pattern: ${topSignal.title}. Explain it in plain language and give me the one behavior change with the highest payoff this week.`,
+    });
+  }
+
+  if (progress.currentDay > 0 && profile?.protocolGoal) {
+    prompts.push({
+      label: "Does today's plan actually move me toward my goal?",
+      prompt: `My goal is: ${profile.protocolGoal}. Tell me the single highest-leverage move for today, and the one mistake most likely to derail me.`,
+    });
+  }
+
+  return prompts;
+};
+
 const getBarrierPrompt = (profile?: GutBrainProfile | null): GutBrainStarterPrompt | null => {
   const joinedBarriers = profile?.barriers.join(' ').toLowerCase() ?? '';
   const joinedPreferences = profile?.supportPreferences.join(' ').toLowerCase() ?? '';
 
   if (includesAny(joinedBarriers, ['busy', 'schedule', 'time'])) {
     return {
-      label: 'How do I keep this realistic?',
-      prompt: 'My schedule is messy. Give me the simplest version of today that still keeps me on track.',
+      label: "I have no time today. What's the bare minimum that still works?",
+      prompt: "My schedule is packed today. What's the minimum-effective plan with exact time blocks so I can still stay on track?",
     };
   }
 
   if (includesAny(joinedBarriers, ['overthink', 'confus', 'spiral'])) {
     return {
-      label: 'What can I ignore today?',
-      prompt: 'I am likely to overthink this. Tell me what I can ignore today and what actually matters.',
+      label: "I'm spiraling. What can I ignore today?",
+      prompt: "I'm overthinking. Tell me what to ignore today, what to execute, and what not to research right now.",
     };
   }
 
   if (includesAny(joinedBarriers, ['motivation', 'quit', 'consisten'])) {
     return {
-      label: 'What keeps me consistent today?',
-      prompt: 'I need help staying consistent. What should I focus on today when motivation drops?',
+      label: 'I want to quit today. Give me a tiny plan so I do not.',
+      prompt: "I feel like quitting. Give me a tiny set of actions that protect momentum when I feel like quitting.",
     };
   }
 
   if (includesAny(joinedPreferences, ['direct', 'blunt', 'straight'])) {
     return {
-      label: 'What matters most, bluntly?',
-      prompt: 'Give me the blunt version of what matters today and what does not.',
+      label: 'Blunt mode: what matters today?',
+      prompt: "Give me the blunt version: what matters today, what is noise, and what costs me progress.",
     };
   }
 
@@ -175,155 +416,155 @@ const getProtocolStagePrompts = (
 
   if (progress.currentDay === 0) {
     pushStagePrompt({
-      label: 'What matters most before Day 1?',
-      prompt: 'Map my Prep Day in the clearest order possible and tell me what matters most before Day 1 starts.',
+      label: 'I bought random stuff from TikTok. What do I actually need first?',
+      prompt: "What's the strict Prep Day buy-first list: must-have before Day 1, can-wait items, and what people overbuy?",
     });
     pushStagePrompt({
-      label: 'What should I buy first?',
-      prompt: 'Build my Prep Day shopping plan and tell me what matters most to buy first.',
+      label: "I'm missing things. Can I start anyway or should I wait?",
+      prompt: "If I don't have every supplement, can I start safely? What's truly required to begin, what is optional early, and how do I avoid analysis paralysis?",
     });
     pushStagePrompt({
-      label: 'What could knock me off early?',
-      prompt: 'What is most likely to knock me off before Day 1, and how do I prevent it today?',
+      label: 'What do most people mess up in Week 1 (so I do not)?',
+      prompt: "What are the biggest Week 1 failure patterns, and how do I prevent each one starting now?",
     });
     pushStagePrompt(profile?.whyNow
       ? {
-        label: 'How do I stay anchored to my why?',
-        prompt: `Tie today's prep back to why I am doing this: ${profile.whyNow}`,
+        label: "I'm scared of feeling worse. How do I not quit when symptoms spike?",
+        prompt: `When symptoms spike, I panic. Can you turn my why into a short script I can reread so I don't quit? My why: ${profile.whyNow}`,
       }
       : {
-        label: 'How do I make this feel worth it?',
-        prompt: 'Help me figure out the real reason I am doing this before Day 1 starts, so the plan actually feels worth following.',
+        label: 'How do I make sure I do not quit by Day 3?',
+        prompt: 'Help me write a personal commitment script so I stay in when discomfort and doubt show up.',
       });
   } else if (progress.currentDay === 1) {
     pushStagePrompt({
-      label: 'What matters most on Day 1?',
-      prompt: 'Walk me through Day 1 in plain English and tell me what really matters today.',
+      label: "Day 1: I'm nervous. What's normal vs a red flag?",
+      prompt: "Describe what Day 1 commonly feels like, what is expected adaptation, and what signals should not be ignored.",
     });
     pushStagePrompt({
-      label: 'How do I keep food simple today?',
-      prompt: 'Give me a simple food plan for today that keeps me on track without overcomplicating it.',
+      label: 'Cravings are already loud. What do I eat today so I do not cave?',
+      prompt: "Give me a simple Day 1 food structure that lowers cravings, stabilizes energy, and keeps compliance high.",
     });
     pushStagePrompt({
-      label: 'What should I expect today?',
-      prompt: 'What should I expect on Day 1, and what signs are normal versus just noise?',
+      label: 'I already feel weird. Did I start too hard?',
+      prompt: "I already feel weird. Which early symptoms are common, which suggest I started too aggressively, and how do I adjust without quitting?",
     });
     pushStagePrompt({
-      label: 'If I get overwhelmed, what first?',
-      prompt: 'If I start to feel overwhelmed or behind today, what is the first thing I should do to stay on track?',
+      label: 'I messed up today. Be honest: did I ruin it?',
+      prompt: "I messed up today. Give me a same-day recovery sequence in order so I can continue without restarting.",
     });
   } else if (progress.currentDay === 8) {
     pushStagePrompt({
-      label: 'What changes in this new phase?',
-      prompt: 'I am starting the parasite phase. Tell me what changes today and what stays the same.',
+      label: "I'm impatient. Why can't I go straight to parasites?",
+      prompt: "Explain in plain language why fungal cleanup comes first, how parasites use that terrain, and why this phase is timed for now.",
     });
     pushStagePrompt({
-      label: 'What still matters most today?',
-      prompt: 'What are the non-negotiables today so I do not lose the foundation while this phase changes?',
+      label: 'What keeps Week 2 from going off the rails?',
+      prompt: "Give me Week 2 non-negotiables and the exact failure patterns that derail most people.",
     });
     pushStagePrompt({
-      label: 'What should I watch, not fear?',
-      prompt: 'What should I watch for in this phase without overreacting to every signal?',
+      label: "TMI: I'm seeing weird stool changes. Should I panic?",
+      prompt: "Give me a calm Week 2 framework: common stool/symptom changes, caution signs, and true stop-and-check signs.",
     });
     pushStagePrompt({
-      label: 'How do I stay steady today?',
-      prompt: 'Give me the simplest plan for staying steady today while this phase changes.',
+      label: "Symptoms are louder this week. Give me a simple stability plan.",
+      prompt: "Give me a pressure-week routine I can follow on low-energy days without collapsing compliance.",
     });
   } else if (progress.currentDay === 15) {
     pushStagePrompt({
-      label: 'How do I finish this cleanly?',
-      prompt: 'I am entering the final phase. Tell me how to finish strong without making the day heavier than it needs to be.',
+      label: "I'm over it. How do I finish without burning out?",
+      prompt: "I'm entering the final stretch. How do I finish cleanly without overpushing, under-eating, or burnout?",
     });
     pushStagePrompt({
-      label: 'What is worth focusing on now?',
-      prompt: 'What matters most today if I want a clean finish instead of a chaotic one?',
+      label: 'What matters this week vs what is extra noise?',
+      prompt: "Separate final-week essentials from optional extras so I focus on what actually drives results.",
     });
     pushStagePrompt({
-      label: 'How do I protect my energy?',
-      prompt: 'Help me stay consistent this week without pushing too hard.',
+      label: 'Why do some people feel worse in the final week?',
+      prompt: "Explain common final-week crash patterns and give me the exact adjustments to avoid that pattern.",
     });
     pushStagePrompt({
-      label: 'What can I stop overdoing?',
-      prompt: 'Tell me what I can stop overdoing in this final stretch so I finish strong without adding extra noise.',
+      label: 'Be honest: what am I probably overdoing right now?',
+      prompt: "Tell me what people commonly overdo in this phase and what a smarter controlled version looks like.",
     });
   } else if (progress.currentPhase === 2) {
     pushStagePrompt({
-      label: "What are today's non-negotiables?",
-      prompt: 'What are my three non-negotiables today in this phase?',
+      label: 'If I only nail 3 things today, what are they?',
+      prompt: "If I only nail 3 things today, what are they and why does each one matter right now?",
     });
     pushStagePrompt({
-      label: 'How do I make food easy today?',
-      prompt: 'What should I eat today if I want this phase to feel simpler, not harder?',
+      label: 'What should I eat today so cravings chill out?',
+      prompt: "Give me a low-friction food plan for today that lowers cravings and supports this phase.",
     });
     pushStagePrompt({
-      label: 'If the day gets messy, then what?',
-      prompt: 'If the day gets messy later, what is the easiest way to stay on track?',
+      label: 'I slipped earlier. Did I feed the fungus? What do I do now?',
+      prompt: "I slipped earlier. Give me a same-day recovery plan so I keep momentum instead of quitting. Keep it calm and practical.",
     });
     pushStagePrompt({
-      label: 'What am I likely to overthink?',
-      prompt: 'Where am I most likely to overthink this phase today, and what actually deserves my attention?',
+      label: 'What am I overthinking that does not matter today?',
+      prompt: "Tell me what people overthink most in this phase and the simple rule I should follow instead.",
     });
   } else if (progress.currentPhase === 3) {
     pushStagePrompt({
-      label: 'What matters most in this phase?',
-      prompt: 'What do I need to keep steady today so this phase does not turn into chaos?',
+      label: 'What keeps this phase stable day to day (so I do not spiral)?',
+      prompt: "Give me the exact daily habits that keep this phase steady and the warning signs I'm drifting.",
     });
     pushStagePrompt({
-      label: 'What should I not overthink today?',
-      prompt: 'Tell me what matters most today and what I should not overthink.',
+      label: 'Be honest: what should I take seriously vs ignore today?',
+      prompt: "Separate true caution signals from normal day-to-day noise so I don't spiral.",
     });
     pushStagePrompt({
-      label: 'What is the simplest food plan today?',
-      prompt: 'Give me the simplest food and timing plan for today.',
+      label: 'What is my simple plan for today, step by step?',
+      prompt: "Build my today plan in order with timing anchors and key checkpoints.",
     });
     pushStagePrompt({
-      label: 'What should I watch without spiraling?',
-      prompt: 'Tell me what is worth paying attention to in this phase today without turning every signal into a problem.',
+      label: 'Is this die-off or did I do something wrong?',
+      prompt: "Is this normal for this phase, or does it suggest I need to adjust quickly? Please be direct about warning signs.",
     });
   } else {
     pushStagePrompt({
-      label: 'What matters most from here?',
-      prompt: 'What matters most today if I want to finish this protocol cleanly?',
+      label: 'What matters most from here to finish?',
+      prompt: "What matters most today for a clean finish and strong carryover after Day 21?",
     });
     pushStagePrompt({
-      label: 'How do I keep this simpler today?',
-      prompt: 'How do I keep today simpler instead of adding extra variables?',
+      label: 'How do I keep this simple and not burn out?',
+      prompt: "Give me a simple sustainable plan for today that still moves progress.",
     });
     pushStagePrompt({
-      label: 'What supports recovery the most?',
-      prompt: 'What should I prioritize today to support recovery and still stay on plan?',
+      label: 'What should I prioritize today for recovery?',
+      prompt: "Prioritize today for recovery and consistency: what to emphasize and what to dial down.",
     });
     pushStagePrompt({
-      label: 'What is noise right now?',
-      prompt: 'Tell me what is noise today versus what is actually worth focusing on if I want a clean finish.',
+      label: 'What is noise vs real leverage right now?',
+      prompt: "Tell me what is noise today and what single action gives the biggest payoff.",
     });
   }
 
   if (snapshot?.nextStep) {
     pushPersonalizedPrompt({
-      label: 'What is the smartest next step?',
-      prompt: `Turn this into a simple plan for today: ${snapshot.nextStep}`,
+      label: 'What is the smartest move from my latest pattern?',
+      prompt: `Based on my latest pattern, what should I do today in order? Here's what you said my next step is: ${snapshot.nextStep}`,
     });
   }
 
   if (snapshot?.summary) {
     pushPersonalizedPrompt({
-      label: 'Given my pattern, what matters most?',
-      prompt: `Based on what you have noticed so far, tell me what matters most today: ${snapshot.summary}`,
+      label: 'Given my pattern, where should I be ruthless?',
+      prompt: `Based on this summary, where should I be strict, where can I be flexible, and what single decision matters most today? Summary: ${snapshot.summary}`,
     });
   }
 
   if (profile?.protocolGoal) {
     pushPersonalizedPrompt({
-      label: 'How does today support my goal?',
-      prompt: `Keep today anchored to my goal: ${profile.protocolGoal}`,
+      label: 'How does today compound toward my goal?',
+      prompt: `My goal is: ${profile.protocolGoal}. How should I approach today so it compounds toward that? What's the one highest-compounding move?`,
     });
   }
 
   if (profile?.whyNow && progress.currentDay > 0) {
     pushPersonalizedPrompt({
-      label: 'How do I stay connected to my why?',
-      prompt: `Reconnect today's plan to why I started this: ${profile.whyNow}`,
+      label: 'How do I stay emotionally connected to my why?',
+      prompt: `I need help staying emotionally connected to why I started. My why: ${profile.whyNow}. What's one behavior I can execute today that matches that?`,
     });
   }
 
@@ -332,7 +573,8 @@ const getProtocolStagePrompts = (
     pushPersonalizedPrompt(barrierPrompt);
   }
 
-  return dedupePrompts([...personalizedPrompts, ...stagePrompts]);
+  const memoryAdaptivePrompts = getMemoryAdaptivePrompts(progress, profile, snapshot);
+  return dedupePrompts([...memoryAdaptivePrompts, ...personalizedPrompts, ...stagePrompts]);
 };
 
 export const getGutBrainStarterState = (
@@ -342,26 +584,37 @@ export const getGutBrainStarterState = (
   options?: { mobile?: boolean },
 ): GutBrainStarterState => {
   const basePrompts = getProtocolStagePrompts(progress, profile, snapshot);
+  const fallbackPrompts = GUT_BRAIN_SUGGESTED_PROMPTS.map((prompt) => ({
+    label: prompt,
+    prompt,
+  }));
+  const promptPool = basePrompts.length ? basePrompts : fallbackPrompts;
+  const now = new Date();
+  const dailySeed = Number(`${now.getUTCFullYear()}${now.getUTCMonth() + 1}${now.getUTCDate()}`) + progress.currentDay;
+  const [firstPrompt, ...remainingPrompts] = promptPool;
+  const rotatedPrompts = firstPrompt
+    ? [firstPrompt, ...rotatePromptsBySeed(remainingPrompts, dailySeed)]
+    : rotatePromptsBySeed(promptPool, dailySeed);
   const promptCount = options?.mobile ? 3 : 4;
 
   if (progress.currentDay === 0) {
     return {
       eyebrow: 'Prep Day',
-      title: 'Prep Day starts here.',
+      title: "Let's set you up for a clean Day 1.",
       description: profile?.whyNow
-        ? 'Get organized first. GutBrain can keep today tied to the reason you are doing this.'
+        ? "Get organized first. We'll keep today tied to why you're doing this, not more scrolling."
         : 'Keep today focused on setup, not more research.',
-      prompts: basePrompts.slice(0, promptCount),
+      prompts: rotatedPrompts.slice(0, promptCount),
     };
   }
 
   return {
     eyebrow: `Day ${progress.currentDay}`,
-    title: `Let's make ${progress.currentDay === 1 ? 'Day 1' : 'today'} feel simple.`,
+    title: `Ask the messy question. We'll make ${progress.currentDay === 1 ? 'Day 1' : 'today'} feel doable.`,
     description: snapshot?.summary
       ? snapshot.summary
-      : 'Start with the clearest next move, then let GutBrain adapt as it learns how you work.',
-    prompts: basePrompts.slice(0, promptCount),
+      : 'Pick a card below, or ask your own question. Clarity beats perfection.',
+    prompts: rotatedPrompts.slice(0, promptCount),
   };
 };
 

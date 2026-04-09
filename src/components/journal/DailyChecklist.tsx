@@ -215,7 +215,7 @@ export function ChecklistSections({
                                         reminder={remindersByKey[item.key]}
                                         onToggle={onToggle}
                                         onAskAbout={onAskAbout}
-                                        onRemove={variant === 'panel' ? onRemoveCustomItem : undefined}
+                                        onRemove={onRemoveCustomItem}
                                         reminderComposerOpen={reminderComposerTargetKey === item.key}
                                         onReminderComposerOpenChange={onReminderComposerOpenChange}
                                         onSetReminder={onSetReminder}
@@ -492,7 +492,12 @@ function ChecklistRow({
                             e.stopPropagation();
                             onRemove(item.key);
                         }}
-                        className="opacity-0 transition-opacity p-1 rounded hover:bg-destructive/10 group-hover/row:opacity-100"
+                        className={cn(
+                            'p-1 rounded transition-opacity hover:bg-destructive/10',
+                            variant === 'panel'
+                                ? 'opacity-0 group-hover/row:opacity-100'
+                                : 'opacity-100',
+                        )}
                         title="Remove item"
                     >
                         <X className="w-3 h-3 text-muted-foreground hover:text-destructive" />

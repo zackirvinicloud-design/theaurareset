@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, ShoppingCart } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Plus, ShoppingCart, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { ChecklistSections, buildChecklistViewModel } from '@/components/journal/DailyChecklist';
 import type {
@@ -26,6 +27,7 @@ interface MobileTodayViewProps {
     focusedItemKey?: string | null;
     reminderComposerTargetKey?: string | null;
     onToggle: (itemKey: string) => void;
+    onAddCustomItem: (label: string, source?: 'ai' | 'manual') => void;
     onRemoveCustomItem: (key: string) => void;
     onAskAbout: (label: string) => void;
     onOpenShoppingView: () => void;
@@ -48,6 +50,7 @@ export const MobileTodayView = ({
     focusedItemKey,
     reminderComposerTargetKey,
     onToggle,
+    onAddCustomItem,
     onRemoveCustomItem,
     onAskAbout,
     onOpenShoppingView,
@@ -89,10 +92,22 @@ export const MobileTodayView = ({
     const listReminderComposerTargetKey = reminderComposerTargetKey === nextItem?.key
         ? null
         : reminderComposerTargetKey;
+    const [showAddInput, setShowAddInput] = useState(false);
+    const [newItemText, setNewItemText] = useState('');
 
     useEffect(() => {
         setShowWhyThisMatters(false);
     }, [nextItem?.key]);
+
+    const handleAddItem = () => {
+        const trimmed = newItemText.trim();
+        if (trimmed.length < 3) {
+            return;
+        }
+        onAddCustomItem(trimmed, 'manual');
+        setNewItemText('');
+        setShowAddInput(false);
+    };
 
     return (
         <div className="flex h-full flex-col bg-background">
@@ -310,6 +325,54 @@ export const MobileTodayView = ({
                             onClearReminder={onClearReminder}
                             variant="inline"
                         />
+                        <div className="pt-1">
+                            {showAddInput ? (
+                                <div className="flex gap-1.5">
+                                    <Input
+                                        value={newItemText}
+                                        onChange={(event) => setNewItemText(event.target.value)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === 'Enter') {
+                                                handleAddItem();
+                                            }
+                                        }}
+                                        placeholder="Add a task..."
+                                        className="h-8 text-xs"
+                                        autoFocus
+                                    />
+                                    <Button size="sm" className="h-8 px-2" onClick={handleAddItem} disabled={newItemText.trim().length < 3}>
+                                        <Plus className="w-3.5 h-3.5" />
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-8 px-2"
+                                        onClick={() => {
+                                            setShowAddInput(false);
+                                            setNewItemText('');
+                                        }}
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </Button>
+                                </div>
+                            ) : completionPercent === 100 ? (
+                                <div className="text-center py-2 px-3 rounded-lg bg-gradient-to-r from-emerald-50 to-primary/5 dark:from-emerald-900/20 dark:to-primary/10 border border-emerald-200/50">
+                                    <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                                        Today's plan is complete.
+                                    </span>
+                                </div>
+                            ) : (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full text-xs text-muted-foreground gap-1.5 h-8"
+                                    onClick={() => setShowAddInput(true)}
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add follow-up
+                                </Button>
+                            )}
+                        </div>
                     </section>
 
                 </div>

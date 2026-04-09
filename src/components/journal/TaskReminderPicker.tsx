@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bell, BellRing, Clock3, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { TaskReminder } from '@/hooks/useJournalStore';
-import { formatReminderTime, getReminderPresets, toLocalDateTimeInputValue } from '@/lib/taskReminders';
+import { formatReminderTime, toLocalDateTimeInputValue } from '@/lib/taskReminders';
 import { cn } from '@/lib/utils';
 
 interface TaskReminderPickerProps {
@@ -19,6 +20,22 @@ interface TaskReminderPickerProps {
     onOpenChange?: (open: boolean) => void;
 }
 
+const QUICK_OFFSET_MINUTES = [
+    { label: '5 minutes', minutes: 5 },
+    { label: '10 minutes', minutes: 10 },
+    { label: '15 minutes', minutes: 15 },
+    { label: '30 minutes', minutes: 30 },
+    { label: '45 minutes', minutes: 45 },
+    { label: '1 hour', minutes: 60 },
+    { label: '2 hours', minutes: 120 },
+    { label: '3 hours', minutes: 180 },
+    { label: '4 hours', minutes: 240 },
+    { label: '6 hours', minutes: 360 },
+    { label: '8 hours', minutes: 480 },
+    { label: '12 hours', minutes: 720 },
+    { label: '24 hours', minutes: 1440 },
+];
+
 export function TaskReminderPicker({
     itemKey,
     label,
@@ -30,14 +47,29 @@ export function TaskReminderPicker({
     open,
     onOpenChange,
 }: TaskReminderPickerProps) {
-    const presets = useMemo(() => getReminderPresets(timeOfDay), [timeOfDay]);
     const [internalOpen, setInternalOpen] = useState(false);
-    const [customValue, setCustomValue] = useState(() => reminder?.scheduledLocalTime ?? presets[0]?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date()));
+    const [customValue, setCustomValue] = useState(() => reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
+    const [selectedQuickValue, setSelectedQuickValue] = useState<string | undefined>(undefined);
+    const [quickPresetBaseTime, setQuickPresetBaseTime] = useState(() => Date.now());
     const resolvedOpen = open ?? internalOpen;
+    const quickOffsetPresets = QUICK_OFFSET_MINUTES.map((item) => ({
+        label: item.label,
+        scheduledLocalTime: toLocalDateTimeInputValue(new Date(quickPresetBaseTime + item.minutes * 60 * 1000)),
+    }));
 
     useEffect(() => {
-        setCustomValue(reminder?.scheduledLocalTime ?? presets[0]?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date()));
-    }, [presets, reminder?.scheduledLocalTime]);
+        setCustomValue(reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
+        setSelectedQuickValue(undefined);
+    }, [reminder?.scheduledLocalTime]);
+
+    useEffect(() => {
+        if (!resolvedOpen) {
+            return;
+        }
+
+        setQuickPresetBaseTime(Date.now());
+        setSelectedQuickValue(undefined);
+    }, [resolvedOpen]);
 
     const handleOpenChange = (nextOpen: boolean) => {
         if (open === undefined) {
@@ -56,8 +88,8 @@ export function TaskReminderPicker({
     };
 
     return (
-        <Popover open={resolvedOpen} onOpenChange={handleOpenChange}>
-            <PopoverTrigger asChild>
+        <Dialog open={resolvedOpen} onOpenChange={handleOpenChange}>
+            <DialogTrigger asChild>
                 {variant === 'icon' ? (
                     <button
                         type="button"
@@ -85,42 +117,66 @@ export function TaskReminderPicker({
                         {reminder ? formatReminderTime(reminder.scheduledLocalTime) : 'Remind me'}
                     </Button>
                 )}
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-72 rounded-2xl border-border/70 p-3">
-                <div className="space-y-3">
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                            Reminder
-                        </p>
-                        <p className="mt-1 text-sm font-medium text-foreground">{label}</p>
-                    </div>
+            </DialogTrigger>
+            <DialogContent className="w-[calc(100vw-1.5rem)] max-w-md rounded-2xl border-border/70 p-4 sm:p-5">
+                <DialogHeader className="space-y-1 text-left">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        Reminder
+                    </p>
+                    <DialogTitle className="text-base leading-6 text-foreground">{label}</DialogTitle>
+                </DialogHeader>
 
-                    <div className="grid gap-2">
-                        {presets.map((preset) => (
-                            <button
-                                key={preset.label}
-                                type="button"
-                                onClick={() => void handleSet(preset.scheduledLocalTime)}
-                                className="flex items-center justify-between rounded-xl border border-border/60 px-3 py-2 text-left text-sm transition-colors hover:bg-muted/25"
-                            >
-                                <span>{preset.label}</span>
-                                <span className="text-xs text-muted-foreground">
-                                    {formatReminderTime(preset.scheduledLocalTime)}
-                                </span>
-                            </button>
-                        ))}
+                <div className="space-y-3">
+                    {reminder && (
+                        <p className="rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-primary">
+                            Current reminder: {formatReminderTime(reminder.scheduledLocalTime)}
+                        </p>
+                    )}
+
+                    <div className="space-y-1.5">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                            Quick picks
+                        </p>
+                        <Select
+                            value={selectedQuickValue}
+                            onValueChange={(value) => {
+                                if (!value) return;
+                                setSelectedQuickValue(value);
+                                setCustomValue(value);
+                            }}
+                        >
+                            <SelectTrigger className="h-10">
+                                <SelectValue
+                                    placeholder={
+                                        reminder
+                                            ? `Choose a quick time (current: ${formatReminderTime(reminder.scheduledLocalTime)})`
+                                            : 'Choose a quick time'
+                                    }
+                                />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {quickOffsetPresets.map((preset) => (
+                                    <SelectItem key={preset.label} value={preset.scheduledLocalTime}>
+                                        {preset.label} · {formatReminderTime(preset.scheduledLocalTime)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-2">
                         <label className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                             <Clock3 className="h-3 w-3" />
-                            Pick a time
+                            Custom date and time
                         </label>
                         <Input
                             type="datetime-local"
                             value={customValue}
-                            onChange={(event) => setCustomValue(event.target.value)}
-                            className="h-9 text-sm"
+                            onChange={(event) => {
+                                setSelectedQuickValue(undefined);
+                                setCustomValue(event.target.value);
+                            }}
+                            className="h-10 text-sm"
                         />
                     </div>
 
@@ -128,7 +184,7 @@ export function TaskReminderPicker({
                         <Button
                             type="button"
                             size="sm"
-                            className="h-8 flex-1 rounded-full"
+                            className="h-9 flex-1 rounded-full"
                             onClick={() => void handleSet(customValue)}
                         >
                             Set reminder
@@ -138,7 +194,7 @@ export function TaskReminderPicker({
                                 type="button"
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 rounded-full px-2.5 text-muted-foreground"
+                                className="h-9 rounded-full px-2.5 text-muted-foreground"
                                 onClick={() => {
                                     onClearReminder(itemKey);
                                     handleOpenChange(false);
@@ -150,7 +206,7 @@ export function TaskReminderPicker({
                         )}
                     </div>
                 </div>
-            </PopoverContent>
-        </Popover>
+            </DialogContent>
+        </Dialog>
     );
 }
