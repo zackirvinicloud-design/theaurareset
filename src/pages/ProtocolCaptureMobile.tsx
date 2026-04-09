@@ -4,8 +4,8 @@ import { BookOpen, ClipboardList, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { JournalCenter } from '@/components/journal/JournalCenter';
 import { MobileTodayView } from '@/components/journal/MobileTodayView';
+import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExplorer';
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
-import { FullProtocolView } from '@/components/journal/FullProtocolView';
 import { MobileProtocolReferenceContent } from '@/components/journal/ProtocolReference';
 import { TopBar } from '@/components/journal/TopBar';
 import { calculatePhase } from '@/hooks/useProtocolData';
@@ -28,7 +28,7 @@ function makeEntry(day: number, role: 'user' | 'assistant', content: string, min
 }
 
 type CaptureScene = 'prep' | 'today' | 'help' | 'guide';
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'protocol';
+type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap';
 
 function normalizeScene(value?: string): CaptureScene {
   if (value === 'prep' || value === 'today' || value === 'help' || value === 'guide') return value;
@@ -167,8 +167,6 @@ export default function ProtocolCaptureMobile() {
         onExportJournal={() => undefined}
         onClearJournal={() => undefined}
         onRunTutorialAgain={() => undefined}
-        onReadFullProtocol={() => setActiveView('protocol')}
-        showReadFullProtocol={true}
         onSignOut={() => undefined}
       />
 
@@ -184,8 +182,15 @@ export default function ProtocolCaptureMobile() {
             onBack={() => setActiveView('guide')}
             onAskAI={() => setActiveView('help')}
           />
-        ) : activeView === 'protocol' ? (
-          <FullProtocolView onBack={() => setActiveView('guide')} />
+        ) : activeView === 'roadmap' ? (
+          <ProtocolRoadmapExplorer
+            currentDay={progress.currentDay}
+            currentPhase={progress.currentPhase}
+            onBack={() => setActiveView('guide')}
+            onOpenShoppingView={() => setActiveView('shopping')}
+            onAskCoach={() => setActiveView('help')}
+            onOpenNormalToday={() => setActiveView('guide')}
+          />
         ) : activeView === 'guide' ? (
           <div className="flex h-full flex-col bg-background">
             <div className="flex-1 overflow-y-auto px-4 py-4 pb-6">
@@ -193,14 +198,14 @@ export default function ProtocolCaptureMobile() {
                 <div className="border-b border-border/50 pb-4">
                   <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Guide</h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Open the shopping list, the full protocol guide, or the quick reference you actually need.
+                    Open the roadmap, shopping list, or the quick reference you actually need today.
                   </p>
                 </div>
                 <MobileProtocolReferenceContent
                   currentPhase={progress.currentPhase}
                   currentDay={progress.currentDay}
                   onOpenShoppingView={() => setActiveView('shopping')}
-                  onOpenFullProtocolView={() => setActiveView('protocol')}
+                  onOpenRoadmapView={() => setActiveView('roadmap')}
                 />
               </div>
             </div>
@@ -258,7 +263,7 @@ export default function ProtocolCaptureMobile() {
             onClick={() => setActiveView('guide')}
             className={cn(
               'flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors',
-              activeView === 'guide' || activeView === 'protocol' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
+              activeView === 'guide' || activeView === 'roadmap' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
             )}
           >
             <BookOpen className="w-5 h-5" />

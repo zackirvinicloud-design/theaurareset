@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { DailyChecklist } from '@/components/journal/DailyChecklist';
 import { JournalCenter } from '@/components/journal/JournalCenter';
 import { ProtocolReference } from '@/components/journal/ProtocolReference';
+import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExplorer';
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
-import { FullProtocolView } from '@/components/journal/FullProtocolView';
 import { TopBar } from '@/components/journal/TopBar';
 import { calculatePhase } from '@/hooks/useProtocolData';
 import type {
@@ -16,7 +16,7 @@ import type {
 } from '@/hooks/useJournalStore';
 
 type CaptureScene = 'prep' | 'today' | 'journey';
-type ActiveView = 'chat' | 'shopping' | 'protocol';
+type ActiveView = 'chat' | 'shopping' | 'roadmap';
 
 const PREP_EXPANDED_CATEGORIES = [
   'Foundation_Morning Ritual Essentials',
@@ -463,8 +463,15 @@ export default function ProtocolCapture() {
               onAskAI={handleShoppingAskAI}
               defaultExpandedCategories={PREP_EXPANDED_CATEGORIES}
             />
-          ) : activeView === 'protocol' ? (
-            <FullProtocolView onBack={() => setActiveView('chat')} />
+          ) : activeView === 'roadmap' ? (
+            <ProtocolRoadmapExplorer
+              currentDay={progress.currentDay}
+              currentPhase={progress.currentPhase}
+              onBack={() => setActiveView('chat')}
+              onOpenShoppingView={() => setActiveView('shopping')}
+              onAskCoach={() => setActiveView('chat')}
+              onOpenNormalToday={() => setRefOpen(true)}
+            />
           ) : (
             <JournalCenter
               userId={null}
@@ -481,7 +488,7 @@ export default function ProtocolCapture() {
           currentPhase={progress.currentPhase}
           currentDay={progress.currentDay}
           onOpenShoppingView={() => setActiveView('shopping')}
-          onOpenFullProtocolView={() => setActiveView('protocol')}
+          onOpenRoadmapView={() => setActiveView('roadmap')}
           isOpen={refOpen}
           onToggle={() => setRefOpen((prev) => !prev)}
         />

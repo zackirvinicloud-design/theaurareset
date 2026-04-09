@@ -22,6 +22,7 @@ import {
   sanitizeRedirectPath,
   withAuthTimeout,
 } from "@/lib/auth-routing";
+import { getFriendlyAuthErrorMessage } from "@/lib/auth-errors";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
@@ -167,7 +168,10 @@ const Signup = () => {
       if (error) {
         toast({
           title: "Sign up failed",
-          description: error.message,
+          description: getFriendlyAuthErrorMessage(
+            error,
+            "Something went wrong while creating your account. Please try again.",
+          ),
           variant: "destructive",
         });
         return;
@@ -184,7 +188,10 @@ const Signup = () => {
       console.error("Sign up error:", error);
       toast({
         title: "Sign up failed",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: getFriendlyAuthErrorMessage(
+          error,
+          "Something went wrong while creating your account. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { BookOpen, ChevronDown, ChevronLeft, ShoppingCart, X } from 'lucide-react';
+import { Activity, AlertTriangle, BookOpen, ChevronDown, ChevronLeft, CheckCircle2, ShoppingCart, X } from 'lucide-react';
 import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
 import { getNormalToday } from '@/hooks/normalToday';
 import { ProtocolRoadmap } from '@/components/journal/ProtocolRoadmap';
@@ -13,7 +13,7 @@ interface ProtocolReferenceProps {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
-    onOpenFullProtocolView: () => void;
+    onOpenRoadmapView: () => void;
     isOpen: boolean;
     onToggle: () => void;
     normalTodayAutoOpenSignal?: number;
@@ -38,7 +38,7 @@ export const ProtocolReference = ({
     currentPhase,
     currentDay,
     onOpenShoppingView,
-    onOpenFullProtocolView,
+    onOpenRoadmapView,
     isOpen,
     onToggle,
     normalTodayAutoOpenSignal,
@@ -88,7 +88,7 @@ export const ProtocolReference = ({
                                     currentDay={currentDay}
                                     currentPhase={currentPhase}
                                     onOpenShoppingView={onOpenShoppingView}
-                                    onOpenFullProtocolView={onOpenFullProtocolView}
+                                    onOpenRoadmapView={onOpenRoadmapView}
                                     normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
                                 />
                             </div>
@@ -104,13 +104,13 @@ export function MobileProtocolReferenceContent({
     currentPhase,
     currentDay,
     onOpenShoppingView,
-    onOpenFullProtocolView,
+    onOpenRoadmapView,
     normalTodayAutoOpenSignal,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
-    onOpenFullProtocolView: () => void;
+    onOpenRoadmapView: () => void;
     normalTodayAutoOpenSignal?: number;
 }) {
     return (
@@ -118,7 +118,7 @@ export function MobileProtocolReferenceContent({
             currentPhase={currentPhase}
             currentDay={currentDay}
             onOpenShoppingView={onOpenShoppingView}
-            onOpenFullProtocolView={onOpenFullProtocolView}
+            onOpenRoadmapView={onOpenRoadmapView}
             normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
         />
     );
@@ -128,13 +128,13 @@ function GuideContent({
     currentPhase,
     currentDay,
     onOpenShoppingView,
-    onOpenFullProtocolView,
+    onOpenRoadmapView,
     normalTodayAutoOpenSignal,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
-    onOpenFullProtocolView: () => void;
+    onOpenRoadmapView: () => void;
     normalTodayAutoOpenSignal?: number;
 }) {
     const [isNormalTodayOpen, setIsNormalTodayOpen] = useState(false);
@@ -190,61 +190,47 @@ function GuideContent({
             />
 
             <PrimaryGuideCard
-                title="Shopping List"
-                description="Edit the list, check things off, and buy only what fits your version of the protocol."
+                eyebrow="Buy by phase"
+                tone="emerald"
+                title="Shopping list"
+                description="Foundation first, then Week 1, Week 2, and Week 3. Edit it, trim it, and buy only what fits your version of the cleanse."
                 actionLabel="Open shopping list"
-                icon={<ShoppingCart className="h-3.5 w-3.5 text-muted-foreground" />}
+                icon={<ShoppingCart className="h-3.5 w-3.5 text-primary/85" />}
                 onClick={onOpenShoppingView}
             />
 
-            <PrimaryGuideCard
-                title="Full Protocol"
-                description="Open the full dark-mode guide when you want the complete protocol reference in one place."
-                actionLabel="Open full guide"
-                icon={<BookOpen className="h-3.5 w-3.5 text-muted-foreground" />}
-                onClick={onOpenFullProtocolView}
+            <GuideNormalTodayCard
+                sectionRef={normalTodayCardRef}
+                title="What's normal today"
+                description={`${getDayLabel(currentDay)} · ${stageLabel}`}
+                headline={normalToday.headline}
+                isOpen={isNormalTodayOpen}
+                onToggle={() => setIsNormalTodayOpen((value) => !value)}
+                normal={normalToday.normal}
+                redFlags={normalToday.redFlags}
+                ignore={normalToday.ignore}
             />
 
             <ProtocolRoadmap
                 currentDay={currentDay}
                 currentPhase={currentPhase}
+                onOpenRoadmapView={onOpenRoadmapView}
             />
-
-            <GuideDisclosureCard
-                sectionRef={normalTodayCardRef}
-                title="What's normal today"
-                description={`${getDayLabel(currentDay)} · ${stageLabel}`}
-                isOpen={isNormalTodayOpen}
-                onToggle={() => setIsNormalTodayOpen((value) => !value)}
-            >
-                <p className="text-sm font-medium text-foreground">{normalToday.headline}</p>
-                <div className="space-y-3">
-                    <GuideBulletSection
-                        title="Expected"
-                        items={normalToday.normal}
-                    />
-                    <GuideBulletSection
-                        title="Red flags"
-                        items={normalToday.redFlags}
-                        tone="warning"
-                    />
-                    <GuideBulletSection
-                        title="Safe to ignore"
-                        items={normalToday.ignore}
-                    />
-                </div>
-            </GuideDisclosureCard>
         </div>
     );
 }
 
 function PrimaryGuideCard({
+    eyebrow,
+    tone = 'neutral',
     title,
     description,
     actionLabel,
     icon,
     onClick,
 }: {
+    eyebrow?: string;
+    tone?: 'neutral' | 'emerald';
     title: string;
     description: string;
     actionLabel: string;
@@ -252,19 +238,44 @@ function PrimaryGuideCard({
     onClick: () => void;
 }) {
     return (
-        <div className="rounded-xl border border-border/60 bg-card/60 px-3 py-3">
-            <p className="text-sm font-semibold text-foreground">{title}</p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+        <section
+            className={cn(
+                'relative overflow-hidden rounded-2xl border px-3 py-3',
+                tone === 'emerald'
+                    ? 'border-primary/25 bg-card/72 shadow-[0_0_0_1px_hsl(var(--primary)/0.14),inset_0_1px_0_hsl(var(--background)/0.35)]'
+                    : 'border-border/60 bg-card/60 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]',
+            )}
+        >
+            {tone === 'emerald' && (
+                <>
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_55%)]" />
+                    <div className="pointer-events-none absolute inset-[1px] rounded-[15px] border border-primary/10" />
+                </>
+            )}
+            <div className="relative">
+                {eyebrow && (
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/85">
+                        {eyebrow}
+                    </p>
+                )}
+                <p className="mt-1 text-sm font-semibold text-foreground">{title}</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+            </div>
             <Button
                 variant="outline"
                 size="sm"
-                className="mt-2.5 h-8 w-full justify-between rounded-lg border-border/60 bg-background/30 px-2.5 text-xs font-medium hover:bg-muted/25"
+                className={cn(
+                    'relative mt-2.5 h-8 w-full justify-between rounded-xl px-2.5 text-xs font-medium',
+                    tone === 'emerald'
+                        ? 'border-primary/25 bg-background/40 hover:bg-primary/8'
+                        : 'border-border/60 bg-background/30 hover:bg-muted/25',
+                )}
                 onClick={onClick}
             >
                 {actionLabel}
                 {icon}
             </Button>
-        </div>
+        </section>
     );
 }
 
@@ -303,31 +314,79 @@ function GuideQuoteCard({
     );
 }
 
-function GuideDisclosureCard({
+function GuideNormalTodayCard({
     sectionRef,
     title,
     description,
+    headline,
     isOpen,
     onToggle,
-    children,
+    normal,
+    redFlags,
+    ignore,
 }: {
     sectionRef?: RefObject<HTMLElement | null>;
     title: string;
     description: string;
+    headline: string;
     isOpen: boolean;
     onToggle: () => void;
-    children: ReactNode;
+    normal: string[];
+    redFlags: string[];
+    ignore: string[];
 }) {
+    const [activeTab, setActiveTab] = useState<'normal' | 'red' | 'ignore'>('normal');
+
+    useEffect(() => {
+        if (isOpen) {
+            setActiveTab('normal');
+        }
+    }, [isOpen, description]);
+
+    const tabConfig = {
+        normal: {
+            label: 'Expected',
+            icon: <Activity className="h-4 w-4 text-primary/80" />,
+            items: normal,
+            tone: 'normal' as const,
+        },
+        red: {
+            label: 'Pause',
+            icon: <AlertTriangle className="h-4 w-4 text-rose-500" />,
+            items: redFlags,
+            tone: 'alert' as const,
+        },
+        ignore: {
+            label: 'Ignore',
+            icon: <CheckCircle2 className="h-4 w-4 text-muted-foreground" />,
+            items: ignore,
+            tone: 'muted' as const,
+        },
+    };
+
+    const active = tabConfig[activeTab];
+
     return (
-        <section ref={sectionRef} className="rounded-xl border border-border/60 bg-card/55">
+        <section
+            ref={sectionRef}
+            className="relative overflow-hidden rounded-2xl border border-primary/25 bg-card/72 shadow-[0_0_0_1px_hsl(var(--primary)/0.14),inset_0_1px_0_hsl(var(--background)/0.35)]"
+        >
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/0.18),transparent_56%)]" />
+            <div className="pointer-events-none absolute inset-[1px] rounded-[15px] border border-primary/10" />
             <button
                 type="button"
                 onClick={onToggle}
-                className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left transition-colors hover:bg-muted/20"
+                className="relative flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/20"
             >
                 <div className="min-w-0">
                     <p className="text-sm font-semibold text-foreground">{title}</p>
-                    <p className="text-[11px] leading-5 text-muted-foreground">{description}</p>
+                    <p className="mt-1 text-[11px] leading-5 text-muted-foreground">{description}</p>
+                    <p className="mt-2 max-w-[34ch] text-[14px] leading-7 text-foreground/85">
+                        {headline}
+                    </p>
+                    <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+                        Tap to see what is typical vs when to pause.
+                    </p>
                 </div>
                 <ChevronDown
                     className={cn(
@@ -337,33 +396,88 @@ function GuideDisclosureCard({
                 />
             </button>
             {isOpen && (
-                <div className="space-y-3 px-3 pb-3 pt-0.5">
-                    {children}
+                <div className="relative space-y-3 px-3 pb-3 pt-0.5">
+                    <div className="grid grid-cols-3 gap-1 rounded-xl border border-border/60 bg-background/35 p-1">
+                        {(
+                            [
+                                { id: 'normal' as const, label: tabConfig.normal.label },
+                                { id: 'red' as const, label: tabConfig.red.label },
+                                { id: 'ignore' as const, label: tabConfig.ignore.label },
+                            ] as const
+                        ).map((tab) => (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => setActiveTab(tab.id)}
+                                className={cn(
+                                    'h-8 rounded-lg text-[11px] font-medium transition-colors',
+                                    activeTab === tab.id
+                                        ? 'bg-primary/12 text-foreground shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]'
+                                        : 'text-muted-foreground hover:bg-muted/25',
+                                )}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <GuideSignalBlock
+                        title={active.label}
+                        items={active.items}
+                        icon={active.icon}
+                        tone={active.tone}
+                    />
                 </div>
             )}
         </section>
     );
 }
 
-function GuideBulletSection({
+function GuideSignalBlock({
     title,
     items,
-    tone = 'default',
+    icon,
+    tone = 'normal',
 }: {
     title: string;
     items: string[];
-    tone?: 'default' | 'warning';
+    icon: ReactNode;
+    tone?: 'normal' | 'alert' | 'muted';
 }) {
     return (
-        <div className="space-y-1.5">
-            <p className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${tone === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
-                {title}
-            </p>
-            <div className="space-y-1.5">
+        <div
+            className={cn(
+                'rounded-[18px] border px-3 py-3',
+                tone === 'normal' && 'border-primary/20 bg-background/70',
+                tone === 'alert' && 'border-rose-500/20 bg-rose-500/6',
+                tone === 'muted' && 'border-border/60 bg-background/70',
+            )}
+        >
+            <div className="flex items-center gap-2">
+                {icon}
+                <p
+                    className={cn(
+                        'text-[12px] font-semibold',
+                        tone === 'normal' && 'text-foreground',
+                        tone === 'alert' && 'text-rose-500',
+                        tone === 'muted' && 'text-foreground',
+                    )}
+                >
+                    {title}
+                </p>
+            </div>
+            <div className="mt-2 space-y-2">
                 {items.map((item) => (
-                    <div key={item} className="flex items-start gap-2 text-xs leading-5 text-muted-foreground">
-                        <span className={`mt-1.5 h-1 w-1 flex-shrink-0 rounded-full ${tone === 'warning' ? 'bg-amber-500' : 'bg-primary/60'}`} />
-                        <span>{item}</span>
+                    <div key={item} className="flex items-start gap-2.5 text-[13px] leading-6 text-muted-foreground">
+                        <span
+                            className={cn(
+                                'mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full',
+                                tone === 'normal' && 'bg-primary/70',
+                                tone === 'alert' && 'bg-rose-500',
+                                tone === 'muted' && 'bg-muted-foreground/50',
+                            )}
+                        />
+                        <span className="text-foreground/82">{item}</span>
                     </div>
                 ))}
             </div>

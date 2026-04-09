@@ -15,11 +15,11 @@ import { TopBar } from "@/components/journal/TopBar";
 import { DailyChecklist, buildChecklistViewModel } from "@/components/journal/DailyChecklist";
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
+import { ProtocolRoadmapExplorer } from "@/components/journal/ProtocolRoadmapExplorer";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
-import { FullProtocolView } from "@/components/journal/FullProtocolView";
 import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
 
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'protocol';
+type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap';
 
 const Protocol = () => {
   const navigate = useNavigate();
@@ -202,15 +202,15 @@ const Protocol = () => {
   }, []);
 
   const handleCoachAction = useCallback((action: CoachAction) => {
-    const resolveShoppingCategoryKey = () => {
-      if (action.category) {
-        const categoryMatch = findShoppingCategoryMatch(action.category);
+    const resolveShoppingCategoryKey = (phaseHint?: string | null, categoryHint?: string | null) => {
+      if (categoryHint) {
+        const categoryMatch = findShoppingCategoryMatch(categoryHint);
         if (categoryMatch) {
           return `${categoryMatch.phase}_${categoryMatch.category.category}`;
         }
       }
 
-      const normalizedPhase = action.phase?.toLowerCase().trim() ?? "";
+      const normalizedPhase = phaseHint?.toLowerCase().trim() ?? "";
       let phaseName: string | null = null;
 
       if (normalizedPhase.includes("week 1") || normalizedPhase.includes("fungal")) {
@@ -221,7 +221,7 @@ const Protocol = () => {
         phaseName = "Heavy Metal Detox";
       } else if (normalizedPhase.includes("prep") || normalizedPhase.includes("foundation")) {
         phaseName = "Foundation";
-      } else if (action.phase) {
+      } else if (phaseHint) {
         phaseName = SHOPPING_LIST.find((phase) => phase.phase.toLowerCase() === normalizedPhase)?.phase ?? null;
       }
 
@@ -242,8 +242,8 @@ const Protocol = () => {
       return `${phaseName}_${firstCategory.category}`;
     };
 
-    const openShoppingWithFocus = () => {
-      const focusedKey = resolveShoppingCategoryKey();
+    const openShoppingWithFocus = (phaseHint?: string | null, categoryHint?: string | null) => {
+      const focusedKey = resolveShoppingCategoryKey(phaseHint, categoryHint);
       setShoppingDefaultExpandedCategories(focusedKey ? [focusedKey] : []);
       setActiveView("shopping");
     };
@@ -254,17 +254,20 @@ const Protocol = () => {
     }
 
     if (action.type === 'open_shopping') {
-      openShoppingWithFocus();
+      openShoppingWithFocus(action.phase, action.category);
       return;
     }
 
     if (action.type === 'open_view') {
       if (action.view === 'shopping') {
-        openShoppingWithFocus();
+        openShoppingWithFocus(action.phase, action.category);
         return;
       }
       if (action.view === 'protocol') {
-        setActiveView('protocol');
+        setActiveView('guide');
+        if (!isMobile) {
+          setRefOpen(true);
+        }
         return;
       }
       if (action.view === 'guide') {
@@ -348,8 +351,19 @@ const Protocol = () => {
     setActiveView('shopping');
   };
 
-  const handleOpenFullProtocolFromGuide = () => {
-    setActiveView('protocol');
+  const handleOpenShoppingForPhase = useCallback((phaseName: string) => {
+    const firstCategory = SHOPPING_LIST.find((phase) => phase.phase === phaseName)?.categories[0];
+    setShoppingDefaultExpandedCategories(firstCategory ? [`${phaseName}_${firstCategory.category}`] : []);
+    setActiveView('shopping');
+  }, []);
+
+  const handleOpenRoadmapFromGuide = () => {
+    setActiveView('roadmap');
+  };
+
+  const handleAskCoachFromRoadmap = (prompt: string) => {
+    setActiveView('help');
+    setPendingPrompt(prompt);
   };
 
   const handleApplyShoppingActions = async (actions: GutBrainShoppingAction[]) => {
@@ -506,8 +520,6 @@ const Protocol = () => {
         onExportJournal={handleExportJournal}
         onClearJournal={handleClearJournal}
         onRunTutorialAgain={handleStartTutorial}
-        onReadFullProtocol={handleOpenFullProtocolFromGuide}
-        showReadFullProtocol={isMobile}
         onSignOut={handleSignOut}
       />
 
@@ -550,9 +562,14 @@ const Protocol = () => {
                 onAskAI={handleShoppingAskAI}
                 defaultExpandedCategories={shoppingDefaultExpandedCategories}
               />
-            ) : activeView === 'protocol' ? (
-              <FullProtocolView
+            ) : activeView === 'roadmap' ? (
+              <ProtocolRoadmapExplorer
+                currentDay={store.progress.currentDay}
+                currentPhase={store.progress.currentPhase}
                 onBack={() => setActiveView('guide')}
+                onOpenShoppingView={handleOpenShoppingForPhase}
+                onAskCoach={handleAskCoachFromRoadmap}
+                onOpenNormalToday={openNormalToday}
               />
             ) : activeView === 'guide' ? (
               <div className="flex h-full flex-col bg-background">
@@ -561,14 +578,14 @@ const Protocol = () => {
                     <div className="border-b border-border/50 pb-4">
                       <h2 className="text-xl font-semibold tracking-[-0.03em] text-foreground">Guide</h2>
                       <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        Open the shopping list, the full protocol guide, or the quick reference you actually need.
+                        Open the roadmap, shopping list, or the quick reference you actually need today.
                       </p>
                     </div>
                     <MobileProtocolReferenceContent
                       currentPhase={store.progress.currentPhase}
                       currentDay={store.progress.currentDay}
                       onOpenShoppingView={handleOpenShoppingFromGuide}
-                      onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
+                      onOpenRoadmapView={handleOpenRoadmapFromGuide}
                       normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
                     />
                   </div>
@@ -629,9 +646,14 @@ const Protocol = () => {
               onAskAI={handleShoppingAskAI}
               defaultExpandedCategories={shoppingDefaultExpandedCategories}
             />
-          ) : activeView === 'protocol' ? (
-            <FullProtocolView
+          ) : activeView === 'roadmap' ? (
+            <ProtocolRoadmapExplorer
+              currentDay={store.progress.currentDay}
+              currentPhase={store.progress.currentPhase}
               onBack={() => setActiveView('help')}
+              onOpenShoppingView={handleOpenShoppingForPhase}
+              onAskCoach={handleAskCoachFromRoadmap}
+              onOpenNormalToday={openNormalToday}
             />
           ) : (
             <JournalCenter
@@ -661,7 +683,7 @@ const Protocol = () => {
             currentPhase={store.progress.currentPhase}
             currentDay={store.progress.currentDay}
             onOpenShoppingView={handleOpenShoppingFromGuide}
-            onOpenFullProtocolView={handleOpenFullProtocolFromGuide}
+            onOpenRoadmapView={handleOpenRoadmapFromGuide}
             isOpen={refOpen}
             onToggle={() => setRefOpen(prev => !prev)}
             normalTodayAutoOpenSignal={normalTodayAutoOpenSignal}
@@ -699,7 +721,7 @@ const Protocol = () => {
               onClick={() => setActiveView('guide')}
               className={cn(
                 "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                activeView === 'guide' || activeView === 'shopping' || activeView === 'protocol'
+                activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap'
                   ? "bg-primary/10 text-primary"
                   : "hover:bg-muted/50"
               )}

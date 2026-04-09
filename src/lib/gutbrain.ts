@@ -392,6 +392,50 @@ export const parseGutBrainShoppingActions = (content: string): GutBrainShoppingA
   });
 };
 
+const findClarifyBlock = (content: string) => {
+  const openMatch = content.match(/\[\s*CLARIFY\s*\]/i);
+  if (!openMatch || openMatch.index === undefined) {
+    return null;
+  }
+
+  const openStart = openMatch.index;
+  const bodyStart = openStart + openMatch[0].length;
+  const afterOpen = content.slice(bodyStart);
+  const closeMatch = afterOpen.match(/\[\s*\/\s*CLARIFY\s*\]/i);
+
+  let bodyEnd = content.length;
+  let fullEnd = content.length;
+
+  if (closeMatch && closeMatch.index !== undefined) {
+    bodyEnd = bodyStart + closeMatch.index;
+    fullEnd = bodyEnd + closeMatch[0].length;
+  } else {
+    // Fallback: if closing tag is missing, stop at the next known block.
+    const nextBlockMatch = afterOpen.match(/\[(?:COACH_ACTION|\/COACH_ACTION|SHOP_ACTION|\/SHOP_ACTION|PROGRESS_UPDATE:[^\]]+)\]/i);
+    if (nextBlockMatch && nextBlockMatch.index !== undefined) {
+      bodyEnd = bodyStart + nextBlockMatch.index;
+      fullEnd = bodyEnd;
+    }
+  }
+
+  return {
+    openStart,
+    bodyStart,
+    bodyEnd,
+    fullEnd,
+    body: content.slice(bodyStart, bodyEnd),
+  };
+};
+
+const stripClarifyBlock = (content: string) => {
+  const block = findClarifyBlock(content);
+  if (!block) {
+    return content;
+  }
+
+  return `${content.slice(0, block.openStart)}${content.slice(block.fullEnd)}`;
+};
+
 export const parseCoachActions = (content: string): CoachAction[] => {
   const matches = [...content.matchAll(/\[COACH_ACTION\]([\s\S]*?)\[\/COACH_ACTION\]/gi)];
   const validTypes: CoachActionType[] = [
@@ -401,24 +445,54 @@ export const parseCoachActions = (content: string): CoachAction[] => {
     'set_reminder',
     'open_shopping',
   ];
+  const defaultLabelByType: Record<CoachActionType, string> = {
+    open_view: 'Open view',
+    focus_checklist_item: 'Focus checklist item',
+    open_normal_today: "Open what's normal today",
+    set_reminder: 'Set reminder',
+    open_shopping: 'Open shopping list',
+  };
+  const normalizeType = (value: string | undefined): CoachActionType | null => {
+    if (!value) return null;
+    const normalized = value.toLowerCase().trim().replace(/[\s-]+/g, '_');
+    return validTypes.includes(normalized as CoachActionType)
+      ? (normalized as CoachActionType)
+      : null;
+  };
+  const normalizeView = (value: string | undefined): CoachAction['view'] | undefined => {
+    if (!value) return undefined;
+    const normalized = value.toLowerCase().trim();
+    if (normalized.includes('shop')) return 'shopping';
+    if (normalized.includes('today') || normalized.includes('plan')) return 'today';
+    if (normalized.includes('guide')) return 'guide';
+    if (normalized.includes('help') || normalized.includes('coach') || normalized.includes('chat')) return 'help';
+    if (normalized.includes('protocol')) return 'protocol';
+    return undefined;
+  };
 
-  return matches.flatMap((match) => {
+  const parsedActions = matches.flatMap((match) => {
     const lines = match[1]
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean);
 
-    const getValue = (prefix: string) => lines.find((line) => line.toLowerCase().startsWith(prefix))?.slice(prefix.length).trim();
-    const type = getValue('type:') as CoachActionType | undefined;
-    const label = getValue('label:');
-    const view = getValue('view:') as CoachAction['view'] | undefined;
-    const checklistKey = getValue('checklist_key:');
-    const phase = getValue('phase:');
-    const category = getValue('category:');
+    const values: Record<string, string> = {};
+    for (const line of lines) {
+      const match = line.match(/^[-*]?\s*([a-zA-Z_]+)\s*[:=]\s*(.+)$/);
+      if (!match) continue;
+      values[match[1].toLowerCase()] = match[2].trim();
+    }
 
-    if (!type || !label || !validTypes.includes(type)) {
+    const type = normalizeType(values.type);
+    if (!type) {
       return [];
     }
+
+    const label = values.label?.trim() || defaultLabelByType[type];
+    const view = normalizeView(values.view);
+    const checklistKey = values.checklist_key;
+    const phase = values.phase;
+    const category = values.category;
 
     return [{
       type,
@@ -429,18 +503,49 @@ export const parseCoachActions = (content: string): CoachAction[] => {
       category,
     }];
   });
+
+  if (parsedActions.length) {
+    return parsedActions;
+  }
+
+  // Fallback: infer a shopping action when the assistant strongly suggests opening
+  // the in-app list but forgot to emit a valid COACH_ACTION block.
+  const visibleText = getGutBrainDisplayText(content).toLowerCase();
+  const mentionsShopping = /shopping\s+list|shopping|supplies|grocery|groceries|what\s+to\s+buy|buy\s+first/.test(visibleText);
+  const asksToOpenList = /open\s+shopping|open\s+the\s+list|check\s+the\s+list|see\s+the\s+list|in\s+the\s+app|inside\s+the\s+app|want\s+to\s+see/.test(visibleText);
+  const hasClarifierListOption = /\[clarify\][\s\S]*?option:\s*.*(check|open|see).*(list|app)[\s\S]*?\[\/clarify\]/i.test(content);
+
+  if (!mentionsShopping || (!asksToOpenList && !hasClarifierListOption)) {
+    return [];
+  }
+
+  let inferredPhase: string | undefined;
+  if (/\bprep\b|\bfoundation\b/.test(visibleText)) {
+    inferredPhase = 'Foundation';
+  } else if (/\bweek\s*1\b|\bfungal\b/.test(visibleText)) {
+    inferredPhase = 'Fungal Elimination';
+  } else if (/\bweek\s*2\b|\bparasite\b/.test(visibleText)) {
+    inferredPhase = 'Parasite Elimination';
+  } else if (/\bweek\s*3\b|\bheavy\s*metal\b|\bmetal\b/.test(visibleText)) {
+    inferredPhase = 'Heavy Metal Detox';
+  }
+
+  return [{
+    type: 'open_shopping',
+    label: 'Open shopping list',
+    phase: inferredPhase,
+  }];
 };
 
 export const parseGutBrainClarifier = (content: string): GutBrainClarifier | null => {
-  const match = content.match(/\[CLARIFY\]([\s\S]*?)\[\/CLARIFY\]/i);
-  if (!match) {
+  const clarifyBlock = findClarifyBlock(content);
+  if (!clarifyBlock) {
     return null;
   }
 
   // Extract preamble (text before the [CLARIFY] block), stripped of action tags
-  const clarifyIndex = content.indexOf('[CLARIFY]');
-  const rawPreamble = clarifyIndex > 0
-    ? content.slice(0, clarifyIndex).trim()
+  const rawPreamble = clarifyBlock.openStart > 0
+    ? content.slice(0, clarifyBlock.openStart).trim()
     : '';
   const preamble = rawPreamble
     .replace(/\[COACH_ACTION\][\s\S]*?\[\/COACH_ACTION\]/gi, '')
@@ -448,32 +553,60 @@ export const parseGutBrainClarifier = (content: string): GutBrainClarifier | nul
     .replace(/\[PROGRESS_UPDATE:[^\]]*\]/gi, '')
     .trim();
 
-  const lines = match[1]
-    .split('\n')
-    .map((line) => line.trim())
+  const options = [...clarifyBlock.body.matchAll(/(?:^|\n)\s*[-*]?\s*option\s*:\s*(.+)\s*$/gim)]
+    .map((match) => match[1].trim())
     .filter(Boolean);
 
-  const questionLine = lines.find((line) => line.toLowerCase().startsWith('question:'));
-  const options = lines
-    .filter((line) => line.toLowerCase().startsWith('option:'))
-    .map((line) => line.slice(line.indexOf(':') + 1).trim())
-    .filter(Boolean);
+  let question = '';
+  const questionMatch = clarifyBlock.body.match(/(?:^|\n)\s*[-*]?\s*question\s*:\s*(.+)\s*$/im);
+  if (questionMatch) {
+    question = questionMatch[1].trim();
 
-  if (!questionLine || options.length < 2) {
+    const afterQuestion = clarifyBlock.body.slice(
+      (questionMatch.index ?? 0) + questionMatch[0].length,
+    );
+    const continuationLines = afterQuestion
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    for (const line of continuationLines) {
+      if (/^[-*]?\s*option\s*:/i.test(line)) {
+        break;
+      }
+      if (/^\[\/?[A-Z_]/i.test(line)) {
+        break;
+      }
+      question = question ? `${question} ${line}` : line;
+    }
+  } else {
+    // Fallback: treat leading text before the first option as the question.
+    const firstOptionMatch = clarifyBlock.body.match(/(?:^|\n)\s*[-*]?\s*option\s*:/i);
+    const questionSlice = firstOptionMatch && firstOptionMatch.index !== undefined
+      ? clarifyBlock.body.slice(0, firstOptionMatch.index)
+      : clarifyBlock.body;
+    question = questionSlice
+      .split('\n')
+      .map((line) => line.replace(/^[-*]?\s*question\s*:\s*/i, '').trim())
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+  }
+
+  if (!question || options.length < 2) {
     return null;
   }
 
   return {
     preamble,
-    question: questionLine.slice(questionLine.indexOf(':') + 1).trim(),
+    question,
     options: options.slice(0, 4),
   };
 };
 
 export const getGutBrainDisplayText = (content: string) => {
   // Strip action and helper blocks from display
-  return content
-    .replace(/\[CLARIFY\][\s\S]*?\[\/CLARIFY\]/gi, '')
+  return stripClarifyBlock(content)
     .replace(/\[COACH_ACTION\][\s\S]*?\[\/COACH_ACTION\]/gi, '')
     .replace(/\[SHOP_ACTION\][\s\S]*?\[\/SHOP_ACTION\]/gi, '')
     .replace(/\[PROGRESS_UPDATE:[^\]]*\]/gi, '')
@@ -620,6 +753,7 @@ label: Open today's plan
 - Keep shopping actions narrow:
   * If user asks for one part of the list, send one shopping action pointing to that part.
   * Do not dump the full shopping list in prose if an open_shopping action can handle it.
+- If the user asks about shopping, what to buy, or supplies, you MUST include an open_shopping action.
 - Use actions by default when relevant:
   * Symptoms, die-off, "is this normal" -> include open_normal_today
   * Questions about what to do now -> include open_view today

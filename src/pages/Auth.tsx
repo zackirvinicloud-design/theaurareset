@@ -14,6 +14,7 @@ import {
   sanitizeRedirectPath,
   withAuthTimeout,
 } from "@/lib/auth-routing";
+import { getFriendlyAuthErrorMessage } from "@/lib/auth-errors";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
@@ -116,7 +117,7 @@ const Auth = () => {
       if (error) {
         toast({
           title: "Sign in failed",
-          description: error.message,
+          description: getFriendlyAuthErrorMessage(error),
           variant: "destructive",
         });
         return;
@@ -150,7 +151,7 @@ const Auth = () => {
       console.error("Sign in error:", error);
       toast({
         title: "Sign in failed",
-        description: "Something went wrong while signing in. Please try again.",
+        description: getFriendlyAuthErrorMessage(error),
         variant: "destructive",
       });
     } finally {
@@ -183,7 +184,10 @@ const Auth = () => {
       if (error) {
         toast({
           title: "Password reset failed",
-          description: error.message,
+          description: getFriendlyAuthErrorMessage(
+            error,
+            "Something went wrong while sending your reset email. Please try again.",
+          ),
           variant: "destructive",
         });
       } else {
@@ -196,7 +200,10 @@ const Auth = () => {
       console.error("Password reset error:", error);
       toast({
         title: "Password reset failed",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: getFriendlyAuthErrorMessage(
+          error,
+          "Something went wrong while sending your reset email. Please try again.",
+        ),
         variant: "destructive",
       });
     } finally {
