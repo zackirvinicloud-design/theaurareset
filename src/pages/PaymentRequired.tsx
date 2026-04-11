@@ -10,11 +10,12 @@ import { getWhopCheckoutUrl, PRODUCT_NAME, PRODUCT_PRICE, PRODUCT_PRIMARY_CTA } 
 
 const PAYWALL = {
   headline: "Your protocol workspace is ready.",
-  description: "You already know the reset is hard to execute cleanly. This one-time purchase keeps the daily structure, shopping, and coaching in one place.",
+  description: "You already know the cleanse is hard to execute cleanly. This one-time purchase keeps the daily plan, shopping, symptom support, and coaching in one place.",
   bullets: [
     "Day-by-day protocol guidance that answers what matters today, not generic wellness advice.",
     "GutBrain coaching tied to your protocol day, your friction, and your real routine.",
-    "Shopping, food, timing, and troubleshooting support without PDF chaos.",
+    "Shopping, food, timing, symptom support, and troubleshooting without PDF chaos.",
+    "Optional text reminders that pull you back into the exact step when life gets messy.",
     "One-time payment. Lifetime access. No subscription drag.",
   ],
 };
@@ -126,23 +127,23 @@ const PaymentRequired = () => {
 
           <div className="rounded-3xl border border-primary/25 bg-primary/5 p-6 text-center">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-              Founder pricing
+              One-time access
             </p>
             <p className="mt-4 text-4xl font-bold text-primary">{PRODUCT_PRICE}</p>
             <p className="mt-2 text-base font-semibold text-foreground">
-              One payment. Lifetime access. No subscription.
+              One payment. Lifetime access. No subscription. No app-store friction.
             </p>
             <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              {PRODUCT_NAME} is not another pile of wellness theory. It is the execution layer built to get you through the reset without unnecessary confusion.
+              {PRODUCT_NAME} is not another pile of wellness theory. It is the execution layer built to get you through the cleanse without unnecessary confusion.
             </p>
           </div>
 
           <div className="rounded-3xl border border-primary/20 bg-primary/10 p-6">
             <p className="text-base font-semibold text-foreground">
-              No monthly charges. No sneaky billing.
+              Open in your browser. Add text reminders only if you want them.
             </p>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              One payment. Lifetime access to every feature, every update, and every protocol expansion.
+              One payment keeps your cleanse workspace, daily structure, and core product updates in place without another subscription to manage.
             </p>
           </div>
 
@@ -156,7 +157,7 @@ const PaymentRequired = () => {
               <ExternalLink className="ml-2 w-5 h-5" />
             </Button>
             <p className="text-xs sm:text-sm text-muted-foreground mt-4">
-              ✓ One-time payment • ✓ Lifetime access • ✓ No subscription
+              ✓ One-time payment • ✓ Lifetime access • ✓ No app download required
             </p>
           </div>
         </CardContent>

@@ -4,9 +4,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Flame, ArrowLeft, ArrowRight, Settings, LogOut } from 'lucide-react';
+import { Flame, ArrowLeft, ArrowRight, Settings, LogOut, UserRoundCog } from 'lucide-react';
 import { UserProgress } from '@/hooks/useJournalStore';
 import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
 import { cn } from '@/lib/utils';
@@ -15,6 +16,7 @@ interface TopBarProps {
     progress: UserProgress;
     onPreviousDay: () => void;
     onNextDay: () => void;
+    onOpenSettings: () => void;
     onSignOut: () => void;
 }
 
@@ -22,6 +24,7 @@ export const TopBar = ({
     progress,
     onPreviousDay,
     onNextDay,
+    onOpenSettings,
     onSignOut,
 }: TopBarProps) => {
     const dayLabel = getDayLabel(progress.currentDay);
@@ -98,6 +101,14 @@ export const TopBar = ({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem
+                                onClick={onOpenSettings}
+                                className="gap-2"
+                            >
+                                <UserRoundCog className="w-4 h-4" />
+                                Edit profile
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={onSignOut}
                                 className="gap-2 text-destructive focus:text-destructive"

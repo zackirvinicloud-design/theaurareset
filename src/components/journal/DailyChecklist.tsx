@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Circle, HelpCircle, Plus, X, Sparkles } from 'lucide-react';
 import { TaskReminderPicker } from '@/components/journal/TaskReminderPicker';
+import type { ReminderDeliveryChannel } from '@/lib/sms';
 
 interface DailyChecklistProps {
     currentDay: number;
@@ -22,8 +23,16 @@ interface DailyChecklistProps {
     focusedItemKey?: string | null;
     reminderComposerTargetKey?: string | null;
     onReminderComposerOpenChange?: (itemKey: string, open: boolean) => void;
-    onSetReminder?: (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => Promise<void> | void;
-    onClearReminder?: (checklistKey: string) => void;
+    onSetReminder?: (input: {
+        checklistKey: string;
+        dayNumber: number;
+        label: string;
+        scheduledLocalTime: string;
+        deliveryChannel?: ReminderDeliveryChannel;
+        deepLinkTarget?: string;
+    }) => Promise<void> | void;
+    onClearReminder?: (checklistKey: string, dayNumber: number) => void;
+    smsReady?: boolean;
 }
 
 type ChecklistTimeOfDay = ChecklistItem['timeOfDay'];
@@ -58,8 +67,16 @@ interface ChecklistSectionsProps {
     focusedItemKey?: string | null;
     reminderComposerTargetKey?: string | null;
     onReminderComposerOpenChange?: (itemKey: string, open: boolean) => void;
-    onSetReminder?: (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => Promise<void> | void;
-    onClearReminder?: (checklistKey: string) => void;
+    onSetReminder?: (input: {
+        checklistKey: string;
+        dayNumber: number;
+        label: string;
+        scheduledLocalTime: string;
+        deliveryChannel?: ReminderDeliveryChannel;
+        deepLinkTarget?: string;
+    }) => Promise<void> | void;
+    onClearReminder?: (checklistKey: string, dayNumber: number) => void;
+    smsReady?: boolean;
 }
 
 const createEmptyGroups = (): Record<ChecklistTimeOfDay, ChecklistDisplayItem[]> => ({
@@ -132,12 +149,13 @@ export function ChecklistSections({
     onReminderComposerOpenChange,
     onSetReminder,
     onClearReminder,
+    smsReady = false,
 }: ChecklistSectionsProps) {
     const { grouped, followUps } = buildChecklistViewModel(currentDay, checklist, customItems);
     const remindersByKey = Object.fromEntries(
         taskReminders
-            .filter((reminder) => reminder.active)
-            .map((reminder) => [reminder.checklistKey, reminder]),
+            .filter((reminder) => reminder.active && reminder.dayNumber === currentDay)
+            .map((reminder) => [`${reminder.dayNumber}:${reminder.checklistKey}`, reminder]),
     );
 
     return (
@@ -166,15 +184,17 @@ export function ChecklistSections({
                                 <ChecklistRow
                                     key={item.key}
                                     item={item}
+                                    currentDay={currentDay}
                                     isChecked={!!checklist[item.key]}
                                     isFocused={focusedItemKey === item.key}
-                                    reminder={remindersByKey[item.key]}
+                                    reminder={remindersByKey[`${currentDay}:${item.key}`]}
                                     onToggle={onToggle}
                                     onAskAbout={onAskAbout}
                                     reminderComposerOpen={reminderComposerTargetKey === item.key}
                                     onReminderComposerOpenChange={onReminderComposerOpenChange}
                                     onSetReminder={onSetReminder}
                                     onClearReminder={onClearReminder}
+                                    smsReady={smsReady}
                                     variant={variant}
                                 />
                             ))}
@@ -210,9 +230,10 @@ export function ChecklistSections({
                                 >
                                     <ChecklistRow
                                         item={item}
+                                        currentDay={currentDay}
                                         isChecked={!!checklist[item.key]}
                                         isFocused={focusedItemKey === item.key}
-                                        reminder={remindersByKey[item.key]}
+                                        reminder={remindersByKey[`${currentDay}:${item.key}`]}
                                         onToggle={onToggle}
                                         onAskAbout={onAskAbout}
                                         onRemove={onRemoveCustomItem}
@@ -220,6 +241,7 @@ export function ChecklistSections({
                                         onReminderComposerOpenChange={onReminderComposerOpenChange}
                                         onSetReminder={onSetReminder}
                                         onClearReminder={onClearReminder}
+                                        smsReady={smsReady}
                                         variant={variant}
                                     />
                                 </motion.div>
@@ -241,6 +263,7 @@ export const DailyChecklist = ({
     onReminderComposerOpenChange,
     onSetReminder,
     onClearReminder,
+    smsReady = false,
 }: DailyChecklistProps) => {
     const [newItemText, setNewItemText] = useState('');
     const [showAddInput, setShowAddInput] = useState(false);
@@ -306,6 +329,7 @@ export const DailyChecklist = ({
                         onReminderComposerOpenChange={onReminderComposerOpenChange}
                         onSetReminder={onSetReminder}
                         onClearReminder={onClearReminder}
+                        smsReady={smsReady}
                     />
                 </div>
             </ScrollArea>
@@ -353,6 +377,7 @@ export const DailyChecklist = ({
 
 function ChecklistRow({
     item,
+    currentDay,
     isChecked,
     isFocused,
     reminder,
@@ -363,9 +388,11 @@ function ChecklistRow({
     onReminderComposerOpenChange,
     onSetReminder,
     onClearReminder,
+    smsReady,
     variant,
 }: {
     item: ChecklistDisplayItem;
+    currentDay: number;
     isChecked: boolean;
     isFocused: boolean;
     reminder?: TaskReminder;
@@ -374,8 +401,16 @@ function ChecklistRow({
     onRemove?: (key: string) => void;
     reminderComposerOpen?: boolean;
     onReminderComposerOpenChange?: (itemKey: string, open: boolean) => void;
-    onSetReminder?: (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => Promise<void> | void;
-    onClearReminder?: (checklistKey: string) => void;
+    onSetReminder?: (input: {
+        checklistKey: string;
+        dayNumber: number;
+        label: string;
+        scheduledLocalTime: string;
+        deliveryChannel?: ReminderDeliveryChannel;
+        deepLinkTarget?: string;
+    }) => Promise<void> | void;
+    onClearReminder?: (checklistKey: string, dayNumber: number) => void;
+    smsReady?: boolean;
     variant: 'panel' | 'inline';
 }) {
     const rowRef = useRef<HTMLDivElement | null>(null);
@@ -475,9 +510,11 @@ function ChecklistRow({
                 {onSetReminder && onClearReminder && !isChecked && (
                     <TaskReminderPicker
                         itemKey={item.key}
+                        dayNumber={currentDay}
                         label={item.label}
                         timeOfDay={item.timeOfDay}
                         reminder={reminder}
+                        smsReady={smsReady}
                         onSetReminder={onSetReminder}
                         onClearReminder={onClearReminder}
                         variant="icon"

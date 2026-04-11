@@ -8,6 +8,11 @@ export interface GutBrainProfilePayload {
   motivationStyle: string | null;
   barriers: string[];
   supportPreferences: string[];
+  dietPattern?: string | null;
+  foodPreferences?: string[];
+  routineType?: string | null;
+  primaryBlocker?: string | null;
+  healthFocus?: string[];
   wins: string[];
   conversationSummary: string | null;
 }
@@ -42,6 +47,11 @@ export const buildMemoryContext = (
     profile?.protocolGoal ? `Goal: ${profile.protocolGoal}` : '',
     profile?.whyNow ? `Why now: ${profile.whyNow}` : '',
     profile?.motivationStyle ? `Motivation style: ${profile.motivationStyle}` : '',
+    profile?.dietPattern ? `Diet pattern: ${profile.dietPattern}` : '',
+    renderList('Food preferences and hard no items', profile?.foodPreferences ?? []),
+    profile?.routineType ? `Routine type: ${profile.routineType}` : '',
+    profile?.primaryBlocker ? `Primary blocker: ${profile.primaryBlocker}` : '',
+    renderList('Health focus', profile?.healthFocus ?? []),
     renderList('Barriers', profile?.barriers ?? []),
     renderList('Support preferences', profile?.supportPreferences ?? []),
     renderList('Wins', profile?.wins ?? []),
@@ -57,9 +67,11 @@ export const buildGutBrainChatPrompt = (
   context: string,
   profile?: Partial<GutBrainProfilePayload> | null,
   snapshot?: Partial<GutBrainSnapshotPayload> | null,
+  symptoms?: string[],
 ) => {
   const memoryContext = buildMemoryContext(profile, snapshot);
   const userName = profile?.preferredName || 'friend';
+  const symptomText = symptoms?.length ? `\nCURRENT SYMPTOMS TODAY: ${symptoms.join(', ')}` : '';
 
   return `You are Coach, the personal gut health guide inside The Gut Brain Journal app.
 
@@ -69,6 +81,7 @@ IDENTITY
 - Think: the friend who reads every study, questions everything, and tells you what your doctor won't.
 - You have OPINIONS. You are not neutral. You believe this protocol works and you want ${userName} to finish it.
 - You remember everything about ${userName} from the MEMORY section. Use their name, reference past conversations, remember their barriers and wins. Make them feel known.
+- Treat explicit profile details in MEMORY as durable truth unless the user clearly corrects them.
 
 VOICE & TONE
 - Informal. Casual. Direct. Like texting.
@@ -94,7 +107,10 @@ NLP ENGAGEMENT
 FOOD-FIRST RULE
 - When asked about meals, breakfast, lunch, dinner, snacks, or "what should I eat" -- ALWAYS lead with actual food and recipes.
 - Give specific, practical meals. Not "eat anti-inflammatory foods." Say "scramble 2 eggs in coconut oil with sauteed spinach and a handful of pumpkin seeds."
-- Ask about food preferences and restrictions if you don't know them yet.
+- If MEMORY already includes a diet pattern, food preference, or hard no food, HONOR it automatically.
+- Do not recommend foods that conflict with what you already know about this user.
+- If their diet pattern makes a default cleanse meal awkward, give the closest compliant swap instead of acting confused.
+- Ask about food preferences and restrictions only if you still do not know them.
 - Only mention supplements AFTER covering food, or if specifically asked.
 
 AGENTIC BEHAVIOR
@@ -104,6 +120,8 @@ AGENTIC BEHAVIOR
 - Use clarifiers aggressively for personalization: "Before I map this out for you..." "Quick question first..."
 - When you ask a clarifier, frame it like you're a coach gathering intel, not a form collecting data.
 - You can suggest adding or removing items from the shopping list using action tags.
+- Personalization means adapting meals, food swaps, shopping guidance, symptom framing, reminder framing, and tone.
+- Personalization does NOT mean rewriting the cleanse order or changing the core checklist.
 
 PROTOCOL EXPERTISE
 - You know this 21-day protocol deeply. Use the CURRENT CONTEXT for timing, phase, and daily specifics.
@@ -169,7 +187,7 @@ The only time you skip the [CLARIFY] block is:
 CURRENT CONTEXT
 ${context}
 
-${memoryContext}`;
+${memoryContext}${symptomText}`;
 };
 
 export const buildGutBrainInsightPrompt = (
@@ -192,6 +210,7 @@ FOCUS
 - Pay special attention to motivation, resistance, emotional friction, confusion, routines, and what helps the user stay consistent.
 - Connect emotional patterns to protocol adherence when the conversation supports it.
 - Note food preferences, dietary restrictions, and energy patterns if mentioned.
+- If MEMORY already contains explicit facts like name, goal, why now, diet pattern, food preferences, or support style, treat those as grounded truth unless the conversation clearly updates them.
 - Do not diagnose or make disease/cure claims.
 - If something is unknown, return null or an empty list.
 
@@ -228,6 +247,7 @@ RULES
 - Make the action steps specific and easy to do.
 - The memory should sound like a sharp coach's notes, not therapy jargon.
 - If the user mentioned food preferences, restrictions, or allergies, note them in barriers or supportPreferences.
+- Do not contradict explicit profile facts from MEMORY unless the conversation clearly changes them.
 
 CURRENT DAY
 - Day: ${currentDay}

@@ -5,7 +5,6 @@ import { ChatMessage } from '@/components/chat/ChatMessage';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { CoachHistory } from '@/components/chat/CoachHistory';
 import { ChatThread, JournalEntry, UserProgress } from '@/hooks/useJournalStore';
-import { useGutBrainProfile } from '@/hooks/useGutBrainProfile';
 import { streamChat } from '@/utils/streamChat';
 import { buildProtocolChatContext, getDayLabel } from '@/hooks/useProtocolData';
 import { toast } from '@/hooks/use-toast';
@@ -15,8 +14,11 @@ import {
     getGutBrainDisplayText,
     getGutBrainStarterState,
     type CoachAction,
+    type GutBrainConversationEntry,
+    type GutBrainProfile,
     parseGutBrainShoppingActions,
     type GutBrainShoppingAction,
+    type GutBrainSnapshot,
     type GutBrainStarterState,
 } from '@/lib/gutbrain';
 
@@ -29,6 +31,14 @@ interface JournalCenterProps {
     onFinalizeEntry: (entryId: string, content: string) => Promise<void> | void;
     onApplyShoppingActions?: (actions: GutBrainShoppingAction[]) => Promise<void> | void;
     onCoachAction?: (action: CoachAction) => void;
+    brainProfile: GutBrainProfile;
+    brainSnapshot: GutBrainSnapshot | null;
+    symptoms?: string[];
+    onRefreshBrain: (
+        entries: GutBrainConversationEntry[],
+        progress: { currentDay: number; currentPhase: 1 | 2 | 3 | 4 },
+        options?: { force?: boolean; silent?: boolean; memoryProfile?: GutBrainProfile | null },
+    ) => Promise<void>;
     threads?: ChatThread[];
     activeThreadId?: string | null;
     onStartNewChat?: () => Promise<void> | void;
@@ -49,6 +59,10 @@ export const JournalCenter = ({
     onFinalizeEntry,
     onApplyShoppingActions,
     onCoachAction,
+    brainProfile,
+    brainSnapshot,
+    symptoms = [],
+    onRefreshBrain,
     threads,
     activeThreadId,
     onStartNewChat,
@@ -59,11 +73,10 @@ export const JournalCenter = ({
     isMobile = false,
     mobileVariant = 'default',
 }: JournalCenterProps) => {
-    const gutBrain = useGutBrainProfile(userId);
     const [isLoading, setIsLoading] = useState(false);
     const [showScrollButton, setShowScrollButton] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
-    const starterState = getGutBrainStarterState(progress, gutBrain.profile, gutBrain.snapshot, { mobile: isMobile });
+    const starterState = getGutBrainStarterState(progress, brainProfile, brainSnapshot, { mobile: isMobile });
     const isMobileHelpMode = isMobile && mobileVariant === 'help';
     const inputPlaceholder = progress.currentDay === 0
         ? 'Ask what to buy, what to do first, or what could trip you up...'
@@ -134,8 +147,9 @@ export const JournalCenter = ({
             await streamChat({
                 messages: [...mappedMsgs, { id: 'new', role: 'user' as const, content, timestamp: Date.now() }],
                 context: enhancedContext,
-                brainProfile: gutBrain.profile,
-                brainSnapshot: gutBrain.snapshot,
+                brainProfile,
+                brainSnapshot,
+                symptoms,
                 onDelta: (chunk) => {
                     assistantContent += chunk;
                     const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
@@ -158,7 +172,7 @@ export const JournalCenter = ({
                                 await onApplyShoppingActions(shoppingActions);
                             }
 
-                            await gutBrain.refreshBrain(
+                            await onRefreshBrain(
                                 [
                                     ...entries,
                                     userEntry,
@@ -168,7 +182,7 @@ export const JournalCenter = ({
                                     },
                                 ],
                                 { currentDay: nextDay, currentPhase: nextPhase },
-                                { silent: true },
+                                { silent: true, memoryProfile: brainProfile },
                             );
                         } finally {
                             setIsLoading(false);
@@ -198,9 +212,12 @@ export const JournalCenter = ({
         onApplyShoppingActions,
         onFinalizeEntry,
         onUpdateEntry,
-        gutBrain,
         progress.currentDay,
         progress.currentPhase,
+        brainProfile,
+        brainSnapshot,
+        symptoms,
+        onRefreshBrain,
         sanitizeAssistantText,
     ]);
 

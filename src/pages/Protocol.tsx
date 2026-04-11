@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BookOpen, ClipboardList, Loader2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { findShoppingCategoryMatch, getDayLabel, getShoppingPhaseForDay, SHOPPING_LIST } from "@/hooks/useProtocolData";
+import { useGutBrainProfile } from "@/hooks/useGutBrainProfile";
 import { useJournalStore } from "@/hooks/useJournalStore";
+import { useOnboardingProfile } from "@/hooks/useOnboardingProfile";
+import { useSmsSubscription } from "@/hooks/useSmsSubscription";
 import { toast } from "@/hooks/use-toast";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
 import { cn } from "@/lib/utils";
@@ -16,14 +19,31 @@ import { DailyChecklist, buildChecklistViewModel } from "@/components/journal/Da
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
 import { NormalTodayView } from "@/components/journal/NormalTodayView";
+import { ProfileSettingsView } from "@/components/journal/ProfileSettingsView";
 import { ProtocolRoadmapExplorer } from "@/components/journal/ProtocolRoadmapExplorer";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
 import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
 
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap' | 'normal';
+type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap' | 'normal' | 'settings';
+
+const dedupeList = (values: Array<string | null | undefined>) => {
+  const seen = new Set<string>();
+  return values
+    .map((value) => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean)
+    .filter((value) => {
+      const key = value.toLowerCase();
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+};
 
 const Protocol = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
@@ -37,16 +57,62 @@ const Protocol = () => {
   // Pending prompt for auto-sending from checklist tap
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<ActiveView>('today');
+  const [settingsReturnView, setSettingsReturnView] = useState<Exclude<ActiveView, 'settings'>>('today');
   const [focusedChecklistKey, setFocusedChecklistKey] = useState<string | null>(null);
   const [reminderComposerTargetKey, setReminderComposerTargetKey] = useState<string | null>(null);
   const [shoppingDefaultExpandedCategories, setShoppingDefaultExpandedCategories] = useState<string[]>([]);
+  const appliedDeepLinkRef = useRef<string | null>(null);
+  const backfillPromptShownRef = useRef(false);
 
   // Journal store (Supabase-backed)
   const store = useJournalStore();
+  const currentDay = store.progress.currentDay;
+  const currentPhase = store.progress.currentPhase;
+  const storeIsLoading = store.isLoading;
+  const setCurrentDay = store.setCurrentDay;
+  const setTaskReminder = store.setTaskReminder;
+  const taskReminders = store.taskReminders;
+  const markTaskReminderDelivered = store.markTaskReminderDelivered;
+  const gutBrain = useGutBrainProfile(store.userId);
+  const onboarding = useOnboardingProfile(store.userId);
+  const {
+    subscription,
+    smsReady,
+    isLoading: isSmsLoading,
+    isSaving: isSmsSaving,
+    saveSubscription,
+  } = useSmsSubscription(store.userId);
   const checklistViewModel = useMemo(
-    () => buildChecklistViewModel(store.progress.currentDay, store.checklist, store.customItems),
-    [store.checklist, store.customItems, store.progress.currentDay],
+    () => buildChecklistViewModel(currentDay, store.checklist, store.customItems),
+    [currentDay, store.checklist, store.customItems],
   );
+  const mergedCoachProfile = useMemo(() => {
+    const supportPreferences = dedupeList([
+      onboarding.profile.supportStyle,
+      ...gutBrain.profile.supportPreferences,
+      ...onboarding.profile.foodPreferences,
+    ]);
+    const barriers = dedupeList([
+      onboarding.profile.primaryBlocker,
+      ...gutBrain.profile.barriers,
+    ]);
+    const healthFocus = dedupeList(onboarding.profile.healthFlags);
+
+    return {
+      ...gutBrain.profile,
+      preferredName: onboarding.profile.firstName ?? gutBrain.profile.preferredName,
+      protocolGoal: onboarding.profile.protocolGoal ?? gutBrain.profile.protocolGoal,
+      whyNow: onboarding.profile.whyNow ?? gutBrain.profile.whyNow,
+      motivationStyle: onboarding.profile.supportStyle ?? gutBrain.profile.motivationStyle,
+      barriers,
+      supportPreferences,
+      dietPattern: onboarding.profile.dietPattern,
+      foodPreferences: onboarding.profile.foodPreferences,
+      routineType: onboarding.profile.routineType,
+      primaryBlocker: onboarding.profile.primaryBlocker,
+      healthFocus,
+    };
+  }, [gutBrain.profile, onboarding.profile]);
 
   // Persist ref panel state
   useEffect(() => {
@@ -107,6 +173,17 @@ const Protocol = () => {
     navigate("/");
   };
 
+  const openSettingsView = useCallback(() => {
+    if (activeView !== 'settings') {
+      setSettingsReturnView(activeView);
+    }
+    setActiveView('settings');
+  }, [activeView]);
+
+  const handleCloseSettings = useCallback(() => {
+    setActiveView(settingsReturnView);
+  }, [settingsReturnView]);
+
   const openNormalToday = useCallback(() => {
     setActiveView('normal');
   }, []);
@@ -118,6 +195,52 @@ const Protocol = () => {
 
     return checklistViewModel.nextItem?.key ?? checklistViewModel.allItems[0]?.key ?? null;
   }, [checklistViewModel.allItems, checklistViewModel.nextItem]);
+
+  const resolveShoppingCategoryKey = useCallback((phaseHint?: string | null, categoryHint?: string | null) => {
+    if (categoryHint) {
+      const categoryMatch = findShoppingCategoryMatch(categoryHint);
+      if (categoryMatch) {
+        return `${categoryMatch.phase}_${categoryMatch.category.category}`;
+      }
+    }
+
+    const normalizedPhase = phaseHint?.toLowerCase().trim() ?? "";
+    let phaseName: string | null = null;
+
+    if (normalizedPhase.includes("week 1") || normalizedPhase.includes("fungal")) {
+      phaseName = "Fungal Elimination";
+    } else if (normalizedPhase.includes("week 2") || normalizedPhase.includes("parasite")) {
+      phaseName = "Parasite Elimination";
+    } else if (normalizedPhase.includes("week 3") || normalizedPhase.includes("metal")) {
+      phaseName = "Heavy Metal Detox";
+    } else if (normalizedPhase.includes("prep") || normalizedPhase.includes("foundation")) {
+      phaseName = "Foundation";
+    } else if (phaseHint) {
+      phaseName = SHOPPING_LIST.find((phase) => phase.phase.toLowerCase() === normalizedPhase)?.phase ?? null;
+    }
+
+    if (!phaseName) {
+      const fallbackPhase = getShoppingPhaseForDay(currentDay);
+      const fallbackCategory = SHOPPING_LIST.find((phase) => phase.phase === fallbackPhase)?.categories[0];
+      if (!fallbackCategory) {
+        return null;
+      }
+      return `${fallbackPhase}_${fallbackCategory.category}`;
+    }
+
+    const firstCategory = SHOPPING_LIST.find((phase) => phase.phase === phaseName)?.categories[0];
+    if (!firstCategory) {
+      return null;
+    }
+
+    return `${phaseName}_${firstCategory.category}`;
+  }, [currentDay]);
+
+  const openShoppingWithFocus = useCallback((phaseHint?: string | null, categoryHint?: string | null) => {
+    const focusedKey = resolveShoppingCategoryKey(phaseHint, categoryHint);
+    setShoppingDefaultExpandedCategories(focusedKey ? [focusedKey] : []);
+    setActiveView("shopping");
+  }, [resolveShoppingCategoryKey]);
 
   const focusChecklistItem = useCallback((itemKey: string, options?: { openReminderComposer?: boolean }) => {
     setFocusedChecklistKey(itemKey);
@@ -132,15 +255,15 @@ const Protocol = () => {
   const openReminderTarget = useCallback(async (itemKey: string, reminderDayNumber?: number | null) => {
     if (
       typeof reminderDayNumber === 'number'
-      && reminderDayNumber !== store.progress.currentDay
+      && reminderDayNumber !== currentDay
       && reminderDayNumber >= 0
       && reminderDayNumber <= 21
     ) {
-      await store.setCurrentDay(reminderDayNumber);
+      await setCurrentDay(reminderDayNumber);
     }
 
     focusChecklistItem(itemKey);
-  }, [focusChecklistItem, store.progress.currentDay, store.setCurrentDay]);
+  }, [currentDay, focusChecklistItem, setCurrentDay]);
 
   const handleReminderComposerOpenChange = useCallback((itemKey: string, open: boolean) => {
     setReminderComposerTargetKey((current) => {
@@ -151,8 +274,20 @@ const Protocol = () => {
     });
   }, []);
 
-  const handleSetReminder = useCallback(async (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => {
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+  const handleSetReminder = useCallback(async (input: {
+    checklistKey: string;
+    dayNumber: number;
+    label: string;
+    scheduledLocalTime: string;
+    deliveryChannel?: 'local' | 'sms';
+    deepLinkTarget?: string;
+  }) => {
+    if (
+      input.deliveryChannel !== 'sms'
+      && typeof window !== 'undefined'
+      && 'Notification' in window
+      && Notification.permission === 'default'
+    ) {
       try {
         await Notification.requestPermission();
       } catch {
@@ -160,18 +295,19 @@ const Protocol = () => {
       }
     }
 
-    await store.setTaskReminder({
+    await setTaskReminder({
       ...input,
-      dayNumber: store.progress.currentDay,
     });
 
     setReminderComposerTargetKey(null);
 
     toast({
       title: "Reminder set",
-      description: `${input.label} will bring you back to the right step.`,
+      description: input.deliveryChannel === 'sms'
+        ? `${input.label} will text you back into the exact step.`
+        : `${input.label} will bring you back to the right step.`,
     });
-  }, [store.progress.currentDay, store.setTaskReminder]);
+  }, [setTaskReminder]);
 
   const handleResumeToday = useCallback(() => {
     const targetKey = resolveChecklistTargetKey();
@@ -197,52 +333,6 @@ const Protocol = () => {
   }, []);
 
   const handleCoachAction = useCallback((action: CoachAction) => {
-    const resolveShoppingCategoryKey = (phaseHint?: string | null, categoryHint?: string | null) => {
-      if (categoryHint) {
-        const categoryMatch = findShoppingCategoryMatch(categoryHint);
-        if (categoryMatch) {
-          return `${categoryMatch.phase}_${categoryMatch.category.category}`;
-        }
-      }
-
-      const normalizedPhase = phaseHint?.toLowerCase().trim() ?? "";
-      let phaseName: string | null = null;
-
-      if (normalizedPhase.includes("week 1") || normalizedPhase.includes("fungal")) {
-        phaseName = "Fungal Elimination";
-      } else if (normalizedPhase.includes("week 2") || normalizedPhase.includes("parasite")) {
-        phaseName = "Parasite Elimination";
-      } else if (normalizedPhase.includes("week 3") || normalizedPhase.includes("metal")) {
-        phaseName = "Heavy Metal Detox";
-      } else if (normalizedPhase.includes("prep") || normalizedPhase.includes("foundation")) {
-        phaseName = "Foundation";
-      } else if (phaseHint) {
-        phaseName = SHOPPING_LIST.find((phase) => phase.phase.toLowerCase() === normalizedPhase)?.phase ?? null;
-      }
-
-      if (!phaseName) {
-        const fallbackPhase = getShoppingPhaseForDay(store.progress.currentDay);
-        const fallbackCategory = SHOPPING_LIST.find((phase) => phase.phase === fallbackPhase)?.categories[0];
-        if (!fallbackCategory) {
-          return null;
-        }
-        return `${fallbackPhase}_${fallbackCategory.category}`;
-      }
-
-      const firstCategory = SHOPPING_LIST.find((phase) => phase.phase === phaseName)?.categories[0];
-      if (!firstCategory) {
-        return null;
-      }
-
-      return `${phaseName}_${firstCategory.category}`;
-    };
-
-    const openShoppingWithFocus = (phaseHint?: string | null, categoryHint?: string | null) => {
-      const focusedKey = resolveShoppingCategoryKey(phaseHint, categoryHint);
-      setShoppingDefaultExpandedCategories(focusedKey ? [focusedKey] : []);
-      setActiveView("shopping");
-    };
-
     if (action.type === 'open_normal_today') {
       openNormalToday();
       return;
@@ -301,7 +391,7 @@ const Protocol = () => {
         focusChecklistItem(targetKey, { openReminderComposer: true });
       }
     }
-  }, [focusChecklistItem, isMobile, openNormalToday, resolveChecklistTargetKey, store.progress.currentDay]);
+  }, [focusChecklistItem, isMobile, openNormalToday, openShoppingWithFocus, resolveChecklistTargetKey]);
 
   const handlePreviousDay = async () => {
     const targetDay = Math.max(store.progress.currentDay - 1, 0);
@@ -359,6 +449,30 @@ const Protocol = () => {
   const handleOpenNormalTodayFromGuide = () => {
     setActiveView('normal');
   };
+
+  const handleSaveProfileSettings = useCallback(async (
+    updates: Parameters<typeof onboarding.saveProfile>[0],
+    options?: Parameters<typeof onboarding.saveProfile>[1],
+  ) => {
+    await onboarding.saveProfile(updates, options);
+    toast({
+      title: "Profile saved",
+      description: "Coach will use this immediately in the next reply.",
+    });
+  }, [onboarding]);
+
+  const handleSaveSmsSettings = useCallback(async (input: {
+    phone: string;
+    transactionalOptIn: boolean;
+    marketingOptIn: boolean;
+    consentSource?: string;
+  }) => {
+    await saveSubscription(input);
+    toast({
+      title: "Text reminders updated",
+      description: "Your reminder phone and consent settings are saved.",
+    });
+  }, [saveSubscription]);
 
   const handleAskCoachFromRoadmap = (prompt: string) => {
     setActiveView('help');
@@ -431,22 +545,24 @@ const Protocol = () => {
   }, [focusedChecklistKey]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !store.taskReminders.length) {
+    if (typeof window === 'undefined' || !taskReminders.length) {
       return;
     }
 
     const fireDueReminders = () => {
       const now = Date.now();
 
-      store.taskReminders
-        .filter((reminder) => reminder.active)
+      taskReminders
+        .filter((reminder) => reminder.active && reminder.deliveryChannel === 'local')
         .forEach((reminder) => {
-          const scheduled = parseLocalDateTime(reminder.scheduledLocalTime);
+          const scheduled = reminder.scheduledAtUtc
+            ? new Date(reminder.scheduledAtUtc)
+            : parseLocalDateTime(reminder.scheduledLocalTime);
           if (!scheduled || scheduled.getTime() > now) {
             return;
           }
 
-          store.markTaskReminderDelivered(reminder.id);
+          void markTaskReminderDelivered(reminder.id);
 
           if (document.visibilityState === 'visible') {
             void openReminderTarget(reminder.checklistKey, reminder.dayNumber);
@@ -474,10 +590,112 @@ const Protocol = () => {
     const interval = window.setInterval(fireDueReminders, 30000);
 
     return () => window.clearInterval(interval);
-  }, [openReminderTarget, store.markTaskReminderDelivered, store.taskReminders]);
+  }, [markTaskReminderDelivered, openReminderTarget, taskReminders]);
+
+  useEffect(() => {
+    if (
+      backfillPromptShownRef.current
+      || !hasAccess
+      || isAuthLoading
+      || storeIsLoading
+      || onboarding.isLoading
+      || !store.userId
+      || onboarding.hasCompletedOnboarding
+    ) {
+      return;
+    }
+
+    backfillPromptShownRef.current = true;
+    toast({
+      title: "Finish your profile",
+      description: "Open Edit profile in settings so Coach can tailor meals, shopping, and support to you.",
+    });
+  }, [hasAccess, isAuthLoading, onboarding.hasCompletedOnboarding, onboarding.isLoading, store.userId, storeIsLoading]);
+
+  useEffect(() => {
+    if (isAuthLoading || storeIsLoading || !hasAccess) {
+      return;
+    }
+
+    if (appliedDeepLinkRef.current === location.search) {
+      return;
+    }
+    appliedDeepLinkRef.current = location.search;
+
+    const params = new URLSearchParams(location.search);
+    if (!params.toString()) {
+      return;
+    }
+
+    const applyDeepLink = async () => {
+      const rawDay = params.get('day');
+      const targetDay = rawDay !== null ? Number.parseInt(rawDay, 10) : null;
+      if (typeof targetDay === 'number' && Number.isFinite(targetDay) && targetDay >= 0 && targetDay <= 21 && targetDay !== currentDay) {
+        await setCurrentDay(targetDay);
+      }
+
+      const view = params.get('view');
+      const checklistKey = params.get('checklistKey');
+      const phase = params.get('phase');
+      const category = params.get('category');
+
+      if (view === 'shopping') {
+        openShoppingWithFocus(phase, category);
+        return;
+      }
+
+      if (view === 'normal') {
+        setActiveView('normal');
+        return;
+      }
+
+      if (view === 'roadmap') {
+        setActiveView('roadmap');
+        return;
+      }
+
+      if (view === 'guide') {
+        setActiveView('guide');
+        if (!isMobile) {
+          setRefOpen(true);
+        }
+        return;
+      }
+
+      if (view === 'help') {
+        setActiveView('help');
+        return;
+      }
+
+      if (checklistKey) {
+        focusChecklistItem(checklistKey);
+        return;
+      }
+
+      if (view === 'today') {
+        const targetKey = resolveChecklistTargetKey();
+        if (targetKey) {
+          focusChecklistItem(targetKey);
+        }
+      }
+    };
+
+    void applyDeepLink();
+  }, [
+    focusChecklistItem,
+    hasAccess,
+    isAuthLoading,
+    isMobile,
+    location.search,
+    openShoppingWithFocus,
+    resolveChecklistTargetKey,
+    setCurrentDay,
+    storeIsLoading,
+    currentDay,
+  ]);
 
   // Loading states
-  if (isAuthLoading || store.isLoading) {
+  if (isAuthLoading || storeIsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -493,10 +711,11 @@ const Protocol = () => {
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Top Bar */}
-      <TopBar
-        progress={store.progress}
+        <TopBar
+          progress={store.progress}
         onPreviousDay={handlePreviousDay}
         onNextDay={handleNextDay}
+        onOpenSettings={openSettingsView}
         onSignOut={handleSignOut}
       />
 
@@ -508,8 +727,8 @@ const Protocol = () => {
           className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-muted/20 flex-shrink-0 overflow-hidden"
         >
           <DailyChecklist
-            currentDay={store.progress.currentDay}
-            currentPhase={store.progress.currentPhase}
+            currentDay={currentDay}
+            currentPhase={currentPhase}
             checklist={store.checklist}
             customItems={store.customItems}
             onToggle={store.toggleChecklistItem}
@@ -522,14 +741,27 @@ const Protocol = () => {
             onReminderComposerOpenChange={handleReminderComposerOpenChange}
             onSetReminder={handleSetReminder}
             onClearReminder={store.clearTaskReminder}
+            smsReady={smsReady}
           />
         </aside>
 
-        <main className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${!isMobile && refOpen ? 'lg:mr-80' : ''} ${isMobile ? 'pb-14' : ''}`}>
+        <main className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${!isMobile && refOpen && activeView !== 'settings' ? 'lg:mr-80' : ''} ${isMobile ? 'pb-14' : ''}`}>
           {isMobile ? (
-            activeView === 'shopping' ? (
+            activeView === 'settings' ? (
+              <ProfileSettingsView
+                profile={onboarding.profile}
+                isProfileLoading={onboarding.isLoading}
+                isProfileSaving={onboarding.isSaving}
+                subscription={subscription}
+                isSmsLoading={isSmsLoading}
+                isSmsSaving={isSmsSaving}
+                onSaveProfile={handleSaveProfileSettings}
+                onSaveSms={handleSaveSmsSettings}
+                onBack={handleCloseSettings}
+              />
+            ) : activeView === 'shopping' ? (
               <ShoppingListView
-                currentDay={store.progress.currentDay}
+                currentDay={currentDay}
                 checklist={store.checklist}
                 shoppingOverrides={store.shoppingOverrides}
                 onToggle={store.toggleChecklistItem}
@@ -541,8 +773,8 @@ const Protocol = () => {
               />
             ) : activeView === 'roadmap' ? (
               <ProtocolRoadmapExplorer
-                currentDay={store.progress.currentDay}
-                currentPhase={store.progress.currentPhase}
+                currentDay={currentDay}
+                currentPhase={currentPhase}
                 onBack={() => setActiveView('guide')}
                 onOpenShoppingView={handleOpenShoppingForPhase}
                 onAskCoach={handleAskCoachFromRoadmap}
@@ -550,8 +782,8 @@ const Protocol = () => {
               />
             ) : activeView === 'normal' ? (
               <NormalTodayView
-                currentDay={store.progress.currentDay}
-                currentPhase={store.progress.currentPhase}
+                currentDay={currentDay}
+                currentPhase={currentPhase}
                 onBack={() => setActiveView('guide')}
                 onAskCoach={handleAskCoachFromNormalToday}
                 onAskCoachPrompt={handleAskCoachFromNormalToday}
@@ -566,7 +798,7 @@ const Protocol = () => {
                   </div>
                   <MobileProtocolReferenceContent
                     currentPhase={store.progress.currentPhase}
-                    currentDay={store.progress.currentDay}
+                    currentDay={currentDay}
                     onOpenShoppingView={handleOpenShoppingFromGuide}
                     onOpenRoadmapView={handleOpenRoadmapFromGuide}
                     onOpenNormalTodayView={handleOpenNormalTodayFromGuide}
@@ -575,8 +807,8 @@ const Protocol = () => {
               </div>
             ) : activeView === 'today' ? (
               <MobileTodayView
-                currentDay={store.progress.currentDay}
-                currentPhase={store.progress.currentPhase}
+                currentDay={currentDay}
+                currentPhase={currentPhase}
                 checklist={store.checklist}
                 customItems={store.customItems}
                 taskReminders={store.taskReminders}
@@ -595,12 +827,17 @@ const Protocol = () => {
                 onReminderComposerOpenChange={handleReminderComposerOpenChange}
                 onSetReminder={handleSetReminder}
                 onClearReminder={store.clearTaskReminder}
+                smsReady={smsReady}
               />
             ) : (
               <JournalCenter
                 userId={store.userId}
                 progress={store.progress}
                 entries={store.entries}
+                brainProfile={mergedCoachProfile}
+                brainSnapshot={gutBrain.snapshot}
+                symptoms={store.symptoms}
+                onRefreshBrain={gutBrain.refreshBrain}
                 threads={store.threads}
                 activeThreadId={store.activeThreadId}
                 onStartNewChat={store.startNewChat}
@@ -617,9 +854,21 @@ const Protocol = () => {
                 mobileVariant="help"
               />
             )
+          ) : activeView === 'settings' ? (
+            <ProfileSettingsView
+              profile={onboarding.profile}
+              isProfileLoading={onboarding.isLoading}
+              isProfileSaving={onboarding.isSaving}
+              subscription={subscription}
+              isSmsLoading={isSmsLoading}
+              isSmsSaving={isSmsSaving}
+              onSaveProfile={handleSaveProfileSettings}
+              onSaveSms={handleSaveSmsSettings}
+              onBack={handleCloseSettings}
+            />
           ) : activeView === 'shopping' ? (
             <ShoppingListView
-              currentDay={store.progress.currentDay}
+              currentDay={currentDay}
               checklist={store.checklist}
               shoppingOverrides={store.shoppingOverrides}
               onToggle={store.toggleChecklistItem}
@@ -631,8 +880,8 @@ const Protocol = () => {
             />
           ) : activeView === 'roadmap' ? (
             <ProtocolRoadmapExplorer
-              currentDay={store.progress.currentDay}
-              currentPhase={store.progress.currentPhase}
+              currentDay={currentDay}
+              currentPhase={currentPhase}
               onBack={() => setActiveView('help')}
               onOpenShoppingView={handleOpenShoppingForPhase}
               onAskCoach={handleAskCoachFromRoadmap}
@@ -640,8 +889,8 @@ const Protocol = () => {
             />
           ) : activeView === 'normal' ? (
             <NormalTodayView
-              currentDay={store.progress.currentDay}
-              currentPhase={store.progress.currentPhase}
+              currentDay={currentDay}
+              currentPhase={currentPhase}
               onBack={() => setActiveView('help')}
               onAskCoach={handleAskCoachFromNormalToday}
               onAskCoachPrompt={handleAskCoachFromNormalToday}
@@ -653,6 +902,10 @@ const Protocol = () => {
               userId={store.userId}
               progress={store.progress}
               entries={store.entries}
+              brainProfile={mergedCoachProfile}
+              brainSnapshot={gutBrain.snapshot}
+              symptoms={store.symptoms}
+              onRefreshBrain={gutBrain.refreshBrain}
               threads={store.threads}
               activeThreadId={store.activeThreadId}
               onStartNewChat={store.startNewChat}
@@ -671,7 +924,7 @@ const Protocol = () => {
         </main>
 
         {/* ── Right: Protocol Reference (desktop) ── */}
-        {!isMobile && (
+        {!isMobile && activeView !== 'settings' && (
           <ProtocolReference
             currentPhase={store.progress.currentPhase}
             currentDay={store.progress.currentDay}

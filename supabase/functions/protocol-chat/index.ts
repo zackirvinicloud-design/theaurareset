@@ -17,6 +17,7 @@ Deno.serve(async (req) => {
       context,
       brainProfile,
       brainSnapshot,
+      symptoms,
     } = await req.json();
 
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
@@ -28,6 +29,7 @@ Deno.serve(async (req) => {
       typeof context === "string" ? context : "",
       brainProfile ?? null,
       brainSnapshot ?? null,
+      Array.isArray(symptoms) ? symptoms : [],
     );
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

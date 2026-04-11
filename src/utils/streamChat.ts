@@ -12,6 +12,7 @@ interface StreamChatOptions {
   context?: string;
   brainProfile?: GutBrainProfile | null;
   brainSnapshot?: GutBrainSnapshot | null;
+  symptoms?: string[];
   onDelta: (chunk: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -22,6 +23,7 @@ export const streamChat = async ({
   context,
   brainProfile,
   brainSnapshot,
+  symptoms,
   onDelta,
   onDone,
   onError,
@@ -29,7 +31,7 @@ export const streamChat = async ({
   const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL || 'https://mergwwrhcqzbogtnhxus.supabase.co'}/functions/v1/protocol-chat`;
 
   // Build the system prompt client-side so updates take effect immediately
-  const systemPrompt = buildChatSystemPrompt(context || '', brainProfile, brainSnapshot);
+  const systemPrompt = buildChatSystemPrompt(context || '', brainProfile, brainSnapshot, symptoms);
 
   try {
     const response = await fetch(CHAT_URL, {
@@ -47,6 +49,7 @@ export const streamChat = async ({
         context,
         brainProfile,
         brainSnapshot,
+        symptoms,
       }),
     });
 

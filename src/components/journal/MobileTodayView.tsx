@@ -15,6 +15,7 @@ import { getChecklistSupport, getDayLabel, getJourneyStageLabel, getPhaseInfo } 
 import { getTodayFocus } from '@/components/journal/ProtocolReference';
 import { cn } from '@/lib/utils';
 import { TaskReminderPicker } from '@/components/journal/TaskReminderPicker';
+import type { ReminderDeliveryChannel } from '@/lib/sms';
 
 interface MobileTodayViewProps {
     currentDay: number;
@@ -24,6 +25,7 @@ interface MobileTodayViewProps {
     taskReminders: TaskReminder[];
     recoveryState: RecoveryState | null;
     maintenanceHandoff: MaintenanceHandoff | null;
+    smsReady?: boolean;
     focusedItemKey?: string | null;
     reminderComposerTargetKey?: string | null;
     onToggle: (itemKey: string) => void;
@@ -35,8 +37,15 @@ interface MobileTodayViewProps {
     onAskCoachAboutRecovery: () => void;
     onAskCoachAboutMaintenance: () => void;
     onReminderComposerOpenChange?: (itemKey: string, open: boolean) => void;
-    onSetReminder: (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => Promise<void> | void;
-    onClearReminder: (checklistKey: string) => void;
+    onSetReminder: (input: {
+        checklistKey: string;
+        dayNumber: number;
+        label: string;
+        scheduledLocalTime: string;
+        deliveryChannel?: ReminderDeliveryChannel;
+        deepLinkTarget?: string;
+    }) => Promise<void> | void;
+    onClearReminder: (checklistKey: string, dayNumber: number) => void;
 }
 
 export const MobileTodayView = ({
@@ -47,6 +56,7 @@ export const MobileTodayView = ({
     taskReminders,
     recoveryState,
     maintenanceHandoff,
+    smsReady = false,
     focusedItemKey,
     reminderComposerTargetKey,
     onToggle,
@@ -87,7 +97,7 @@ export const MobileTodayView = ({
         [currentDay, nextItem],
     );
     const nextReminder = nextItem
-        ? taskReminders.find((reminder) => reminder.active && reminder.checklistKey === nextItem.key)
+        ? taskReminders.find((reminder) => reminder.active && reminder.dayNumber === currentDay && reminder.checklistKey === nextItem.key)
         : undefined;
     const listReminderComposerTargetKey = reminderComposerTargetKey === nextItem?.key
         ? null
@@ -201,9 +211,11 @@ export const MobileTodayView = ({
                                 <div className="flex flex-wrap gap-2">
                                     <TaskReminderPicker
                                         itemKey={nextItem.key}
+                                        dayNumber={currentDay}
                                         label={nextItem.label}
                                         timeOfDay={nextItem.timeOfDay}
                                         reminder={nextReminder}
+                                        smsReady={smsReady}
                                         onSetReminder={onSetReminder}
                                         onClearReminder={onClearReminder}
                                         open={reminderComposerTargetKey === nextItem.key ? true : undefined}
@@ -323,6 +335,7 @@ export const MobileTodayView = ({
                             onReminderComposerOpenChange={onReminderComposerOpenChange}
                             onSetReminder={onSetReminder}
                             onClearReminder={onClearReminder}
+                            smsReady={smsReady}
                             variant="inline"
                         />
                         <div className="pt-1">

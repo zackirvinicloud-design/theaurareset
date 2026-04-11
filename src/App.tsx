@@ -13,6 +13,8 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Signup = lazy(() => import("./pages/Signup"));
 const PaymentRequired = lazy(() => import("./pages/PaymentRequired"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const ProfileOnboarding = lazy(() => import("./pages/ProfileOnboarding"));
+const TextReminderSetup = lazy(() => import("./pages/TextReminderSetup"));
 const Protocol = lazy(() => import("./pages/Protocol"));
 const ProtocolCapture = lazy(() => import("./pages/ProtocolCapture"));
 const ProtocolCaptureMobile = lazy(() => import("./pages/ProtocolCaptureMobile"));
@@ -41,6 +43,8 @@ const App = () => (
               <Route path="/signup" element={<Signup />} />
               <Route path="/payment-required" element={<PaymentRequired />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/setup/profile" element={<ProfileOnboarding />} />
+              <Route path="/setup/text-reminders" element={<TextReminderSetup />} />
               <Route path="/protocol" element={<Protocol />} />
               <Route path="/capture/:scene" element={<ProtocolCapture />} />
               <Route path="/capture-mobile/:scene" element={<ProtocolCaptureMobile />} />

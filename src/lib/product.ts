@@ -1,8 +1,8 @@
 export const PRODUCT_NAME = "The Gut Brain Journal";
 export const PRODUCT_PRICE = "$79";
 export const PRODUCT_PROMISE =
-  "A guided 21-day gut reset system that tells you what to do today, what to buy before you start, and where to get help when you get stuck.";
-export const PRODUCT_PRIMARY_CTA = "Start your reset";
+  "A guided 21-day cleanse command center that tells you what to do today, what to buy before you start, what feels normal, and where to get help when you get stuck.";
+export const PRODUCT_PRIMARY_CTA = "Start the 21-day cleanse";
 
 const RAW_WHOP_CHECKOUT_URL = import.meta.env.VITE_WHOP_CHECKOUT_URL?.trim() ?? "";
 

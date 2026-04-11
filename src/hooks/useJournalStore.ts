@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 import { buildShopKey, calculatePhase, findDefaultShoppingItem } from './useProtocolData';
+import { buildProtocolDeepLink, buildReminderSchedulePayload, type ReminderDeliveryChannel } from '@/lib/sms';
 
 // ── Types ──────────────────────────────────────────────
 
@@ -85,14 +86,19 @@ export interface CustomChecklistItem {
 export interface TaskReminder {
     id: string;
     userId: string | null;
+    dayNumber: number;
     checklistKey: string;
     label: string;
     scheduledLocalTime: string;
+    scheduledAtUtc: string;
     timezone: string;
+    deliveryChannel: ReminderDeliveryChannel;
+    smsEnabled: boolean;
+    deepLinkTarget: string;
     active: boolean;
     createdAt: string;
     deliveredAt?: string | null;
-    dayNumber?: number;
+    lastSentAt?: string | null;
 }
 
 export interface RecoveryState {
@@ -179,6 +185,26 @@ function mapShoppingOverrideRow(row: ShoppingListItemRow): ShoppingListOverride 
         source: row.source as ShoppingListItemSource,
         isHidden: row.is_hidden,
         createdAt: row.created_at,
+    };
+}
+
+function mapTaskReminderRow(row: Record<string, unknown>): TaskReminder {
+    return {
+        id: String(row.id),
+        userId: typeof row.user_id === 'string' ? row.user_id : null,
+        dayNumber: typeof row.day_number === 'number' ? row.day_number : 0,
+        checklistKey: String(row.checklist_key),
+        label: String(row.label),
+        scheduledLocalTime: String(row.scheduled_local_time),
+        scheduledAtUtc: String(row.scheduled_at_utc),
+        timezone: String(row.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone),
+        deliveryChannel: row.delivery_channel === 'sms' ? 'sms' : 'local',
+        smsEnabled: Boolean(row.sms_enabled),
+        deepLinkTarget: String(row.deep_link_target ?? buildProtocolDeepLink()),
+        active: Boolean(row.active),
+        createdAt: String(row.created_at ?? new Date().toISOString()),
+        deliveredAt: typeof row.delivered_at === 'string' ? row.delivered_at : null,
+        lastSentAt: typeof row.last_sent_at === 'string' ? row.last_sent_at : null,
     };
 }
 
@@ -518,7 +544,18 @@ export function useJournalStore() {
                 lsSet(LS_CHECKIN_KEY, null);
             }
 
-            setTaskReminders(getLocalTaskReminders(userId));
+            const { data: reminderRows, error: reminderError } = await supabase
+                .from('task_reminders')
+                .select('*')
+                .eq('user_id', userId)
+                .order('scheduled_at_utc', { ascending: true });
+
+            const loadedTaskReminders = !reminderError && reminderRows
+                ? reminderRows.map((row) => mapTaskReminderRow(row as Record<string, unknown>))
+                : getLocalTaskReminders(userId);
+
+            setTaskReminders(loadedTaskReminders);
+            setLocalTaskReminders(userId, loadedTaskReminders);
 
             setIsLoading(false);
         };
@@ -1183,51 +1220,134 @@ export function useJournalStore() {
         label: string;
         scheduledLocalTime: string;
         dayNumber?: number;
+        deliveryChannel?: ReminderDeliveryChannel;
+        deepLinkTarget?: string;
     }) => {
+        const schedule = buildReminderSchedulePayload(input.scheduledLocalTime);
+        if (!schedule) {
+            throw new Error('Invalid reminder time.');
+        }
+
+        const reminderDayNumber = input.dayNumber ?? progress.currentDay;
         const nextReminder: TaskReminder = {
             id: `reminder_${input.checklistKey}_${Date.now()}`,
             userId,
+            dayNumber: reminderDayNumber,
             checklistKey: input.checklistKey,
             label: input.label.trim(),
-            scheduledLocalTime: input.scheduledLocalTime,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            scheduledLocalTime: schedule.scheduledLocalTime,
+            scheduledAtUtc: schedule.scheduledAtUtc,
+            timezone: schedule.timezone,
+            deliveryChannel: input.deliveryChannel ?? 'local',
+            smsEnabled: (input.deliveryChannel ?? 'local') === 'sms',
+            deepLinkTarget: input.deepLinkTarget ?? buildProtocolDeepLink({
+                view: 'today',
+                dayNumber: reminderDayNumber,
+                checklistKey: input.checklistKey,
+            }),
             active: true,
             createdAt: new Date().toISOString(),
             deliveredAt: null,
-            dayNumber: input.dayNumber ?? progress.currentDay,
+            lastSentAt: null,
         };
 
         setTaskReminders((prev) => {
             const next = [
-                ...prev.filter((reminder) => reminder.checklistKey !== input.checklistKey),
+                ...prev.filter((reminder) => !(reminder.checklistKey === input.checklistKey && reminder.dayNumber === reminderDayNumber)),
                 nextReminder,
             ];
             setLocalTaskReminders(userId, next);
             return next;
         });
 
+        if (userId) {
+            const payload = {
+                user_id: userId,
+                day_number: reminderDayNumber,
+                checklist_key: input.checklistKey,
+                label: nextReminder.label,
+                scheduled_local_time: nextReminder.scheduledLocalTime,
+                scheduled_at_utc: nextReminder.scheduledAtUtc,
+                timezone: nextReminder.timezone,
+                deep_link_target: nextReminder.deepLinkTarget,
+                delivery_channel: nextReminder.deliveryChannel,
+                sms_enabled: nextReminder.smsEnabled,
+                active: true,
+                delivered_at: null,
+            };
+
+            const { data } = await supabase
+                .from('task_reminders')
+                .upsert(payload, { onConflict: 'user_id,day_number,checklist_key' })
+                .select('*')
+                .single();
+
+            if (data) {
+                const persistedReminder = mapTaskReminderRow(data as Record<string, unknown>);
+                setTaskReminders((prev) => {
+                    const next = [
+                        ...prev.filter((reminder) => !(reminder.checklistKey === persistedReminder.checklistKey && reminder.dayNumber === persistedReminder.dayNumber)),
+                        persistedReminder,
+                    ];
+                    setLocalTaskReminders(userId, next);
+                    return next;
+                });
+            }
+        }
+
         await touchLastActiveDate();
         return nextReminder;
     }, [progress.currentDay, touchLastActiveDate, userId]);
 
-    const clearTaskReminder = useCallback((checklistKey: string) => {
+    const clearTaskReminder = useCallback(async (checklistKey: string, dayNumber?: number) => {
         setTaskReminders((prev) => {
-            const next = prev.filter((reminder) => reminder.checklistKey !== checklistKey);
+            const next = prev.filter((reminder) => (
+                reminder.checklistKey !== checklistKey
+                || (typeof dayNumber === 'number' && reminder.dayNumber !== dayNumber)
+            ));
             setLocalTaskReminders(userId, next);
             return next;
         });
+
+        if (userId) {
+            let query = supabase
+                .from('task_reminders')
+                .delete()
+                .eq('user_id', userId)
+                .eq('checklist_key', checklistKey);
+
+            if (typeof dayNumber === 'number') {
+                query = query.eq('day_number', dayNumber);
+            }
+
+            await query;
+        }
     }, [userId]);
 
-    const markTaskReminderDelivered = useCallback((reminderId: string) => {
+    const markTaskReminderDelivered = useCallback(async (reminderId: string) => {
+        const deliveredAt = new Date().toISOString();
+
         setTaskReminders((prev) => {
             const next = prev.map((reminder) => (
                 reminder.id === reminderId
-                    ? { ...reminder, active: false, deliveredAt: new Date().toISOString() }
+                    ? { ...reminder, active: false, deliveredAt, lastSentAt: deliveredAt }
                     : reminder
             ));
             setLocalTaskReminders(userId, next);
             return next;
         });
+
+        if (userId) {
+            await supabase
+                .from('task_reminders')
+                .update({
+                    active: false,
+                    delivered_at: deliveredAt,
+                    last_sent_at: deliveredAt,
+                })
+                .eq('id', reminderId)
+                .eq('user_id', userId);
+        }
     }, [userId]);
 
     const recoveryState = useMemo<RecoveryState | null>(() => {

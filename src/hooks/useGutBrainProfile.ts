@@ -87,6 +87,17 @@ const normalizeProfile = (value: Partial<GutBrainProfile> | null | undefined): G
       : null,
     barriers: normalizeList(value.barriers),
     supportPreferences: normalizeList(value.supportPreferences),
+    dietPattern: typeof value.dietPattern === 'string' && value.dietPattern.trim()
+      ? value.dietPattern.trim()
+      : null,
+    foodPreferences: normalizeList(value.foodPreferences),
+    routineType: typeof value.routineType === 'string' && value.routineType.trim()
+      ? value.routineType.trim()
+      : null,
+    primaryBlocker: typeof value.primaryBlocker === 'string' && value.primaryBlocker.trim()
+      ? value.primaryBlocker.trim()
+      : null,
+    healthFocus: normalizeList(value.healthFocus),
     wins: normalizeList(value.wins),
     conversationSummary: typeof value.conversationSummary === 'string' && value.conversationSummary.trim()
       ? value.conversationSummary.trim()
@@ -134,7 +145,7 @@ export interface GutBrainState {
   refreshBrain: (
     entries: GutBrainConversationEntry[],
     progress: GutBrainProgressState,
-    options?: { force?: boolean; silent?: boolean },
+    options?: { force?: boolean; silent?: boolean; memoryProfile?: GutBrainProfile | null },
   ) => Promise<void>;
   updateProfile: (updates: Partial<GutBrainProfile>) => Promise<void>;
 }
@@ -225,7 +236,7 @@ export const useGutBrainProfile = (userId: string | null): GutBrainState => {
   const refreshBrain = useCallback(async (
     entries: GutBrainConversationEntry[],
     progress: GutBrainProgressState,
-    options?: { force?: boolean; silent?: boolean },
+    options?: { force?: boolean; silent?: boolean; memoryProfile?: GutBrainProfile | null },
   ) => {
     const cleanedEntries = entries.filter((entry) => entry.content.trim());
     if (cleanedEntries.length < 2) {
@@ -243,6 +254,8 @@ export const useGutBrainProfile = (userId: string | null): GutBrainState => {
       return;
     }
 
+    const memoryProfile = options?.memoryProfile ?? profile;
+
     setIsRefreshing(true);
 
     try {
@@ -254,7 +267,7 @@ export const useGutBrainProfile = (userId: string | null): GutBrainState => {
             .join('\n\n'),
           currentDay: progress.currentDay,
           currentPhase: progress.currentPhase,
-          existingProfile: profile,
+          existingProfile: memoryProfile,
           latestSnapshot: snapshot,
         },
       });

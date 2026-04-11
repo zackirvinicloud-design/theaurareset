@@ -2,8 +2,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const OFFER_PRICE = '$79';
+import { PRODUCT_PRICE } from '@/lib/product';
 
 export const PricingSection = () => {
   const navigate = useNavigate();
@@ -25,11 +24,11 @@ export const PricingSection = () => {
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
             Clear Offer.{' '}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Better Economics.
+              No App-Store Friction.
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Pay for a gut health execution system, not another pile of wellness content.
+            Pay for a 21-day cleanse execution system that works in your browser and can text you back into the right step.
           </p>
         </motion.div>
 
@@ -46,7 +45,7 @@ export const PricingSection = () => {
               <div className="text-center mb-8">
                 <div className="inline-block">
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-7xl font-bold">{OFFER_PRICE}</span>
+                    <span className="text-7xl font-bold">{PRODUCT_PRICE}</span>
                   </div>
                   <div className="text-lg text-muted-foreground mt-2">One-time payment. No recurring subscription.</div>
                 </div>
@@ -64,10 +63,12 @@ export const PricingSection = () => {
               <div className="space-y-4 mb-8">
                 <h3 className="text-xl font-bold text-center mb-6">What You Get:</h3>
                 {[
-                  'A 21-day gut health cleanse command center',
+                  'A 21-day cleanse command center built around what to do today',
                   'Prep Day setup and shopping guidance',
                   'A daily plan grouped by morning, afternoon, and evening',
-                  'Protocol-specific help for questions and troubleshooting',
+                  'Protocol-specific help for questions, symptoms, and troubleshooting',
+                  'Optional text reminders that reopen the exact step you need',
+                  'No app download required for the core experience',
                   'Budget protection so you know what to buy first',
                   'Lifetime access after the one-time payment',
                 ].map((feature, i) => (

@@ -68,9 +68,14 @@ const PaymentSuccess = () => {
       rememberPostAuthDestination(session.user.id, "/protocol");
       toast({
         title: "Access unlocked",
-        description: "Opening your protocol workspace now.",
+        description: "Next up: a quick profile setup so Coach can tailor this around you.",
       });
-      navigate("/protocol", { replace: true });
+      const next = new URLSearchParams();
+      next.set("redirect", "/protocol");
+      next.set("source", "payment-success");
+      next.set("provider", provider);
+      next.set("payment_id", paymentId);
+      navigate(`/setup/profile?${next.toString()}`, { replace: true });
     };
 
     void activate();

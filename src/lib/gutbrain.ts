@@ -15,6 +15,11 @@ export interface GutBrainProfile {
   motivationStyle: string | null;
   barriers: string[];
   supportPreferences: string[];
+  dietPattern?: string | null;
+  foodPreferences?: string[];
+  routineType?: string | null;
+  primaryBlocker?: string | null;
+  healthFocus?: string[];
   wins: string[];
   conversationSummary: string | null;
   updatedAt?: string | null;
@@ -90,6 +95,11 @@ export const EMPTY_GUT_BRAIN_PROFILE: GutBrainProfile = {
   motivationStyle: null,
   barriers: [],
   supportPreferences: [],
+  dietPattern: null,
+  foodPreferences: [],
+  routineType: null,
+  primaryBlocker: null,
+  healthFocus: [],
   wins: [],
   conversationSummary: null,
   updatedAt: null,
@@ -143,6 +153,11 @@ const getMemoryAdaptivePrompts = (
     profile?.conversationSummary ?? '',
     profile?.barriers.join(' ') ?? '',
     profile?.supportPreferences.join(' ') ?? '',
+    profile?.dietPattern ?? '',
+    profile?.foodPreferences?.join(' ') ?? '',
+    profile?.routineType ?? '',
+    profile?.primaryBlocker ?? '',
+    profile?.healthFocus?.join(' ') ?? '',
     profile?.wins.join(' ') ?? '',
     snapshot?.summary ?? '',
     snapshot?.nextStep ?? '',
@@ -248,6 +263,17 @@ const getMemoryAdaptivePrompts = (
     'smell',
     'body odor',
   ]);
+  const skinScore = countTermMatches(memoryText, [
+    'skin',
+    'acne',
+    'eczema',
+    'rash',
+    'breakout',
+  ]);
+  const dietText = [
+    profile?.dietPattern ?? '',
+    profile?.foodPreferences?.join(' ') ?? '',
+  ].join(' ').toLowerCase();
 
   if (digestiveScore > 0) {
     prompts.push({
@@ -316,6 +342,20 @@ const getMemoryAdaptivePrompts = (
     prompts.push({
       label: "I want sugar so bad I'm about to cave. What do I eat today?",
       prompt: "I'm craving sugar and carbs. Can you build a same-day meal structure that kills cravings and keeps me compliant?",
+    });
+  }
+
+  if (includesAny(dietText, ['vegan', 'vegetarian', 'pescatarian', 'dairy-free', 'gluten-free'])) {
+    prompts.push({
+      label: `Build me a ${profile?.dietPattern ?? 'food'}-friendly day that still fits the cleanse.`,
+      prompt: `My eating style is ${profile?.dietPattern ?? 'specific'}. Use my preferences and build a cleanse-compliant day of meals that feels realistic, not generic.`,
+    });
+  }
+
+  if (skinScore > 0) {
+    prompts.push({
+      label: 'If my skin is part of this, what matters most today?',
+      prompt: 'Skin is a big part of why I care about this. Tell me what actually matters today for skin-related inflammation and what is just noise.',
     });
   }
 
@@ -887,6 +927,11 @@ export const buildGutBrainMemoryContext = (
     profile?.protocolGoal ? `Goal: ${profile.protocolGoal}` : null,
     profile?.whyNow ? `Why now: ${profile.whyNow}` : null,
     profile?.motivationStyle ? `Motivation style: ${profile.motivationStyle}` : null,
+    profile?.dietPattern ? `Diet pattern: ${profile.dietPattern}` : null,
+    formatList('Food preferences and hard no items', profile?.foodPreferences ?? []),
+    profile?.routineType ? `Routine type: ${profile.routineType}` : null,
+    profile?.primaryBlocker ? `Primary blocker: ${profile.primaryBlocker}` : null,
+    formatList('Health focus', profile?.healthFocus ?? []),
     formatList('Barriers', profile?.barriers ?? []),
     formatList('Support preferences', profile?.supportPreferences ?? []),
     formatList('Wins to reinforce', profile?.wins ?? []),
@@ -928,6 +973,7 @@ IDENTITY
 - Think: the friend who reads every study, questions everything, and tells you what your doctor won't.
 - You have OPINIONS. You are not neutral. You believe this protocol works and you want ${userName} to finish it.
 - You remember everything about ${userName} from the MEMORY section. Use their name, reference past conversations, remember their barriers and wins. Make them feel known.
+- Treat explicit profile details in MEMORY as durable truth unless the user clearly corrects them.
 
 VOICE & TONE
 - Informal. Casual. Direct. Like texting.
@@ -953,7 +999,10 @@ NLP ENGAGEMENT
 FOOD-FIRST RULE
 - When asked about meals, breakfast, lunch, dinner, snacks, or "what should I eat" -- ALWAYS lead with actual food and recipes.
 - Give specific, practical meals. Not "eat anti-inflammatory foods." Say "scramble 2 eggs in coconut oil with sauteed spinach and a handful of pumpkin seeds."
-- Ask about food preferences and restrictions if you do not know them yet.
+- If MEMORY already includes a diet pattern, food preference, or hard no food, HONOR it automatically.
+- Do not recommend foods that conflict with what you already know about this user.
+- If their diet pattern makes a default cleanse meal awkward, give the closest compliant swap instead of acting confused.
+- Ask about food preferences and restrictions only if they are still unknown.
 - Only mention supplements AFTER covering food, or if specifically asked.
 
 AGENTIC BEHAVIOR
@@ -967,6 +1016,8 @@ AGENTIC BEHAVIOR
   * Instead of "What are your barriers?" say "What is most likely to trip you up?" with options like "Busy schedule" / "Cravings" / "Confusion" / "Social pressure" / "Something else"
 - Every piece of info you collect makes future answers better. Remind the user of this subtly: "Now that I know you are dealing with brain fog, I can be way more specific..."
 - You can suggest adding or removing items from the shopping list using action tags.
+- Personalization means adapting meals, food swaps, shopping guidance, symptom framing, reminder framing, and tone.
+- Personalization does NOT mean rewriting the cleanse order or changing the core checklist.
 
 PROTOCOL EXPERTISE
 - You know this 21-day protocol deeply. Use the CURRENT CONTEXT for timing, phase, and daily specifics.
@@ -1084,5 +1135,5 @@ The only time you skip the [CLARIFY] block is:
 CURRENT CONTEXT
 ${context}
 
-${memoryContext}`;
+${memoryContext}${symptomText}`;
 };

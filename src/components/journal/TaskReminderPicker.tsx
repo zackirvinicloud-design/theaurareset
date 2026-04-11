@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, BellRing, Clock3, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,15 +7,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { TaskReminder } from '@/hooks/useJournalStore';
 import { formatReminderTime, toLocalDateTimeInputValue } from '@/lib/taskReminders';
+import { buildProtocolDeepLink, formatReminderDeliveryLabel, type ReminderDeliveryChannel } from '@/lib/sms';
 import { cn } from '@/lib/utils';
 
 interface TaskReminderPickerProps {
     itemKey: string;
+    dayNumber: number;
     label: string;
     timeOfDay: 'morning' | 'afternoon' | 'evening' | 'anytime';
     reminder?: TaskReminder;
-    onSetReminder: (input: { checklistKey: string; label: string; scheduledLocalTime: string }) => Promise<void> | void;
-    onClearReminder: (checklistKey: string) => void;
+    smsReady?: boolean;
+    onSetReminder: (input: {
+        checklistKey: string;
+        dayNumber: number;
+        label: string;
+        scheduledLocalTime: string;
+        deliveryChannel?: ReminderDeliveryChannel;
+        deepLinkTarget?: string;
+    }) => Promise<void> | void;
+    onClearReminder: (checklistKey: string, dayNumber: number) => void;
     variant?: 'button' | 'icon';
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -38,9 +49,11 @@ const QUICK_OFFSET_MINUTES = [
 
 export function TaskReminderPicker({
     itemKey,
+    dayNumber,
     label,
     timeOfDay,
     reminder,
+    smsReady = false,
     onSetReminder,
     onClearReminder,
     variant = 'button',
@@ -50,6 +63,7 @@ export function TaskReminderPicker({
     const [internalOpen, setInternalOpen] = useState(false);
     const [customValue, setCustomValue] = useState(() => reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
     const [selectedQuickValue, setSelectedQuickValue] = useState<string | undefined>(undefined);
+    const [deliveryChannel, setDeliveryChannel] = useState<ReminderDeliveryChannel>(reminder?.deliveryChannel ?? (smsReady ? 'sms' : 'local'));
     const [quickPresetBaseTime, setQuickPresetBaseTime] = useState(() => Date.now());
     const resolvedOpen = open ?? internalOpen;
     const quickOffsetPresets = QUICK_OFFSET_MINUTES.map((item) => ({
@@ -60,7 +74,8 @@ export function TaskReminderPicker({
     useEffect(() => {
         setCustomValue(reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
         setSelectedQuickValue(undefined);
-    }, [reminder?.scheduledLocalTime]);
+        setDeliveryChannel(reminder?.deliveryChannel ?? (smsReady ? 'sms' : 'local'));
+    }, [reminder?.scheduledLocalTime, reminder?.deliveryChannel, smsReady]);
 
     useEffect(() => {
         if (!resolvedOpen) {
@@ -79,10 +94,21 @@ export function TaskReminderPicker({
     };
 
     const handleSet = async (scheduledLocalTime: string) => {
+        if (deliveryChannel === 'sms' && !smsReady) {
+            return;
+        }
+
         await onSetReminder({
             checklistKey: itemKey,
+            dayNumber,
             label,
             scheduledLocalTime,
+            deliveryChannel,
+            deepLinkTarget: buildProtocolDeepLink({
+                view: 'today',
+                dayNumber,
+                checklistKey: itemKey,
+            }),
         });
         handleOpenChange(false);
     };
@@ -129,9 +155,39 @@ export function TaskReminderPicker({
                 <div className="space-y-3">
                     {reminder && (
                         <p className="rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-primary">
-                            Current reminder: {formatReminderTime(reminder.scheduledLocalTime)}
+                            Current reminder: {formatReminderDeliveryLabel(reminder.deliveryChannel)} on {formatReminderTime(reminder.scheduledLocalTime)}
                         </p>
                     )}
+
+                    <div className="space-y-1.5">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                            Delivery
+                        </p>
+                        <Select
+                            value={deliveryChannel}
+                            onValueChange={(value) => setDeliveryChannel(value === 'sms' ? 'sms' : 'local')}
+                        >
+                            <SelectTrigger className="h-10">
+                                <SelectValue placeholder="Choose where the reminder should show up" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="local">Browser notification</SelectItem>
+                                <SelectItem value="sms" disabled={!smsReady}>Text message</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {!smsReady && (
+                            <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3 text-xs leading-5 text-muted-foreground">
+                                Text reminders are not set up on this account yet.
+                                <div className="mt-2">
+                                    <Button asChild variant="ghost" size="sm" className="h-8 rounded-full px-3 text-xs text-primary hover:bg-primary/8 hover:text-primary">
+                                        <Link to={`/setup/text-reminders?redirect=${encodeURIComponent('/protocol')}&source=reminder-picker`}>
+                                            Set up text reminders
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="space-y-1.5">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -185,9 +241,10 @@ export function TaskReminderPicker({
                             type="button"
                             size="sm"
                             className="h-9 flex-1 rounded-full"
+                            disabled={deliveryChannel === 'sms' && !smsReady}
                             onClick={() => void handleSet(customValue)}
                         >
-                            Set reminder
+                            {deliveryChannel === 'sms' ? 'Save text reminder' : 'Set reminder'}
                         </Button>
                         {reminder && (
                             <Button
@@ -196,7 +253,7 @@ export function TaskReminderPicker({
                                 variant="ghost"
                                 className="h-9 rounded-full px-2.5 text-muted-foreground"
                                 onClick={() => {
-                                    onClearReminder(itemKey);
+                                    onClearReminder(itemKey, dayNumber);
                                     handleOpenChange(false);
                                 }}
                             >

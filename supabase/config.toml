@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.activate-subscription]
 verify_jwt = false
+
+[functions.send-sms-reminders]
+verify_jwt = false

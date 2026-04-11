@@ -1,13 +1,13 @@
 # Product Reset Brief
 
 ## Product
-The Gut Brain Journal is a guided protocol companion for people who want a clear 21-day gut reset plan without turning a PDF, notes app, and chatbot into their own system.
+The Gut Brain Journal is a guided protocol companion for people who want a clear 21-day cleanse plan without turning a PDF, notes app, and chatbot into their own system.
 
 ## Vision
 Turn dense wellness protocols into focused mini web apps people can actually finish.
 
 ## Mission
-Help overwhelmed users know exactly what to do today, why it matters, and what to log as they move through a 21-day gut reset.
+Help overwhelmed users know exactly what to do today, why it matters, and what to log as they move through a 21-day cleanse.
 
 ## Target User
 - Adults dealing with recurring gut symptoms who are motivated to self-manage.
@@ -15,7 +15,7 @@ Help overwhelmed users know exactly what to do today, why it matters, and what t
 - Buyers looking for a low-friction, self-serve product, not a diagnostic tool or high-touch coaching program.
 
 ## Job To Be Done
-When I start a gut reset, help me follow the plan day by day so I do not get lost, skip steps, or fall back into research paralysis.
+When I start a cleanse, help me follow the plan day by day so I do not get lost, skip steps, or fall back into research paralysis.
 
 ## Product Principles
 1. Protocol first, AI second.
@@ -30,6 +30,7 @@ When I start a gut reset, help me follow the plan day by day so I do not get los
 2. Today: complete the daily plan in order.
 3. Log: capture symptoms, mood, and notes.
 4. Learn More: ask for clarification only when the user is stuck.
+5. Re-enter: optional text reminders pull the user back into the exact app surface when momentum drops.
 
 ## Feature Scope
 
@@ -50,7 +51,8 @@ When I start a gut reset, help me follow the plan day by day so I do not get los
 - Conversion: landing visit to paid start.
 
 ## Near-Term Execution
-1. Rewrite positioning around a guided protocol companion.
-2. Simplify the in-app information architecture to prep, today, and guide.
-3. Remove low-trust marketing claims and non-core promises.
-4. Validate the narrowed product with target users before expanding features again.
+1. Run a web-first, SMS-assisted funnel instead of a native-app push.
+2. Keep positioning around a guided protocol companion, not a generic AI health app.
+3. Simplify the in-app information architecture to prep, today, and guide.
+4. Remove low-trust marketing claims and non-core promises.
+5. Validate the narrowed product with target users before expanding features again.
