@@ -423,7 +423,7 @@ const Advertorial = () => {
             You've already decided to do the cleanse. You're not researching whether it works. You're stuck on <strong className="text-slate-800">how to actually execute it</strong> without quitting on Day 5.
           </p>
           <p className="mt-5 leading-8 text-slate-600">
-            The Gut Brain Journal is a one-time purchase ($79) that turns the 21-day protocol into a daily system. No subscription. No monthly charges. Pay once, own it forever.
+            The Gut Brain Journal is a one-time purchase ($39 launch price, normally $79) that turns the 21-day protocol into a daily system. No subscription. No monthly charges. Pay once, own it forever.
           </p>
         </motion.div>
 
@@ -460,7 +460,7 @@ const Advertorial = () => {
             <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                One-time $79
+                Launch price $39
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />

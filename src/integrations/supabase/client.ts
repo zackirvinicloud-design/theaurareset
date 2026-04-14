@@ -1,9 +1,10 @@
 import { createClient, type SupportedStorage } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const FALLBACK_SUPABASE_URL = 'https://mergwwrhcqzbogtnhxus.supabase.co';
+const FALLBACK_SUPABASE_URL = 'https://kcmtwnzmeelaypolufjf.supabase.co';
 const FALLBACK_SUPABASE_PUBLISHABLE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lcmd3d3JoY3F6Ym9ndG5oeHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTc0NTgsImV4cCI6MjA3ODc3MzQ1OH0.t0f8RGXnEPaAVC63bKFcHGg9xrVt9gIsW8fMxI7uJ-I';
+  'sb_publishable_tfU5V7VbCez434EtfHW77g_h5vuO4Tc';
+const LEGACY_BLOCKED_PROJECT_REF = 'mergwwrhcqzbogtnhxus';
 
 const trimOrNull = (value: unknown) => {
   if (typeof value !== 'string') return null;
@@ -11,7 +12,8 @@ const trimOrNull = (value: unknown) => {
   return trimmed.length > 0 ? trimmed : null;
 };
 
-const isLikelyJwt = (value: string) => value.split('.').length === 3;
+const isLikelySupabaseKey = (value: string) =>
+  value.startsWith('sb_publishable_') || value.split('.').length === 3;
 
 const isValidSupabaseUrl = (value: string) => {
   try {
@@ -30,11 +32,16 @@ const envPublishableKey =
   trimOrNull(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY)
   ?? trimOrNull(import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-const SUPABASE_URL = envSupabaseUrl && isValidSupabaseUrl(envSupabaseUrl)
-  ? envSupabaseUrl
+const useEnvSupabase =
+  Boolean(envSupabaseUrl)
+  && isValidSupabaseUrl(envSupabaseUrl!)
+  && !envSupabaseUrl!.includes(LEGACY_BLOCKED_PROJECT_REF);
+
+const SUPABASE_URL = useEnvSupabase
+  ? envSupabaseUrl!
   : FALLBACK_SUPABASE_URL;
 
-const SUPABASE_PUBLISHABLE_KEY = envPublishableKey && isLikelyJwt(envPublishableKey)
+const SUPABASE_PUBLISHABLE_KEY = useEnvSupabase && envPublishableKey && isLikelySupabaseKey(envPublishableKey)
   ? envPublishableKey
   : FALLBACK_SUPABASE_PUBLISHABLE_KEY;
 

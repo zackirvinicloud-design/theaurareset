@@ -16,7 +16,7 @@ interface TaskReminderPickerProps {
     label: string;
     timeOfDay: 'morning' | 'afternoon' | 'evening' | 'anytime';
     reminder?: TaskReminder;
-    smsReady?: boolean;
+    pushReady?: boolean;
     onSetReminder: (input: {
         checklistKey: string;
         dayNumber: number;
@@ -53,7 +53,7 @@ export function TaskReminderPicker({
     label,
     timeOfDay,
     reminder,
-    smsReady = false,
+    pushReady = false,
     onSetReminder,
     onClearReminder,
     variant = 'button',
@@ -63,7 +63,6 @@ export function TaskReminderPicker({
     const [internalOpen, setInternalOpen] = useState(false);
     const [customValue, setCustomValue] = useState(() => reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
     const [selectedQuickValue, setSelectedQuickValue] = useState<string | undefined>(undefined);
-    const [deliveryChannel, setDeliveryChannel] = useState<ReminderDeliveryChannel>(reminder?.deliveryChannel ?? (smsReady ? 'sms' : 'local'));
     const [quickPresetBaseTime, setQuickPresetBaseTime] = useState(() => Date.now());
     const resolvedOpen = open ?? internalOpen;
     const quickOffsetPresets = QUICK_OFFSET_MINUTES.map((item) => ({
@@ -74,8 +73,7 @@ export function TaskReminderPicker({
     useEffect(() => {
         setCustomValue(reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
         setSelectedQuickValue(undefined);
-        setDeliveryChannel(reminder?.deliveryChannel ?? (smsReady ? 'sms' : 'local'));
-    }, [reminder?.scheduledLocalTime, reminder?.deliveryChannel, smsReady]);
+    }, [reminder?.scheduledLocalTime, reminder?.deliveryChannel, pushReady]);
 
     useEffect(() => {
         if (!resolvedOpen) {
@@ -94,16 +92,12 @@ export function TaskReminderPicker({
     };
 
     const handleSet = async (scheduledLocalTime: string) => {
-        if (deliveryChannel === 'sms' && !smsReady) {
-            return;
-        }
-
         await onSetReminder({
             checklistKey: itemKey,
             dayNumber,
             label,
             scheduledLocalTime,
-            deliveryChannel,
+            deliveryChannel: pushReady ? 'push' : 'local',
             deepLinkTarget: buildProtocolDeepLink({
                 view: 'today',
                 dayNumber,
@@ -119,6 +113,7 @@ export function TaskReminderPicker({
                 {variant === 'icon' ? (
                     <button
                         type="button"
+                        data-reminder-trigger={itemKey}
                         className={cn(
                             'inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors',
                             reminder
@@ -132,6 +127,7 @@ export function TaskReminderPicker({
                 ) : (
                     <Button
                         type="button"
+                        data-reminder-trigger={itemKey}
                         variant="outline"
                         size="sm"
                         className={cn(
@@ -158,33 +154,18 @@ export function TaskReminderPicker({
                             Current reminder: {formatReminderDeliveryLabel(reminder.deliveryChannel)} on {formatReminderTime(reminder.scheduledLocalTime)}
                         </p>
                     )}
-
-                    <div className="space-y-1.5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                            Delivery
-                        </p>
-                        <Select
-                            value={deliveryChannel}
-                            onValueChange={(value) => setDeliveryChannel(value === 'sms' ? 'sms' : 'local')}
-                        >
-                            <SelectTrigger className="h-10">
-                                <SelectValue placeholder="Choose where the reminder should show up" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="local">Browser notification</SelectItem>
-                                <SelectItem value="sms" disabled={!smsReady}>Text message</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        {!smsReady && (
-                            <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3 text-xs leading-5 text-muted-foreground">
-                                Text reminders are not set up on this account yet.
-                                <div className="mt-2">
-                                    <Button asChild variant="ghost" size="sm" className="h-8 rounded-full px-3 text-xs text-primary hover:bg-primary/8 hover:text-primary">
-                                        <Link to={`/setup/text-reminders?redirect=${encodeURIComponent('/protocol')}&source=reminder-picker`}>
-                                            Set up text reminders
-                                        </Link>
-                                    </Button>
-                                </div>
+                    <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3 text-xs leading-5 text-muted-foreground">
+                        Reminder channel: {pushReady ? 'push notification' : 'in-app reminder'}.
+                        {!pushReady && (
+                            <div className="mt-2 flex items-center gap-2">
+                                <span className="text-[11px] text-muted-foreground">
+                                    If notifications are off, you will miss phone pings.
+                                </span>
+                                <Button asChild variant="ghost" size="sm" className="h-8 rounded-full px-3 text-xs text-primary hover:bg-primary/8 hover:text-primary">
+                                    <Link to={`/setup/notifications?redirect=${encodeURIComponent('/protocol')}&source=reminder-picker`}>
+                                        Enable push
+                                    </Link>
+                                </Button>
                             </div>
                         )}
                     </div>
@@ -241,10 +222,9 @@ export function TaskReminderPicker({
                             type="button"
                             size="sm"
                             className="h-9 flex-1 rounded-full"
-                            disabled={deliveryChannel === 'sms' && !smsReady}
                             onClick={() => void handleSet(customValue)}
                         >
-                            {deliveryChannel === 'sms' ? 'Save text reminder' : 'Set reminder'}
+                            Set reminder
                         </Button>
                         {reminder && (
                             <Button

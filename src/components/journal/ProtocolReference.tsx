@@ -75,6 +75,7 @@ export const ProtocolReference = ({
                             <Button
                                 variant="ghost"
                                 size="icon"
+                                data-guide-close="true"
                                 className="h-7 w-7"
                                 onClick={onToggle}
                             >
@@ -162,6 +163,7 @@ function GuideContent({
             />
 
             <PrimaryGuideCard
+                actionKey="open-shopping"
                 eyebrow="Quick access"
                 tone="emerald"
                 title="Shopping list"
@@ -172,6 +174,7 @@ function GuideContent({
             />
 
             <PrimaryGuideCard
+                actionKey="open-symptom-tracker"
                 eyebrow="Quick context"
                 tone="emerald"
                 title="Symptom tracker"
@@ -191,6 +194,7 @@ function GuideContent({
 }
 
 function PrimaryGuideCard({
+    actionKey,
     eyebrow,
     tone = 'neutral',
     title,
@@ -199,6 +203,7 @@ function PrimaryGuideCard({
     icon,
     onClick,
 }: {
+    actionKey?: string;
     eyebrow?: string;
     tone?: 'neutral' | 'emerald';
     title: string;
@@ -228,6 +233,7 @@ function PrimaryGuideCard({
             <Button
                 variant="outline"
                 size="sm"
+                data-guide-action={actionKey}
                 className={cn(
                     'mt-2.5 h-9 w-full justify-between rounded-xl px-3 text-[12px] font-medium',
                     tone === 'emerald'

@@ -189,6 +189,12 @@ function mapShoppingOverrideRow(row: ShoppingListItemRow): ShoppingListOverride 
 }
 
 function mapTaskReminderRow(row: Record<string, unknown>): TaskReminder {
+    const deliveryChannel = row.delivery_channel === 'sms'
+        ? 'sms'
+        : row.delivery_channel === 'push'
+            ? 'push'
+            : 'local';
+
     return {
         id: String(row.id),
         userId: typeof row.user_id === 'string' ? row.user_id : null,
@@ -198,7 +204,7 @@ function mapTaskReminderRow(row: Record<string, unknown>): TaskReminder {
         scheduledLocalTime: String(row.scheduled_local_time),
         scheduledAtUtc: String(row.scheduled_at_utc),
         timezone: String(row.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone),
-        deliveryChannel: row.delivery_channel === 'sms' ? 'sms' : 'local',
+        deliveryChannel,
         smsEnabled: Boolean(row.sms_enabled),
         deepLinkTarget: String(row.deep_link_target ?? buildProtocolDeepLink()),
         active: Boolean(row.active),

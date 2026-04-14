@@ -7,6 +7,11 @@ import {
   type BusinessStateInput,
   type GrowthPlan,
 } from "../_shared/brainiac.ts";
+import {
+  buildChatProviderHeaders,
+  resolveChatProvider,
+  type ChatProviderConfig,
+} from "../_shared/ai-provider.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,7 +25,7 @@ interface PlannerRequest {
   withMemo?: boolean;
 }
 
-async function generateMemo(plan: GrowthPlan, lovableApiKey: string) {
+async function generateMemo(plan: GrowthPlan, provider: ChatProviderConfig) {
   const systemPrompt = [
     'You are BRAINIAC, the backend CEO planner for a software business.',
     'You are not inventing strategy from scratch. A deterministic planner already selected the constraint, scores, and decisions.',
@@ -31,14 +36,11 @@ async function generateMemo(plan: GrowthPlan, lovableApiKey: string) {
     'Keep the memo high-signal and practical.',
   ].join(' ');
 
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  const response = await fetch(provider.endpoint, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${lovableApiKey}`,
-      'Content-Type': 'application/json',
-    },
+    headers: buildChatProviderHeaders(provider),
     body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
+      model: provider.model,
       messages: [
         { role: 'system', content: systemPrompt },
         {
@@ -60,7 +62,7 @@ async function generateMemo(plan: GrowthPlan, lovableApiKey: string) {
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`AI gateway error: ${response.status} ${errorText}`);
+    throw new Error(`AI gateway error (${provider.provider}): ${response.status} ${errorText}`);
   }
 
   const data = await response.json();
@@ -147,9 +149,12 @@ serve(async (req) => {
     const plan = buildGrowthPlan(normalizedState);
 
     let memo: string | undefined;
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    if (withMemo && lovableApiKey) {
-      memo = await generateMemo(plan, lovableApiKey);
+    if (withMemo) {
+      const hasGeminiKey = Boolean(Deno.env.get("GEMINI_API_KEY") ?? Deno.env.get("GOOGLE_API_KEY"));
+      if (hasGeminiKey) {
+        const provider = resolveChatProvider();
+        memo = await generateMemo(plan, provider);
+      }
     }
 
     const runId = persist ? await persistPlan(plan, businessState ?? {}, memo) : null;

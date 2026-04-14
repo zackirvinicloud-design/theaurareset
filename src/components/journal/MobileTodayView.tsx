@@ -25,7 +25,7 @@ interface MobileTodayViewProps {
     taskReminders: TaskReminder[];
     recoveryState: RecoveryState | null;
     maintenanceHandoff: MaintenanceHandoff | null;
-    smsReady?: boolean;
+    pushReady?: boolean;
     focusedItemKey?: string | null;
     reminderComposerTargetKey?: string | null;
     onToggle: (itemKey: string) => void;
@@ -56,7 +56,7 @@ export const MobileTodayView = ({
     taskReminders,
     recoveryState,
     maintenanceHandoff,
-    smsReady = false,
+    pushReady = false,
     focusedItemKey,
     reminderComposerTargetKey,
     onToggle,
@@ -215,7 +215,7 @@ export const MobileTodayView = ({
                                         label={nextItem.label}
                                         timeOfDay={nextItem.timeOfDay}
                                         reminder={nextReminder}
-                                        smsReady={smsReady}
+                                        pushReady={pushReady}
                                         onSetReminder={onSetReminder}
                                         onClearReminder={onClearReminder}
                                         open={reminderComposerTargetKey === nextItem.key ? true : undefined}
@@ -335,7 +335,7 @@ export const MobileTodayView = ({
                             onReminderComposerOpenChange={onReminderComposerOpenChange}
                             onSetReminder={onSetReminder}
                             onClearReminder={onClearReminder}
-                            smsReady={smsReady}
+                            pushReady={pushReady}
                             variant="inline"
                         />
                         <div className="pt-1">

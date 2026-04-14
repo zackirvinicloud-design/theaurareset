@@ -8,19 +8,26 @@ import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExp
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
 import { TopBar } from '@/components/journal/TopBar';
 import { calculatePhase } from '@/hooks/useProtocolData';
+import type { CoachAction } from '@/lib/gutbrain';
 import type {
   ChecklistState,
   CustomChecklistItem,
   JournalEntry,
   ShoppingListOverride,
+  TaskReminder,
   UserProgress,
 } from '@/hooks/useJournalStore';
 
-type CaptureScene = 'prep' | 'today' | 'journey';
+type CaptureScene = 'prep' | 'today' | 'journey' | 'tour';
 type ActiveView = 'chat' | 'shopping' | 'roadmap' | 'normal';
 
 const PREP_EXPANDED_CATEGORIES = [
   'Foundation_Morning Ritual Essentials',
+  'Foundation_Liver Support Supplements',
+  'Fungal Elimination_Fungal Support Supplements',
+];
+
+const TOUR_EXPANDED_CATEGORIES = [
   'Foundation_Liver Support Supplements',
   'Fungal Elimination_Fungal Support Supplements',
 ];
@@ -40,7 +47,7 @@ function makeEntry(day: number, role: 'user' | 'assistant', content: string, min
 }
 
 function normalizeScene(value?: string): CaptureScene {
-  if (value === 'prep' || value === 'today' || value === 'journey') return value;
+  if (value === 'prep' || value === 'today' || value === 'journey' || value === 'tour') return value;
   return 'today';
 }
 
@@ -82,6 +89,24 @@ function buildChecklist(scene: CaptureScene, day: number): ChecklistState {
       binder_evening: false,
       no_sugar: true,
       herx_check: false,
+    };
+  }
+
+  if (scene === 'tour') {
+    return {
+      lemon_salt_water: true,
+      breakfast_compliant: true,
+      supplements_am: true,
+      oregano_oil: true,
+      caprylic_acid: true,
+      hydration_goal: true,
+      lunch_compliant: true,
+      supplements_pm: false,
+      dinner_compliant: false,
+      binder_evening: false,
+      no_sugar: true,
+      herx_check: false,
+      shop_phase3: true,
     };
   }
 
@@ -162,6 +187,10 @@ function buildEntries(scene: CaptureScene, day: number): JournalEntry[] {
     ];
   }
 
+  if (scene === 'tour') {
+    return [];
+  }
+
   if (day >= 15) {
     return [
       makeEntry(day, 'user', 'What changes now that I am in the heavy metal phase?', 1),
@@ -220,6 +249,17 @@ function buildCustomItems(scene: CaptureScene): CustomChecklistItem[] {
     ];
   }
 
+  if (scene === 'tour') {
+    return [
+      {
+        key: 'custom_today_hydrate',
+        label: 'Finish the second hydration push before dinner',
+        source: 'ai',
+        createdAt: '2026-03-12T15:04:00.000Z',
+      },
+    ];
+  }
+
   return [
     {
       key: 'custom_journey_phase',
@@ -233,7 +273,105 @@ function buildCustomItems(scene: CaptureScene): CustomChecklistItem[] {
 function initialDayForScene(scene: CaptureScene) {
   if (scene === 'prep') return 0;
   if (scene === 'today') return 5;
+  if (scene === 'tour') return 5;
   return 7;
+}
+
+function buildDesktopTourSequence(day: number): JournalEntry[] {
+  return [
+    makeEntry(
+      day,
+      'user',
+      "I am on Day 5 and feel bloated, foggy, and weirdly tired after lunch. Did I mess this cleanse up?",
+      2,
+    ),
+    makeEntry(
+      day,
+      'assistant',
+      `Probably not. Days 4-6 are where fungal die-off usually gets loud. As colonies break apart, they dump waste and stir up inflammation, so bloat, brain fog, fatigue, and sudden crashes can spike even when you are still on track.
+
+[CLARIFY]
+question: What kind of help do you want first?
+option: Is this normal?
+option: What do I do today?
+option: Why fungal first?
+[/CLARIFY]`,
+      3,
+    ),
+    makeEntry(
+      day,
+      'user',
+      'What do I do today?',
+      4,
+    ),
+    makeEntry(
+      day,
+      'assistant',
+      `Keep today boring. Protect the binder window, stay on clean meals, hydrate hard, and do not stack extra detox tricks. Today is a drainage day, not a hero day. The win is moving waste out cleanly, not doing more.
+
+[CLARIFY]
+question: Where do you want help next?
+option: What can I eat tonight?
+option: How do I calm it?
+option: What are the red flags?
+[/CLARIFY]`,
+      5,
+    ),
+    makeEntry(
+      day,
+      'user',
+      'Why fungal first?',
+      6,
+    ),
+    makeEntry(
+      day,
+      'assistant',
+      `Because parasites like to hide, feed, and lay eggs in fungal colonies. That colony acts like cover, fuel, and a home base. Week 1 breaks up that environment first so Week 2 is not trying to clear parasites inside the place that protects them.
+
+[COACH_ACTION]
+type: open_shopping
+label: Open shopping list
+phase: Fungal Elimination
+category: Fungal Support Supplements
+[/COACH_ACTION]
+
+[CLARIFY]
+question: What do you want help with next?
+option: Tell me the red flags
+option: What can I eat tonight?
+option: How do I calm die-off?
+option: Open the shopping list
+[/CLARIFY]`,
+      7,
+    ),
+  ];
+}
+
+function makeReminder(input: {
+  id: string;
+  dayNumber: number;
+  checklistKey: string;
+  label: string;
+  scheduledLocalTime: string;
+}): TaskReminder {
+  const scheduledAtUtc = new Date(input.scheduledLocalTime).toISOString();
+  return {
+    id: input.id,
+    userId: null,
+    dayNumber: input.dayNumber,
+    checklistKey: input.checklistKey,
+    label: input.label,
+    scheduledLocalTime: input.scheduledLocalTime,
+    scheduledAtUtc,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    deliveryChannel: 'local',
+    smsEnabled: false,
+    deepLinkTarget: '/protocol',
+    active: true,
+    createdAt: new Date().toISOString(),
+    deliveredAt: null,
+    lastSentAt: null,
+  };
 }
 
 export default function ProtocolCapture() {
@@ -248,8 +386,11 @@ export default function ProtocolCapture() {
     buildCustomItems(activeScene)
   );
   const [shoppingOverrides] = useState<ShoppingListOverride[]>([]);
+  const [taskReminders, setTaskReminders] = useState<TaskReminder[]>([]);
+  const [reminderComposerTargetKey, setReminderComposerTargetKey] = useState<string | null>(null);
+  const [focusedItemKey, setFocusedItemKey] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<ActiveView>(activeScene === 'prep' ? 'shopping' : 'chat');
-  const [refOpen, setRefOpen] = useState(activeScene !== 'prep');
+  const [refOpen, setRefOpen] = useState(false);
 
   useEffect(() => {
     const day = initialDayForScene(activeScene);
@@ -257,8 +398,11 @@ export default function ProtocolCapture() {
     setEntries(buildEntries(activeScene, day));
     setChecklist(buildChecklist(activeScene, day));
     setCustomItems(buildCustomItems(activeScene));
+    setTaskReminders([]);
+    setReminderComposerTargetKey(null);
+    setFocusedItemKey(null);
     setActiveView(activeScene === 'prep' ? 'shopping' : 'chat');
-    setRefOpen(activeScene !== 'prep');
+    setRefOpen(false);
   }, [activeScene]);
 
   useEffect(() => {
@@ -362,6 +506,18 @@ export default function ProtocolCapture() {
       );
     }
 
+    if (activeScene === 'tour') {
+      const sequence = buildDesktopTourSequence(5);
+      setEntries([sequence[0]]);
+      sequence.slice(1).forEach((entry, index) => {
+        timers.push(
+          window.setTimeout(() => {
+            setEntries(sequence.slice(0, index + 2));
+          }, (index + 1) * 850),
+        );
+      });
+    }
+
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, [activeScene]);
 
@@ -405,6 +561,72 @@ export default function ProtocolCapture() {
     ]);
   };
 
+  const handleSetReminder = async (input: {
+    checklistKey: string;
+    dayNumber: number;
+    label: string;
+    scheduledLocalTime: string;
+  }) => {
+    setTaskReminders((prev) => {
+      const nextReminder = makeReminder({
+        id: `${input.dayNumber}-${input.checklistKey}`,
+        dayNumber: input.dayNumber,
+        checklistKey: input.checklistKey,
+        label: input.label,
+        scheduledLocalTime: input.scheduledLocalTime,
+      });
+
+      return [
+        ...prev.filter((reminder) => !(reminder.dayNumber === input.dayNumber && reminder.checklistKey === input.checklistKey)),
+        nextReminder,
+      ];
+    });
+    setReminderComposerTargetKey(null);
+  };
+
+  const handleClearReminder = (checklistKey: string, dayNumber: number) => {
+    setTaskReminders((prev) => prev.filter((reminder) => !(reminder.dayNumber === dayNumber && reminder.checklistKey === checklistKey)));
+    setReminderComposerTargetKey(null);
+  };
+
+  const handleCoachAction = (action: CoachAction) => {
+    if (action.type === 'open_shopping') {
+      setActiveView('shopping');
+      return;
+    }
+
+    if (action.type === 'open_normal_today') {
+      setActiveView('normal');
+      return;
+    }
+
+    if (action.type === 'open_view') {
+      if (action.view === 'guide') {
+        setRefOpen(true);
+        return;
+      }
+
+      if (action.view === 'shopping') {
+        setActiveView('shopping');
+        return;
+      }
+
+      if (action.view === 'today' || action.view === 'protocol' || action.view === 'help') {
+        setActiveView('chat');
+        return;
+      }
+    }
+
+    if (action.checklistKey && (action.type === 'focus_checklist_item' || action.type === 'set_reminder')) {
+      setActiveView('chat');
+      setFocusedItemKey(action.checklistKey);
+
+      if (action.type === 'set_reminder') {
+        setReminderComposerTargetKey(action.checklistKey);
+      }
+    }
+  };
+
   return (
     <div data-capture-scene={activeScene} className="h-screen overflow-hidden bg-background">
       <style>{`
@@ -444,6 +666,15 @@ export default function ProtocolCapture() {
               setCustomItems((prev) => prev.filter((item) => item.key !== key))
             }
             onAskAbout={handleAskAbout}
+            taskReminders={taskReminders}
+            focusedItemKey={focusedItemKey}
+            reminderComposerTargetKey={reminderComposerTargetKey}
+            onReminderComposerOpenChange={(itemKey, open) => {
+              setFocusedItemKey(open ? itemKey : null);
+              setReminderComposerTargetKey(open ? itemKey : null);
+            }}
+            onSetReminder={handleSetReminder}
+            onClearReminder={handleClearReminder}
           />
         </aside>
 
@@ -458,7 +689,7 @@ export default function ProtocolCapture() {
               onRemoveItem={() => Promise.resolve(null)}
               onBack={() => setActiveView('chat')}
               onAskAI={handleShoppingAskAI}
-              defaultExpandedCategories={PREP_EXPANDED_CATEGORIES}
+              defaultExpandedCategories={activeScene === 'tour' ? TOUR_EXPANDED_CATEGORIES : PREP_EXPANDED_CATEGORIES}
             />
           ) : activeView === 'roadmap' ? (
             <ProtocolRoadmapExplorer
@@ -484,6 +715,7 @@ export default function ProtocolCapture() {
               onAddEntry={addJournalEntry}
               onUpdateEntry={updateEntry}
               onFinalizeEntry={updateEntry}
+              onCoachAction={handleCoachAction}
             />
           )}
         </main>

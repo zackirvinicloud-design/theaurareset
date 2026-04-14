@@ -1,4 +1,5 @@
 import { buildGutBrainChatPrompt } from "../_shared/gutbrain.ts";
+import { buildChatProviderHeaders, resolveChatProvider } from "../_shared/ai-provider.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,10 +21,7 @@ Deno.serve(async (req) => {
       symptoms,
     } = await req.json();
 
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    const provider = resolveChatProvider();
 
     const systemPrompt = buildGutBrainChatPrompt(
       typeof context === "string" ? context : "",
@@ -32,14 +30,11 @@ Deno.serve(async (req) => {
       Array.isArray(symptoms) ? symptoms : [],
     );
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(provider.endpoint, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: buildChatProviderHeaders(provider),
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: provider.model,
         messages: [
           { role: "system", content: systemPrompt },
           ...(Array.isArray(messages) ? messages : []),
@@ -61,7 +56,7 @@ Deno.serve(async (req) => {
 
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "AI credits depleted. Please add credits to continue." }),
+          JSON.stringify({ error: "AI provider credits depleted. Add provider credits or switch to GEMINI_API_KEY." }),
           {
             status: 402,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -70,7 +65,7 @@ Deno.serve(async (req) => {
       }
 
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error(`AI gateway error (${provider.provider}):`, response.status, errorText);
 
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500,

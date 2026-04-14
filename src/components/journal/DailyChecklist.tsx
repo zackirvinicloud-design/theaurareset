@@ -32,7 +32,7 @@ interface DailyChecklistProps {
         deepLinkTarget?: string;
     }) => Promise<void> | void;
     onClearReminder?: (checklistKey: string, dayNumber: number) => void;
-    smsReady?: boolean;
+    pushReady?: boolean;
 }
 
 type ChecklistTimeOfDay = ChecklistItem['timeOfDay'];
@@ -76,7 +76,7 @@ interface ChecklistSectionsProps {
         deepLinkTarget?: string;
     }) => Promise<void> | void;
     onClearReminder?: (checklistKey: string, dayNumber: number) => void;
-    smsReady?: boolean;
+    pushReady?: boolean;
 }
 
 const createEmptyGroups = (): Record<ChecklistTimeOfDay, ChecklistDisplayItem[]> => ({
@@ -149,7 +149,7 @@ export function ChecklistSections({
     onReminderComposerOpenChange,
     onSetReminder,
     onClearReminder,
-    smsReady = false,
+    pushReady = false,
 }: ChecklistSectionsProps) {
     const { grouped, followUps } = buildChecklistViewModel(currentDay, checklist, customItems);
     const remindersByKey = Object.fromEntries(
@@ -194,7 +194,7 @@ export function ChecklistSections({
                                     onReminderComposerOpenChange={onReminderComposerOpenChange}
                                     onSetReminder={onSetReminder}
                                     onClearReminder={onClearReminder}
-                                    smsReady={smsReady}
+                                    pushReady={pushReady}
                                     variant={variant}
                                 />
                             ))}
@@ -241,7 +241,7 @@ export function ChecklistSections({
                                         onReminderComposerOpenChange={onReminderComposerOpenChange}
                                         onSetReminder={onSetReminder}
                                         onClearReminder={onClearReminder}
-                                        smsReady={smsReady}
+                                        pushReady={pushReady}
                                         variant={variant}
                                     />
                                 </motion.div>
@@ -263,7 +263,7 @@ export const DailyChecklist = ({
     onReminderComposerOpenChange,
     onSetReminder,
     onClearReminder,
-    smsReady = false,
+    pushReady = false,
 }: DailyChecklistProps) => {
     const [newItemText, setNewItemText] = useState('');
     const [showAddInput, setShowAddInput] = useState(false);
@@ -329,7 +329,7 @@ export const DailyChecklist = ({
                         onReminderComposerOpenChange={onReminderComposerOpenChange}
                         onSetReminder={onSetReminder}
                         onClearReminder={onClearReminder}
-                        smsReady={smsReady}
+                        pushReady={pushReady}
                     />
                 </div>
             </ScrollArea>
@@ -388,7 +388,7 @@ function ChecklistRow({
     onReminderComposerOpenChange,
     onSetReminder,
     onClearReminder,
-    smsReady,
+    pushReady,
     variant,
 }: {
     item: ChecklistDisplayItem;
@@ -410,7 +410,7 @@ function ChecklistRow({
         deepLinkTarget?: string;
     }) => Promise<void> | void;
     onClearReminder?: (checklistKey: string, dayNumber: number) => void;
-    smsReady?: boolean;
+    pushReady?: boolean;
     variant: 'panel' | 'inline';
 }) {
     const rowRef = useRef<HTMLDivElement | null>(null);
@@ -435,6 +435,7 @@ function ChecklistRow({
             {/* Checkbox area — toggles completion */}
             <motion.button
                 onClick={(e) => { e.stopPropagation(); onToggle(item.key); }}
+                data-checklist-checkbox={item.key}
                 whileTap={{ scale: 0.85 }}
                 className={cn(
                     'flex-shrink-0',
@@ -470,6 +471,7 @@ function ChecklistRow({
                         e.stopPropagation();
                         onToggle(item.key);
                     }}
+                    data-checklist-mark={item.key}
                     className={cn(
                         'flex-1 min-w-0 text-left',
                         variant === 'panel' ? 'text-xs flex items-center gap-1.5' : 'flex items-start gap-2.5 text-sm',
@@ -495,6 +497,7 @@ function ChecklistRow({
                             e.stopPropagation();
                             onAskAbout(item.label);
                         }}
+                        data-checklist-ask={item.key}
                         className={cn(
                             'inline-flex h-7 w-7 items-center justify-center rounded-full border transition-colors',
                             variant === 'panel'
@@ -514,7 +517,7 @@ function ChecklistRow({
                         label={item.label}
                         timeOfDay={item.timeOfDay}
                         reminder={reminder}
-                        smsReady={smsReady}
+                        pushReady={pushReady}
                         onSetReminder={onSetReminder}
                         onClearReminder={onClearReminder}
                         variant="icon"

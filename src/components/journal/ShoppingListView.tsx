@@ -221,6 +221,7 @@ export function ShoppingListView({
                         variant="ghost"
                         size="icon"
                         onClick={onBack}
+                        data-shopping-back="true"
                         className="h-8 w-8 flex-shrink-0"
                     >
                         <ArrowLeft className="w-4 h-4" />
@@ -356,6 +357,7 @@ export function ShoppingReferenceContent({
                     <section key={phase.phase} className="space-y-2">
                         <button
                             onClick={() => togglePhase(phase.phase)}
+                            data-shopping-phase={phase.phase}
                             className={cn(
                                 'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all',
                                 phaseStatus === 'current' && 'bg-primary/8 border border-primary/20',
@@ -437,6 +439,7 @@ export function ShoppingReferenceContent({
                                                     <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/20 transition-colors">
                                                         <button
                                                             onClick={() => toggleCategory(categoryKey)}
+                                                            data-shopping-category={categoryKey}
                                                             className="flex min-w-0 flex-1 items-center gap-2 text-left"
                                                         >
                                                             <span className="text-sm">{category.emoji}</span>
@@ -545,6 +548,7 @@ export function ShoppingReferenceContent({
                                                                                 <button
                                                                                     type="button"
                                                                                     onClick={() => onToggle(item.key)}
+                                                                                    data-shopping-item={item.key}
                                                                                     className="mt-0.5"
                                                                                 >
                                                                                     {checked ? (

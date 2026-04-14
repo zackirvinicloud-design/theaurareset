@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Loader2, MessageSquareText, Settings2, Sparkles } from 'lucide-react';
+import { ArrowLeft, BellRing, Loader2, Settings2, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import type { SmsSubscription } from '@/hooks/useSmsSubscription';
 import {
   DIET_PATTERN_OPTIONS,
   ROUTINE_TYPE_OPTIONS,
@@ -25,16 +22,11 @@ interface ProfileSettingsViewProps {
   profile: UserOnboardingProfile;
   isProfileLoading?: boolean;
   isProfileSaving?: boolean;
-  subscription: SmsSubscription | null;
-  isSmsLoading?: boolean;
-  isSmsSaving?: boolean;
+  notificationPermission: NotificationPermission | 'unsupported';
+  notificationNeedsInstall?: boolean;
+  pushReady?: boolean;
   onSaveProfile: (updates: Partial<UserOnboardingProfile>, options?: { markComplete?: boolean; entrySource?: string }) => Promise<void> | void;
-  onSaveSms: (input: {
-    phone: string;
-    transactionalOptIn: boolean;
-    marketingOptIn: boolean;
-    consentSource?: string;
-  }) => Promise<void> | void;
+  onOpenNotificationsSetup: () => void;
   onBack: () => void;
 }
 
@@ -42,11 +34,11 @@ export const ProfileSettingsView = ({
   profile,
   isProfileLoading = false,
   isProfileSaving = false,
-  subscription,
-  isSmsLoading = false,
-  isSmsSaving = false,
+  notificationPermission,
+  notificationNeedsInstall = false,
+  pushReady = false,
   onSaveProfile,
-  onSaveSms,
+  onOpenNotificationsSetup,
   onBack,
 }: ProfileSettingsViewProps) => {
   const [firstName, setFirstName] = useState('');
@@ -58,9 +50,6 @@ export const ProfileSettingsView = ({
   const [routineType, setRoutineType] = useState('');
   const [supportStyle, setSupportStyle] = useState('');
   const [healthFocusText, setHealthFocusText] = useState('');
-  const [phone, setPhone] = useState('');
-  const [transactionalOptIn, setTransactionalOptIn] = useState(false);
-  const [marketingOptIn, setMarketingOptIn] = useState(false);
 
   useEffect(() => {
     setFirstName(profile.firstName ?? '');
@@ -73,12 +62,6 @@ export const ProfileSettingsView = ({
     setSupportStyle(profile.supportStyle ?? '');
     setHealthFocusText(formatProfileListInput(profile.healthFlags));
   }, [profile]);
-
-  useEffect(() => {
-    setPhone(subscription?.phoneE164 ?? '');
-    setTransactionalOptIn(Boolean(subscription?.transactionalOptIn));
-    setMarketingOptIn(Boolean(subscription?.marketingOptIn));
-  }, [subscription]);
 
   const completionPreview = useMemo<UserOnboardingProfile>(() => ({
     ...profile,
@@ -118,15 +101,6 @@ export const ProfileSettingsView = ({
     }, {
       markComplete: isOnboardingProfileComplete(completionPreview),
       entrySource: 'settings',
-    });
-  };
-
-  const handleSaveSms = async () => {
-    await onSaveSms({
-      phone,
-      transactionalOptIn,
-      marketingOptIn,
-      consentSource: 'settings',
     });
   };
 
@@ -327,84 +301,38 @@ export const ProfileSettingsView = ({
           <Card className="border-border/70 bg-card/80">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <MessageSquareText className="h-4 w-4 text-primary" />
-                Text reminders
+                <BellRing className="h-4 w-4 text-primary" />
+                Push reminders
               </CardTitle>
               <CardDescription>
-                Phone lives here. Keep this separate from the Coach profile so reminder delivery stays clean.
+                Turn this on if you want real phone taps at reminder time.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {isSmsLoading ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Loading text reminder settings...
-                </div>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="settings-phone">Mobile phone</Label>
-                    <Input
-                      id="settings-phone"
-                      type="tel"
-                      inputMode="tel"
-                      value={phone}
-                      onChange={(event) => setPhone(event.target.value)}
-                      placeholder="(555) 555-5555"
-                    />
-                  </div>
+              <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3 text-xs leading-5 text-muted-foreground">
+                Status: {notificationPermission === 'granted' ? 'enabled' : notificationPermission === 'denied' ? 'blocked' : notificationPermission}
+                {pushReady && (
+                  <p className="mt-2 text-primary">This device is subscribed for closed-app push reminders.</p>
+                )}
+                {notificationNeedsInstall && (
+                  <p className="mt-2">
+                    iPhone requires Add to Home Screen first, then notification permission.
+                  </p>
+                )}
+                {notificationPermission !== 'granted' && (
+                  <p className="mt-2">
+                    If this stays off, you will miss one of the easiest high-value features in the app.
+                  </p>
+                )}
+              </div>
 
-                  <Separator />
-
-                  <div className="flex items-start gap-3">
-                    <Checkbox
-                      id="settings-transactional"
-                      checked={transactionalOptIn}
-                      onCheckedChange={(value) => setTransactionalOptIn(Boolean(value))}
-                      className="mt-1"
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="settings-transactional" className="text-sm font-medium text-foreground">
-                        Turn on cleanse reminder texts
-                      </Label>
-                      <p className="text-xs leading-5 text-muted-foreground">
-                        These are the functional texts: day-start cues, rescue nudges, shopping reminders, and step reminders.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Checkbox
-                      id="settings-marketing"
-                      checked={marketingOptIn}
-                      onCheckedChange={(value) => setMarketingOptIn(Boolean(value))}
-                      className="mt-1"
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="settings-marketing" className="text-sm font-medium text-foreground">
-                        I also want future launches and offers
-                      </Label>
-                      <p className="text-xs leading-5 text-muted-foreground">
-                        Optional. Leave this off if you only want protocol texts.
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                    onClick={() => void handleSaveSms()}
-                    disabled={isSmsSaving || !phone.trim() || !transactionalOptIn}
-                  >
-                    {isSmsSaving ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving texts
-                      </>
-                    ) : subscription ? 'Update text reminders' : 'Turn on text reminders'}
-                  </Button>
-                </>
-              )}
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={onOpenNotificationsSetup}
+              >
+                {notificationPermission === 'granted' ? 'Manage push setup' : 'Turn on push reminders'}
+              </Button>
             </CardContent>
           </Card>
         </div>

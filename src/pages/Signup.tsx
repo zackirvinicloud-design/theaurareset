@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Loader2,
   LockKeyhole,
-  Mail,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ import { z } from "zod";
 const emailSchema = z.string().email("Invalid email address");
 const passwordSchema = z.string().min(8, "Password must be at least 8 characters");
 
-type Step = "create" | "verify";
+type Step = "create";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -45,7 +44,6 @@ const Signup = () => {
   const [step, setStep] = useState<Step>("create");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
@@ -96,13 +94,6 @@ const Signup = () => {
         return;
       }
 
-      if (!isEmailVerified(session.user)) {
-        setPendingEmail(session.user.email ?? null);
-        setStep("verify");
-        setIsBootstrapping(false);
-        return;
-      }
-
       await completeSetup(session.user.id);
       if (!cancelled) {
         setIsBootstrapping(false);
@@ -147,20 +138,11 @@ const Signup = () => {
 
     setIsSubmitting(true);
 
-    const search = new URLSearchParams();
-    search.set("verified", "1");
-    if (redirectDestination) search.set("redirect", redirectDestination);
-    if (provider) search.set("provider", provider);
-    if (paymentId) search.set("payment_id", paymentId);
-
     try {
-      const { error } = await withAuthTimeout(
+      const { data, error } = await withAuthTimeout(
         supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/signup?${search.toString()}`,
-          },
         }),
         "Sign-up timed out. Please try again.",
       );
@@ -177,13 +159,14 @@ const Signup = () => {
         return;
       }
 
-      setPendingEmail(email);
-      setStep("verify");
-
-      toast({
-        title: "Check your inbox",
-        description: "Confirm your email to continue.",
-      });
+      // Immediately route user forward — no email verification needed
+      if (data?.user) {
+        if (redirectDestination) {
+          navigate(redirectDestination, { replace: true });
+          return;
+        }
+        await completeSetup(data.user.id);
+      }
     } catch (error) {
       console.error("Sign up error:", error);
       toast({
@@ -197,24 +180,6 @@ const Signup = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleVerificationCheck = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session || !isEmailVerified(session.user)) {
-      toast({
-        title: "Still waiting",
-        description: "Open the email we sent and tap the confirmation link first.",
-      });
-      return;
-    }
-
-    if (redirectDestination) {
-      navigate(redirectDestination, { replace: true });
-      return;
-    }
-
-    await completeSetup(session.user.id);
   };
 
   // Loading state
@@ -256,7 +221,7 @@ const Signup = () => {
               The Gut Brain Journal
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-              {isLegacyActivationFlow ? "Claim your access" : "Create your account"}
+              {isLegacyActivationFlow ? "Claim your access" : "Take the Free Gut Analysis"}
             </h1>
 
             {isLegacyActivationFlow ? (
@@ -270,7 +235,7 @@ const Signup = () => {
             ) : (
               <>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Create an account to unlock the full protocol workspace. One email, one password — that's it.
+                  Take the diagnostic test to see if a 21-day reset is the right fit for your symptoms. Enter your email to begin.
                 </p>
 
                 <div className="mt-6 space-y-3 text-sm text-muted-foreground">
@@ -306,38 +271,19 @@ const Signup = () => {
                   exit={{ opacity: 0, y: -18 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {step === "verify" ? (
-                    <div className="mx-auto flex max-w-xl flex-col items-center py-10 text-center">
-                      <Mail className="h-10 w-10 text-primary" />
-                      <h2 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-foreground">
-                        Check your email
-                      </h2>
-                      <p className="mt-3 text-base leading-7 text-muted-foreground">
-                        We sent a confirmation link to <strong>{pendingEmail}</strong>. Open it, then come back here.
-                      </p>
-                      <div className="mt-8 flex w-full max-w-sm flex-col gap-3">
-                        <Button onClick={handleVerificationCheck} disabled={isFinishing} className="h-12">
-                          {isFinishing ? "Checking..." : "I verified my email"}
-                        </Button>
-                        <Button variant="ghost" onClick={() => setStep("create")}>
-                          Change email
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mx-auto max-w-xl py-6">
+                   <div className="mx-auto max-w-xl py-6">
                       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">
                         {isLegacyActivationFlow ? "Create your account" : "Step 1 of 2"}
                       </p>
                       <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-foreground">
                         {isLegacyActivationFlow
                           ? "Attach your paid access to a real account"
-                          : "Create your account"}
+                          : "Where should we lock in your test results?"}
                       </h2>
                       <p className="mt-3 text-base leading-7 text-muted-foreground">
                         {isLegacyActivationFlow
                           ? "This keeps your payment connected to the correct login."
-                          : "After this, you'll unlock the full workspace with a one-time payment."}
+                          : "Set up your secure profile so you don't lose any progress or customized insights from Coach."}
                       </p>
 
                       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -368,7 +314,7 @@ const Signup = () => {
                             "Creating account..."
                           ) : (
                             <>
-                              Create account
+                              Start the Analysis
                               <ArrowRight className="ml-2 h-4 w-4" />
                             </>
                           )}
@@ -385,7 +331,6 @@ const Signup = () => {
                         </Link>
                       </div>
                     </div>
-                  )}
                 </motion.div>
               </CardContent>
             </Card>

@@ -7,6 +7,7 @@ import {
   type GutBrainProfilePayload,
   type GutBrainSnapshotPayload,
 } from "../_shared/gutbrain.ts";
+import { buildChatProviderHeaders, resolveChatProvider } from "../_shared/ai-provider.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,19 +52,13 @@ serve(async (req) => {
       latestSnapshot,
     } = await req.json();
 
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      throw new Error("LOVABLE_API_KEY is not configured");
-    }
+    const provider = resolveChatProvider();
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(provider.endpoint, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: buildChatProviderHeaders(provider),
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: provider.model,
         messages: [
           {
             role: "system",
@@ -99,7 +94,8 @@ serve(async (req) => {
         });
       }
 
-      throw new Error("AI gateway error");
+      const errorText = await response.text();
+      throw new Error(`AI gateway error (${provider.provider}) ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();

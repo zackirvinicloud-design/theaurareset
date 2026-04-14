@@ -28,7 +28,7 @@ export const PricingSection = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Pay for a 21-day cleanse execution system that works in your browser and can text you back into the right step.
+            Pay for a 21-day cleanse execution system that works in your browser and can ping you back into the right step.
           </p>
         </motion.div>
 
@@ -67,7 +67,7 @@ export const PricingSection = () => {
                   'Prep Day setup and shopping guidance',
                   'A daily plan grouped by morning, afternoon, and evening',
                   'Protocol-specific help for questions, symptoms, and troubleshooting',
-                  'Optional text reminders that reopen the exact step you need',
+                  'Optional push reminders that reopen the exact step you need',
                   'No app download required for the core experience',
                   'Budget protection so you know what to buy first',
                   'Lifetime access after the one-time payment',

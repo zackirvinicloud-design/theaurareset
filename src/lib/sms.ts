@@ -1,6 +1,6 @@
 import { parseLocalDateTime } from '@/lib/taskReminders';
 
-export type ReminderDeliveryChannel = 'local' | 'sms';
+export type ReminderDeliveryChannel = 'local' | 'push' | 'sms';
 
 interface ProtocolDeepLinkOptions {
   view?: 'today' | 'shopping' | 'normal' | 'guide' | 'roadmap' | 'help';
@@ -83,5 +83,9 @@ export const buildReminderSchedulePayload = (scheduledLocalTime: string): Remind
 };
 
 export const formatReminderDeliveryLabel = (channel: ReminderDeliveryChannel) => {
-  return channel === 'sms' ? 'Text reminder' : 'Browser reminder';
+  if (channel === 'push') {
+    return 'Push reminder';
+  }
+
+  return channel === 'sms' ? 'Text reminder' : 'In-app reminder';
 };

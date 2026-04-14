@@ -6,10 +6,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { findShoppingCategoryMatch, getDayLabel, getShoppingPhaseForDay, SHOPPING_LIST } from "@/hooks/useProtocolData";
 import { useGutBrainProfile } from "@/hooks/useGutBrainProfile";
 import { useJournalStore } from "@/hooks/useJournalStore";
+import { useNotificationSetup } from "@/hooks/useNotificationSetup";
 import { useOnboardingProfile } from "@/hooks/useOnboardingProfile";
-import { useSmsSubscription } from "@/hooks/useSmsSubscription";
+import { usePushSubscription } from "@/hooks/usePushSubscription";
 import { toast } from "@/hooks/use-toast";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
+import type { ReminderDeliveryChannel } from "@/lib/sms";
 import { cn } from "@/lib/utils";
 import { parseLocalDateTime } from "@/lib/taskReminders";
 import type { CoachAction, GutBrainShoppingAction } from "@/lib/gutbrain";
@@ -75,13 +77,9 @@ const Protocol = () => {
   const markTaskReminderDelivered = store.markTaskReminderDelivered;
   const gutBrain = useGutBrainProfile(store.userId);
   const onboarding = useOnboardingProfile(store.userId);
-  const {
-    subscription,
-    smsReady,
-    isLoading: isSmsLoading,
-    isSaving: isSmsSaving,
-    saveSubscription,
-  } = useSmsSubscription(store.userId);
+  const notifications = useNotificationSetup();
+  const pushSubscription = usePushSubscription(store.userId);
+  const pushReady = notifications.isEnabled && pushSubscription.pushReady;
   const checklistViewModel = useMemo(
     () => buildChecklistViewModel(currentDay, store.checklist, store.customItems),
     [currentDay, store.checklist, store.customItems],
@@ -279,11 +277,11 @@ const Protocol = () => {
     dayNumber: number;
     label: string;
     scheduledLocalTime: string;
-    deliveryChannel?: 'local' | 'sms';
+    deliveryChannel?: ReminderDeliveryChannel;
     deepLinkTarget?: string;
   }) => {
     if (
-      input.deliveryChannel !== 'sms'
+      (input.deliveryChannel ?? 'local') === 'local'
       && typeof window !== 'undefined'
       && 'Notification' in window
       && Notification.permission === 'default'
@@ -303,9 +301,9 @@ const Protocol = () => {
 
     toast({
       title: "Reminder set",
-      description: input.deliveryChannel === 'sms'
-        ? `${input.label} will text you back into the exact step.`
-        : `${input.label} will bring you back to the right step.`,
+      description: (input.deliveryChannel ?? 'local') === 'push'
+        ? `${input.label} will ping this phone even when the app is closed.`
+        : `${input.label} is saved in-app. Turn on push reminders for closed-app pings.`,
     });
   }, [setTaskReminder]);
 
@@ -461,18 +459,12 @@ const Protocol = () => {
     });
   }, [onboarding]);
 
-  const handleSaveSmsSettings = useCallback(async (input: {
-    phone: string;
-    transactionalOptIn: boolean;
-    marketingOptIn: boolean;
-    consentSource?: string;
-  }) => {
-    await saveSubscription(input);
-    toast({
-      title: "Text reminders updated",
-      description: "Your reminder phone and consent settings are saved.",
-    });
-  }, [saveSubscription]);
+  const handleOpenNotificationsSetup = useCallback(() => {
+    const params = new URLSearchParams();
+    params.set('redirect', '/protocol');
+    params.set('source', 'settings');
+    navigate(`/setup/notifications?${params.toString()}`);
+  }, [navigate]);
 
   const handleAskCoachFromRoadmap = (prompt: string) => {
     setActiveView('help');
@@ -741,7 +733,7 @@ const Protocol = () => {
             onReminderComposerOpenChange={handleReminderComposerOpenChange}
             onSetReminder={handleSetReminder}
             onClearReminder={store.clearTaskReminder}
-            smsReady={smsReady}
+            pushReady={pushReady}
           />
         </aside>
 
@@ -752,11 +744,11 @@ const Protocol = () => {
                 profile={onboarding.profile}
                 isProfileLoading={onboarding.isLoading}
                 isProfileSaving={onboarding.isSaving}
-                subscription={subscription}
-                isSmsLoading={isSmsLoading}
-                isSmsSaving={isSmsSaving}
+                notificationPermission={notifications.permission}
+                notificationNeedsInstall={notifications.needsIosInstall}
+                pushReady={pushReady}
                 onSaveProfile={handleSaveProfileSettings}
-                onSaveSms={handleSaveSmsSettings}
+                onOpenNotificationsSetup={handleOpenNotificationsSetup}
                 onBack={handleCloseSettings}
               />
             ) : activeView === 'shopping' ? (
@@ -827,7 +819,7 @@ const Protocol = () => {
                 onReminderComposerOpenChange={handleReminderComposerOpenChange}
                 onSetReminder={handleSetReminder}
                 onClearReminder={store.clearTaskReminder}
-                smsReady={smsReady}
+                pushReady={pushReady}
               />
             ) : (
               <JournalCenter
@@ -859,11 +851,11 @@ const Protocol = () => {
               profile={onboarding.profile}
               isProfileLoading={onboarding.isLoading}
               isProfileSaving={onboarding.isSaving}
-              subscription={subscription}
-              isSmsLoading={isSmsLoading}
-              isSmsSaving={isSmsSaving}
+              notificationPermission={notifications.permission}
+              notificationNeedsInstall={notifications.needsIosInstall}
+              pushReady={pushReady}
               onSaveProfile={handleSaveProfileSettings}
-              onSaveSms={handleSaveSmsSettings}
+              onOpenNotificationsSetup={handleOpenNotificationsSetup}
               onBack={handleCloseSettings}
             />
           ) : activeView === 'shopping' ? (

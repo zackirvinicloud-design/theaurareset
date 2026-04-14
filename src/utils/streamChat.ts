@@ -28,7 +28,18 @@ export const streamChat = async ({
   onDone,
   onError,
 }: StreamChatOptions) => {
-  const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL || 'https://mergwwrhcqzbogtnhxus.supabase.co'}/functions/v1/protocol-chat`;
+  const fallbackSupabaseUrl = 'https://kcmtwnzmeelaypolufjf.supabase.co';
+  const fallbackPublishableKey = 'sb_publishable_tfU5V7VbCez434EtfHW77g_h5vuO4Tc';
+  const legacyBlockedProjectRef = 'mergwwrhcqzbogtnhxus';
+  const envSupabaseUrl = typeof import.meta.env.VITE_SUPABASE_URL === 'string'
+    ? import.meta.env.VITE_SUPABASE_URL.trim()
+    : '';
+  const useEnvSupabase = Boolean(envSupabaseUrl) && !envSupabaseUrl.includes(legacyBlockedProjectRef);
+  const activeSupabaseUrl = useEnvSupabase ? envSupabaseUrl : fallbackSupabaseUrl;
+  const activePublishableKey = useEnvSupabase
+    ? (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || fallbackPublishableKey)
+    : fallbackPublishableKey;
+  const CHAT_URL = `${activeSupabaseUrl}/functions/v1/protocol-chat`;
 
   // Build the system prompt client-side so updates take effect immediately
   const systemPrompt = buildChatSystemPrompt(context || '', brainProfile, brainSnapshot, symptoms);
@@ -38,7 +49,7 @@ export const streamChat = async ({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lcmd3d3JoY3F6Ym9ndG5oeHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTc0NTgsImV4cCI6MjA3ODc3MzQ1OH0.t0f8RGXnEPaAVC63bKFcHGg9xrVt9gIsW8fMxI7uJ-I'}`,
+        Authorization: `Bearer ${activePublishableKey}`,
       },
       body: JSON.stringify({
         messages: [
@@ -54,13 +65,23 @@ export const streamChat = async ({
     });
 
     if (!response.ok) {
+      let providerErrorMessage: string | null = null;
+      try {
+        const errorPayload = await response.json();
+        if (typeof errorPayload?.error === 'string' && errorPayload.error.trim()) {
+          providerErrorMessage = errorPayload.error.trim();
+        }
+      } catch {
+        // Ignore JSON parse errors for non-JSON responses.
+      }
+
       if (response.status === 429) {
-        throw new Error('Rate limit exceeded. Please try again in a moment.');
+        throw new Error(providerErrorMessage ?? 'Rate limit exceeded. Please try again in a moment.');
       }
       if (response.status === 402) {
-        throw new Error('AI credits depleted. Please add credits to continue.');
+        throw new Error(providerErrorMessage ?? 'AI provider credits are depleted. Please refresh provider billing.');
       }
-      throw new Error('Failed to connect to AI service');
+      throw new Error(providerErrorMessage ?? 'Failed to connect to AI service');
     }
 
     if (!response.body) {
