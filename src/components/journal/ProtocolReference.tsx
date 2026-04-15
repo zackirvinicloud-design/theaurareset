@@ -165,22 +165,22 @@ function GuideContent({
             <PrimaryGuideCard
                 actionKey="open-shopping"
                 eyebrow="Quick access"
-                tone="emerald"
+                tone="neutral"
                 title="Shopping list"
                 description="Open by week, buy what you need now, and keep the rest collapsed until you need it."
                 actionLabel="Open shopping list"
-                icon={<ShoppingCart className="h-3.5 w-3.5 text-primary/85" />}
+                icon={<ShoppingCart className="h-3.5 w-3.5" />}
                 onClick={onOpenShoppingView}
             />
 
             <PrimaryGuideCard
                 actionKey="open-symptom-tracker"
                 eyebrow="Quick context"
-                tone="emerald"
+                tone="neutral"
                 title="Symptom tracker"
                 description={`${getDayLabel(currentDay)} · ${stageLabel}. ${normalToday.headline}`}
                 actionLabel="Open symptom tracker"
-                icon={<Activity className="h-3.5 w-3.5 text-primary/85" />}
+                icon={<Activity className="h-3.5 w-3.5" />}
                 onClick={onOpenNormalTodayView}
             />
 
@@ -261,28 +261,27 @@ function GuideQuoteCard({
     support: string;
 }) {
     return (
-        <section className="px-1 py-0.5">
-            <div className="border-l border-primary/35 pl-3">
+        <section className="relative overflow-hidden rounded-2xl border border-primary/28 bg-card/80 px-4 py-3.5 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)]">
+            <div className="absolute -inset-4 bg-primary/5 blur-2xl rounded-full pointer-events-none" />
+            <div className="relative z-10 border-l-2 border-primary/50 pl-3">
                 <div className="flex items-center justify-between gap-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary/80">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary/90">
                         Daily quote
                     </p>
                     <p className="text-[10px] text-muted-foreground">{dateLabel}</p>
                 </div>
 
-                <p className="mt-1.5 text-[13px] leading-6 text-foreground/90">
+                <p className="mt-2 text-[14px] leading-6 text-foreground font-medium italic">
                     "{quote}"
                 </p>
 
-                <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary/80">
+                <p className="mt-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary/80">
                     {author}
                 </p>
-                <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground/95">
+                <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground">
                     {support}
                 </p>
             </div>
-
-            <div className="mt-2 h-px bg-gradient-to-r from-primary/30 via-border/50 to-transparent" />
         </section>
     );
 }

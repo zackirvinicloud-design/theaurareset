@@ -1,6 +1,16 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { MessageSquare, Leaf, ArrowDown, Sparkles, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { ChatMessage } from '@/components/chat/ChatMessage';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { CoachHistory } from '@/components/chat/CoachHistory';
@@ -75,6 +85,7 @@ export const JournalCenter = ({
 }: JournalCenterProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showScrollButton, setShowScrollButton] = useState(false);
+    const [showNewChatDialog, setShowNewChatDialog] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const starterState = getGutBrainStarterState(progress, brainProfile, brainSnapshot, { mobile: isMobile });
     const isMobileHelpMode = isMobile && mobileVariant === 'help';
@@ -260,7 +271,7 @@ export const JournalCenter = ({
                                 size="icon"
                                 className="h-8 w-8"
                                 title="Start new chat"
-                                onClick={() => void onStartNewChat?.()}
+                                onClick={() => setShowNewChatDialog(true)}
                             >
                                 <Plus className="h-4 w-4" />
                             </Button>
@@ -293,7 +304,7 @@ export const JournalCenter = ({
                             size="icon"
                             className="h-8 w-8"
                             title="Start new chat"
-                            onClick={() => void onStartNewChat?.()}
+                            onClick={() => setShowNewChatDialog(true)}
                         >
                             <Plus className="h-4 w-4" />
                         </Button>
@@ -398,6 +409,26 @@ export const JournalCenter = ({
                     compact={isMobile}
                 />
             </div>
+
+            <AlertDialog open={showNewChatDialog} onOpenChange={setShowNewChatDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Start a new chat?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will create a fresh conversation. Your current chat will remain saved in your history.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {
+                            setShowNewChatDialog(false);
+                            void onStartNewChat?.();
+                        }}>
+                            Confirm
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };

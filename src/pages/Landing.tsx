@@ -21,29 +21,23 @@ const CYCLING_WORDS = [
 const WEEKS = [
   {
     id: 1,
-    label: 'PHASE 1',
-    name: 'THE FUNGAL FLUSH',
-    description: 'Week 1 is brutal. Die-off symptoms hit hard and sugar cravings scream the loudest. We target fungal colonies first with strict execution so you do not cave.',
-    goal: ['Crush fungal base', 'Survive the die-off crash'],
-    techniques: ['Fungal-focused checklist', 'Urgent craving support', 'Prep-to-Day-7 flow'],
+    label: 'WEEK 1',
+    name: 'FUNGAL FLUSH',
+    description: 'Blast the initial fungal shield. Starve the yeast overgrowth ravaging your gut walls—without the crushing overwhelm of scattered PDF guides and conflicting TikTok advice. Shut down the crippling sugar cravings before they even begin. Skip the endless Google searches and eliminate the panic when brutal die-off symptoms hit on Day 3.',
     image: '/daily-oranges.jpg',
   },
   {
     id: 2,
-    label: 'PHASE 2',
+    label: 'WEEK 2',
     name: 'PARASITE PURGE',
-    description: 'Once the fungal shield breaks, we flush the system. This is the tipping point where most people quit due to confusion. We tell you exactly what to take.',
-    goal: ['Vaporize parasites', 'Lock in ruthless consistency'],
-    techniques: ['Parasite-stage timing', 'Day-aware symptom logic', 'Agent interventions'],
+    description: 'Flush the core system. Paralyze and expel the parasites feeding off your daily energy supply—without staring blankly at a counter full of random supplement bottles you do not know how to sequence. Torch the brain fog. Reclaim your mental clarity and lock in ruthless consistency instead of waking up to pure exhaustion.',
     image: '/week-tangerine.jpg',
   },
   {
     id: 3,
-    label: 'PHASE 3',
-    name: 'HEAVY METAL DETOX',
-    description: 'The final push. We bind and clear the deep-rooted junk. Drop the ball here and you relapse. We force you across the finish line.',
-    goal: ['Clear heavy-metal load', 'Solidify the flat stomach'],
-    techniques: ['Heavy-metal phase map', 'Relapse-prevention steps', 'Maintenance bridge'],
+    label: 'WEEK 3',
+    name: 'METAL DETOX',
+    description: 'Bind and extract. Pull the deep-rooted metals and toxic sludge directly out of your system—without dealing with constant, painful bloating, and without the fear of immediate relapse. Solidify the flat stomach. Erase the toxic load permanently so you drop the bloat and lock in a clean system.',
     image: '/week-cosmos-reference.webp',
   },
 ];
@@ -65,20 +59,6 @@ const DESKTOP_SHOWCASE_POINTS = [
 ] as const;
 
 const MOBILE_DEMO_CARDS = [
-  {
-    id: 'shopping-mobile',
-    label: 'Immediate Action',
-    title: 'Stop panic-buying random bottles.',
-    description: 'You get a phase-by-phase shopping directive. Get exactly what you need for Day 1, skip the fluff, and stop wasting money.',
-    value: 'You start armed and dangerous, not overwhelmed.',
-    frames: [
-      '/landing-media/mobile-shopping-seq-1.png',
-      '/landing-media/mobile-shopping-seq-2.png',
-      '/landing-media/mobile-shopping-seq-3.png',
-      '/landing-media/mobile-shopping-seq-4.png',
-      '/landing-media/mobile-shopping-seq-5.png',
-    ],
-  },
   {
     id: 'today-mobile',
     label: 'Daily Directives',
@@ -103,6 +83,20 @@ const MOBILE_DEMO_CARDS = [
       '/landing-media/mobile-coach-seq-2.png',
       '/landing-media/mobile-coach-seq-3.png',
       '/landing-media/mobile-coach-seq-4.png',
+    ],
+  },
+  {
+    id: 'shopping-mobile',
+    label: 'Immediate Action',
+    title: 'Stop panic-buying random bottles.',
+    description: 'You get a phase-by-phase shopping directive. Get exactly what you need for Day 1, skip the fluff, and stop wasting money.',
+    value: 'You start armed and dangerous, not overwhelmed.',
+    frames: [
+      '/landing-media/mobile-shopping-seq-1.png',
+      '/landing-media/mobile-shopping-seq-2.png',
+      '/landing-media/mobile-shopping-seq-3.png',
+      '/landing-media/mobile-shopping-seq-4.png',
+      '/landing-media/mobile-shopping-seq-5.png',
     ],
   },
 ] as const;
@@ -261,7 +255,7 @@ const Landing = () => {
       <div className="open-program__inner">
         <div className="open-program__header-row">
           <span className="open-program__heading">21-DAY CLEANSE</span>
-          <span className="open-program__heading-right">FUNGAL • PARASITE • HEAVY METAL</span>
+          <span className="open-program__heading-right">FUNGAL • PARASITE • METAL DETOX</span>
         </div>
 
         <div className="open-program__image-area">
@@ -302,21 +296,6 @@ const Landing = () => {
             className="open-program__details"
           >
             <p className="open-program__description">{currentWeek.description}</p>
-
-            <div className="open-program__meta">
-              <div className="open-program__meta-group">
-                <span className="open-program__meta-label">OUTCOME</span>
-                {currentWeek.goal.map((goal) => (
-                  <span key={goal} className="open-program__meta-value">{goal}</span>
-                ))}
-              </div>
-              <div className="open-program__meta-group">
-                <span className="open-program__meta-label">INSIDE THE APP</span>
-                {currentWeek.techniques.map((technique) => (
-                  <span key={technique} className="open-program__meta-value">{technique}</span>
-                ))}
-              </div>
-            </div>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -414,7 +393,7 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Attempting a 21-day gut reset with scattered PDFs and TikToks guarantees a 92% failure rate. This is the ruthless execution engine built to make sure you actually finish.
+            Winging a 21-day gut reset guarantees a 92% failure rate. Plug into the daily execution engine that tells you exactly what to do, what to take, and when.
           </motion.p>
         </div>
       </section>

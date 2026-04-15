@@ -25,7 +25,7 @@ import { getFriendlyAuthErrorMessage } from "@/lib/auth-errors";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
-const passwordSchema = z.string().min(8, "Password must be at least 8 characters");
+const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
 
 type Step = "create";
 
@@ -307,7 +307,7 @@ const Signup = () => {
                             onChange={(event) => setPassword(event.target.value)}
                             required
                           />
-                          <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>
+                          <p className="text-xs text-muted-foreground">Use at least 6 characters.</p>
                         </div>
                         <Button type="submit" className="h-12 w-full" disabled={isSubmitting}>
                           {isSubmitting ? (

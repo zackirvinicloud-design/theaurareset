@@ -124,25 +124,19 @@ export const MobileTodayView = ({
             <div className="flex-1 overflow-y-auto px-4 py-4 pb-6">
                 <div className="space-y-6">
                     <section className="border-b border-border/50 pb-4">
-                        <div className="flex items-end justify-between gap-4">
-                            <div className="min-w-0">
-                                <p className={cn('text-[11px] font-semibold uppercase tracking-[0.18em]', phase.color)}>
-                                    {stageLabel}
+                        <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                                <p className="text-sm leading-6 text-foreground">
+                                    {getTodayFocus(currentDay, currentPhase)}
                                 </p>
-                                <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-                                    {dayLabel}
-                                </h2>
                             </div>
-                            <div className="text-right">
-                                <p className="text-lg font-semibold text-foreground">{completedCount}/{totalCount}</p>
-                                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                            <div className="text-right flex-shrink-0">
+                                <p className="text-xl font-semibold tracking-tight text-foreground leading-none mb-1.5">{completedCount}/{totalCount}</p>
+                                <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
                                     steps done
                                 </p>
                             </div>
                         </div>
-                        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                            {getTodayFocus(currentDay, currentPhase)}
-                        </p>
                         <div className="mt-4 space-y-2">
                             <Progress value={completionPercent} className="h-2" />
                             <div className="flex items-center justify-between text-xs text-muted-foreground">
