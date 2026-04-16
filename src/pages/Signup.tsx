@@ -252,16 +252,16 @@ const Signup = () => {
               The Gut Brain Journal
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-              {isLegacyActivationFlow ? "Claim your access" : "Step 2 of 2: Save your profile to claim your protocol."}
+              {isLegacyActivationFlow ? "Step 2 of 2: Claim your access" : "Step 2 of 2: Save your profile to claim your protocol."}
             </h1>
 
             {isLegacyActivationFlow ? (
               <div className="app-panel-dark mt-6 rounded-[28px] p-5 text-white">
                 <div className="flex items-center gap-2 text-primary">
-                  <LockKeyhole className="h-4 w-4" />
-                  <span className="text-xs font-semibold uppercase tracking-[0.18em]">Legacy activation</span>
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em]">Payment Secured</span>
                 </div>
-                <p className="mt-4 text-lg font-semibold leading-tight">You already paid. This step just creates the account that holds your access.</p>
+                <p className="mt-4 text-lg font-semibold leading-tight">Your protocol is unlocked. Let's create your account to lock in your test results.</p>
               </div>
             ) : (
               <>
@@ -304,16 +304,14 @@ const Signup = () => {
                 >
                    <div className="mx-auto max-w-xl py-6">
                       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                        {isLegacyActivationFlow ? "Create your account" : "Almost done"}
+                        {isLegacyActivationFlow ? "Final Step" : "Almost done"}
                       </p>
                       <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-foreground">
-                        {isLegacyActivationFlow
-                          ? "Attach your paid access to a real account"
-                          : "Where should we lock in your test results?"}
+                        Where should we lock in your test results?
                       </h2>
                       <p className="mt-3 text-base leading-7 text-muted-foreground">
                         {isLegacyActivationFlow
-                          ? "This keeps your payment connected to the correct login."
+                          ? "Create your secure login so you don't lose your diagnostic score or your lifetime access."
                           : "Set up your secure profile so you don't lose any progress or customized insights from Coach."}
                       </p>
 
