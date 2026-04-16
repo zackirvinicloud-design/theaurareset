@@ -189,7 +189,7 @@ const PaymentRequired = () => {
 
           {/* ── Value Stack ── */}
           <div className="space-y-3.5 mb-8">
-            <h2 className="text-xl font-bold tracking-tight mb-4 text-balance">Stop hoarding supplements. Start executing.</h2>
+            <h2 className="text-xl font-bold tracking-tight mb-4 text-balance">Stop researching. Start executing.</h2>
 
             <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Know exactly what to take, when to take it, and why — <span className="text-white font-medium">without Googling dosages at midnight or cross-referencing 6 different TikToks</span></span></div>
 
