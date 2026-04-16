@@ -15,6 +15,7 @@ import {
   useOnboardingProfile,
 } from '@/hooks/useOnboardingProfile';
 import { useSmsSubscription } from '@/hooks/useSmsSubscription';
+import { calculateGutScore } from '@/lib/gut-score';
 
 const TOTAL_STEPS = 9;
 
@@ -215,6 +216,7 @@ const ProfileOnboarding = () => {
           healthFlags,
           entrySource: source,
           email,
+          gutHealthScore: calculateGutScore({ healthFlags, primaryBlocker, dietPattern, routineType }),
         }));
         
         toast({

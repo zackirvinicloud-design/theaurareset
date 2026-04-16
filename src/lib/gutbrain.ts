@@ -932,6 +932,7 @@ export const buildGutBrainMemoryContext = (
     profile?.routineType ? `Routine type: ${profile.routineType}` : null,
     profile?.primaryBlocker ? `Primary blocker: ${profile.primaryBlocker}` : null,
     formatList('Health focus', profile?.healthFocus ?? []),
+    typeof (profile as any)?.gutHealthScore === 'number' ? `Gut health audit score: ${(profile as any).gutHealthScore}/10` : null,
     formatList('Barriers', profile?.barriers ?? []),
     formatList('Support preferences', profile?.supportPreferences ?? []),
     formatList('Wins to reinforce', profile?.wins ?? []),

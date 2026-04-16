@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, ShieldCheck, ArrowRight, Activity, Loader2 } from "lucide-react";
+import { Lock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
 import { getWhopCheckoutUrl, PRODUCT_PRIMARY_CTA } from "@/lib/product";
 import { useOnboardingProfile } from "@/hooks/useOnboardingProfile";
+import { calculateGutScore, getScoreLabel, getScoreColor } from "@/lib/gut-score";
 import { motion } from "framer-motion";
 
 const PaymentRequired = () => {
@@ -92,6 +93,29 @@ const PaymentRequired = () => {
     navigate("/");
   };
 
+  // Personalization Logic — computed before any conditional returns to obey hooks rules
+  const healthFlagsList = profile?.healthFlags || [];
+  const symptomsText = healthFlagsList.length > 0
+    ? healthFlagsList.slice(0, 3).map(s => s.toLowerCase()).join(", ")
+    : "general symptoms";
+
+  const gutScore = useMemo(() => calculateGutScore({
+    healthFlags: healthFlagsList,
+    primaryBlocker: profile?.primaryBlocker ?? null,
+    dietPattern: profile?.dietPattern ?? null,
+    routineType: profile?.routineType ?? null,
+  }), [healthFlagsList, profile?.primaryBlocker, profile?.dietPattern, profile?.routineType]);
+
+  const scoreLabel = getScoreLabel(gutScore);
+  const scoreColor = getScoreColor(gutScore);
+
+  // SVG arc math for the score gauge
+  const RADIUS = 54;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+  const arcLength = CIRCUMFERENCE * 0.75; // 270° arc
+  const filledLength = arcLength * (gutScore / 10);
+  const gapLength = arcLength - filledLength;
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
@@ -100,36 +124,62 @@ const PaymentRequired = () => {
     );
   }
 
-  // Personalization Logic
-  const healthFlagsList = profile?.healthFlags || [];
-  const symptomsText = healthFlagsList.length > 0 
-    ? healthFlagsList.slice(0, 2).map(s => s.toLowerCase()).join(" and ") 
-    : "debilitating symptoms";
-    
-  let blockerText = "losing motivation or getting confused";
-  if (profile?.primaryBlocker) {
-    if (profile.primaryBlocker === 'Confusion') blockerText = "confusion on what to take and when";
-    else if (profile.primaryBlocker === 'Lack of time') blockerText = "lack of time and poor meal prep";
-    else if (profile.primaryBlocker === 'Losing motivation') blockerText = "losing motivation when die-off hits";
-    else if (profile.primaryBlocker === 'Social events') blockerText = "social events and weekend slip-ups";
-    else if (profile.primaryBlocker === 'Forgetful') blockerText = "getting busy and forgetting";
-    else blockerText = profile.primaryBlocker.toLowerCase();
-  }
-
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30 pb-36">
 
-      {/* Diagnostic Readout — compact, monospace, proves we analyzed them */}
-      <div className="bg-[#060606] border-b border-zinc-800/60">
-        <div className="max-w-md mx-auto px-5 pt-6 pb-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="h-4 w-4 text-primary animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Gut Analysis — Results</span>
+      {/* Score Hero */}
+      <div className="bg-gradient-to-b from-[#080808] to-black border-b border-zinc-800/40">
+        <div className="max-w-md mx-auto px-5 pt-8 pb-6">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500 text-center mb-5">Gut Health Audit — Results</p>
+
+          {/* Circular Score Gauge */}
+          <div className="flex flex-col items-center mb-5">
+            <div className="relative w-36 h-36">
+              <svg viewBox="0 0 120 120" className="w-full h-full -rotate-[135deg]">
+                {/* Background track */}
+                <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="#1a1a1a" strokeWidth="10"
+                  strokeDasharray={`${arcLength} ${CIRCUMFERENCE - arcLength}`}
+                  strokeLinecap="round"
+                />
+                {/* Filled arc */}
+                <motion.circle
+                  cx="60" cy="60" r={RADIUS} fill="none" stroke={scoreColor} strokeWidth="10"
+                  strokeDasharray={`${filledLength} ${gapLength + (CIRCUMFERENCE - arcLength)}`}
+                  strokeLinecap="round"
+                  initial={{ strokeDasharray: `0 ${CIRCUMFERENCE}` }}
+                  animate={{ strokeDasharray: `${filledLength} ${gapLength + (CIRCUMFERENCE - arcLength)}` }}
+                  transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+                />
+              </svg>
+              {/* Score number centered */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.span
+                  className="text-5xl font-black tracking-tight"
+                  style={{ color: scoreColor }}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                >
+                  {gutScore}
+                </motion.span>
+                <span className="text-[11px] font-semibold text-zinc-500 -mt-0.5">out of 10</span>
+              </div>
+            </div>
+
+            <motion.div
+              className="mt-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest border"
+              style={{ color: scoreColor, borderColor: `${scoreColor}33`, backgroundColor: `${scoreColor}0d` }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+            >
+              {scoreLabel}
+            </motion.div>
           </div>
-          <div className="font-mono text-[13px] space-y-2">
-            <div className="flex"><span className="text-zinc-600 w-[90px] shrink-0">STATUS</span><span className="text-red-400 font-semibold">At Risk</span></div>
-            <div className="flex"><span className="text-zinc-600 w-[90px] shrink-0">FLAGS</span><span className="text-white capitalize">{symptomsText}</span></div>
-            <div className="flex"><span className="text-zinc-600 w-[90px] shrink-0">BLOCKER</span><span className="text-zinc-300">{blockerText}</span></div>
+
+          {/* Compact flags */}
+          <div className="text-center text-[13px] text-zinc-400 leading-relaxed">
+            <span className="capitalize">{symptomsText}</span>
           </div>
         </div>
       </div>
