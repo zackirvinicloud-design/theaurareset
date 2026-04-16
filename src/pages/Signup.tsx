@@ -55,6 +55,30 @@ const Signup = () => {
     setIsFinishing(true);
 
     try {
+      const pendingProfileStr = localStorage.getItem('pending_onboarding_profile');
+      if (pendingProfileStr) {
+        try {
+          const profile = JSON.parse(pendingProfileStr);
+          await supabase.from('user_onboarding_profiles').upsert({
+            user_id: userId,
+            first_name: profile.firstName,
+            protocol_goal: profile.protocolGoal,
+            why_now: profile.whyNow,
+            primary_blocker: profile.primaryBlocker,
+            diet_pattern: profile.dietPattern,
+            food_preferences: profile.foodPreferences || [],
+            routine_type: profile.routineType,
+            support_style: profile.supportStyle,
+            health_flags: profile.healthFlags || [],
+            entry_source: profile.entrySource || 'app',
+            completed_at: new Date().toISOString(),
+          }, { onConflict: 'user_id' });
+          localStorage.removeItem('pending_onboarding_profile');
+        } catch (e) {
+          console.error("Failed to migrate pending profile", e);
+        }
+      }
+
       const destination = await getDefaultPostAuthDestination(userId);
 
       toast({
@@ -221,7 +245,7 @@ const Signup = () => {
               The Gut Brain Journal
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-              {isLegacyActivationFlow ? "Claim your access" : "Take the Free Gut Analysis"}
+              {isLegacyActivationFlow ? "Claim your access" : "Step 2 of 2: Save your profile to claim your protocol."}
             </h1>
 
             {isLegacyActivationFlow ? (
@@ -273,7 +297,7 @@ const Signup = () => {
                 >
                    <div className="mx-auto max-w-xl py-6">
                       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                        {isLegacyActivationFlow ? "Create your account" : "Step 1 of 2"}
+                        {isLegacyActivationFlow ? "Create your account" : "Almost done"}
                       </p>
                       <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-foreground">
                         {isLegacyActivationFlow
@@ -314,7 +338,7 @@ const Signup = () => {
                             "Creating account..."
                           ) : (
                             <>
-                              Start the Analysis
+                              Lock In & Continue
                               <ArrowRight className="ml-2 h-4 w-4" />
                             </>
                           )}

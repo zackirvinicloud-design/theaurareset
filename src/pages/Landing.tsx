@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2, Plus, X } from 'lucide-react';
 import { PRODUCT_PRICE, PRODUCT_ORIGINAL_PRICE } from '@/lib/product';
 import './Landing.css';
 
-const START_PATH = `/signup?redirect=${encodeURIComponent('/setup/profile?redirect=' + encodeURIComponent('/payment-required'))}`;
+const START_PATH = `/setup/profile?redirect=${encodeURIComponent('/payment-required')}`;
 const DESKTOP_DEMO_PLAYBACK_RATE = 0.9;
 const MOBILE_FRAME_INTERVAL_MS = 1000;
 

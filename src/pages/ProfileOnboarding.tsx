@@ -85,22 +85,10 @@ const ProfileOnboarding = () => {
     const load = async () => {
       const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) {
-        if (!cancelled) {
-          navigate(`/auth?redirect=${encodeURIComponent(setupPath)}`, { replace: true });
-        }
-        return;
-      }
-
-      if (!isEmailVerified(session.user)) {
-        if (!cancelled) {
-          navigate(`/signup?redirect=${encodeURIComponent(setupPath)}`, { replace: true });
-        }
-        return;
-      }
-
       if (!cancelled) {
-        setUserId(session.user.id);
+        if (session && isEmailVerified(session.user)) {
+          setUserId(session.user.id);
+        }
         setIsBootstrapping(false);
       }
     };
@@ -182,35 +170,57 @@ const ProfileOnboarding = () => {
       // Fake delay for "Analysis" tension
       await new Promise(resolve => setTimeout(resolve, 2500));
 
-      await saveProfile({
-        firstName,
-        protocolGoal,
-        whyNow,
-        primaryBlocker,
-        dietPattern,
-        foodPreferences: [], // Optional
-        routineType,
-        supportStyle,
-        healthFlags,
-      }, {
-        markComplete: true,
-        entrySource: source,
-      });
+      if (userId) {
+        await saveProfile({
+          firstName,
+          protocolGoal,
+          whyNow,
+          primaryBlocker,
+          dietPattern,
+          foodPreferences: [], // Optional
+          routineType,
+          supportStyle,
+          healthFlags,
+        }, {
+          markComplete: true,
+          entrySource: source,
+        });
 
-      toast({
-        title: 'Analysis Complete',
-        description: 'You are a strong candidate for a protocol reset.',
-      });
+        toast({
+          title: 'Analysis Complete',
+          description: 'You are a strong candidate for a protocol reset.',
+        });
 
-      if (smsReady) {
-        navigate(redirectDestination, { replace: true });
-        return;
+        if (smsReady) {
+          navigate(redirectDestination, { replace: true });
+          return;
+        }
+
+        const next = new URLSearchParams();
+        next.set('redirect', redirectDestination);
+        next.set('source', 'profile-onboarding');
+        navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
+      } else {
+        localStorage.setItem('pending_onboarding_profile', JSON.stringify({
+          firstName,
+          protocolGoal,
+          whyNow,
+          primaryBlocker,
+          dietPattern,
+          foodPreferences: [],
+          routineType,
+          supportStyle,
+          healthFlags,
+          entrySource: source,
+        }));
+        
+        toast({
+          title: 'Analysis Complete',
+          description: 'Lock in your account to see your customized roadmap.',
+        });
+        
+        navigate(`/signup?redirect=${encodeURIComponent(redirectDestination)}`);
       }
-
-      const next = new URLSearchParams();
-      next.set('redirect', redirectDestination);
-      next.set('source', 'profile-onboarding');
-      navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
     } catch (error) {
       setIsAnalyzing(false);
       setStep(8);
