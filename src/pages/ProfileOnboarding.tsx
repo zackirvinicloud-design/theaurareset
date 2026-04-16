@@ -16,7 +16,7 @@ import {
 } from '@/hooks/useOnboardingProfile';
 import { useSmsSubscription } from '@/hooks/useSmsSubscription';
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 9;
 
 const slideVariants = {
   enter: (direction: number) => ({
@@ -78,6 +78,7 @@ const ProfileOnboarding = () => {
   const [dietPattern, setDietPattern] = useState('');
   const [routineType, setRoutineType] = useState('');
   const [supportStyle, setSupportStyle] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -136,6 +137,7 @@ const ProfileOnboarding = () => {
     if (step === 8 && !supportStyle) return;
 
     if (step === TOTAL_STEPS) {
+      if (!email.trim()) return;
       void handleComplete();
       return;
     }
@@ -164,7 +166,7 @@ const ProfileOnboarding = () => {
   const handleComplete = async () => {
     setIsAnalyzing(true);
     setDirection(1);
-    setStep(9); // Show analyzing screen
+    setStep(10); // Show analyzing screen
 
     try {
       // Fake delay for "Analysis" tension
@@ -212,18 +214,19 @@ const ProfileOnboarding = () => {
           supportStyle,
           healthFlags,
           entrySource: source,
+          email,
         }));
         
         toast({
           title: 'Analysis Complete',
-          description: 'Lock in your account to see your customized roadmap.',
+          description: 'Generating your customized roadmap...',
         });
         
-        navigate(`/signup?redirect=${encodeURIComponent(redirectDestination)}`);
+        navigate(redirectDestination, { replace: true });
       }
     } catch (error) {
       setIsAnalyzing(false);
-      setStep(8);
+      setStep(9);
       toast({
         title: 'Could not save your profile',
         description: getFriendlyAuthErrorMessage(error, 'Please try again in a moment.'),
@@ -487,10 +490,39 @@ const ProfileOnboarding = () => {
             </motion.div>
           )}
 
-          {/* SLIDE 9: Analyzing */}
-          {isAnalyzing && (
+          {/* SLIDE 9: Email */}
+          {step === 9 && (
             <motion.div
               key="step9"
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-full absolute inset-0 flex flex-col items-center justify-center p-6"
+            >
+              <SlideTitle>Where should we send your results?</SlideTitle>
+              <p className="text-zinc-400 text-lg mb-8 text-center -mt-4 max-w-lg">
+                The system is finalizing your protocol. Enter your best email below so we can lock in your analysis and send your results.
+              </p>
+              <input
+                type="email"
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleNext()}
+                placeholder="you@example.com"
+                className="w-full max-w-lg bg-transparent border-b-2 border-zinc-700 focus:border-primary focus:outline-none text-2xl md:text-3xl text-center text-white py-4 placeholder:text-zinc-700 transition-colors"
+                autoComplete="email"
+              />
+            </motion.div>
+          )}
+
+          {/* SLIDE 10: Analyzing */}
+          {isAnalyzing && (
+            <motion.div
+              key="step10"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}

@@ -21,18 +21,24 @@ const PaymentRequired = () => {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        navigate("/auth");
+        if (!cancelled) {
+          setIsLoading(false);
+        }
         return;
       }
 
       if (!isEmailVerified(session.user)) {
-        navigate("/signup");
+        if (!cancelled) {
+          // They might have paid already without email verification? In legacy they do.
+          // But actually, just let them through or force to signup. Keep it simple.
+          navigate("/signup");
+        }
         return;
       }
 
       const destination = await getDefaultPostAuthDestination(session.user.id);
       if (destination !== "/payment-required") {
-        navigate(destination);
+        if (!cancelled) navigate(destination);
         return;
       }
 
@@ -49,7 +55,23 @@ const PaymentRequired = () => {
     };
   }, [navigate]);
 
-  const { profile } = useOnboardingProfile(userId);
+  const { profile: dbProfile } = useOnboardingProfile(userId);
+  const [localProfile, setLocalProfile] = useState<Record<string, any> | null>(null);
+
+  useEffect(() => {
+    if (!userId) {
+      const stored = localStorage.getItem('pending_onboarding_profile');
+      if (stored) {
+        try {
+          setLocalProfile(JSON.parse(stored));
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+  }, [userId]);
+
+  const profile = userId ? dbProfile : localProfile;
 
   const handleCheckout = () => {
     const checkoutUrl = getWhopCheckoutUrl();
@@ -211,12 +233,14 @@ const PaymentRequired = () => {
             </div>
 
             <div className="text-center pb-20">
-              <button 
-                onClick={handleSignOut} 
-                className="text-sm text-zinc-600 hover:text-zinc-400 underline underline-offset-4 transition-colors"
-              >
-                Log out and abandon protocol
-              </button>
+              {userId && (
+                <button 
+                  onClick={handleSignOut} 
+                  className="text-sm text-zinc-600 hover:text-zinc-400 underline underline-offset-4 transition-colors"
+                >
+                  Log out and abandon protocol
+                </button>
+              )}
             </div>
             
           </div>
