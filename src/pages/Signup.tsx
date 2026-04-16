@@ -29,6 +29,32 @@ const passwordSchema = z.string().min(6, "Password must be at least 6 characters
 
 type Step = "create";
 
+const migratePendingProfile = async (userId: string) => {
+  const pendingProfileStr = localStorage.getItem('pending_onboarding_profile');
+  if (pendingProfileStr) {
+    try {
+      const profile = JSON.parse(pendingProfileStr);
+      await supabase.from('user_onboarding_profiles').upsert({
+        user_id: userId,
+        first_name: profile.firstName,
+        protocol_goal: profile.protocolGoal,
+        why_now: profile.whyNow,
+        primary_blocker: profile.primaryBlocker,
+        diet_pattern: profile.dietPattern,
+        food_preferences: profile.foodPreferences || [],
+        routine_type: profile.routineType,
+        support_style: profile.supportStyle,
+        health_flags: profile.healthFlags || [],
+        entry_source: profile.entrySource || 'app',
+        completed_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+      localStorage.removeItem('pending_onboarding_profile');
+    } catch (e) {
+      console.error("Failed to migrate pending profile", e);
+    }
+  }
+};
+
 const Signup = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -48,36 +74,13 @@ const Signup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
   const finishStartedRef = useRef(false);
-
   const completeSetup = useCallback(async (userId: string) => {
     if (finishStartedRef.current) return;
     finishStartedRef.current = true;
     setIsFinishing(true);
 
     try {
-      const pendingProfileStr = localStorage.getItem('pending_onboarding_profile');
-      if (pendingProfileStr) {
-        try {
-          const profile = JSON.parse(pendingProfileStr);
-          await supabase.from('user_onboarding_profiles').upsert({
-            user_id: userId,
-            first_name: profile.firstName,
-            protocol_goal: profile.protocolGoal,
-            why_now: profile.whyNow,
-            primary_blocker: profile.primaryBlocker,
-            diet_pattern: profile.dietPattern,
-            food_preferences: profile.foodPreferences || [],
-            routine_type: profile.routineType,
-            support_style: profile.supportStyle,
-            health_flags: profile.healthFlags || [],
-            entry_source: profile.entrySource || 'app',
-            completed_at: new Date().toISOString(),
-          }, { onConflict: 'user_id' });
-          localStorage.removeItem('pending_onboarding_profile');
-        } catch (e) {
-          console.error("Failed to migrate pending profile", e);
-        }
-      }
+      await migratePendingProfile(userId);
 
       const destination = await getDefaultPostAuthDestination(userId);
 
@@ -112,6 +115,8 @@ const Signup = () => {
         setIsBootstrapping(false);
         return;
       }
+
+      await migratePendingProfile(session.user.id);
 
       if (redirectDestination) {
         navigate(redirectDestination, { replace: true });
@@ -185,6 +190,8 @@ const Signup = () => {
 
       // Immediately route user forward — no email verification needed
       if (data?.user) {
+        await migratePendingProfile(data.user.id);
+
         if (redirectDestination) {
           navigate(redirectDestination, { replace: true });
           return;

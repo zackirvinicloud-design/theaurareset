@@ -66,16 +66,36 @@ const PaymentSuccess = () => {
       }
 
       rememberPostAuthDestination(session.user.id, "/protocol");
-      toast({
-        title: "Access unlocked",
-        description: "Next up: a quick profile setup so Coach can tailor this around you.",
-      });
-      const next = new URLSearchParams();
-      next.set("redirect", "/protocol");
-      next.set("source", "payment-success");
-      next.set("provider", provider);
-      next.set("payment_id", paymentId);
-      navigate(`/setup/profile?${next.toString()}`, { replace: true });
+      
+      const { data: profile } = await supabase
+        .from('user_onboarding_profiles')
+        .select('completed_at')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      const hasCompletedOnboarding = Boolean(profile?.completed_at);
+
+      if (hasCompletedOnboarding) {
+        toast({
+          title: "Access unlocked",
+          description: "Just one more thing: enable text reminders so you stay on track.",
+        });
+        const next = new URLSearchParams();
+        next.set("redirect", "/protocol");
+        next.set("source", "payment-success");
+        navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
+      } else {
+        toast({
+          title: "Access unlocked",
+          description: "Next up: a quick profile setup so Coach can tailor this around you.",
+        });
+        const next = new URLSearchParams();
+        next.set("redirect", "/protocol");
+        next.set("source", "payment-success");
+        next.set("provider", provider);
+        next.set("payment_id", paymentId);
+        navigate(`/setup/profile?${next.toString()}`, { replace: true });
+      }
     };
 
     void activate();
