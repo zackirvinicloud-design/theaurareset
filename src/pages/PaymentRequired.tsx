@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Lock, ShieldCheck, ArrowRight, Activity, X, Check, Loader2 } from "lucide-react";
+import { AlertTriangle, Lock, ShieldCheck, ArrowRight, Activity, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
