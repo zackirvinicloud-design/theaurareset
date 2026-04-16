@@ -188,58 +188,50 @@ const PaymentRequired = () => {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 
           {/* ── Timeline ── */}
-          <h2 className="text-xl font-bold tracking-tight mb-5">Here's exactly what happens inside</h2>
+          <h2 className="text-xl font-bold tracking-tight mb-5">Your 21-day roadmap</h2>
 
-          <div className="relative pl-7 border-l-2 border-zinc-800 space-y-5 mb-8">
-            {/* Prep */}
+          <div className="relative pl-7 border-l-2 border-zinc-800 space-y-4 mb-8">
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center"><span className="text-[9px] font-black text-black">0</span></div>
-              <p className="text-sm"><span className="text-primary font-bold">Prep Day</span> <span className="text-zinc-400">— Your exact shopping list drops instantly. No Googling, no guessing which brand. You know what to buy, what to skip, and the one cheap item most people forget that makes or breaks Week 1.</span></p>
+              <p className="text-sm"><span className="text-primary font-bold">Prep</span> <span className="text-zinc-400">— Shopping list + daily schedule drop instantly.</span></p>
             </div>
-            {/* Days 1-3 — Fungal + Free Trial */}
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">3</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Fungal Elimination Begins</span> <span className="text-zinc-400">— Candida die-off usually peaks here. Headaches, brain fog, sugar cravings screaming at you. The app detects die-off patterns and unlocks SOS protocols so you don't white-knuckle it alone. This is where 80% of people quit — you won't.</span></p>
+              <p className="text-sm"><span className="text-white font-bold">Fungal Kill</span> <span className="text-zinc-400">— Die-off peaks. SOS protocols unlock so you don't quit.</span></p>
               <span className="inline-block mt-1 text-[10px] font-bold tracking-widest uppercase text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">← Free trial ends here</span>
             </div>
-            {/* Day 7 */}
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">7</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Sugar Cravings Collapse</span> <span className="text-zinc-400">— Energy stabilizes. The daily symptom tracker inside the app will show you the exact moment your body flipped. Your coach recalibrates your plan based on what you're actually feeling — not a generic PDF schedule.</span></p>
+              <p className="text-sm"><span className="text-white font-bold">Cravings Die</span> <span className="text-zinc-400">— Sugar cravings collapse. Energy comes back.</span></p>
             </div>
-            {/* Days 8-14 — Parasite */}
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">14</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Parasite Cleanse Phase</span> <span className="text-zinc-400">— Black walnut, wormwood, clove — timed to the full moon cycle (there's a reason veterinary parasitology does this). The app tells you exactly when to start, what dose, and what the bizarre stool changes actually mean so you don't panic and quit.</span></p>
+              <p className="text-sm"><span className="text-white font-bold">Parasite Flush</span> <span className="text-zinc-400">— Full-moon timed cleanse. The app handles dosing + timing.</span></p>
             </div>
-            {/* Days 15-21 — Heavy Metal */}
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">21</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Heavy Metal Detox</span> <span className="text-zinc-400">— Chlorella, spirulina, zeolite — binding the metals that have been hiding behind the biofilm you just spent two weeks breaking down. Your daily schedule shifts automatically. No manual research required.</span></p>
+              <p className="text-sm"><span className="text-white font-bold">Metal Detox</span> <span className="text-zinc-400">— Chlorella + zeolite bind what the biofilm was hiding.</span></p>
             </div>
-            {/* Complete */}
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-green-500 flex items-center justify-center"><span className="text-[9px] font-black text-black">✓</span></div>
-              <p className="text-sm"><span className="text-green-400 font-bold">Protocol Complete</span> <span className="text-zinc-400">— 21 days done. The rebuilding instructions are already loaded. You keep lifetime access to your planner, your coach, and your shopping lists for every future round.</span></p>
+              <p className="text-sm"><span className="text-green-400 font-bold">Done</span> <span className="text-zinc-400">— Lifetime access stays. Rebuild phase loaded.</span></p>
             </div>
           </div>
 
-          {/* ── Fascination Bullets ── */}
-          <div className="space-y-2.5 mb-8">
-            <h3 className="text-lg font-bold tracking-tight mb-3">What's waiting inside</h3>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">The exact daily schedule that tells you what to take, when to take it, and the specific reason behind every single dose</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">A complete shopping list generated before Day 1 — including the one $8 item that prevents the worst die-off side effects</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Emergency SOS protocols that activate automatically when your symptom tracker flags a die-off spike (so you never have to guess if it's "normal" or a real problem)</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">A 24/7 AI nutrition coach that already knows your diet, your blockers, and your score — and won't give you the same generic advice you've seen in every YouTube video</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">The exact full-moon parasite timing window most practitioners charge $300 to explain at a functional medicine appointment</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">A visual symptom tracker that proves the protocol is working — so on Day 5 when your brain says "this isn't doing anything," the data says otherwise</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Lifetime access. One payment. No subscriptions. No upsells. Yours forever — including future protocol updates</span></div>
+          {/* ── Bullets ── */}
+          <div className="space-y-2 mb-7">
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Tells you exactly what to take and when — every single day</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Shopping list before Day 1 (including the $8 item nobody mentions)</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">AI coach that already knows your score, your diet, and your weak spots</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Symptom tracker that proves it's working when your brain says it's not</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Full-moon parasite timing most practitioners charge $300 to explain</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">One payment. Lifetime access. No upsells. Ever.</span></div>
           </div>
 
-          {/* ── Killer Final Line ── */}
-          <p className="text-center text-sm text-zinc-500 font-medium mb-4 leading-relaxed">
-            You already own the supplements.&nbsp;
-            <span className="text-white font-semibold">This is the operating system that makes sure you actually finish what you started.</span>
+          {/* ── Closer ── */}
+          <p className="text-center text-[13px] text-zinc-500 font-medium mb-4">
+            You already bought the supplements.&nbsp;
+            <span className="text-white font-semibold">Without this, you're guessing.</span>
           </p>
 
           {userId && (
