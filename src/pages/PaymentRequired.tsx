@@ -188,50 +188,52 @@ const PaymentRequired = () => {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 
           {/* ── Timeline ── */}
-          <h2 className="text-xl font-bold tracking-tight mb-5">Your 21-day roadmap</h2>
+          <h2 className="text-xl font-bold tracking-tight mb-5">Here's exactly what happens inside</h2>
 
-          <div className="relative pl-7 border-l-2 border-zinc-800 space-y-4 mb-8">
+          <div className="relative pl-7 border-l-2 border-zinc-800 space-y-5 mb-8">
+            {/* Prep */}
             <div className="relative">
-              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center"><span className="text-[9px] font-black text-black">0</span></div>
-              <p className="text-sm"><span className="text-primary font-bold">Prep</span> <span className="text-zinc-400">— Shopping list + daily schedule drop instantly.</span></p>
+              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-primary flex items-center justify-center"><span className="text-[8px] font-black text-black">P</span></div>
+              <p className="text-sm"><span className="text-primary font-bold">Prep Day</span> <span className="text-zinc-400">— Shopping list drops. You know what to buy, what to skip, and the one cheap item nobody talks about that prevents the worst die-off.</span></p>
             </div>
+            {/* Week 1 — Fungal */}
             <div className="relative">
-              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">3</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Fungal Kill</span> <span className="text-zinc-400">— Die-off peaks. SOS protocols unlock so you don't quit.</span></p>
-              <span className="inline-block mt-1 text-[10px] font-bold tracking-widest uppercase text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">← Free trial ends here</span>
+              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[8px] font-bold text-white">W1</span></div>
+              <p className="text-sm"><span className="text-white font-bold">Fungal Elimination</span> <span className="text-zinc-400">— Candida die-off peaks. The app detects it and unlocks SOS protocols. 80% of people quit here. You won't.</span></p>
+              <span className="inline-block mt-1 text-[10px] font-bold tracking-widest uppercase text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">← Free trial ends Day 3</span>
             </div>
+            {/* Week 2 — Parasite */}
             <div className="relative">
-              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">7</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Cravings Die</span> <span className="text-zinc-400">— Sugar cravings collapse. Energy comes back.</span></p>
+              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[8px] font-bold text-white">W2</span></div>
+              <p className="text-sm"><span className="text-white font-bold">Parasite Cleanse</span> <span className="text-zinc-400">— Black walnut, wormwood, clove — timed to the lunar cycle. The app tells you exactly when, what dose, and what the weird stool changes mean.</span></p>
             </div>
+            {/* Week 3 — Heavy Metal */}
             <div className="relative">
-              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">14</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Parasite Flush</span> <span className="text-zinc-400">— Full-moon timed cleanse. The app handles dosing + timing.</span></p>
+              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[8px] font-bold text-white">W3</span></div>
+              <p className="text-sm"><span className="text-white font-bold">Heavy Metal Detox</span> <span className="text-zinc-400">— Chlorella, spirulina, zeolite — binding the metals that were hiding behind the biofilm you just broke down. Schedule shifts automatically.</span></p>
             </div>
-            <div className="relative">
-              <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-zinc-700 flex items-center justify-center"><span className="text-[9px] font-bold text-white">21</span></div>
-              <p className="text-sm"><span className="text-white font-bold">Metal Detox</span> <span className="text-zinc-400">— Chlorella + zeolite bind what the biofilm was hiding.</span></p>
-            </div>
+            {/* Complete */}
             <div className="relative">
               <div className="absolute -left-[calc(1.75rem+1px)] top-0.5 h-5 w-5 rounded-full bg-green-500 flex items-center justify-center"><span className="text-[9px] font-black text-black">✓</span></div>
-              <p className="text-sm"><span className="text-green-400 font-bold">Done</span> <span className="text-zinc-400">— Lifetime access stays. Rebuild phase loaded.</span></p>
+              <p className="text-sm"><span className="text-green-400 font-bold">Done</span> <span className="text-zinc-400">— Rebuild instructions loaded. Lifetime access stays. Yours forever.</span></p>
             </div>
           </div>
 
-          {/* ── Bullets ── */}
-          <div className="space-y-2 mb-7">
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Tells you exactly what to take and when — every single day</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Shopping list before Day 1 (including the $8 item nobody mentions)</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">AI coach that already knows your score, your diet, and your weak spots</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Symptom tracker that proves it's working when your brain says it's not</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Full-moon parasite timing most practitioners charge $300 to explain</span></div>
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">One payment. Lifetime access. No upsells. Ever.</span></div>
+          {/* ── Fascination Bullets ── */}
+          <div className="space-y-2.5 mb-8">
+            <h3 className="text-lg font-bold tracking-tight mb-3">What's waiting inside</h3>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">Your exact daily schedule — what to take, when, and why (not a generic PDF)</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">The full-moon parasite timing most practitioners charge $300 to explain</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">SOS protocols that activate when die-off hits so you stop Googling "is this normal"</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">An AI coach that already knows your score, your diet, and your weak spots</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">A symptom tracker that proves it's working — even on the days your brain says it's not</span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5">✦</span><span className="text-zinc-300">One payment. Lifetime access. No subscriptions. No upsells. Ever.</span></div>
           </div>
 
-          {/* ── Closer ── */}
-          <p className="text-center text-[13px] text-zinc-500 font-medium mb-4">
-            You already bought the supplements.&nbsp;
-            <span className="text-white font-semibold">Without this, you're guessing.</span>
+          {/* ── Killer Final Line ── */}
+          <p className="text-center text-sm text-zinc-500 font-medium mb-4 leading-relaxed">
+            You already own the supplements.&nbsp;
+            <span className="text-white font-semibold">This is what makes sure you actually finish.</span>
           </p>
 
           {userId && (
