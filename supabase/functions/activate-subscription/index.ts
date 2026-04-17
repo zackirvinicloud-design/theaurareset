@@ -194,12 +194,6 @@ serve(async (req) => {
         });
       }
 
-      // If membership has an email and it clearly conflicts with the signed-in account,
-      // stop here to prevent attaching someone else's active membership.
-      if (membershipUserEmail && signedInEmail && membershipUserEmail !== signedInEmail) {
-        return json({ error: "Membership does not match the signed-in account" }, 400);
-      }
-
       resolvedStatus = membershipStatus ?? paymentSubstatus ?? paymentStatus ?? null;
     } else {
       if (!signedInEmail) {
