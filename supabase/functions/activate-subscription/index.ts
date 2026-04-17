@@ -18,9 +18,10 @@ interface WhopPaymentResponse {
   refunded_amount?: number | null;
   user?: string | WhopPaymentUser | null;
   company_id?: string | null;
-  membership?: {
+  membership?: string | {
     id?: string | null;
     status?: string | null;
+    user?: WhopMembershipUser | null;
   } | null;
 }
 
@@ -47,6 +48,16 @@ const json = (body: Record<string, unknown>, status: number) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
     status,
   });
+
+const ACCESS_ELIGIBLE_MEMBERSHIP_STATUSES = new Set([
+  "trialing",
+  "active",
+  "canceling",
+  "completed",
+]);
+
+const normalizeEmail = (value: string | null | undefined) =>
+  typeof value === "string" ? value.trim().toLowerCase() : null;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -85,12 +96,14 @@ serve(async (req) => {
     }
 
     const companyId = Deno.env.get("WHOP_COMPANY_ID");
+    const signedInEmail = normalizeEmail(user.email);
     let resolvedPaymentId: string | null = paymentId;
     let resolvedStatus: string | null = null;
 
     if (paymentId) {
       const paymentUrl = new URL(`https://api.whop.com/api/v2/payments/${paymentId}`);
       paymentUrl.searchParams.append("expand", "user");
+      paymentUrl.searchParams.append("expand", "membership");
 
       const paymentResponse = await fetch(paymentUrl.toString(), {
         headers: {
@@ -106,10 +119,15 @@ serve(async (req) => {
       }
 
       const payment = await paymentResponse.json() as WhopPaymentResponse;
-      const membershipStatus = payment.membership?.status ?? null;
-      const accessEligibleMembership = membershipStatus === "trialing"
-        || membershipStatus === "active"
-        || membershipStatus === "canceling";
+      let membershipStatus = typeof payment.membership === "object" && payment.membership
+        ? payment.membership.status ?? null
+        : null;
+      let membershipUserEmail = typeof payment.membership === "object" && payment.membership
+        ? normalizeEmail(payment.membership.user?.email)
+        : null;
+      const membershipId = typeof payment.membership === "string"
+        ? payment.membership
+        : payment.membership?.id ?? null;
 
       if (payment.id !== paymentId) {
         return json({ error: "Payment verification mismatch" }, 400);
@@ -124,20 +142,67 @@ serve(async (req) => {
       }
 
       const paymentUserEmail = typeof payment.user === "object" && payment.user
-        ? payment.user.email?.toLowerCase() ?? null
+        ? normalizeEmail(payment.user.email)
         : null;
 
-      if (paymentUserEmail && user.email && paymentUserEmail !== user.email.toLowerCase()) {
-        return json({ error: "Payment does not match the signed-in account" }, 400);
+      if (membershipId && !membershipStatus) {
+        const membershipUrl = new URL(`https://api.whop.com/api/v2/memberships/${membershipId}`);
+        const membershipResponse = await fetch(membershipUrl.toString(), {
+          headers: {
+            Authorization: `Bearer ${whopApiKey}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (membershipResponse.ok) {
+          const membership = await membershipResponse.json() as WhopMembershipResponse;
+          membershipStatus = membership.status ?? null;
+          membershipUserEmail = normalizeEmail(
+            membership.email
+              ?? (typeof membership.user === "object" && membership.user
+                ? membership.user.email
+                : null),
+          );
+          if (companyId && membership.company?.id && membership.company.id !== companyId) {
+            return json({ error: "Membership does not belong to the configured company" }, 400);
+          }
+        } else {
+          const body = await membershipResponse.text();
+          console.error("Whop membership-by-id lookup failed:", membershipResponse.status, body);
+        }
       }
 
-      if (payment.status !== "paid" && !accessEligibleMembership) {
+      const paymentStatus = payment.status?.toLowerCase() ?? null;
+      const paymentSubstatus = payment.substatus?.toLowerCase() ?? null;
+      const paymentEligible = paymentStatus === "paid" || paymentSubstatus === "succeeded";
+      const accessEligibleMembership = membershipStatus
+        ? ACCESS_ELIGIBLE_MEMBERSHIP_STATUSES.has(membershipStatus.toLowerCase())
+        : false;
+
+      if (!paymentEligible && !accessEligibleMembership) {
         return json({ error: "Payment is not eligible for access" }, 400);
       }
 
-      resolvedStatus = membershipStatus ?? payment.status ?? null;
+      // Allow account creation to continue when checkout/account emails differ.
+      // This is common when users pay first, then create app credentials.
+      if (paymentUserEmail && signedInEmail && paymentUserEmail !== signedInEmail) {
+        console.warn("Whop email mismatch", {
+          signedInEmail,
+          paymentUserEmail,
+          membershipUserEmail,
+          paymentId,
+        });
+      }
+
+      // If membership has an email and it clearly conflicts with the signed-in account,
+      // stop here to prevent attaching someone else's active membership.
+      if (membershipUserEmail && signedInEmail && membershipUserEmail !== signedInEmail) {
+        return json({ error: "Membership does not match the signed-in account" }, 400);
+      }
+
+      resolvedStatus = membershipStatus ?? paymentSubstatus ?? paymentStatus ?? null;
     } else {
-      if (!user.email) {
+      if (!signedInEmail) {
         return json({ error: "User email is required to verify Whop access" }, 400);
       }
 
@@ -169,20 +234,40 @@ serve(async (req) => {
 
       const memberships = await membershipsResponse.json() as WhopMembershipListResponse;
       const matchedMembership = (memberships.data ?? []).find((membership) => {
-        const membershipEmail = (
+        const membershipEmail = normalizeEmail(
           membership.email
-          ?? (typeof membership.user === "object" && membership.user
-            ? membership.user.email
-            : null)
-        )?.toLowerCase() ?? null;
-        return membershipEmail === user.email?.toLowerCase();
+            ?? (typeof membership.user === "object" && membership.user
+              ? membership.user.email
+              : null),
+        );
+        return membershipEmail === signedInEmail;
       });
 
-      if (!matchedMembership) {
+      if (!matchedMembership || !matchedMembership.id) {
         return json({ error: "No active Whop membership matched this account" }, 400);
       }
 
+      resolvedPaymentId = matchedMembership.id;
       resolvedStatus = matchedMembership.status ?? null;
+    }
+
+    // Prevent attaching the same paid reference to multiple app accounts.
+    if (resolvedPaymentId) {
+      const { data: existingPaymentOwner, error: paymentOwnerError } = await supabaseClient
+        .from("user_subscriptions")
+        .select("user_id")
+        .eq("payment_id", resolvedPaymentId)
+        .neq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
+      if (paymentOwnerError) {
+        throw paymentOwnerError;
+      }
+
+      if (existingPaymentOwner?.user_id) {
+        return json({ error: "Payment is already linked to another account" }, 400);
+      }
     }
 
     const { error: upsertError } = await supabaseClient
