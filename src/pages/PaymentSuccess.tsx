@@ -13,8 +13,11 @@ const PaymentSuccess = () => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [needsAccount, setNeedsAccount] = useState(false);
 
-  const paymentId = searchParams.get("payment_id");
+  const receiptId = searchParams.get("receipt_id");
+  const paymentId = searchParams.get("payment_id") ?? receiptId;
   const provider = searchParams.get("provider") || "whop";
+  const checkoutStatus = searchParams.get("checkout_status");
+  const whopStatus = searchParams.get("status");
   const currentPath = useMemo(() => {
     const query = searchParams.toString();
     return `/payment-success${query ? `?${query}` : ""}`;
@@ -38,7 +41,10 @@ const PaymentSuccess = () => {
       const { error } = await supabase.functions.invoke("activate-subscription", {
         body: {
           payment_id: paymentId,
+          receipt_id: receiptId,
           payment_provider: provider,
+          checkout_status: checkoutStatus,
+          status: whopStatus,
         },
       });
 
@@ -95,7 +101,7 @@ const PaymentSuccess = () => {
     return () => {
       cancelled = true;
     };
-  }, [navigate, paymentId, provider]);
+  }, [checkoutStatus, navigate, paymentId, provider, receiptId, whopStatus]);
 
   return (
     <div className="app-shell-dark min-h-screen flex items-center justify-center p-4">
