@@ -8,12 +8,12 @@ const testimonials = [
   {
     name: "James R., Chicago",
     result: "$847 in supplements gathering dust",
-    quote: "I spent $847 on supplements last year that are still sitting in my cabinet. This $27 program is the ONLY thing I've actually finished. Day 21 and my wife says I'm a different person."
+    quote: "I spent $847 on supplements last year that are still sitting in my cabinet. This app is the ONLY thing I've actually finished. Day 21 and my wife says I'm a different person."
   },
   {
     name: "Sarah M., Austin",
-    result: "$380 doctor visit vs $27 answers",
-    quote: "My doctor charged me $380 for a 15-minute appointment that told me nothing. This program gave me answers in the first 48 hours that 3 specialists couldn't figure out in 2 years."
+    result: "$380 doctor visit vs $47 for the year",
+    quote: "My doctor charged me $380 for a 15-minute appointment that told me nothing. This app gave me answers in the first 48 hours that 3 specialists couldn't figure out in 2 years."
   },
   {
     name: "Maria K., San Diego",
@@ -38,7 +38,7 @@ export const TransformationScene = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
-          "They Said I Was Crazy To Give This Away For $27..."
+          "They Said I Was Crazy To Start This With A Free Trial..."
         </motion.h2>
 
         <motion.p
@@ -144,10 +144,10 @@ export const TransformationScene = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xl sm:text-2xl font-bold text-primary">YOUR PRICE TODAY:</span>
-                <span className="text-4xl sm:text-5xl font-bold text-primary">$27</span>
+                <span className="text-4xl sm:text-5xl font-bold text-primary">3 days free</span>
               </div>
               <p className="text-center text-sm sm:text-base text-muted-foreground mt-4">
-                That's <span className="font-bold text-primary">$1.29/day</span>. Less than the coffee that's destroying your gut.
+                Then <span className="font-bold text-primary">$47/year</span>. Less than the money most people waste on the wrong supplements in one week.
               </p>
             </div>
           </Card>
@@ -174,7 +174,7 @@ export const TransformationScene = () => {
             </p>
 
             <p className="text-base sm:text-lg text-foreground mb-6 leading-relaxed">
-              I'm charging $27 because I want <span className="font-bold text-primary">RESULTS</span>, not just customers.
+              I'm starting this with a free trial because I want <span className="font-bold text-primary">RESULTS</span>, not just customers.
             </p>
 
             <p className="text-base sm:text-lg text-muted-foreground mb-8 leading-relaxed italic">
@@ -190,11 +190,11 @@ export const TransformationScene = () => {
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span className="text-base sm:text-lg"><span className="font-bold">Then $27 one-time</span> (not monthly, not recurring, EVER)</span>
+                  <span className="text-base sm:text-lg"><span className="font-bold">Then $47 per year</span> (not monthly, not a surprise rebill every 30 days)</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span className="text-base sm:text-lg"><span className="font-bold">Lifetime access</span> (I can't take it away even if I wanted to)</span>
+                  <span className="text-base sm:text-lg"><span className="font-bold">Cancel before renewal if it is not helping</span> (simple, clean, and easy to understand)</span>
                 </div>
               </div>
             </div>
@@ -204,11 +204,11 @@ export const TransformationScene = () => {
               size="lg" 
               className="w-full text-base sm:text-lg h-12 sm:h-14 mb-4 font-bold"
             >
-              Yes! Give Me The 21-Day System For Just $27 →
+              Yes! Start My 3-Day Free Trial →
             </Button>
 
             <p className="text-xs sm:text-sm text-muted-foreground">
-              See your personalized plan, then decide. Zero subscription games.
+              See your personalized plan, then decide whether the annual plan is worth keeping.
             </p>
           </Card>
         </motion.div>

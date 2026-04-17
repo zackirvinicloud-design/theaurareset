@@ -209,7 +209,7 @@ const PaymentRequired = () => {
 
             <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Wake up every morning knowing exactly what to do today — <span className="text-white font-medium">without opening 4 apps, 3 PDFs, and a saved TikTok playlist to figure it out</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">One payment. Lifetime access. No subscriptions. No upsells — <span className="text-white font-medium">without the guilt of another $49/month membership you forget to cancel</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Start with a 3-day free trial, then continue at $47/year only if it is helping — <span className="text-white font-medium">without getting trapped in a sneaky monthly subscription</span></span></div>
           </div>
 
           {/* ── Killer Final Line ── */}

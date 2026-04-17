@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { PRODUCT_PRICE } from '@/lib/product';
+import { PRODUCT_PRICE, PRODUCT_PRICE_SUFFIX, PRODUCT_TRIAL_LABEL } from '@/lib/product';
 
 export const PricingSection = () => {
   const navigate = useNavigate();
@@ -46,8 +46,9 @@ export const PricingSection = () => {
                 <div className="inline-block">
                   <div className="flex items-baseline justify-center gap-2">
                     <span className="text-7xl font-bold">{PRODUCT_PRICE}</span>
+                    <span className="text-2xl font-semibold text-muted-foreground">{PRODUCT_PRICE_SUFFIX}</span>
                   </div>
-                  <div className="text-lg text-muted-foreground mt-2">One-time payment. No recurring subscription.</div>
+                  <div className="text-lg text-muted-foreground mt-2">{PRODUCT_TRIAL_LABEL}, then billed annually.</div>
                 </div>
               </div>
 
@@ -70,7 +71,7 @@ export const PricingSection = () => {
                   'Optional push reminders that reopen the exact step you need',
                   'No app download required for the core experience',
                   'Budget protection so you know what to buy first',
-                  'Lifetime access after the one-time payment',
+                  'Ongoing access, reminders, and updates for one simple annual plan',
                 ].map((feature, i) => (
                   <motion.div
                     key={i}

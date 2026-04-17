@@ -284,7 +284,7 @@ const Signup = () => {
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>One-time payment. Lifetime access.</span>
+                    <span>3-day free trial, then $47/year.</span>
                   </div>
                 </div>
               </>
@@ -311,7 +311,7 @@ const Signup = () => {
                       </h2>
                       <p className="mt-3 text-base leading-7 text-muted-foreground">
                         {isLegacyActivationFlow
-                          ? "Create your secure login so you don't lose your diagnostic score or your lifetime access."
+                          ? "Create your secure login so you don't lose your diagnostic score or your trial access."
                           : "Set up your secure profile so you don't lose any progress or customized insights from Coach."}
                       </p>
 

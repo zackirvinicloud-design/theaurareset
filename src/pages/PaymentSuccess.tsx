@@ -26,16 +26,6 @@ const PaymentSuccess = () => {
     const activate = async () => {
       setIsProcessing(true);
 
-      if (!paymentId) {
-        setIsProcessing(false);
-        toast({
-          title: "Missing payment reference",
-          description: "This link does not include a verified payment id.",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const { data: { session } } = await supabase.auth.getSession();
       if (!session || !isEmailVerified(session.user)) {
         if (!cancelled) {
@@ -59,7 +49,7 @@ const PaymentSuccess = () => {
       if (error) {
         toast({
           title: "Activation failed",
-          description: "We could not verify this payment. Please contact support if this persists.",
+          description: "We could not verify your Whop access yet. Please contact support if this keeps happening.",
           variant: "destructive",
         });
         return;
@@ -93,7 +83,9 @@ const PaymentSuccess = () => {
         next.set("redirect", "/protocol");
         next.set("source", "payment-success");
         next.set("provider", provider);
-        next.set("payment_id", paymentId);
+        if (paymentId) {
+          next.set("payment_id", paymentId);
+        }
         navigate(`/setup/profile?${next.toString()}`, { replace: true });
       }
     };
@@ -117,20 +109,20 @@ const PaymentSuccess = () => {
             )}
           </div>
           <CardTitle className="text-3xl font-bold">
-            {isProcessing ? "Verifying payment..." : "Payment received"}
+            {isProcessing ? "Verifying checkout..." : "Access ready"}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-muted-foreground">
             {isProcessing
-              ? "Checking your payment with Whop and preparing your access."
-              : "Your purchase is confirmed."}
+              ? "Checking your Whop checkout and preparing your access."
+              : "Your free trial is active."}
           </p>
 
           {needsAccount && (
             <>
               <p className="text-muted-foreground font-medium">
-                Create or verify your account to attach this payment to your workspace.
+                Create or verify your account to attach this checkout to your workspace.
               </p>
               <Button
                 onClick={() => {

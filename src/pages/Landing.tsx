@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Plus, X } from 'lucide-react';
-import { PRODUCT_PRICE, PRODUCT_ORIGINAL_PRICE } from '@/lib/product';
+import { PRODUCT_PRICE_SUMMARY, PRODUCT_PRICE_WITH_INTERVAL, PRODUCT_TRIAL_LABEL } from '@/lib/product';
 import './Landing.css';
 
 const START_PATH = `/setup/profile?redirect=${encodeURIComponent('/payment-required')}`;
@@ -124,7 +124,7 @@ const FAQS = [
   },
   {
     q: 'Is this a monthly subscription?',
-    a: `No. ${PRODUCT_PRICE} one time. Lifetime access. No sneaky monthly rebills. No app-store friction. Pay once and keep your entire cleanse command center forever.`,
+    a: `No monthly bill. It starts with a ${PRODUCT_TRIAL_LABEL}, then becomes ${PRODUCT_PRICE_WITH_INTERVAL}. Cancel before renewal if it is not helping.`,
   },
   {
     q: 'Will this cure my IBS / SIBO / Gut Issues?',
@@ -323,7 +323,7 @@ const Landing = () => {
         transition: 'transform 0.4s ease, opacity 0.4s ease',
         pointerEvents: !logoVisible ? 'auto' : 'none',
       }}>
-        🚀 LAUNCH PRICE: {PRODUCT_PRICE} <span style={{ textDecoration: 'line-through', opacity: 0.6 }}>{PRODUCT_ORIGINAL_PRICE}</span> — First 100 customers only
+        START FREE TODAY — {PRODUCT_PRICE_SUMMARY}
       </div>
       <header className={`open-header ${!logoVisible ? 'open-header--hidden' : ''}`}>
         <div
@@ -539,10 +539,10 @@ const Landing = () => {
           </div>
 
           <div className="open-offer__panel">
-            <p className="open-offer__panel-label">LAUNCH PRICE</p>
-            <p className="open-offer__price">{PRODUCT_PRICE} <span style={{ textDecoration: 'line-through', opacity: 0.4, fontSize: '0.5em' }}>{PRODUCT_ORIGINAL_PRICE}</span></p>
+            <p className="open-offer__panel-label">START FREE TODAY</p>
+            <p className="open-offer__price">3 DAYS FREE</p>
             <p className="open-offer__panel-copy">
-              One payment. Lifetime access. No monthly leeching on your credit card. Snag this before the launch pricing disappears forever.
+              Then {PRODUCT_PRICE_WITH_INTERVAL} for ongoing access to your command center, reminders, and updates. No monthly charge. Cancel before renewal if it is not helping.
             </p>
 
             <button type="button" className="open-hero__button open-offer__button" onClick={handleStart}>
@@ -550,7 +550,7 @@ const Landing = () => {
             </button>
 
             <p className="open-offer__micro">
-              Create your account, unlock the workspace, and start from Prep Day.
+              Start your trial, unlock the workspace, and begin from Prep Day.
             </p>
           </div>
         </div>

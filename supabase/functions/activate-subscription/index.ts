@@ -13,10 +13,33 @@ interface WhopPaymentUser {
 interface WhopPaymentResponse {
   id: string;
   status?: string | null;
+  substatus?: string | null;
   paid_at?: string | null;
   refunded_amount?: number | null;
   user?: string | WhopPaymentUser | null;
   company_id?: string | null;
+  membership?: {
+    id?: string | null;
+    status?: string | null;
+  } | null;
+}
+
+interface WhopMembershipUser {
+  email?: string | null;
+}
+
+interface WhopMembershipResponse {
+  id: string;
+  status?: string | null;
+  email?: string | null;
+  user?: string | WhopMembershipUser | null;
+  company?: {
+    id?: string | null;
+  } | null;
+}
+
+interface WhopMembershipListResponse {
+  data?: WhopMembershipResponse[] | null;
 }
 
 const json = (body: Record<string, unknown>, status: number) =>
@@ -47,10 +70,10 @@ serve(async (req) => {
       return json({ error: "Invalid user token" }, 401);
     }
 
-    const { payment_id: paymentId, payment_provider: paymentProvider } = await req.json();
-    if (!paymentId || typeof paymentId !== "string") {
-      return json({ error: "payment_id is required" }, 400);
-    }
+    const { payment_id: rawPaymentId, payment_provider: paymentProvider } = await req.json();
+    const paymentId = typeof rawPaymentId === "string" && rawPaymentId.trim().length > 0
+      ? rawPaymentId.trim()
+      : null;
 
     if (paymentProvider !== "whop") {
       return json({ error: "Unsupported payment provider" }, 400);
@@ -62,46 +85,104 @@ serve(async (req) => {
     }
 
     const companyId = Deno.env.get("WHOP_COMPANY_ID");
-    const paymentUrl = new URL(`https://api.whop.com/api/v2/payments/${paymentId}`);
-    paymentUrl.searchParams.append("expand", "user");
+    let resolvedPaymentId: string | null = paymentId;
+    let resolvedStatus: string | null = null;
 
-    const paymentResponse = await fetch(paymentUrl.toString(), {
-      headers: {
-        Authorization: `Bearer ${whopApiKey}`,
-        "Content-Type": "application/json",
-      },
-    });
+    if (paymentId) {
+      const paymentUrl = new URL(`https://api.whop.com/api/v2/payments/${paymentId}`);
+      paymentUrl.searchParams.append("expand", "user");
 
-    if (!paymentResponse.ok) {
-      const body = await paymentResponse.text();
-      console.error("Whop payment lookup failed:", paymentResponse.status, body);
-      return json({ error: "Could not verify payment with Whop" }, 400);
-    }
+      const paymentResponse = await fetch(paymentUrl.toString(), {
+        headers: {
+          Authorization: `Bearer ${whopApiKey}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    const payment = await paymentResponse.json() as WhopPaymentResponse;
+      if (!paymentResponse.ok) {
+        const body = await paymentResponse.text();
+        console.error("Whop payment lookup failed:", paymentResponse.status, body);
+        return json({ error: "Could not verify payment with Whop" }, 400);
+      }
 
-    if (payment.id !== paymentId) {
-      return json({ error: "Payment verification mismatch" }, 400);
-    }
+      const payment = await paymentResponse.json() as WhopPaymentResponse;
+      const membershipStatus = payment.membership?.status ?? null;
+      const accessEligibleMembership = membershipStatus === "trialing"
+        || membershipStatus === "active"
+        || membershipStatus === "canceling";
 
-    if (payment.status !== "paid" || !payment.paid_at) {
-      return json({ error: "Payment is not in a paid state" }, 400);
-    }
+      if (payment.id !== paymentId) {
+        return json({ error: "Payment verification mismatch" }, 400);
+      }
 
-    if ((payment.refunded_amount ?? 0) > 0) {
-      return json({ error: "Refunded payments cannot activate access" }, 400);
-    }
+      if ((payment.refunded_amount ?? 0) > 0) {
+        return json({ error: "Refunded payments cannot activate access" }, 400);
+      }
 
-    if (companyId && payment.company_id && payment.company_id !== companyId) {
-      return json({ error: "Payment does not belong to the configured company" }, 400);
-    }
+      if (companyId && payment.company_id && payment.company_id !== companyId) {
+        return json({ error: "Payment does not belong to the configured company" }, 400);
+      }
 
-    const paymentUserEmail = typeof payment.user === "object" && payment.user
-      ? payment.user.email?.toLowerCase() ?? null
-      : null;
+      const paymentUserEmail = typeof payment.user === "object" && payment.user
+        ? payment.user.email?.toLowerCase() ?? null
+        : null;
 
-    if (paymentUserEmail && user.email && paymentUserEmail !== user.email.toLowerCase()) {
-      return json({ error: "Payment does not match the signed-in account" }, 400);
+      if (paymentUserEmail && user.email && paymentUserEmail !== user.email.toLowerCase()) {
+        return json({ error: "Payment does not match the signed-in account" }, 400);
+      }
+
+      if (payment.status !== "paid" && !accessEligibleMembership) {
+        return json({ error: "Payment is not eligible for access" }, 400);
+      }
+
+      resolvedStatus = membershipStatus ?? payment.status ?? null;
+    } else {
+      if (!user.email) {
+        return json({ error: "User email is required to verify Whop access" }, 400);
+      }
+
+      if (!companyId) {
+        return json({ error: "WHOP_COMPANY_ID is required for membership lookup" }, 500);
+      }
+
+      const membershipsUrl = new URL("https://api.whop.com/api/v2/memberships");
+      membershipsUrl.searchParams.set("company_id", companyId);
+      membershipsUrl.searchParams.set("first", "100");
+      membershipsUrl.searchParams.set("direction", "desc");
+      membershipsUrl.searchParams.set("order", "created_at");
+      membershipsUrl.searchParams.append("statuses", "trialing");
+      membershipsUrl.searchParams.append("statuses", "active");
+      membershipsUrl.searchParams.append("statuses", "canceling");
+
+      const membershipsResponse = await fetch(membershipsUrl.toString(), {
+        headers: {
+          Authorization: `Bearer ${whopApiKey}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!membershipsResponse.ok) {
+        const body = await membershipsResponse.text();
+        console.error("Whop membership lookup failed:", membershipsResponse.status, body);
+        return json({ error: "Could not verify Whop membership" }, 400);
+      }
+
+      const memberships = await membershipsResponse.json() as WhopMembershipListResponse;
+      const matchedMembership = (memberships.data ?? []).find((membership) => {
+        const membershipEmail = (
+          membership.email
+          ?? (typeof membership.user === "object" && membership.user
+            ? membership.user.email
+            : null)
+        )?.toLowerCase() ?? null;
+        return membershipEmail === user.email?.toLowerCase();
+      });
+
+      if (!matchedMembership) {
+        return json({ error: "No active Whop membership matched this account" }, 400);
+      }
+
+      resolvedStatus = matchedMembership.status ?? null;
     }
 
     const { error: upsertError } = await supabaseClient
@@ -109,7 +190,7 @@ serve(async (req) => {
       .upsert({
         user_id: user.id,
         is_active: true,
-        payment_id: paymentId,
+        payment_id: resolvedPaymentId,
         payment_provider: "whop",
       }, { onConflict: "user_id" });
 
@@ -119,8 +200,8 @@ serve(async (req) => {
 
     return json({
       success: true,
-      payment_id: paymentId,
-      status: payment.status,
+      payment_id: resolvedPaymentId,
+      status: resolvedStatus,
     }, 200);
   } catch (error) {
     console.error("Error activating subscription:", error);
