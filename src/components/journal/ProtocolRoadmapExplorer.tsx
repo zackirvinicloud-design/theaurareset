@@ -18,7 +18,6 @@ interface ProtocolRoadmapExplorerProps {
     onBack: () => void;
     onOpenShoppingView: (phaseName: string) => void;
     onAskCoach: (prompt: string) => void;
-    onOpenNormalToday: () => void;
 }
 
 function getWhyNowDescription(phase: ProtocolRoadmapPhase) {
@@ -159,7 +158,6 @@ export function ProtocolRoadmapExplorer({
     onBack,
     onOpenShoppingView: _onOpenShoppingView,
     onAskCoach: _onAskCoach,
-    onOpenNormalToday: _onOpenNormalToday,
 }: ProtocolRoadmapExplorerProps) {
     const currentRoadmapPhase = getProtocolRoadmapPhaseForDay(currentDay);
     const [expandedPhaseId, setExpandedPhaseId] = useState<ProtocolRoadmapPhaseId | null>(null);

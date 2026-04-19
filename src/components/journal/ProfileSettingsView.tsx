@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BellRing, Loader2, Settings2, Sparkles } from 'lucide-react';
+import { ArrowLeft, BellRing, Loader2, Settings2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +17,7 @@ import {
   type UserOnboardingProfile,
 } from '@/hooks/useOnboardingProfile';
 import { cn } from '@/lib/utils';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 
 interface ProfileSettingsViewProps {
   profile: UserOnboardingProfile;
@@ -117,7 +118,7 @@ export const ProfileSettingsView = ({
               <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-foreground">Edit profile</h2>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Coach uses this to tailor meals, tone, shopping, and support to you.
+              GutBrain uses this to tailor meals, tone, shopping, and support to you.
             </p>
           </div>
         </div>
@@ -128,13 +129,13 @@ export const ProfileSettingsView = ({
           <Card className="border-primary/20 bg-primary/5">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Sparkles className="h-4 w-4 text-primary" />
-                Coach profile
+                <GutBrainLogo className="h-4 w-4 rounded-sm" />
+                GutBrain profile
               </CardTitle>
               <CardDescription>
                 {profile.completedAt
                   ? 'Your core personalization is saved and active.'
-                  : 'Finish the core details once so Coach can stop sounding generic.'}
+                  : 'Finish the core details once so GutBrain can stop sounding generic.'}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -160,7 +161,7 @@ export const ProfileSettingsView = ({
             <CardHeader className="pb-3">
               <CardTitle className="text-base">About you</CardTitle>
               <CardDescription>
-                Keep this practical. Coach should know your name, why you care, how you eat, and what trips you up.
+                Keep this practical. GutBrain should know your name, why you care, how you eat, and what trips you up.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -178,7 +179,7 @@ export const ProfileSettingsView = ({
                         id="settings-first-name"
                         value={firstName}
                         onChange={(event) => setFirstName(event.target.value)}
-                        placeholder="What should Coach call you?"
+                        placeholder="What should GutBrain call you?"
                       />
                     </div>
                     <div className="space-y-2">
@@ -249,7 +250,7 @@ export const ProfileSettingsView = ({
                       <Label>Support style</Label>
                       <Select value={supportStyle} onValueChange={setSupportStyle}>
                         <SelectTrigger>
-                          <SelectValue placeholder="How should Coach talk to you?" />
+                          <SelectValue placeholder="How should GutBrain talk to you?" />
                         </SelectTrigger>
                         <SelectContent>
                           {SUPPORT_STYLE_OPTIONS.map((option) => (

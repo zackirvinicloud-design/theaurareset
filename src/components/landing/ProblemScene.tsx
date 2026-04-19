@@ -168,7 +168,7 @@ export const ProblemScene = () => {
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
             You already know gut health matters. You've spent 100+ hours reading about it. <br className="hidden sm:block" />
             What you actually need: <span className="font-bold text-primary">Step-by-step guidance. Instant answers to every question. Something that saves you time AND money.</span><br className="hidden sm:block" />
-            A structured program with an AI coach who won't let you quit on Day 9.
+            A structured program with GutBrain that won't let you quit on Day 9.
           </p>
         </motion.div>
       </div>

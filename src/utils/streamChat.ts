@@ -79,9 +79,9 @@ export const streamChat = async ({
         throw new Error(providerErrorMessage ?? 'Rate limit exceeded. Please try again in a moment.');
       }
       if (response.status === 402) {
-        throw new Error(providerErrorMessage ?? 'AI provider credits are depleted. Please refresh provider billing.');
+        throw new Error(providerErrorMessage ?? 'GutBrain provider credits are depleted. Please refresh provider billing.');
       }
-      throw new Error(providerErrorMessage ?? 'Failed to connect to AI service');
+      throw new Error(providerErrorMessage ?? 'Failed to connect to GutBrain service');
     }
 
     if (!response.body) {

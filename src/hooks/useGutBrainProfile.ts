@@ -243,7 +243,7 @@ export const useGutBrainProfile = (userId: string | null): GutBrainState => {
       if (!options?.silent) {
         toast({
           title: 'Not enough conversation yet',
-          description: 'Coach needs a little more context before it can build a useful read.',
+          description: 'GutBrain needs a little more context before it can build a useful read.',
         });
       }
       return;
@@ -331,7 +331,7 @@ export const useGutBrainProfile = (userId: string | null): GutBrainState => {
       if (!options?.silent) {
         toast({
           title: 'Refresh failed',
-          description: 'Coach could not update its read right now.',
+          description: 'GutBrain could not update its read right now.',
           variant: 'destructive',
         });
       }

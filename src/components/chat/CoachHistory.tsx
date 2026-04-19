@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Calendar, User, Leaf, Loader2, Pencil, Search } from 'lucide-react';
+import { Calendar, User, Loader2, Pencil, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import {
   Sheet,
   SheetContent,
@@ -188,7 +189,7 @@ export const CoachHistory = ({
       </SheetTrigger>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader>
-          <SheetTitle>{hasThreadControls ? 'Chats' : 'Coach history'}</SheetTitle>
+          <SheetTitle>{hasThreadControls ? 'Chats' : 'GutBrain history'}</SheetTitle>
           <SheetDescription>
             {hasThreadControls
               ? 'Search, rename, and reopen previous conversations.'
@@ -287,7 +288,7 @@ export const CoachHistory = ({
               </div>
             ) : sortedDays.length === 0 ? (
               <p className="py-12 text-center text-sm text-muted-foreground">
-                No conversations yet. Start chatting with your Coach to build history.
+                No conversations yet. Start chatting with GutBrain to build history.
               </p>
             ) : (
               <ScrollArea className="h-[calc(100vh-10rem)]">
@@ -318,13 +319,13 @@ export const CoachHistory = ({
                                 {msg.role === 'user' ? (
                                   <User className="w-2.5 h-2.5 text-secondary-foreground" />
                                 ) : (
-                                  <Leaf className="w-2.5 h-2.5 text-emerald-400" />
+                                  <GutBrainLogo className="h-2.5 w-2.5 rounded-sm" />
                                 )}
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="mb-0.5 flex items-center gap-2">
                                   <span className="text-xs font-medium">
-                                    {msg.role === 'user' ? 'You' : 'Coach'}
+                                    {msg.role === 'user' ? 'You' : 'GutBrain'}
                                   </span>
                                   <span className="text-[10px] text-muted-foreground">
                                     {new Date(msg.createdAt).toLocaleTimeString('en-US', {

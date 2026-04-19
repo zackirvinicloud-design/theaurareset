@@ -15,6 +15,7 @@ import {
   withAuthTimeout,
 } from "@/lib/auth-routing";
 import { getFriendlyAuthErrorMessage } from "@/lib/auth-errors";
+import { GUEST_QUIZ_START_PATH } from "@/lib/guest-flow";
 import { z } from "zod";
 
 const emailSchema = z.string().email("Invalid email address");
@@ -28,6 +29,9 @@ const Auth = () => {
     provider: searchParams.get("provider"),
     payment_id: searchParams.get("payment_id"),
   });
+  const createAccountPath = redirectDestination
+    ? `/setup/profile?redirect=${encodeURIComponent(redirectDestination)}`
+    : GUEST_QUIZ_START_PATH;
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -262,7 +266,7 @@ const Auth = () => {
           <div className="text-sm text-muted-foreground">
             Need to create an account?{" "}
             <Link 
-              to={`/signup${redirectDestination ? `?redirect=${encodeURIComponent(redirectDestination)}` : ""}`}
+              to={createAccountPath}
               className="text-primary hover:underline"
             >
               Create account

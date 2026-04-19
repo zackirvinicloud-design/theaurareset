@@ -1,9 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Activity, BookOpen, ChevronLeft, ShoppingCart, X } from 'lucide-react';
-import { getDayLabel, getJourneyStageLabel } from '@/hooks/useProtocolData';
-import { getNormalToday } from '@/hooks/normalToday';
+import { BookOpen, ChevronLeft, ShoppingCart, Utensils, X } from 'lucide-react';
 import { ProtocolRoadmap } from '@/components/journal/ProtocolRoadmap';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -13,8 +11,8 @@ interface ProtocolReferenceProps {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
+    onOpenRecipesView?: () => void;
     onOpenRoadmapView: () => void;
-    onOpenNormalTodayView: () => void;
     isOpen: boolean;
     onToggle: () => void;
 }
@@ -38,8 +36,8 @@ export const ProtocolReference = ({
     currentPhase,
     currentDay,
     onOpenShoppingView,
+    onOpenRecipesView,
     onOpenRoadmapView,
-    onOpenNormalTodayView,
     isOpen,
     onToggle,
 }: ProtocolReferenceProps) => {
@@ -89,8 +87,8 @@ export const ProtocolReference = ({
                                     currentDay={currentDay}
                                     currentPhase={currentPhase}
                                     onOpenShoppingView={onOpenShoppingView}
+                                    onOpenRecipesView={onOpenRecipesView}
                                     onOpenRoadmapView={onOpenRoadmapView}
-                                    onOpenNormalTodayView={onOpenNormalTodayView}
                                 />
                             </div>
                         </ScrollArea>
@@ -105,22 +103,22 @@ export function MobileProtocolReferenceContent({
     currentPhase,
     currentDay,
     onOpenShoppingView,
+    onOpenRecipesView,
     onOpenRoadmapView,
-    onOpenNormalTodayView,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
+    onOpenRecipesView?: () => void;
     onOpenRoadmapView: () => void;
-    onOpenNormalTodayView: () => void;
 }) {
     return (
         <GuideContent
             currentPhase={currentPhase}
             currentDay={currentDay}
             onOpenShoppingView={onOpenShoppingView}
+            onOpenRecipesView={onOpenRecipesView}
             onOpenRoadmapView={onOpenRoadmapView}
-            onOpenNormalTodayView={onOpenNormalTodayView}
         />
     );
 }
@@ -129,19 +127,17 @@ function GuideContent({
     currentPhase,
     currentDay,
     onOpenShoppingView,
+    onOpenRecipesView,
     onOpenRoadmapView,
-    onOpenNormalTodayView,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
+    onOpenRecipesView?: () => void;
     onOpenRoadmapView: () => void;
-    onOpenNormalTodayView: () => void;
 }) {
     const [quoteSeed, setQuoteSeed] = useState(() => getGuideQuoteSeed(currentDay));
     const [quoteSeedDay, setQuoteSeedDay] = useState(currentDay);
-    const normalToday = getNormalToday(currentDay);
-    const stageLabel = getJourneyStageLabel(currentDay, currentPhase);
     const dailyNote = getCoachDailyNote(currentDay, new Date(), quoteSeed);
 
     useEffect(() => {
@@ -173,16 +169,18 @@ function GuideContent({
                 onClick={onOpenShoppingView}
             />
 
-            <PrimaryGuideCard
-                actionKey="open-symptom-tracker"
-                eyebrow="Quick context"
-                tone="neutral"
-                title="Symptom tracker"
-                description={`${getDayLabel(currentDay)} · ${stageLabel}. ${normalToday.headline}`}
-                actionLabel="Open symptom tracker"
-                icon={<Activity className="h-3.5 w-3.5" />}
-                onClick={onOpenNormalTodayView}
-            />
+            {onOpenRecipesView && (
+                <PrimaryGuideCard
+                    actionKey="open-recipes"
+                    eyebrow="Protocol library"
+                    tone="neutral"
+                    title="Recipes"
+                    description="Use the protocol defaults, save your own recipes, and let GutBrain build one with you."
+                    actionLabel="Open recipes"
+                    icon={<Utensils className="h-3.5 w-3.5" />}
+                    onClick={onOpenRecipesView}
+                />
+            )}
 
             <ProtocolRoadmap
                 currentDay={currentDay}

@@ -56,7 +56,7 @@ Deno.serve(async (req) => {
 
       if (response.status === 402) {
         return new Response(
-          JSON.stringify({ error: "AI provider credits depleted. Add provider credits or switch to GEMINI_API_KEY." }),
+          JSON.stringify({ error: "GutBrain provider credits depleted. Add provider credits or switch to GEMINI_API_KEY." }),
           {
             status: 402,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
       const errorText = await response.text();
       console.error(`AI gateway error (${provider.provider}):`, response.status, errorText);
 
-      return new Response(JSON.stringify({ error: "AI service error" }), {
+      return new Response(JSON.stringify({ error: "GutBrain service error" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { BookOpen, ClipboardList, MessageSquare } from 'lucide-react';
+import { BookOpen, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import { JournalCenter } from '@/components/journal/JournalCenter';
 import { MobileTodayView } from '@/components/journal/MobileTodayView';
-import { NormalTodayView } from '@/components/journal/NormalTodayView';
 import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExplorer';
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
 import { MobileProtocolReferenceContent } from '@/components/journal/ProtocolReference';
@@ -30,7 +30,7 @@ function makeEntry(day: number, role: 'user' | 'assistant', content: string, min
 }
 
 type CaptureScene = 'prep' | 'today' | 'help' | 'guide';
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap' | 'normal';
+type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap';
 
 const PREP_EXPANDED_CATEGORIES = [
   'Foundation_Morning Ritual Essentials',
@@ -333,14 +333,6 @@ export default function ProtocolCaptureMobile() {
             onBack={() => setActiveView('guide')}
             onOpenShoppingView={() => setActiveView('shopping')}
             onAskCoach={() => setActiveView('help')}
-            onOpenNormalToday={() => setActiveView('normal')}
-          />
-        ) : activeView === 'normal' ? (
-          <NormalTodayView
-            currentDay={progress.currentDay}
-            currentPhase={progress.currentPhase}
-            onBack={() => setActiveView('guide')}
-            onAskCoach={() => setActiveView('help')}
           />
         ) : activeView === 'guide' ? (
           <div className="flex h-full flex-col bg-background">
@@ -353,7 +345,6 @@ export default function ProtocolCaptureMobile() {
                 currentDay={progress.currentDay}
                 onOpenShoppingView={() => setActiveView('shopping')}
                 onOpenRoadmapView={() => setActiveView('roadmap')}
-                onOpenNormalTodayView={() => setActiveView('normal')}
               />
             </div>
           </div>
@@ -415,15 +406,15 @@ export default function ProtocolCaptureMobile() {
               activeView === 'help' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/50',
             )}
           >
-            <MessageSquare className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Coach</span>
+            <GutBrainLogo className="h-5 w-5 rounded-sm" />
+            <span className="text-[10px] font-medium">GutBrain</span>
           </button>
 
           <button
             onClick={() => setActiveView('guide')}
             className={cn(
               'flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors',
-              activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap' || activeView === 'normal'
+              activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap'
                 ? 'bg-primary/10 text-primary'
                 : 'hover:bg-muted/50',
             )}

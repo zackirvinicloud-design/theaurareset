@@ -498,7 +498,7 @@ const CHECKLIST_SUPPORT: Partial<Record<string, ChecklistSupport>> = {
         why: 'Sugar is the fastest way to feed the exact thing this phase is trying to starve out.',
     },
     herx_check: {
-        why: 'A quick note helps you separate normal die-off from spiraling and gives Coach something real to work with.',
+        why: 'A quick note helps you separate normal die-off from spiraling and gives GutBrain something real to work with.',
     },
     shop_phase3: {
         why: 'Buying Week 2 supplies early prevents the phase change from turning into a scramble.',

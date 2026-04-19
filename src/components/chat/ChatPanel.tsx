@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageSquare, Download, Trash2, Leaf, ArrowDown } from 'lucide-react';
+import { MessageSquare, Download, Trash2, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { ProgressSettingsDialog } from './ProgressSettingsDialog';
@@ -217,7 +218,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-border">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <MessageSquare className="w-4 h-4 text-primary flex-shrink-0" />
+            <GutBrainLogo className="h-4 w-4 rounded-sm flex-shrink-0" />
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-sm truncate">{GUT_BRAIN_AI_NAME}</h3>
               <p className="text-xs text-muted-foreground truncate">
@@ -315,7 +316,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
             {isLoading && (
               <div className="flex gap-3 mb-4">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/30 ring-1 ring-emerald-500/20 flex items-center justify-center">
-                  <Leaf className="w-4 h-4 text-emerald-400" />
+                  <GutBrainLogo className="h-4 w-4 rounded-sm" />
                 </div>
                 <div className="bg-muted rounded-lg px-4 py-2">
                   <div className="flex gap-1">

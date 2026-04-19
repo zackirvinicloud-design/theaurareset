@@ -504,7 +504,7 @@ function ChecklistRow({
                                 ? 'border-border/60 bg-background/60 text-muted-foreground hover:bg-muted/40 hover:text-foreground'
                                 : 'border-border/60 bg-background/70 text-muted-foreground hover:bg-muted/40 hover:text-foreground',
                         )}
-                        title="Ask Coach about this step"
+                        title="Ask GutBrain about this step"
                     >
                         <HelpCircle className="h-3.5 w-3.5" />
                     </button>

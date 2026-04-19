@@ -3,9 +3,11 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Plus, X } from 'lucide-react';
 import { PRODUCT_PRICE_SUMMARY, PRODUCT_PRICE_WITH_INTERVAL, PRODUCT_TRIAL_LABEL } from '@/lib/product';
+import { PROTOCOL_ROADMAP_PHASES } from '@/lib/protocol-roadmap';
 import './Landing.css';
 
 const START_PATH = `/setup/profile?redirect=${encodeURIComponent('/payment-required')}`;
+const LOGIN_PATH = '/auth';
 const DESKTOP_DEMO_PLAYBACK_RATE = 0.9;
 const MOBILE_FRAME_INTERVAL_MS = 1000;
 
@@ -18,29 +20,31 @@ const CYCLING_WORDS = [
   'OVERTHINKING',
 ];
 
-const WEEKS = [
-  {
-    id: 1,
-    label: 'WEEK 1',
-    name: 'FUNGAL FLUSH',
-    description: 'Blast the initial fungal shield. Starve the yeast overgrowth ravaging your gut walls—without the crushing overwhelm of scattered PDF guides and conflicting TikTok advice. Shut down the crippling sugar cravings before they even begin. Skip the endless Google searches and eliminate the panic when brutal die-off symptoms hit on Day 3.',
-    image: '/daily-oranges.jpg',
-  },
-  {
-    id: 2,
-    label: 'WEEK 2',
-    name: 'PARASITE PURGE',
-    description: 'Flush the core system. Paralyze and expel the parasites feeding off your daily energy supply—without staring blankly at a counter full of random supplement bottles you do not know how to sequence. Torch the brain fog. Reclaim your mental clarity and lock in ruthless consistency instead of waking up to pure exhaustion.',
-    image: '/week-tangerine.jpg',
-  },
-  {
-    id: 3,
-    label: 'WEEK 3',
-    name: 'METAL DETOX',
-    description: 'Bind and extract. Pull the deep-rooted metals and toxic sludge directly out of your system—without dealing with constant, painful bloating, and without the fear of immediate relapse. Solidify the flat stomach. Erase the toxic load permanently so you drop the bloat and lock in a clean system.',
-    image: '/week-cosmos-reference.webp',
-  },
-];
+const LANDING_PHASE_IDS = ['week-1', 'week-2', 'week-3'] as const;
+type LandingPhaseId = typeof LANDING_PHASE_IDS[number];
+
+const LANDING_PHASE_IMAGES: Record<LandingPhaseId, string> = {
+  'week-1': '/daily-oranges.jpg',
+  'week-2': '/week-tangerine.jpg',
+  'week-3': '/week-cosmos-reference.webp',
+};
+
+const WEEKS = LANDING_PHASE_IDS.map((phaseId, index) => {
+  const phase = PROTOCOL_ROADMAP_PHASES.find((entry) => entry.id === phaseId);
+
+  if (!phase) {
+    throw new Error(`Missing roadmap phase ${phaseId}`);
+  }
+
+  return {
+    id: index + 1,
+    label: phase.railLabel.toUpperCase(),
+    name: phase.title.replace(/^Week\s+\d+:\s*/i, '').toUpperCase(),
+    shortPromise: phase.shortPromise,
+    overview: phase.overview,
+    image: LANDING_PHASE_IMAGES[phaseId],
+  };
+});
 
 const DESKTOP_SHOWCASE = {
   title: 'The End of the "Wing It" Method.',
@@ -52,7 +56,7 @@ const DESKTOP_SHOWCASE_POINTS = [
   'Burn the PDFs. Open "Today" and see exactly what to do, what to take, and when to eat.',
   'Get a hyper-strict shopping list so you stop panic-buying random useless supplements.',
   'Push reminders force you to stay on schedule before the day spirals out of control.',
-  '24/7 Nutrition Agent access to pull you back from the ledge when sugar cravings hit hard.',
+  '24/7 GutBrain access to pull you back from the ledge when sugar cravings hit hard.',
   'Instant symptom decoding when die-off makes you panic and wonder if something is "wrong".',
   'Roadmap tracking so you actually know if you are making progress or just spinning your wheels.',
   'Drop the mental overhead. Tell us what you took, and we handle the logic for the rest of the day.',
@@ -73,10 +77,10 @@ const MOBILE_DEMO_CARDS = [
     ],
   },
   {
-    id: 'coach-mobile',
+    id: 'gutbrain-mobile',
     label: 'Crisis Support',
     title: 'An emergency brake for when you spiral.',
-    description: 'When the die-off hits and you want to quit, the Nutrition Agent intercepts. It answers the exact blocker keeping you stuck and forces you forward.',
+    description: 'When the die-off hits and you want to quit, GutBrain intercepts. It answers the exact blocker keeping you stuck and forces you forward.',
     value: 'Hard days stop being an excuse to order takeout.',
     frames: [
       '/landing-media/mobile-coach-seq-1.png',
@@ -104,8 +108,10 @@ const MOBILE_DEMO_CARDS = [
 const OFFER_ITEMS = [
   'An airtight Prep Day protocol that deletes startup chaos',
   'Ruthless day-by-day directives (no guessing)',
-  '24/7 Crisis Agent for when the cravings hit hard',
+  '24/7 GutBrain support for when the cravings hit hard',
 ];
+
+const COMMAND_CENTER_SUBTEXT = 'Zero thinking required. Wake up. Open the journal. Execute the checklist. Everything you need to survive today is handed to you on a silver platter.';
 
 const FIT_ITEMS = [
   'You already bought supplements but have ZERO schedule',
@@ -224,6 +230,10 @@ const Landing = () => {
     navigate(START_PATH);
   };
 
+  const handleLogin = () => {
+    navigate(LOGIN_PATH);
+  };
+
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -281,7 +291,13 @@ const Landing = () => {
               className={`open-program__tab ${activeWeek === index ? 'open-program__tab--active' : ''}`}
             >
               <span className="open-program__tab-label">{week.label}</span>
-              <span className="open-program__tab-name">{week.name}</span>
+              <span className="open-program__tab-name" aria-label={week.name}>
+                {week.name.split(' ').map((word, wordIndex) => (
+                  <span key={`${week.id}-${wordIndex}`} className="open-program__tab-name-word">
+                    {word}
+                  </span>
+                ))}
+              </span>
             </button>
           ))}
         </div>
@@ -295,7 +311,8 @@ const Landing = () => {
             transition={{ duration: 0.3 }}
             className="open-program__details"
           >
-            <p className="open-program__description">{currentWeek.description}</p>
+            <p className="open-program__promise">{currentWeek.shortPromise}</p>
+            <p className="open-program__description">{currentWeek.overview}</p>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -326,34 +343,43 @@ const Landing = () => {
         START FREE TODAY — {PRODUCT_PRICE_SUMMARY}
       </div>
       <header className={`open-header ${!logoVisible ? 'open-header--hidden' : ''}`}>
-        <div
-          className="open-logo"
-          onClick={handleScrollToTop}
-          onKeyDown={handleLogoKeyDown}
-          role="button"
-          tabIndex={0}
-        >
-          <span>T</span>
-          <span>h</span>
-          <span>e</span>
-          <span className="open-logo-space" />
-          <span>G</span>
-          <span>u</span>
-          <span>t</span>
-          <span className="open-logo-space" />
-          <span>B</span>
-          <span>r</span>
-          <span>a</span>
-          <span>i</span>
-          <span>n</span>
-          <span className="open-logo-space" />
-          <span>J</span>
-          <span>o</span>
-          <span>u</span>
-          <span>r</span>
-          <span>n</span>
-          <span>a</span>
-          <span>l</span>
+        <div className="open-header__inner">
+          <div
+            className="open-logo"
+            onClick={handleScrollToTop}
+            onKeyDown={handleLogoKeyDown}
+            role="button"
+            tabIndex={0}
+          >
+            <span>T</span>
+            <span>h</span>
+            <span>e</span>
+            <span className="open-logo-space" />
+            <span>G</span>
+            <span>u</span>
+            <span>t</span>
+            <span className="open-logo-space" />
+            <span>B</span>
+            <span>r</span>
+            <span>a</span>
+            <span>i</span>
+            <span>n</span>
+            <span className="open-logo-space" />
+            <span>J</span>
+            <span>o</span>
+            <span>u</span>
+            <span>r</span>
+            <span>n</span>
+            <span>a</span>
+            <span>l</span>
+          </div>
+          <button
+            type="button"
+            className="open-header__login"
+            onClick={handleLogin}
+          >
+            Log in
+          </button>
         </div>
       </header>
 
@@ -393,7 +419,7 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Winging a 21-day gut reset guarantees a 92% failure rate. Plug into the daily execution engine that tells you exactly what to do, what to take, and when.
+            {COMMAND_CENTER_SUBTEXT}
           </motion.p>
         </div>
       </section>
@@ -552,6 +578,9 @@ const Landing = () => {
             <p className="open-offer__micro">
               Start your trial, unlock the workspace, and begin from Prep Day.
             </p>
+            <button type="button" className="open-offer__login" onClick={handleLogin}>
+              Already have an account? Log in
+            </button>
           </div>
         </div>
       </section>
@@ -570,7 +599,7 @@ const Landing = () => {
         <div className="open-daily__content">
           <h2 className="open-daily__heading">THE COMMAND CENTER</h2>
           <p className="open-daily__subheading">
-            Zero thinking required. Wake up. Open the journal. Execute the checklist. Everything you need to survive today is handed to you on a silver platter. Stop re-reading complex protocols and just follow the damn instructions.
+            {COMMAND_CENTER_SUBTEXT}
           </p>
         </div>
         <div className="open-daily__footer">
@@ -608,6 +637,13 @@ const Landing = () => {
           onClick={handleStart}
         >
           Take the Free Gut Analysis <ArrowRight size={18} />
+        </button>
+        <button
+          type="button"
+          className="open-sticky-cta__login"
+          onClick={handleLogin}
+        >
+          Log in
         </button>
       </div>
     </div>

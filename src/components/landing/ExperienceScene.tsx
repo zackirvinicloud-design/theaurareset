@@ -9,7 +9,7 @@ const comparisons = [
     us: true
   },
   {
-    feature: "Journey AI answers ANY granular question instantly",
+    feature: "GutBrain answers ANY granular question instantly",
     others: false,
     us: true
   },

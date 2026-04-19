@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { MessageSquare, Leaf, ArrowDown, Sparkles, Plus, ChevronRight } from 'lucide-react';
+import { ArrowDown, Plus, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     AlertDialog,
@@ -19,6 +19,7 @@ import { streamChat } from '@/utils/streamChat';
 import { buildProtocolChatContext, getDayLabel } from '@/hooks/useProtocolData';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import {
     GUT_BRAIN_AI_NAME,
     getGutBrainDisplayText,
@@ -26,7 +27,7 @@ import {
     type CoachAction,
     type GutBrainConversationEntry,
     type GutBrainProfile,
-    parseGutBrainShoppingActions,
+    type GutBrainRecipeAction,
     type GutBrainShoppingAction,
     type GutBrainSnapshot,
     type GutBrainStarterState,
@@ -40,6 +41,7 @@ interface JournalCenterProps {
     onUpdateEntry: (entryId: string, content: string) => void;
     onFinalizeEntry: (entryId: string, content: string) => Promise<void> | void;
     onApplyShoppingActions?: (actions: GutBrainShoppingAction[]) => Promise<void> | void;
+    onApplyRecipeActions?: (actions: GutBrainRecipeAction[]) => Promise<void> | void;
     onCoachAction?: (action: CoachAction) => void;
     brainProfile: GutBrainProfile;
     brainSnapshot: GutBrainSnapshot | null;
@@ -56,6 +58,7 @@ interface JournalCenterProps {
     onRenameChatThread?: (threadId: string, title: string) => Promise<void> | void;
     pendingPrompt?: string | null;
     onPendingPromptConsumed?: () => void;
+    recipeContext?: string;
     isMobile?: boolean;
     mobileVariant?: 'default' | 'help';
 }
@@ -68,6 +71,7 @@ export const JournalCenter = ({
     onUpdateEntry,
     onFinalizeEntry,
     onApplyShoppingActions,
+    onApplyRecipeActions,
     onCoachAction,
     brainProfile,
     brainSnapshot,
@@ -80,6 +84,7 @@ export const JournalCenter = ({
     onRenameChatThread,
     pendingPrompt,
     onPendingPromptConsumed,
+    recipeContext,
     isMobile = false,
     mobileVariant = 'default',
 }: JournalCenterProps) => {
@@ -144,6 +149,7 @@ export const JournalCenter = ({
             'Use only standard ASCII keyboard characters. No non-English words, accented text, curly quotes, emoji, or non-Latin scripts.',
             'Keep the morning elixir simple by default. Do not list every variation unless the user asks for the differences.',
             'Never show internal markers or hidden tags.',
+            ...(recipeContext ? [recipeContext] : []),
             buildProtocolChatContext(progress.currentDay),
         ].join(' ');
 
@@ -177,11 +183,6 @@ export const JournalCenter = ({
                         try {
                             assistantContent = sanitizeAssistantText(assistantContent).trim();
                             await onFinalizeEntry(assistantEntry.id, assistantContent);
-
-                            const shoppingActions = parseGutBrainShoppingActions(assistantContent);
-                            if (shoppingActions.length && onApplyShoppingActions) {
-                                await onApplyShoppingActions(shoppingActions);
-                            }
 
                             await onRefreshBrain(
                                 [
@@ -220,7 +221,6 @@ export const JournalCenter = ({
     }, [
         entries,
         onAddEntry,
-        onApplyShoppingActions,
         onFinalizeEntry,
         onUpdateEntry,
         progress.currentDay,
@@ -228,9 +228,44 @@ export const JournalCenter = ({
         brainProfile,
         brainSnapshot,
         symptoms,
+        recipeContext,
         onRefreshBrain,
         sanitizeAssistantText,
     ]);
+
+    const handleRecipeActionSelect = useCallback(async (action: GutBrainRecipeAction) => {
+        if (!onApplyRecipeActions) {
+            return;
+        }
+
+        await onApplyRecipeActions([action]);
+    }, [onApplyRecipeActions]);
+
+    const handleShoppingActionSelect = useCallback(async (action: GutBrainShoppingAction) => {
+        if (!onApplyShoppingActions) {
+            return;
+        }
+
+        await onApplyShoppingActions([action]);
+    }, [onApplyShoppingActions]);
+
+    const handleRecipeIngredientsToShoppingSelect = useCallback(async (action: GutBrainRecipeAction) => {
+        if (!onApplyShoppingActions || action.type !== 'add' || !action.ingredients.length) {
+            return;
+        }
+
+        const shoppingActions: GutBrainShoppingAction[] = action.ingredients.map((ingredient) => ({
+            type: 'add',
+            category: 'Recipe ingredients',
+            itemName: ingredient,
+        }));
+
+        if (!shoppingActions.length) {
+            return;
+        }
+
+        await onApplyShoppingActions(shoppingActions);
+    }, [onApplyShoppingActions]);
 
     useEffect(() => {
         if (pendingPrompt && !isLoading) {
@@ -262,8 +297,8 @@ export const JournalCenter = ({
                 <div className="border-b border-border/50">
                     <div className="flex items-center justify-between gap-2 px-4 py-2.5">
                         <div className="flex items-center gap-2 min-w-0">
-                            <Sparkles className="w-4 h-4 text-primary" />
-                            <h3 className="font-semibold text-sm">Coach</h3>
+                            <GutBrainLogo className="h-4 w-4 rounded-sm" />
+                            <h3 className="font-semibold text-sm">{GUT_BRAIN_AI_NAME}</h3>
                         </div>
                         <div className="flex items-center gap-1">
                             <Button
@@ -290,7 +325,7 @@ export const JournalCenter = ({
             ) : !isMobile && (
                 <div className="flex items-center justify-between gap-3 border-b border-border/50 px-4 py-3">
                     <div className="flex items-center gap-2 min-w-0">
-                        <MessageSquare className="w-4 h-4 text-primary" />
+                        <GutBrainLogo className="h-4 w-4 rounded-sm" />
                         <div className="min-w-0">
                             <h3 className="font-semibold text-sm">{GUT_BRAIN_AI_NAME}</h3>
                             <p className="text-xs text-muted-foreground">
@@ -368,13 +403,16 @@ export const JournalCenter = ({
                                             void handleSend(choice);
                                         }}
                                         onActionSelect={onCoachAction}
+                                        onRecipeActionSelect={handleRecipeActionSelect}
+                                        onShoppingActionSelect={handleShoppingActionSelect}
+                                        onRecipeIngredientsToShoppingSelect={handleRecipeIngredientsToShoppingSelect}
                                     />
                                 );
                             })}
                             {isLoading && entries[entries.length - 1]?.role !== 'assistant' && (
                                 <div className="mb-4 flex gap-3">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/30 ring-1 ring-emerald-500/20">
-                                        <Leaf className="w-4 h-4 text-emerald-400" />
+                                        <GutBrainLogo className="h-4 w-4 rounded-sm" />
                                     </div>
                                     <div className="rounded-lg bg-muted px-4 py-2">
                                         <div className="flex gap-1">
@@ -446,7 +484,7 @@ function CoachStarterPanel({
         <div className={cn(compact ? 'space-y-3 px-0.5 py-1' : 'space-y-3 px-1 py-1')}>
             <div className="flex items-start gap-3">
                 <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/6 text-primary">
-                    <Sparkles className="h-5 w-5" />
+                    <GutBrainLogo className="h-5 w-5 rounded-sm" />
                 </div>
                 <div className="min-w-0 flex-1 space-y-2 text-left">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">

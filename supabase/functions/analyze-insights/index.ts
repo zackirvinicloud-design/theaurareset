@@ -29,7 +29,7 @@ const fallbackResponse: AnalyzeInsightsResponse = {
     barriers: [],
     supportPreferences: [],
     wins: [],
-    conversationSummary: "The conversation is still early, so GutBrain AI does not have a durable read yet.",
+    conversationSummary: "The conversation is still early, so GutBrain does not have a durable read yet.",
   },
   snapshot: {
     summary: "There is not enough grounded conversation yet to form a strong daily read.",

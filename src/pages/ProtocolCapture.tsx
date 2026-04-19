@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DailyChecklist } from '@/components/journal/DailyChecklist';
 import { JournalCenter } from '@/components/journal/JournalCenter';
-import { NormalTodayView } from '@/components/journal/NormalTodayView';
 import { ProtocolReference } from '@/components/journal/ProtocolReference';
 import { ProtocolRoadmapExplorer } from '@/components/journal/ProtocolRoadmapExplorer';
 import { ShoppingListView } from '@/components/journal/ShoppingListView';
@@ -19,7 +18,7 @@ import type {
 } from '@/hooks/useJournalStore';
 
 type CaptureScene = 'prep' | 'today' | 'journey' | 'tour';
-type ActiveView = 'chat' | 'shopping' | 'roadmap' | 'normal';
+type ActiveView = 'chat' | 'shopping' | 'roadmap';
 
 const PREP_EXPANDED_CATEGORIES = [
   'Foundation_Morning Ritual Essentials',
@@ -561,6 +560,23 @@ export default function ProtocolCapture() {
     ]);
   };
 
+  const openSupportChat = () => {
+    setActiveView('chat');
+    setEntries((prev) => {
+      const startOffset = prev.length + 11;
+      return [
+        ...prev,
+        makeEntry(progress.currentDay, 'user', 'I feel off today. Can you help me understand what is normal and what to do next?', startOffset),
+        makeEntry(
+          progress.currentDay,
+          'assistant',
+          'Yes. Tell me your top physical symptom and your current energy level (0-10), and I will separate what is expected vs caution and give you one next step for today.',
+          startOffset + 1,
+        ),
+      ];
+    });
+  };
+
   const handleSetReminder = async (input: {
     checklistKey: string;
     dayNumber: number;
@@ -596,7 +612,7 @@ export default function ProtocolCapture() {
     }
 
     if (action.type === 'open_normal_today') {
-      setActiveView('normal');
+      openSupportChat();
       return;
     }
 
@@ -608,6 +624,16 @@ export default function ProtocolCapture() {
 
       if (action.view === 'shopping') {
         setActiveView('shopping');
+        return;
+      }
+
+      if (action.view === 'symptoms') {
+        openSupportChat();
+        return;
+      }
+
+      if (action.view === 'help' && /support|symptom|normal/i.test(action.label.toLowerCase())) {
+        openSupportChat();
         return;
       }
 
@@ -698,14 +724,6 @@ export default function ProtocolCapture() {
               onBack={() => setActiveView('chat')}
               onOpenShoppingView={() => setActiveView('shopping')}
               onAskCoach={() => setActiveView('chat')}
-              onOpenNormalToday={() => setActiveView('normal')}
-            />
-          ) : activeView === 'normal' ? (
-            <NormalTodayView
-              currentDay={progress.currentDay}
-              currentPhase={progress.currentPhase}
-              onBack={() => setActiveView('chat')}
-              onAskCoach={() => setActiveView('chat')}
             />
           ) : (
             <JournalCenter
@@ -725,7 +743,6 @@ export default function ProtocolCapture() {
           currentDay={progress.currentDay}
           onOpenShoppingView={() => setActiveView('shopping')}
           onOpenRoadmapView={() => setActiveView('roadmap')}
-          onOpenNormalTodayView={() => setActiveView('normal')}
           isOpen={refOpen}
           onToggle={() => setRefOpen((prev) => !prev)}
         />

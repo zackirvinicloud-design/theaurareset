@@ -22,7 +22,7 @@ export function resolveChatProvider(): ChatProviderConfig {
     };
   }
 
-  throw new Error("No AI provider key configured. Set GEMINI_API_KEY (or GOOGLE_API_KEY).");
+  throw new Error("No GutBrain provider key configured. Set GEMINI_API_KEY (or GOOGLE_API_KEY).");
 }
 
 export function buildChatProviderHeaders(config: ChatProviderConfig) {

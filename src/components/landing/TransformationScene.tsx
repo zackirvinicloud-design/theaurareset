@@ -99,7 +99,7 @@ export const TransformationScene = () => {
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold text-base sm:text-lg">Journey AI - Instant Granular Guidance <span className="text-primary">($497 Value)</span></p>
+                  <p className="font-bold text-base sm:text-lg">GutBrain - Instant Granular Guidance <span className="text-primary">($497 Value)</span></p>
                   <p className="text-sm text-muted-foreground">Answer ANY question instantly, save hours of research and costly mistakes</p>
                 </div>
               </div>

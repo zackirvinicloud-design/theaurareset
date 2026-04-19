@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ export const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8"
         >
-          <Sparkles className="w-4 h-4 text-primary" />
+          <GutBrainLogo className="h-4 w-4 rounded-sm" />
           <span className="text-sm font-medium text-primary">Built for gut health buyers who need execution</span>
         </motion.div>
 
@@ -122,7 +123,7 @@ export const HeroSection = () => {
           </div>
           <div className="flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/70 px-4 py-3">
             <CheckCircle2 className="w-4 h-4 text-primary" />
-            <span>AI help when you get stuck</span>
+            <span>GutBrain help when you get stuck</span>
           </div>
         </motion.div>
       </div>

@@ -83,7 +83,7 @@ const PaymentSuccess = () => {
       } else {
         toast({
           title: "Access unlocked",
-          description: "Next up: a quick profile setup so Coach can tailor this around you.",
+          description: "Next up: a quick profile setup so GutBrain can tailor this around you.",
         });
         const next = new URLSearchParams();
         next.set("redirect", "/protocol");

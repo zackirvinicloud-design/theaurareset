@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Calendar, User, Leaf } from 'lucide-react';
+import { Calendar, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import {
   Dialog,
   DialogContent,
@@ -77,13 +78,13 @@ export const JournalHistory = ({ trigger }: JournalHistoryProps) => {
                         {msg.role === 'user' ? (
                           <User className="w-3 h-3 text-secondary-foreground" />
                         ) : (
-                          <Leaf className="w-3 h-3 text-emerald-400" />
+                          <GutBrainLogo className="h-3 w-3 rounded-sm" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-xs">
-                            {msg.role === 'user' ? 'You' : 'AI Coach'}
+                            {msg.role === 'user' ? 'You' : 'GutBrain'}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {new Date(msg.timestamp).toLocaleTimeString('en-US', {

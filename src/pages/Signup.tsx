@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
+import { GutBrainLogo } from "@/components/brand/GutBrainLogo";
 import { toast } from "@/hooks/use-toast";
 import {
   getDefaultPostAuthDestination,
@@ -251,8 +252,12 @@ const Signup = () => {
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-700">
               The Gut Brain Journal
             </p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5">
+              <GutBrainLogo className="h-4 w-4 rounded-sm" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">GutBrain</span>
+            </div>
             <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-              {isLegacyActivationFlow ? "Step 2 of 2: Claim your access" : "Step 2 of 2: Save your profile to claim your protocol."}
+              Create your secure account.
             </h1>
 
             {isLegacyActivationFlow ? (
@@ -261,12 +266,12 @@ const Signup = () => {
                   <CheckCircle2 className="h-4 w-4" />
                   <span className="text-xs font-semibold uppercase tracking-[0.18em]">Payment Secured</span>
                 </div>
-                <p className="mt-4 text-lg font-semibold leading-tight">Your protocol is unlocked. Let's create your account to lock in your test results.</p>
+                <p className="mt-4 text-lg font-semibold leading-tight">Your protocol is unlocked. Create your account to continue.</p>
               </div>
             ) : (
               <>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Take the diagnostic test to see if a 21-day reset is the right fit for your symptoms. Enter your email to begin.
+                  You are almost in. Set up your login so your protocol progress and preferences stay saved.
                 </p>
 
                 <div className="mt-6 space-y-3 text-sm text-muted-foreground">
@@ -280,7 +285,7 @@ const Signup = () => {
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>Coach answers about YOUR step</span>
+                    <span>GutBrain guidance for your current day</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
@@ -300,19 +305,17 @@ const Signup = () => {
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -18 }}
-                  transition={{ duration: 0.2 }}
+                 transition={{ duration: 0.2 }}
                 >
                    <div className="mx-auto max-w-xl py-6">
                       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">
-                        {isLegacyActivationFlow ? "Final Step" : "Almost done"}
+                        Account setup
                       </p>
                       <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-foreground">
-                        Where should we lock in your test results?
+                        Set up your account
                       </h2>
                       <p className="mt-3 text-base leading-7 text-muted-foreground">
-                        {isLegacyActivationFlow
-                          ? "Create your secure login so you don't lose your diagnostic score or your trial access."
-                          : "Set up your secure profile so you don't lose any progress or customized insights from Coach."}
+                        Use the email and password you want for your login. We will keep your protocol progress synced to this account.
                       </p>
 
                       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -343,7 +346,7 @@ const Signup = () => {
                             "Creating account..."
                           ) : (
                             <>
-                              Lock In & Continue
+                              Create Account & Continue
                               <ArrowRight className="ml-2 h-4 w-4" />
                             </>
                           )}

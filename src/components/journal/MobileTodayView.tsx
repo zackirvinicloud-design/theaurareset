@@ -169,7 +169,7 @@ export const MobileTodayView = ({
                                             Reset this day cleanly
                                         </Button>
                                         <Button variant="ghost" size="sm" className="h-8 rounded-full px-3" onClick={onAskCoachAboutRecovery}>
-                                            Ask Coach if I should adjust
+                                            Ask GutBrain if I should adjust
                                         </Button>
                                     </div>
                                 </div>
@@ -229,7 +229,7 @@ export const MobileTodayView = ({
                                         className="h-8 rounded-full px-3 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                                         onClick={() => onAskAbout(nextItem.label)}
                                     >
-                                        Ask Coach
+                                        Ask GutBrain
                                     </Button>
                                 </div>
                                 {showWhyThisMatters && nextItemSupport && (
@@ -249,7 +249,7 @@ export const MobileTodayView = ({
                                 <div>
                                     <p className="text-sm font-semibold text-foreground">Today is complete.</p>
                                     <p className="text-xs leading-5 text-muted-foreground">
-                                        Stay with the plan tonight and use Coach only if something still feels off.
+                                        Stay with the plan tonight and use GutBrain only if something still feels off.
                                     </p>
                                 </div>
                             </div>

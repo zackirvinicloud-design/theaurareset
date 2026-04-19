@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BookOpen, ClipboardList, Loader2, Sparkles } from "lucide-react";
+import { BookOpen, ClipboardList, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { findShoppingCategoryMatch, getDayLabel, getShoppingPhaseForDay, SHOPPING_LIST } from "@/hooks/useProtocolData";
@@ -14,19 +14,21 @@ import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routi
 import type { ReminderDeliveryChannel } from "@/lib/sms";
 import { cn } from "@/lib/utils";
 import { parseLocalDateTime } from "@/lib/taskReminders";
-import type { CoachAction, GutBrainShoppingAction } from "@/lib/gutbrain";
+import { buildRecipeChatContext } from "@/lib/recipes";
+import type { CoachAction, GutBrainRecipeAction, GutBrainShoppingAction } from "@/lib/gutbrain";
 
 import { TopBar } from "@/components/journal/TopBar";
 import { DailyChecklist, buildChecklistViewModel } from "@/components/journal/DailyChecklist";
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
-import { NormalTodayView } from "@/components/journal/NormalTodayView";
 import { ProfileSettingsView } from "@/components/journal/ProfileSettingsView";
 import { ProtocolRoadmapExplorer } from "@/components/journal/ProtocolRoadmapExplorer";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
+import { RecipesView } from "@/components/journal/RecipesView";
 import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
+import { GutBrainLogo } from "@/components/brand/GutBrainLogo";
 
-type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap' | 'normal' | 'settings';
+type ActiveView = 'today' | 'help' | 'shopping' | 'recipes' | 'guide' | 'roadmap' | 'settings';
 
 const dedupeList = (values: Array<string | null | undefined>) => {
   const seen = new Set<string>();
@@ -111,6 +113,10 @@ const Protocol = () => {
       healthFocus,
     };
   }, [gutBrain.profile, onboarding.profile]);
+  const recipeChatContext = useMemo(
+    () => buildRecipeChatContext(store.recipes, store.progress.currentDay),
+    [store.progress.currentDay, store.recipes],
+  );
 
   // Persist ref panel state
   useEffect(() => {
@@ -182,8 +188,11 @@ const Protocol = () => {
     setActiveView(settingsReturnView);
   }, [settingsReturnView]);
 
-  const openNormalToday = useCallback(() => {
-    setActiveView('normal');
+  const openSymptomHelp = useCallback((prompt?: string) => {
+    setActiveView('help');
+    if (prompt) {
+      setPendingPrompt(prompt);
+    }
   }, []);
 
   const resolveChecklistTargetKey = useCallback((preferredKey?: string | null) => {
@@ -332,7 +341,7 @@ const Protocol = () => {
 
   const handleCoachAction = useCallback((action: CoachAction) => {
     if (action.type === 'open_normal_today') {
-      openNormalToday();
+      openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
       return;
     }
 
@@ -344,6 +353,14 @@ const Protocol = () => {
     if (action.type === 'open_view') {
       if (action.view === 'shopping') {
         openShoppingWithFocus(action.phase, action.category);
+        return;
+      }
+      if (action.view === 'recipes') {
+        setActiveView('recipes');
+        return;
+      }
+      if (action.view === 'symptoms') {
+        openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
         return;
       }
       if (action.view === 'protocol') {
@@ -361,6 +378,10 @@ const Protocol = () => {
         return;
       }
       if (action.view === 'help') {
+        if (/support|symptom|normal/i.test(action.label.toLowerCase())) {
+          openSymptomHelp();
+          return;
+        }
         setActiveView('help');
         return;
       }
@@ -389,7 +410,7 @@ const Protocol = () => {
         focusChecklistItem(targetKey, { openReminderComposer: true });
       }
     }
-  }, [focusChecklistItem, isMobile, openNormalToday, openShoppingWithFocus, resolveChecklistTargetKey]);
+  }, [focusChecklistItem, isMobile, openShoppingWithFocus, openSymptomHelp, resolveChecklistTargetKey]);
 
   const handlePreviousDay = async () => {
     const targetDay = Math.max(store.progress.currentDay - 1, 0);
@@ -434,6 +455,15 @@ const Protocol = () => {
     setActiveView('shopping');
   };
 
+  const handleOpenRecipesFromGuide = () => {
+    setActiveView('recipes');
+  };
+
+  const handleRecipeAskAI = (prompt: string) => {
+    setActiveView('help');
+    setPendingPrompt(prompt);
+  };
+
   const handleOpenShoppingForPhase = useCallback((phaseName: string) => {
     const firstCategory = SHOPPING_LIST.find((phase) => phase.phase === phaseName)?.categories[0];
     setShoppingDefaultExpandedCategories(firstCategory ? [`${phaseName}_${firstCategory.category}`] : []);
@@ -444,10 +474,6 @@ const Protocol = () => {
     setActiveView('roadmap');
   };
 
-  const handleOpenNormalTodayFromGuide = () => {
-    setActiveView('normal');
-  };
-
   const handleSaveProfileSettings = useCallback(async (
     updates: Parameters<typeof onboarding.saveProfile>[0],
     options?: Parameters<typeof onboarding.saveProfile>[1],
@@ -455,7 +481,7 @@ const Protocol = () => {
     await onboarding.saveProfile(updates, options);
     toast({
       title: "Profile saved",
-      description: "Coach will use this immediately in the next reply.",
+      description: "GutBrain will use this immediately in the next reply.",
     });
   }, [onboarding]);
 
@@ -469,11 +495,6 @@ const Protocol = () => {
   const handleAskCoachFromRoadmap = (prompt: string) => {
     setActiveView('help');
     setPendingPrompt(prompt);
-  };
-
-  const handleAskCoachFromNormalToday = (prompt?: string) => {
-    setActiveView('help');
-    setPendingPrompt(prompt ?? 'Use my symptoms today and tell me what is expected vs what means I should pause.');
   };
 
   const handleApplyShoppingActions = async (actions: GutBrainShoppingAction[]) => {
@@ -520,6 +541,38 @@ const Protocol = () => {
       toast({
         title: "Shopping list updated",
         description,
+      });
+    }
+  };
+
+  const handleApplyRecipeActions = async (actions: GutBrainRecipeAction[]) => {
+    const savedRecipes: string[] = [];
+
+    for (const action of actions) {
+      if (action.type !== 'add') {
+        continue;
+      }
+
+      const result = await store.addRecipe({
+        title: action.title,
+        phase: action.phase,
+        mealType: action.mealType,
+        summary: action.summary,
+        ingredients: action.ingredients,
+        instructions: action.instructions,
+        notes: action.notes,
+        source: 'ai',
+      });
+
+      if (result) {
+        savedRecipes.push(result.title);
+      }
+    }
+
+    if (savedRecipes.length) {
+      toast({
+        title: "Recipe saved",
+        description: savedRecipes.join(', '),
       });
     }
   };
@@ -600,7 +653,7 @@ const Protocol = () => {
     backfillPromptShownRef.current = true;
     toast({
       title: "Finish your profile",
-      description: "Open Edit profile in settings so Coach can tailor meals, shopping, and support to you.",
+      description: "Open Edit profile in settings so GutBrain can tailor meals, shopping, and support to you.",
     });
   }, [hasAccess, isAuthLoading, onboarding.hasCompletedOnboarding, onboarding.isLoading, store.userId, storeIsLoading]);
 
@@ -636,8 +689,18 @@ const Protocol = () => {
         return;
       }
 
+      if (view === 'recipes') {
+        setActiveView('recipes');
+        return;
+      }
+
       if (view === 'normal') {
-        setActiveView('normal');
+        openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
+        return;
+      }
+
+      if (view === 'symptoms') {
+        openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
         return;
       }
 
@@ -680,6 +743,7 @@ const Protocol = () => {
     isMobile,
     location.search,
     openShoppingWithFocus,
+    openSymptomHelp,
     resolveChecklistTargetKey,
     setCurrentDay,
     storeIsLoading,
@@ -763,6 +827,15 @@ const Protocol = () => {
                 onAskAI={handleShoppingAskAI}
                 defaultExpandedCategories={shoppingDefaultExpandedCategories}
               />
+            ) : activeView === 'recipes' ? (
+              <RecipesView
+                currentDay={currentDay}
+                recipeOverrides={store.recipeOverrides}
+                onAddRecipe={store.addRecipe}
+                onRemoveRecipe={store.removeRecipe}
+                onAskAI={handleRecipeAskAI}
+                onBack={() => setActiveView('guide')}
+              />
             ) : activeView === 'roadmap' ? (
               <ProtocolRoadmapExplorer
                 currentDay={currentDay}
@@ -770,17 +843,6 @@ const Protocol = () => {
                 onBack={() => setActiveView('guide')}
                 onOpenShoppingView={handleOpenShoppingForPhase}
                 onAskCoach={handleAskCoachFromRoadmap}
-                onOpenNormalToday={openNormalToday}
-              />
-            ) : activeView === 'normal' ? (
-              <NormalTodayView
-                currentDay={currentDay}
-                currentPhase={currentPhase}
-                onBack={() => setActiveView('guide')}
-                onAskCoach={handleAskCoachFromNormalToday}
-                onAskCoachPrompt={handleAskCoachFromNormalToday}
-                symptoms={store.symptoms}
-                onToggleSymptom={store.toggleSymptom}
               />
             ) : activeView === 'guide' ? (
               <div className="flex h-full flex-col bg-background">
@@ -792,8 +854,8 @@ const Protocol = () => {
                     currentPhase={store.progress.currentPhase}
                     currentDay={currentDay}
                     onOpenShoppingView={handleOpenShoppingFromGuide}
+                    onOpenRecipesView={handleOpenRecipesFromGuide}
                     onOpenRoadmapView={handleOpenRoadmapFromGuide}
-                    onOpenNormalTodayView={handleOpenNormalTodayFromGuide}
                   />
                 </div>
               </div>
@@ -839,7 +901,9 @@ const Protocol = () => {
                 onUpdateEntry={store.updateJournalEntry}
                 onFinalizeEntry={store.finalizeJournalEntry}
                 onApplyShoppingActions={handleApplyShoppingActions}
+                onApplyRecipeActions={handleApplyRecipeActions}
                 onCoachAction={handleCoachAction}
+                recipeContext={recipeChatContext}
                 pendingPrompt={pendingPrompt}
                 onPendingPromptConsumed={() => setPendingPrompt(null)}
                 isMobile={true}
@@ -870,6 +934,15 @@ const Protocol = () => {
               onAskAI={handleShoppingAskAI}
               defaultExpandedCategories={shoppingDefaultExpandedCategories}
             />
+          ) : activeView === 'recipes' ? (
+            <RecipesView
+              currentDay={currentDay}
+              recipeOverrides={store.recipeOverrides}
+              onAddRecipe={store.addRecipe}
+              onRemoveRecipe={store.removeRecipe}
+              onAskAI={handleRecipeAskAI}
+              onBack={() => setActiveView('help')}
+            />
           ) : activeView === 'roadmap' ? (
             <ProtocolRoadmapExplorer
               currentDay={currentDay}
@@ -877,17 +950,6 @@ const Protocol = () => {
               onBack={() => setActiveView('help')}
               onOpenShoppingView={handleOpenShoppingForPhase}
               onAskCoach={handleAskCoachFromRoadmap}
-              onOpenNormalToday={openNormalToday}
-            />
-          ) : activeView === 'normal' ? (
-            <NormalTodayView
-              currentDay={currentDay}
-              currentPhase={currentPhase}
-              onBack={() => setActiveView('help')}
-              onAskCoach={handleAskCoachFromNormalToday}
-              onAskCoachPrompt={handleAskCoachFromNormalToday}
-              symptoms={store.symptoms}
-              onToggleSymptom={store.toggleSymptom}
             />
           ) : (
             <JournalCenter
@@ -907,7 +969,9 @@ const Protocol = () => {
               onUpdateEntry={store.updateJournalEntry}
               onFinalizeEntry={store.finalizeJournalEntry}
               onApplyShoppingActions={handleApplyShoppingActions}
+              onApplyRecipeActions={handleApplyRecipeActions}
               onCoachAction={handleCoachAction}
+              recipeContext={recipeChatContext}
               pendingPrompt={pendingPrompt}
               onPendingPromptConsumed={() => setPendingPrompt(null)}
               isMobile={false}
@@ -921,8 +985,8 @@ const Protocol = () => {
             currentPhase={store.progress.currentPhase}
             currentDay={store.progress.currentDay}
             onOpenShoppingView={handleOpenShoppingFromGuide}
+            onOpenRecipesView={handleOpenRecipesFromGuide}
             onOpenRoadmapView={handleOpenRoadmapFromGuide}
-            onOpenNormalTodayView={handleOpenNormalTodayFromGuide}
             isOpen={refOpen}
             onToggle={() => setRefOpen(prev => !prev)}
           />
@@ -951,15 +1015,15 @@ const Protocol = () => {
                 activeView === 'help' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
               )}
             >
-              <Sparkles className="w-5 h-5" />
-              <span className="text-[10px] font-medium">Coach</span>
+              <GutBrainLogo className="h-5 w-5 rounded-sm" />
+              <span className="text-[10px] font-medium">GutBrain</span>
             </button>
 
             <button
               onClick={() => setActiveView('guide')}
               className={cn(
                 "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                activeView === 'guide' || activeView === 'shopping' || activeView === 'roadmap' || activeView === 'normal'
+                activeView === 'guide' || activeView === 'shopping' || activeView === 'recipes' || activeView === 'roadmap'
                   ? "bg-primary/10 text-primary"
                   : "hover:bg-muted/50"
               )}

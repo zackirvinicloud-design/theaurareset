@@ -26,6 +26,15 @@
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
+.open-header__inner {
+  width: min(100%, 1400px);
+  padding: 0 clamp(18px, 4vw, 44px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
 .open-header--hidden {
   opacity: 0;
   transform: translateY(-20px);
@@ -52,6 +61,38 @@
 
 .open-logo-space {
   width: 0.35em;
+}
+
+.open-header__login {
+  position: absolute;
+  right: clamp(18px, 4vw, 44px);
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(12, 12, 12, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.open-header__login:hover {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.open-header__login:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 2px;
 }
 
 @keyframes blink {
@@ -142,8 +183,8 @@
   display: inline;
   position: relative;
   color: #ffffff;
-  border-bottom: 3px solid rgba(255, 255, 255, 0.4);
-  padding-bottom: 2px;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .open-hero__cursor {
@@ -652,6 +693,21 @@
   color: rgba(255, 255, 255, 0.54);
 }
 
+.open-offer__login {
+  margin-top: 12px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.open-offer__login:hover {
+  color: #ffffff;
+}
+
 /* ═══════════════════════════════════════════════════
    21-DAY PROGRAM SECTION
    ═══════════════════════════════════════════════════ */
@@ -754,48 +810,37 @@
 }
 
 .open-program__tab-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.05;
   font-size: clamp(14px, 1.6vw, 18px);
   font-weight: 700;
   letter-spacing: 0.06em;
+}
+
+.open-program__tab-name-word {
+  display: block;
 }
 
 .open-program__details {
   margin-top: 8px;
 }
 
+.open-program__promise {
+  margin: 0;
+  font-size: clamp(15px, 1.8vw, 20px);
+  font-weight: 500;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .open-program__description {
-  font-size: clamp(16px, 2vw, 22px);
+  font-size: clamp(15px, 1.8vw, 20px);
   font-weight: 400;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0;
-}
-
-.open-program__meta {
-  display: flex;
-  gap: clamp(40px, 6vw, 80px);
-}
-
-.open-program__meta-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.open-program__meta-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 6px;
-}
-
-.open-program__meta-value {
-  font-size: clamp(15px, 1.6vw, 18px);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 14px 0 0 0;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1005,6 +1050,10 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .open-sticky-cta__button {
@@ -1029,6 +1078,20 @@
   background: #ffffff;
   transform: scale(1.03);
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+}
+
+.open-sticky-cta__login {
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.open-sticky-cta__login:hover {
+  color: #ffffff;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1093,6 +1156,10 @@
     font-size: 18px;
   }
 
+  .open-header__login {
+    display: none;
+  }
+
   .open-offer__lists {
     grid-template-columns: 1fr;
   }
@@ -1124,6 +1191,10 @@
     justify-content: center;
     padding: 16px 28px;
     font-size: 15px;
+  }
+
+  .open-sticky-cta__login {
+    font-size: 13px;
   }
 
   .open-hero {
@@ -1197,11 +1268,6 @@
 
   .open-program__tab {
     padding: 12px 8px;
-  }
-
-  .open-program__meta {
-    flex-direction: column;
-    gap: 20px;
   }
 
   .open-proof__mobile-card,

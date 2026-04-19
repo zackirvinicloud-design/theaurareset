@@ -229,8 +229,8 @@ export const useOnboardingProfile = (userId: string | null) => {
   }, [profile, userId]);
 
   const hasCompletedOnboarding = useMemo(
-    () => Boolean(profile.completedAt) && isOnboardingProfileComplete(profile),
-    [profile],
+    () => Boolean(profile.completedAt),
+    [profile.completedAt],
   );
 
   return {

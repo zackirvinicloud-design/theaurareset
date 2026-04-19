@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import {
   Sheet,
   SheetContent,
@@ -36,12 +36,12 @@ export const InsightsDrawer = ({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {compact ? (
-          <Button variant="ghost" size="icon" className="h-8 w-8" title="Coach insights">
-            <Brain className="w-4 h-4" />
+          <Button variant="ghost" size="icon" className="h-8 w-8" title="GutBrain insights">
+            <GutBrainLogo className="h-4 w-4 rounded-sm" />
           </Button>
         ) : (
           <Button variant="outline" size="sm" className="gap-2">
-            <Brain className="w-4 h-4" />
+            <GutBrainLogo className="h-4 w-4 rounded-sm" />
             {buttonLabel}
           </Button>
         )}

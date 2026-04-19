@@ -15,7 +15,7 @@ const steps = [
   {
     number: '03',
     title: 'Ask and log',
-    description: 'Use AI for clarification and keep lightweight notes in your journal as you go.',
+    description: 'Use GutBrain for clarification and keep lightweight notes in your journal as you go.',
   },
 ];
 

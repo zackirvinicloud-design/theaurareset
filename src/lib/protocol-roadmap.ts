@@ -70,7 +70,7 @@ export const PROTOCOL_ROADMAP_SURFACES: ProtocolRoadmapSurfaceHint[] = [
         description: 'Use this when you need context, not reassurance loops. Shopping, roadmap, and normal-today live here.',
     },
     {
-        title: 'Coach',
+        title: 'GutBrain',
         description: 'Use this when your real-life question does not fit neatly into a checklist or when you need help interpreting what is happening.',
     },
 ];

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Calendar, Brain, Target } from 'lucide-react';
+import { Calendar, Target } from 'lucide-react';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 
 export const JournalIntroScene = () => {
   return (
@@ -19,7 +20,7 @@ export const JournalIntroScene = () => {
             Step-by-step guidance that saves you both time and money
           </p>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
-            No more wasted hours researching. No more expensive trial-and-error. Journey AI gives you instant answers to ANY question, adapting to YOUR unique situation in real-time.
+            No more wasted hours researching. No more expensive trial-and-error. GutBrain gives you instant answers to ANY question, adapting to YOUR unique situation in real-time.
           </p>
         </motion.div>
 
@@ -48,10 +49,10 @@ export const JournalIntroScene = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Brain className="w-10 h-10 sm:w-12 sm:h-12 mb-4 text-primary" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-3">Journey AI - Granular Answers Instantly</h3>
+            <GutBrainLogo className="w-10 h-10 sm:w-12 sm:h-12 mb-4 rounded-lg" />
+            <h3 className="text-xl sm:text-2xl font-bold mb-3">GutBrain - Granular Answers Instantly</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Ask ANY question, get specific answers immediately. "Can I substitute this?" "Why am I dizzy?" "What if I can't find organic?" Journey adapts to YOUR situation, saving hours of research and preventing expensive mistakes.
+              Ask ANY question, get specific answers immediately. "Can I substitute this?" "Why am I dizzy?" "What if I can't find organic?" GutBrain adapts to YOUR situation, saving hours of research and preventing expensive mistakes.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
               Instant guidance doctors can't provide, available 24/7

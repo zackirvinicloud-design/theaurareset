@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Brain, Leaf, Loader2, Pencil, Save, Sparkles } from 'lucide-react';
+import { Loader2, Pencil, Save, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import {
   GUT_BRAIN_AI_NAME,
   type GutBrainConversationEntry,
@@ -131,7 +132,7 @@ export const ConversationInsights = ({
       <Card className="border-primary/15 bg-primary/5">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Leaf className="h-4 w-4 text-emerald-400" />
+            <GutBrainLogo className="h-4 w-4 rounded-sm" />
             {GUT_BRAIN_AI_NAME}
           </CardTitle>
           <CardDescription>
@@ -165,7 +166,7 @@ export const ConversationInsights = ({
           </div>
           {!hasConversation && (
             <p className="text-sm text-muted-foreground">
-              Start talking with Coach about what feels hard, confusing, or easy. The insight layer gets better once there is real texture to read.
+              Start talking with GutBrain about what feels hard, confusing, or easy. The insight layer gets better once there is real texture to read.
             </p>
           )}
         </CardContent>
@@ -178,8 +179,8 @@ export const ConversationInsights = ({
               <CardTitle className="text-base">About you</CardTitle>
               <CardDescription>
                 {canEdit
-                  ? 'Edit these fields to train Coach. Hover over a field to edit it.'
-                  : 'What Coach knows about you from your conversations.'}
+                  ? 'Edit these fields to train GutBrain. Hover over a field to edit it.'
+                  : 'What GutBrain knows about you from your conversations.'}
               </CardDescription>
             </div>
           </div>
@@ -188,7 +189,7 @@ export const ConversationInsights = ({
           <div>
             <div className="mb-1 text-xs uppercase tracking-[0.16em] text-muted-foreground">Current read</div>
             <p className="text-sm leading-relaxed text-foreground">
-              {profile.conversationSummary || 'Coach is still building a read on how you stay on track.'}
+              {profile.conversationSummary || 'GutBrain is still building a read on how you stay on track.'}
             </p>
           </div>
 
@@ -197,7 +198,7 @@ export const ConversationInsights = ({
               <EditableField
                 label="Your name"
                 value={profile.preferredName || ''}
-                placeholder="What should Coach call you?"
+                placeholder="What should GutBrain call you?"
                 onSave={(v) => onUpdateProfile?.({ preferredName: v || null })}
               />
               <EditableField
@@ -296,7 +297,7 @@ export const ConversationInsights = ({
             </>
           ) : (
             <p className="text-sm text-muted-foreground">
-              No daily read yet. Ask a few real questions, then refresh the read to see what Coach is noticing.
+              No daily read yet. Ask a few real questions, then refresh the read to see what GutBrain is noticing.
             </p>
           )}
         </CardContent>

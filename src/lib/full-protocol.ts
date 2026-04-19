@@ -81,7 +81,7 @@ export const FULL_PROTOCOL_OVERVIEW = [
   "This product is an execution layer for a 21-day reset, not an invitation to read everything at once.",
   "Prep Day exists to reduce friction before Day 1. The goal is readiness, not intensity.",
   "Days 1-21 use the same core rhythm: keep meals clean, hydrate, protect binder timing, and stay consistent with the daily stack.",
-  "Coach is for blockers and clarifying questions. The checklist is still the source of truth for what to do today.",
+  "GutBrain is for blockers and clarifying questions. The checklist is still the source of truth for what to do today.",
 ];
 
 export const DAILY_RHYTHM_RULES = [
@@ -164,7 +164,7 @@ export const FULL_PROTOCOL_PHASES: ProtocolPhaseGuide[] = [
     ],
     keepSimple: [
       "Food, hydration, and timing matter more than heroic effort.",
-      "Use Coach when you feel unsure instead of opening five tabs.",
+      "Use GutBrain when you feel unsure instead of opening five tabs.",
     ],
     dayGroups: [
       {
@@ -267,7 +267,7 @@ export const TROUBLESHOOTING_CARDS: TroubleshootingCard[] = [
     doNow: [
       "Simplify the day before you add anything else.",
       "Protect hydration, food, and binder timing.",
-      "Use Coach to sanity-check the signal instead of guessing.",
+      "Use GutBrain to sanity-check the signal instead of guessing.",
     ],
     escalateIf: "You have chest tightness, trouble breathing, severe confusion, or any symptom that feels dangerous rather than uncomfortable.",
   },
@@ -287,7 +287,7 @@ export const TROUBLESHOOTING_CARDS: TroubleshootingCard[] = [
     doNow: [
       "Take the day slower and keep meals plain.",
       "Use the checklist and guide to confirm timing instead of stacking pills randomly.",
-      "Ask Coach for the simplest version of the day.",
+      "Ask GutBrain for the simplest version of the day.",
     ],
     escalateIf: "Vomiting persists, hydration drops, or symptoms move beyond mild-to-moderate discomfort.",
   },

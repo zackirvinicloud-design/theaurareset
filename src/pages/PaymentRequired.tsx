@@ -6,8 +6,8 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
 import { getWhopCheckoutUrl, PRODUCT_PRIMARY_CTA } from "@/lib/product";
-import { useOnboardingProfile } from "@/hooks/useOnboardingProfile";
-import { calculateGutScore, getScoreLabel, getScoreColor } from "@/lib/gut-score";
+import { useOnboardingProfile, type UserOnboardingProfile } from "@/hooks/useOnboardingProfile";
+import { calculateGutScore, getGutScoreExplanation, getScoreLabel, getScoreColor } from "@/lib/gut-score";
 import { motion } from "framer-motion";
 
 const PaymentRequired = () => {
@@ -57,14 +57,14 @@ const PaymentRequired = () => {
   }, [navigate]);
 
   const { profile: dbProfile } = useOnboardingProfile(userId);
-  const [localProfile, setLocalProfile] = useState<Record<string, any> | null>(null);
+  const [localProfile, setLocalProfile] = useState<UserOnboardingProfile | null>(null);
 
   useEffect(() => {
     if (!userId) {
       const stored = localStorage.getItem('pending_onboarding_profile');
       if (stored) {
         try {
-          setLocalProfile(JSON.parse(stored));
+          setLocalProfile(JSON.parse(stored) as UserOnboardingProfile);
         } catch (e) {
           console.log(e);
         }
@@ -94,17 +94,28 @@ const PaymentRequired = () => {
   };
 
   // Personalization Logic — computed before any conditional returns to obey hooks rules
-  const healthFlagsList = profile?.healthFlags || [];
+  const healthFlagsList = useMemo(() => profile?.healthFlags ?? [], [profile?.healthFlags]);
   const symptomsText = healthFlagsList.length > 0
     ? healthFlagsList.slice(0, 3).map(s => s.toLowerCase()).join(", ")
     : "general symptoms";
 
   const gutScore = useMemo(() => calculateGutScore({
     healthFlags: healthFlagsList,
+    whyNow: profile?.whyNow ?? null,
+    protocolGoal: profile?.protocolGoal ?? null,
     primaryBlocker: profile?.primaryBlocker ?? null,
     dietPattern: profile?.dietPattern ?? null,
-    routineType: profile?.routineType ?? null,
-  }), [healthFlagsList, profile?.primaryBlocker, profile?.dietPattern, profile?.routineType]);
+    foodPreferences: profile?.foodPreferences ?? [],
+  }), [healthFlagsList, profile?.whyNow, profile?.protocolGoal, profile?.primaryBlocker, profile?.dietPattern, profile?.foodPreferences]);
+
+  const scoreExplanation = useMemo(() => getGutScoreExplanation({
+    healthFlags: healthFlagsList,
+    whyNow: profile?.whyNow ?? null,
+    protocolGoal: profile?.protocolGoal ?? null,
+    primaryBlocker: profile?.primaryBlocker ?? null,
+    dietPattern: profile?.dietPattern ?? null,
+    foodPreferences: profile?.foodPreferences ?? [],
+  }), [healthFlagsList, profile?.whyNow, profile?.protocolGoal, profile?.primaryBlocker, profile?.dietPattern, profile?.foodPreferences]);
 
   const scoreLabel = getScoreLabel(gutScore);
   const scoreColor = getScoreColor(gutScore);
@@ -181,6 +192,9 @@ const PaymentRequired = () => {
           <div className="text-center text-[13px] text-zinc-400 leading-relaxed">
             <span className="capitalize">{symptomsText}</span>
           </div>
+          <p className="mt-4 text-center text-xs leading-relaxed text-zinc-500">
+            {scoreExplanation}
+          </p>
         </div>
       </div>
 
@@ -197,9 +211,9 @@ const PaymentRequired = () => {
 
             <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Survive die-off symptoms with SOS protocols that activate automatically — <span className="text-white font-medium">without panicking and quitting because you think something is wrong</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get a 24/7 AI coach that already knows your score, your diet, and your biggest blocker — <span className="text-white font-medium">without paying $300/hr for a functional medicine practitioner to tell you the same thing</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get 24/7 GutBrain support that already knows your score, your diet, and your biggest blocker — <span className="text-white font-medium">without paying $300/hr for a functional medicine practitioner to tell you the same thing</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Track your symptoms daily so you can see the exact moment your body starts turning around — <span className="text-white font-medium">without second-guessing whether it's "working" or you're just wasting money</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get on-demand GutBrain support when symptoms spike — <span className="text-white font-medium">without second-guessing whether it's working or panicking yourself off-plan</span></span></div>
 
             <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Know the correct full-moon parasite timing and exact herbal dosing schedule — <span className="text-white font-medium">without a $200 lab test or a 6-week wait for a naturopath appointment</span></span></div>
 

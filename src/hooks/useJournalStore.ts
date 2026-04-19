@@ -3,6 +3,28 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 import { buildShopKey, calculatePhase, findDefaultShoppingItem } from './useProtocolData';
 import { buildProtocolDeepLink, buildReminderSchedulePayload, type ReminderDeliveryChannel } from '@/lib/sms';
+import {
+    buildRecipeKey,
+    findDefaultRecipe,
+    getRecipePhaseForDay,
+    normalizeRecipeMealType,
+    resolveRecipes,
+    type RecipeItem as AppRecipeItem,
+    type RecipeMealType,
+    type RecipeSource,
+} from '@/lib/recipes';
+import {
+    buildSymptomCoachFollowup,
+    buildSymptomInsights,
+    getLegacySymptomKeysFromCheckin,
+    inferCategoryFromKey,
+    type SymptomCheckin,
+    type SymptomCheckinInput,
+    type SymptomCheckinItem,
+    type SymptomFactor,
+    type SymptomInsightsPayload,
+    type SymptomTrend,
+} from '@/lib/symptom-center';
 
 // ── Types ──────────────────────────────────────────────
 
@@ -34,7 +56,52 @@ export interface ChatThread {
 type DailySymptomsRow = Tables<'daily_symptoms'>;
 type DailyCheckinRow = Tables<'daily_checkins'>;
 type ShoppingListItemRow = Tables<'shopping_list_items'>;
+type RecipeItemRow = Tables<'recipe_items'>;
 type ChatThreadRow = Tables<'chat_threads'>;
+
+interface SymptomCheckinRow {
+    id: string;
+    user_id: string;
+    day_number: number;
+    logged_at: string;
+    gut_state: number | null;
+    mood_score: number | null;
+    energy_score: number | null;
+    stress_score: number | null;
+    note: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+interface SymptomCheckinItemRow {
+    id: string;
+    checkin_id: string;
+    user_id: string;
+    day_number: number;
+    symptom_key: string;
+    symptom_label: string;
+    category: string;
+    severity: number;
+    trend: SymptomTrend | null;
+    duration_bucket: string | null;
+    body_areas: string[] | null;
+    is_custom: boolean;
+    created_at: string;
+}
+
+interface SymptomFactorRow {
+    id: string;
+    checkin_id: string;
+    user_id: string;
+    day_number: number;
+    bristol_type: number | null;
+    hydration_level: number | null;
+    sleep_quality: number | null;
+    supplements_taken: boolean | null;
+    trigger_notes: string | null;
+    created_at: string;
+    updated_at: string;
+}
 
 export type ShoppingListItemSource = 'protocol' | 'manual' | 'ai';
 
@@ -62,6 +129,23 @@ export interface ShoppingListItemInput {
     source?: Extract<ShoppingListItemSource, 'manual' | 'ai'>;
 }
 
+export interface RecipeEntry extends AppRecipeItem {
+    id: string;
+    isHidden: boolean;
+    createdAt: string;
+}
+
+export interface RecipeInput {
+    title: string;
+    phase?: string;
+    mealType?: RecipeMealType | string;
+    summary?: string;
+    ingredients?: string[];
+    instructions?: string[];
+    notes?: string;
+    source?: Extract<RecipeSource, 'manual' | 'ai'>;
+}
+
 export interface DailyCheckIn {
     id: string;
     dayNumber: number;
@@ -70,6 +154,12 @@ export interface DailyCheckIn {
     mood?: 'great' | 'okay' | 'tough';
     note?: string;
     createdAt: string;
+}
+
+export interface SymptomRangeLoadResult {
+    startDay: number;
+    endDay: number;
+    checkins: SymptomCheckin[];
 }
 
 export interface ChecklistState {
@@ -137,7 +227,9 @@ const LS_CUSTOM_ITEMS_KEY = 'gbj-custom-items';
 const LS_SYMPTOMS_KEY = 'gbj-symptoms';
 const LS_CHECKIN_KEY = 'gbj-checkin';
 const LS_SHOPPING_OVERRIDES_KEY = 'gbj-shopping-overrides';
+const LS_RECIPE_OVERRIDES_KEY = 'gbj-recipe-overrides';
 const LS_TASK_REMINDERS_KEY = 'gbj-task-reminders';
+const LS_SYMPTOM_CHECKINS_KEY = 'gbj-symptom-checkins';
 
 function mapJournalEntryRow(row: Tables<'journal_entries'>): JournalEntry {
     return {
@@ -188,6 +280,33 @@ function mapShoppingOverrideRow(row: ShoppingListItemRow): ShoppingListOverride 
     };
 }
 
+function normalizeRecipeList(value: unknown) {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value
+        .map((item) => (typeof item === 'string' ? item.trim() : ''))
+        .filter(Boolean);
+}
+
+function mapRecipeRow(row: RecipeItemRow): RecipeEntry {
+    return {
+        id: row.id,
+        key: row.recipe_key,
+        title: row.title,
+        phase: row.phase_name,
+        mealType: normalizeRecipeMealType(row.meal_type, 'breakfast'),
+        summary: row.summary ?? undefined,
+        ingredients: normalizeRecipeList(row.ingredients),
+        instructions: normalizeRecipeList(row.instructions),
+        notes: row.notes ?? undefined,
+        source: (row.source as RecipeSource) || 'manual',
+        isHidden: row.is_hidden,
+        createdAt: row.created_at,
+    };
+}
+
 function mapTaskReminderRow(row: Record<string, unknown>): TaskReminder {
     const deliveryChannel = row.delivery_channel === 'sms'
         ? 'sms'
@@ -218,6 +337,10 @@ function normalizeShoppingMatch(value: string) {
     return value.trim().toLowerCase();
 }
 
+function normalizeRecipeMatch(value: string) {
+    return value.trim().toLowerCase();
+}
+
 function lsGet<T>(key: string, fallback: T): T {
     try {
         const v = localStorage.getItem(key);
@@ -245,6 +368,139 @@ function setLocalTaskReminders(userId: string | null, reminders: TaskReminder[])
     lsSet(getTaskReminderStorageKey(userId), reminders);
 }
 
+function getSymptomCheckinStorageKey(userId: string | null) {
+    return `${LS_SYMPTOM_CHECKINS_KEY}:${userId ?? 'guest'}`;
+}
+
+function getLocalSymptomCheckins(userId: string | null) {
+    return lsGet<SymptomCheckin[]>(getSymptomCheckinStorageKey(userId), []);
+}
+
+function setLocalSymptomCheckins(userId: string | null, checkins: SymptomCheckin[]) {
+    lsSet(getSymptomCheckinStorageKey(userId), checkins);
+}
+
+function normalizeTrend(value: string | null | undefined): SymptomTrend {
+    if (value === 'better' || value === 'worse') {
+        return value;
+    }
+    return 'same';
+}
+
+function normalizeDuration(value: string | null | undefined): SymptomCheckinItem['durationBucket'] {
+    if (
+        value === 'under_1h'
+        || value === '1_3h'
+        || value === '3_12h'
+        || value === '12_24h'
+        || value === 'multi_day'
+    ) {
+        return value;
+    }
+    return '12_24h';
+}
+
+function mapSymptomItemRow(row: SymptomCheckinItemRow): SymptomCheckinItem {
+    return {
+        id: row.id,
+        checkinId: row.checkin_id,
+        symptomKey: row.symptom_key,
+        symptomLabel: row.symptom_label,
+        category: row.category,
+        severity: row.severity,
+        trend: normalizeTrend(row.trend),
+        durationBucket: normalizeDuration(row.duration_bucket),
+        bodyAreas: Array.isArray(row.body_areas) ? row.body_areas : [],
+        isCustom: Boolean(row.is_custom),
+        createdAt: row.created_at,
+    };
+}
+
+function mapSymptomFactorRow(row: SymptomFactorRow): SymptomFactor {
+    return {
+        id: row.id,
+        checkinId: row.checkin_id,
+        bristolType: row.bristol_type ?? null,
+        hydrationLevel: row.hydration_level ?? null,
+        sleepQuality: row.sleep_quality ?? null,
+        supplementsTaken: row.supplements_taken ?? null,
+        triggerNotes: row.trigger_notes ?? null,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+    };
+}
+
+function mapSymptomCheckinRow(
+    row: SymptomCheckinRow,
+    itemsByCheckin: Map<string, SymptomCheckinItem[]>,
+    factorsByCheckin: Map<string, SymptomFactor>,
+): SymptomCheckin {
+    return {
+        id: row.id,
+        dayNumber: row.day_number,
+        loggedAt: row.logged_at,
+        gutState: row.gut_state ?? null,
+        moodScore: row.mood_score ?? null,
+        energyScore: row.energy_score ?? null,
+        stressScore: row.stress_score ?? null,
+        note: row.note ?? null,
+        items: itemsByCheckin.get(row.id) ?? [],
+        factors: factorsByCheckin.get(row.id) ?? null,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+    };
+}
+
+async function fetchSymptomRangeFromDb(userId: string, startDay: number, endDay: number) {
+    const { data: checkinRows, error: checkinError } = await supabase
+        .from('symptom_checkins')
+        .select('*')
+        .eq('user_id', userId)
+        .gte('day_number', startDay)
+        .lte('day_number', endDay)
+        .order('logged_at', { ascending: false });
+
+    if (checkinError || !checkinRows?.length) {
+        return [] as SymptomCheckin[];
+    }
+
+    const checkinIds = checkinRows.map((row) => row.id);
+
+    const { data: itemRows } = await supabase
+        .from('symptom_checkin_items')
+        .select('*')
+        .eq('user_id', userId)
+        .in('checkin_id', checkinIds)
+        .order('created_at', { ascending: true });
+
+    const { data: factorRows } = await supabase
+        .from('symptom_checkin_factors')
+        .select('*')
+        .eq('user_id', userId)
+        .in('checkin_id', checkinIds);
+
+    const mappedItems = (itemRows || []).map((row) => mapSymptomItemRow(row as unknown as SymptomCheckinItemRow));
+    const mappedFactors = (factorRows || []).map((row) => mapSymptomFactorRow(row as unknown as SymptomFactorRow));
+
+    const itemsByCheckin = new Map<string, SymptomCheckinItem[]>();
+    for (const item of mappedItems) {
+        const list = itemsByCheckin.get(item.checkinId) ?? [];
+        list.push(item);
+        itemsByCheckin.set(item.checkinId, list);
+    }
+
+    const factorsByCheckin = new Map<string, SymptomFactor>();
+    for (const factor of mappedFactors) {
+        factorsByCheckin.set(factor.checkinId, factor);
+    }
+
+    return checkinRows.map((row) => mapSymptomCheckinRow(
+        row as unknown as SymptomCheckinRow,
+        itemsByCheckin,
+        factorsByCheckin,
+    ));
+}
+
 function parseProgressDate(value: string | null) {
     if (!value) {
         return null;
@@ -257,6 +513,38 @@ function parseProgressDate(value: string | null) {
 
 function formatDateOnly(date: Date) {
     return date.toISOString().split('T')[0];
+}
+
+function sortSymptomCheckinsDesc(checkins: SymptomCheckin[]) {
+    return [...checkins].sort((a, b) => (
+        new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()
+    ));
+}
+
+function getLatestCheckinForDay(checkins: SymptomCheckin[], dayNumber: number) {
+    return sortSymptomCheckinsDesc(checkins).find((checkin) => checkin.dayNumber === dayNumber) ?? null;
+}
+
+function getLegacyKeysForDay(checkins: SymptomCheckin[], dayNumber: number) {
+    const latest = getLatestCheckinForDay(checkins, dayNumber);
+    if (!latest) {
+        return [];
+    }
+    return getLegacySymptomKeysFromCheckin(latest);
+}
+
+function clampScore(value: number | null | undefined, min: number, max: number) {
+    if (typeof value !== 'number' || Number.isNaN(value)) {
+        return null;
+    }
+    return Math.min(max, Math.max(min, Math.round(value)));
+}
+
+function sanitizeSymptomBodyAreas(bodyAreas: string[] | undefined) {
+    if (!Array.isArray(bodyAreas)) {
+        return [];
+    }
+    return [...new Set(bodyAreas.map((area) => area.trim()).filter(Boolean))].slice(0, 5);
 }
 
 function createLocalThread(title = 'New chat'): ChatThread {
@@ -303,12 +591,15 @@ export function useJournalStore() {
     const [checklist, setChecklist] = useState<ChecklistState>({});
     const [customItems, setCustomItems] = useState<CustomChecklistItem[]>([]);
     const [shoppingOverrides, setShoppingOverrides] = useState<ShoppingListOverride[]>([]);
+    const [recipeOverrides, setRecipeOverrides] = useState<RecipeEntry[]>([]);
     const [symptoms, setSymptoms] = useState<string[]>([]);
     const [checkIn, setCheckIn] = useState<DailyCheckIn | null>(null);
+    const [symptomCheckins, setSymptomCheckins] = useState<SymptomCheckin[]>([]);
     const [taskReminders, setTaskReminders] = useState<TaskReminder[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const threadLoadRequestRef = useRef(0);
     const activeThreadIdRef = useRef<string | null>(null);
+    const recipes = useMemo(() => resolveRecipes(recipeOverrides), [recipeOverrides]);
 
     // ── Auth listener ──────────────────────────────────
 
@@ -383,6 +674,43 @@ export function useJournalStore() {
         }
     }, [userId]);
 
+    const loadSymptomRange = useCallback(async (
+        startDayInput?: number,
+        endDayInput?: number,
+    ): Promise<SymptomRangeLoadResult> => {
+        const defaultEndDay = progress.currentDay;
+        const safeEndDay = Math.min(Math.max(endDayInput ?? defaultEndDay, 0), 21);
+        const safeStartDay = Math.min(
+            Math.max(startDayInput ?? Math.max(safeEndDay - 20, 0), 0),
+            safeEndDay,
+        );
+
+        let loadedCheckins: SymptomCheckin[] = [];
+
+        if (userId) {
+            loadedCheckins = await fetchSymptomRangeFromDb(userId, safeStartDay, safeEndDay);
+            setLocalSymptomCheckins(userId, loadedCheckins);
+        } else {
+            loadedCheckins = getLocalSymptomCheckins(null)
+                .filter((checkin) => checkin.dayNumber >= safeStartDay && checkin.dayNumber <= safeEndDay);
+        }
+
+        const sorted = sortSymptomCheckinsDesc(loadedCheckins);
+        setSymptomCheckins(sorted);
+
+        if (progress.currentDay >= safeStartDay && progress.currentDay <= safeEndDay) {
+            const latestKeys = getLegacyKeysForDay(sorted, progress.currentDay);
+            setSymptoms(latestKeys);
+            lsSet(LS_SYMPTOMS_KEY, latestKeys);
+        }
+
+        return {
+            startDay: safeStartDay,
+            endDay: safeEndDay,
+            checkins: sorted,
+        };
+    }, [progress.currentDay, userId]);
+
     // ── Load from Supabase (or localStorage fallback) ──
 
     useEffect(() => {
@@ -419,7 +747,12 @@ export function useJournalStore() {
             setChecklist(lsGet(LS_CHECKLIST_KEY, {}));
             setCustomItems(lsGet(LS_CUSTOM_ITEMS_KEY, []));
             setShoppingOverrides(lsGet(LS_SHOPPING_OVERRIDES_KEY, []));
-            setSymptoms(lsGet(LS_SYMPTOMS_KEY, []));
+            setRecipeOverrides(lsGet(LS_RECIPE_OVERRIDES_KEY, []));
+            const offlineSymptomCheckins = sortSymptomCheckinsDesc(getLocalSymptomCheckins(null));
+            setSymptomCheckins(offlineSymptomCheckins);
+            const fallbackSymptoms = lsGet<string[]>(LS_SYMPTOMS_KEY, []);
+            const latestOfflineSymptoms = getLegacyKeysForDay(offlineSymptomCheckins, lsGet(LS_PROGRESS_KEY, DEFAULT_PROGRESS).currentDay);
+            setSymptoms(latestOfflineSymptoms.length ? latestOfflineSymptoms : fallbackSymptoms);
             setCheckIn(lsGet(LS_CHECKIN_KEY, null));
             setTaskReminders(getLocalTaskReminders(null));
             setIsLoading(false);
@@ -523,6 +856,16 @@ export function useJournalStore() {
             setShoppingOverrides(loadedShoppingOverrides);
             lsSet(LS_SHOPPING_OVERRIDES_KEY, loadedShoppingOverrides);
 
+            const { data: recipeRows } = await supabase
+                .from('recipe_items')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: true });
+
+            const loadedRecipeOverrides = (recipeRows || []).map(mapRecipeRow);
+            setRecipeOverrides(loadedRecipeOverrides);
+            lsSet(LS_RECIPE_OVERRIDES_KEY, loadedRecipeOverrides);
+
             // Load symptoms for current day
             const { data: sym } = await supabase
                 .from('daily_symptoms')
@@ -549,6 +892,19 @@ export function useJournalStore() {
                 setCheckIn(null);
                 lsSet(LS_CHECKIN_KEY, null);
             }
+
+            const loadedSymptomCheckins = await fetchSymptomRangeFromDb(
+                userId,
+                Math.max(currentDay - 20, 0),
+                currentDay,
+            );
+            const sortedSymptomCheckins = sortSymptomCheckinsDesc(loadedSymptomCheckins);
+            setSymptomCheckins(sortedSymptomCheckins);
+            setLocalSymptomCheckins(userId, sortedSymptomCheckins);
+
+            const latestKeys = getLegacyKeysForDay(sortedSymptomCheckins, currentDay);
+            setSymptoms(latestKeys);
+            lsSet(LS_SYMPTOMS_KEY, latestKeys);
 
             const { data: reminderRows, error: reminderError } = await supabase
                 .from('task_reminders')
@@ -614,6 +970,19 @@ export function useJournalStore() {
                 lsSet(LS_CHECKIN_KEY, null);
             }
 
+            const loadedSymptomCheckins = await fetchSymptomRangeFromDb(
+                userId,
+                Math.max(targetDay - 20, 0),
+                targetDay,
+            );
+            const sortedSymptomCheckins = sortSymptomCheckinsDesc(loadedSymptomCheckins);
+            setSymptomCheckins(sortedSymptomCheckins);
+            setLocalSymptomCheckins(userId, sortedSymptomCheckins);
+
+            const latestKeys = getLegacyKeysForDay(sortedSymptomCheckins, targetDay);
+            setSymptoms(latestKeys);
+            lsSet(LS_SYMPTOMS_KEY, latestKeys);
+
             return;
         }
 
@@ -627,6 +996,13 @@ export function useJournalStore() {
 
         const savedCheckIn = lsGet<DailyCheckIn | null>(LS_CHECKIN_KEY, null);
         setCheckIn(savedCheckIn);
+
+        const localSymptomCheckins = sortSymptomCheckinsDesc(getLocalSymptomCheckins(null))
+            .filter((checkin) => checkin.dayNumber >= Math.max(targetDay - 20, 0) && checkin.dayNumber <= targetDay);
+        setSymptomCheckins(localSymptomCheckins);
+        const localLatest = getLegacyKeysForDay(localSymptomCheckins, targetDay);
+        setSymptoms(localLatest);
+        lsSet(LS_SYMPTOMS_KEY, localLatest);
     }, [checklist, userId]);
 
     const touchLastActiveDate = useCallback(async (value?: string) => {
@@ -1050,6 +1426,17 @@ export function useJournalStore() {
         });
     }, []);
 
+    const upsertRecipeOverrideLocally = useCallback((nextRecipe: RecipeEntry) => {
+        setRecipeOverrides((prev) => {
+            const existingIndex = prev.findIndex((item) => item.key === nextRecipe.key);
+            const next = existingIndex === -1
+                ? [...prev, nextRecipe]
+                : prev.map((item) => (item.key === nextRecipe.key ? nextRecipe : item));
+            lsSet(LS_RECIPE_OVERRIDES_KEY, next);
+            return next;
+        });
+    }, []);
+
     const addShoppingItem = useCallback(async ({
         phase,
         category,
@@ -1219,6 +1606,186 @@ export function useJournalStore() {
         return nextItem;
     }, [shoppingOverrides, upsertShoppingOverrideLocally, userId]);
 
+    const addRecipe = useCallback(async ({
+        title,
+        phase,
+        mealType,
+        summary,
+        ingredients,
+        instructions,
+        notes,
+        source = 'manual',
+    }: RecipeInput) => {
+        const trimmedTitle = title.trim();
+        if (trimmedTitle.length < 2) {
+            return null;
+        }
+
+        const normalizedPhase = (phase?.trim() || getRecipePhaseForDay(progress.currentDay));
+        const normalizedMealType = normalizeRecipeMealType(mealType, 'breakfast');
+        const normalizedIngredients = (ingredients ?? [])
+            .map((item) => item.trim())
+            .filter(Boolean);
+        const normalizedInstructions = (instructions ?? [])
+            .map((item) => item.trim())
+            .filter(Boolean);
+
+        const existing = recipeOverrides.find((entry) =>
+            normalizeRecipeMatch(entry.title) === normalizeRecipeMatch(trimmedTitle)
+            && normalizeRecipeMatch(entry.phase) === normalizeRecipeMatch(normalizedPhase),
+        );
+        const defaultMatch = findDefaultRecipe({ title: trimmedTitle, phase: normalizedPhase });
+
+        if (defaultMatch && !existing?.isHidden) {
+            return {
+                id: defaultMatch.key,
+                ...defaultMatch,
+                isHidden: false,
+                createdAt: existing?.createdAt ?? new Date().toISOString(),
+            } satisfies RecipeEntry;
+        }
+
+        const baseKey = existing?.key ?? defaultMatch?.key ?? buildRecipeKey(normalizedPhase, trimmedTitle);
+        const uniqueKey = (!existing && !defaultMatch && recipeOverrides.some((entry) => entry.key === baseKey))
+            ? `${baseKey}_${Date.now()}`
+            : baseKey;
+
+        const fallbackInstructions = normalizedInstructions.length
+            ? normalizedInstructions
+            : ['Follow your usual compliant prep and serving flow.'];
+
+        const nextRecipe: RecipeEntry = {
+            id: existing?.id ?? uniqueKey,
+            key: uniqueKey,
+            title: defaultMatch?.title ?? trimmedTitle,
+            phase: defaultMatch?.phase ?? normalizedPhase,
+            mealType: defaultMatch?.mealType ?? normalizedMealType,
+            summary: summary?.trim() || defaultMatch?.summary || undefined,
+            ingredients: defaultMatch?.ingredients ?? normalizedIngredients,
+            instructions: defaultMatch?.instructions ?? fallbackInstructions,
+            notes: notes?.trim() || defaultMatch?.notes || undefined,
+            source: defaultMatch ? 'protocol' : source,
+            isHidden: false,
+            createdAt: existing?.createdAt ?? new Date().toISOString(),
+        };
+
+        upsertRecipeOverrideLocally(nextRecipe);
+
+        if (userId) {
+            const payload: RecipeItemRow['Insert'] = {
+                user_id: userId,
+                recipe_key: nextRecipe.key,
+                title: nextRecipe.title,
+                phase_name: nextRecipe.phase,
+                meal_type: nextRecipe.mealType,
+                summary: nextRecipe.summary ?? null,
+                ingredients: nextRecipe.ingredients,
+                instructions: nextRecipe.instructions,
+                notes: nextRecipe.notes ?? null,
+                source: nextRecipe.source,
+                is_hidden: false,
+            };
+
+            const { data } = await supabase
+                .from('recipe_items')
+                .upsert(payload, { onConflict: 'user_id,recipe_key' })
+                .select('*')
+                .single();
+
+            if (data) {
+                upsertRecipeOverrideLocally(mapRecipeRow(data));
+            }
+        }
+
+        await touchLastActiveDate();
+        return nextRecipe;
+    }, [progress.currentDay, recipeOverrides, touchLastActiveDate, upsertRecipeOverrideLocally, userId]);
+
+    const removeRecipe = useCallback(async (item: {
+        key?: string;
+        title: string;
+        phase?: string;
+        mealType?: RecipeMealType;
+        summary?: string;
+        ingredients?: string[];
+        instructions?: string[];
+        notes?: string;
+        source?: RecipeSource;
+    }) => {
+        const existing = item.key
+            ? recipeOverrides.find((entry) => entry.key === item.key)
+            : recipeOverrides.find((entry) => (
+                normalizeRecipeMatch(entry.title) === normalizeRecipeMatch(item.title)
+                && (!item.phase || normalizeRecipeMatch(entry.phase) === normalizeRecipeMatch(item.phase))
+            ));
+
+        const defaultMatch = findDefaultRecipe({
+            title: item.title,
+            phase: item.phase ?? existing?.phase,
+        });
+
+        const normalizedPhase = item.phase?.trim() || existing?.phase || getRecipePhaseForDay(progress.currentDay);
+        const fallbackKey = item.key ?? `${buildRecipeKey(normalizedPhase, item.title)}_${Date.now()}`;
+        const nextRecipe: RecipeEntry | null = existing
+            ? { ...existing, isHidden: true }
+            : defaultMatch
+                ? {
+                    id: defaultMatch.key,
+                    ...defaultMatch,
+                    isHidden: true,
+                    createdAt: new Date().toISOString(),
+                }
+                : {
+                    id: fallbackKey,
+                    key: fallbackKey,
+                    title: item.title.trim(),
+                    phase: normalizedPhase,
+                    mealType: item.mealType ?? 'breakfast',
+                    summary: item.summary,
+                    ingredients: item.ingredients ?? [],
+                    instructions: item.instructions ?? [],
+                    notes: item.notes,
+                    source: item.source ?? 'manual',
+                    isHidden: true,
+                    createdAt: new Date().toISOString(),
+                };
+
+        if (!nextRecipe.title) {
+            return null;
+        }
+
+        upsertRecipeOverrideLocally(nextRecipe);
+
+        if (userId) {
+            const payload: RecipeItemRow['Insert'] = {
+                user_id: userId,
+                recipe_key: nextRecipe.key,
+                title: nextRecipe.title,
+                phase_name: nextRecipe.phase,
+                meal_type: nextRecipe.mealType,
+                summary: nextRecipe.summary ?? null,
+                ingredients: nextRecipe.ingredients,
+                instructions: nextRecipe.instructions,
+                notes: nextRecipe.notes ?? null,
+                source: nextRecipe.source,
+                is_hidden: true,
+            };
+
+            const { data } = await supabase
+                .from('recipe_items')
+                .upsert(payload, { onConflict: 'user_id,recipe_key' })
+                .select('*')
+                .single();
+
+            if (data) {
+                upsertRecipeOverrideLocally(mapRecipeRow(data));
+            }
+        }
+
+        await touchLastActiveDate();
+        return nextRecipe;
+    }, [progress.currentDay, recipeOverrides, touchLastActiveDate, upsertRecipeOverrideLocally, userId]);
+
     // ── Task Reminders ─────────────────────────────────
 
     const setTaskReminder = useCallback(async (input: {
@@ -1376,7 +1943,7 @@ export function useJournalStore() {
             ? 'Prep does not need perfection. Re-open the shopping and setup basics first, then start Day 1 when that foundation feels handled.'
             : daysOff === 1
                 ? 'Do not make up yesterday. Repeat this day, restart with the next unchecked step, and keep the rest of the day simple.'
-                : 'Do not double up supplements or try to sprint. Repeat this day, hydrate, hit the basics first, and ask Coach only if you need to adjust.';
+                : 'Do not double up supplements or try to sprint. Repeat this day, hydrate, hit the basics first, and ask GutBrain only if you need to adjust.';
 
         return {
             lastActiveDate: progress.lastActiveDate,
@@ -1404,11 +1971,368 @@ export function useJournalStore() {
                 'Trying to replace structure with random new supplements.',
                 'Treating the protocol finish like a green light to swing wildly off-plan.',
             ],
-            nextPhasePrompt: 'Ask Coach to turn what worked into a simple 7-day maintenance rhythm.',
+            nextPhasePrompt: 'Ask GutBrain to turn what worked into a simple 7-day maintenance rhythm.',
         };
     }, [progress.currentDay, progress.lastActiveDate]);
 
     // ── Symptoms & Check-Ins ───────────────────────────
+
+    const persistSymptomCheckinsLocally = useCallback((nextCheckins: SymptomCheckin[]) => {
+        const sorted = sortSymptomCheckinsDesc(nextCheckins);
+        setSymptomCheckins(sorted);
+        setLocalSymptomCheckins(userId, sorted);
+    }, [userId]);
+
+    const upsertLegacySymptomsForDay = useCallback(async (dayNumber: number, keys: string[]) => {
+        const uniqueKeys = [...new Set(keys.map((key) => key.trim().toLowerCase()).filter(Boolean))];
+
+        if (dayNumber === progress.currentDay) {
+            setSymptoms(uniqueKeys);
+            lsSet(LS_SYMPTOMS_KEY, uniqueKeys);
+        }
+
+        if (userId) {
+            const payload: DailySymptomsRow['Insert'] = {
+                user_id: userId,
+                day_number: dayNumber,
+                symptom_keys: uniqueKeys,
+            };
+
+            await supabase
+                .from('daily_symptoms')
+                .upsert(payload, { onConflict: 'user_id,day_number' });
+        }
+    }, [progress.currentDay, userId]);
+
+    const buildCheckinFromInput = useCallback((
+        input: SymptomCheckinInput,
+        fallbackDayNumber: number,
+        existing?: SymptomCheckin | null,
+    ): SymptomCheckin => {
+        const checkinId = existing?.id ?? `symptom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+        const loggedAt = existing?.loggedAt ?? new Date().toISOString();
+        const dayNumber = Math.min(Math.max(input.dayNumber ?? fallbackDayNumber, 0), 21);
+        const createdAt = existing?.createdAt ?? loggedAt;
+
+        const incomingItems = input.items?.length
+            ? input.items
+            : (existing?.items ?? []).map((item) => ({
+                symptomKey: item.symptomKey,
+                symptomLabel: item.symptomLabel,
+                category: item.category,
+                severity: item.severity,
+                trend: item.trend,
+                durationBucket: item.durationBucket,
+                bodyAreas: item.bodyAreas,
+                isCustom: item.isCustom,
+            }));
+
+        const items: SymptomCheckinItem[] = incomingItems
+            .map((item, index) => {
+                const symptomKey = item.symptomKey.trim().toLowerCase();
+                const symptomLabel = item.symptomLabel.trim();
+                if (!symptomKey || !symptomLabel) {
+                    return null;
+                }
+
+                return {
+                    id: existing?.items[index]?.id ?? `${checkinId}_${index}_${Math.random().toString(36).slice(2, 6)}`,
+                    checkinId,
+                    symptomKey,
+                    symptomLabel,
+                    category: item.category?.trim() || inferCategoryFromKey(symptomKey),
+                    severity: Math.min(Math.max(Math.round(item.severity ?? 2), 0), 4),
+                    trend: item.trend ?? 'same',
+                    durationBucket: item.durationBucket ?? '12_24h',
+                    bodyAreas: sanitizeSymptomBodyAreas(item.bodyAreas),
+                    isCustom: Boolean(item.isCustom),
+                    createdAt: existing?.items[index]?.createdAt ?? loggedAt,
+                } satisfies SymptomCheckinItem;
+            })
+            .filter((item): item is SymptomCheckinItem => Boolean(item));
+
+        const factorsInput = input.factors === undefined
+            ? existing?.factors
+            : input.factors;
+
+        const factors: SymptomFactor | null = factorsInput
+            ? {
+                id: existing?.factors?.id ?? `factor_${checkinId}`,
+                checkinId,
+                bristolType: clampScore(factorsInput.bristolType ?? null, 1, 7),
+                hydrationLevel: clampScore(factorsInput.hydrationLevel ?? null, 0, 10),
+                sleepQuality: clampScore(factorsInput.sleepQuality ?? null, 0, 10),
+                supplementsTaken: factorsInput.supplementsTaken ?? null,
+                triggerNotes: factorsInput.triggerNotes?.trim() || null,
+                createdAt: existing?.factors?.createdAt ?? loggedAt,
+                updatedAt: new Date().toISOString(),
+            }
+            : null;
+
+        return {
+            id: checkinId,
+            dayNumber,
+            loggedAt,
+            gutState: clampScore(input.gutState ?? existing?.gutState ?? null, 0, 10),
+            moodScore: clampScore(input.moodScore ?? existing?.moodScore ?? null, 0, 10),
+            energyScore: clampScore(input.energyScore ?? existing?.energyScore ?? null, 0, 10),
+            stressScore: clampScore(input.stressScore ?? existing?.stressScore ?? null, 0, 10),
+            note: input.note?.trim() || existing?.note || null,
+            items,
+            factors,
+            createdAt,
+            updatedAt: new Date().toISOString(),
+        };
+    }, []);
+
+    const logSymptomCheckin = useCallback(async (input: SymptomCheckinInput) => {
+        const newCheckin = buildCheckinFromInput(input, progress.currentDay, null);
+        const optimistic = [newCheckin, ...symptomCheckins.filter((entry) => entry.id !== newCheckin.id)];
+        persistSymptomCheckinsLocally(optimistic);
+
+        const optimisticKeys = getLegacySymptomKeysFromCheckin(newCheckin);
+        await upsertLegacySymptomsForDay(newCheckin.dayNumber, optimisticKeys);
+
+        let persistedCheckin = newCheckin;
+
+        if (userId) {
+            const checkinPayload = {
+                user_id: userId,
+                day_number: newCheckin.dayNumber,
+                logged_at: newCheckin.loggedAt,
+                gut_state: newCheckin.gutState,
+                mood_score: newCheckin.moodScore,
+                energy_score: newCheckin.energyScore,
+                stress_score: newCheckin.stressScore,
+                note: newCheckin.note,
+            };
+
+            const { data: insertedCheckin } = await supabase
+                .from('symptom_checkins')
+                .insert(checkinPayload)
+                .select('*')
+                .single();
+
+            if (insertedCheckin) {
+                const checkinId = insertedCheckin.id as string;
+
+                if (newCheckin.items.length) {
+                    const itemPayload = newCheckin.items.map((item) => ({
+                        checkin_id: checkinId,
+                        user_id: userId,
+                        day_number: newCheckin.dayNumber,
+                        symptom_key: item.symptomKey,
+                        symptom_label: item.symptomLabel,
+                        category: item.category,
+                        severity: item.severity,
+                        trend: item.trend,
+                        duration_bucket: item.durationBucket,
+                        body_areas: item.bodyAreas,
+                        is_custom: item.isCustom,
+                    }));
+
+                    await supabase.from('symptom_checkin_items').insert(itemPayload);
+                }
+
+                if (newCheckin.factors) {
+                    await supabase.from('symptom_checkin_factors').upsert({
+                        checkin_id: checkinId,
+                        user_id: userId,
+                        day_number: newCheckin.dayNumber,
+                        bristol_type: newCheckin.factors.bristolType ?? null,
+                        hydration_level: newCheckin.factors.hydrationLevel ?? null,
+                        sleep_quality: newCheckin.factors.sleepQuality ?? null,
+                        supplements_taken: newCheckin.factors.supplementsTaken ?? null,
+                        trigger_notes: newCheckin.factors.triggerNotes ?? null,
+                    }, { onConflict: 'checkin_id' });
+                }
+
+                const refreshed = await fetchSymptomRangeFromDb(
+                    userId,
+                    Math.max(progress.currentDay - 20, 0),
+                    Math.max(progress.currentDay, newCheckin.dayNumber),
+                );
+                persistSymptomCheckinsLocally(refreshed);
+
+                const matched = refreshed.find((entry) => entry.id === checkinId);
+                if (matched) {
+                    persistedCheckin = matched;
+                }
+
+                const latestForDayKeys = getLegacyKeysForDay(refreshed, newCheckin.dayNumber);
+                await upsertLegacySymptomsForDay(newCheckin.dayNumber, latestForDayKeys);
+            }
+        }
+
+        await touchLastActiveDate();
+        return persistedCheckin;
+    }, [
+        buildCheckinFromInput,
+        persistSymptomCheckinsLocally,
+        progress.currentDay,
+        symptomCheckins,
+        touchLastActiveDate,
+        upsertLegacySymptomsForDay,
+        userId,
+    ]);
+
+    const updateSymptomCheckin = useCallback(async (
+        checkinId: string,
+        updates: Partial<SymptomCheckinInput>,
+    ) => {
+        const existing = symptomCheckins.find((entry) => entry.id === checkinId);
+        if (!existing) {
+            return null;
+        }
+
+        const mergedInput: SymptomCheckinInput = {
+            dayNumber: updates.dayNumber ?? existing.dayNumber,
+            gutState: updates.gutState ?? existing.gutState,
+            moodScore: updates.moodScore ?? existing.moodScore,
+            energyScore: updates.energyScore ?? existing.energyScore,
+            stressScore: updates.stressScore ?? existing.stressScore,
+            note: updates.note ?? existing.note,
+            items: updates.items ?? existing.items.map((item) => ({
+                symptomKey: item.symptomKey,
+                symptomLabel: item.symptomLabel,
+                category: item.category,
+                severity: item.severity,
+                trend: item.trend,
+                durationBucket: item.durationBucket,
+                bodyAreas: item.bodyAreas,
+                isCustom: item.isCustom,
+            })),
+            factors: updates.factors === undefined
+                ? (existing.factors ? {
+                    bristolType: existing.factors.bristolType,
+                    hydrationLevel: existing.factors.hydrationLevel,
+                    sleepQuality: existing.factors.sleepQuality,
+                    supplementsTaken: existing.factors.supplementsTaken,
+                    triggerNotes: existing.factors.triggerNotes,
+                } : null)
+                : updates.factors,
+        };
+
+        const nextCheckin = buildCheckinFromInput(mergedInput, existing.dayNumber, existing);
+        const optimistic = symptomCheckins.map((entry) => (entry.id === checkinId ? nextCheckin : entry));
+        persistSymptomCheckinsLocally(optimistic);
+
+        if (userId) {
+            await supabase
+                .from('symptom_checkins')
+                .update({
+                    day_number: nextCheckin.dayNumber,
+                    gut_state: nextCheckin.gutState,
+                    mood_score: nextCheckin.moodScore,
+                    energy_score: nextCheckin.energyScore,
+                    stress_score: nextCheckin.stressScore,
+                    note: nextCheckin.note,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', checkinId)
+                .eq('user_id', userId);
+
+            await supabase
+                .from('symptom_checkin_items')
+                .delete()
+                .eq('checkin_id', checkinId)
+                .eq('user_id', userId);
+
+            if (nextCheckin.items.length) {
+                await supabase
+                    .from('symptom_checkin_items')
+                    .insert(nextCheckin.items.map((item) => ({
+                        checkin_id: checkinId,
+                        user_id: userId,
+                        day_number: nextCheckin.dayNumber,
+                        symptom_key: item.symptomKey,
+                        symptom_label: item.symptomLabel,
+                        category: item.category,
+                        severity: item.severity,
+                        trend: item.trend,
+                        duration_bucket: item.durationBucket,
+                        body_areas: item.bodyAreas,
+                        is_custom: item.isCustom,
+                    })));
+            }
+
+            if (nextCheckin.factors) {
+                await supabase
+                    .from('symptom_checkin_factors')
+                    .upsert({
+                        checkin_id: checkinId,
+                        user_id: userId,
+                        day_number: nextCheckin.dayNumber,
+                        bristol_type: nextCheckin.factors.bristolType ?? null,
+                        hydration_level: nextCheckin.factors.hydrationLevel ?? null,
+                        sleep_quality: nextCheckin.factors.sleepQuality ?? null,
+                        supplements_taken: nextCheckin.factors.supplementsTaken ?? null,
+                        trigger_notes: nextCheckin.factors.triggerNotes ?? null,
+                    }, { onConflict: 'checkin_id' });
+            } else {
+                await supabase
+                    .from('symptom_checkin_factors')
+                    .delete()
+                    .eq('checkin_id', checkinId)
+                    .eq('user_id', userId);
+            }
+        }
+
+        await upsertLegacySymptomsForDay(nextCheckin.dayNumber, getLegacySymptomKeysFromCheckin(nextCheckin));
+        await touchLastActiveDate();
+        return nextCheckin;
+    }, [
+        buildCheckinFromInput,
+        persistSymptomCheckinsLocally,
+        symptomCheckins,
+        touchLastActiveDate,
+        upsertLegacySymptomsForDay,
+        userId,
+    ]);
+
+    const deleteSymptomCheckin = useCallback(async (checkinId: string) => {
+        const target = symptomCheckins.find((entry) => entry.id === checkinId);
+        if (!target) {
+            return false;
+        }
+
+        const nextCheckins = symptomCheckins.filter((entry) => entry.id !== checkinId);
+        persistSymptomCheckinsLocally(nextCheckins);
+
+        if (userId) {
+            await supabase
+                .from('symptom_checkins')
+                .delete()
+                .eq('id', checkinId)
+                .eq('user_id', userId);
+        }
+
+        const latestKeys = getLegacyKeysForDay(nextCheckins, target.dayNumber);
+        await upsertLegacySymptomsForDay(target.dayNumber, latestKeys);
+        await touchLastActiveDate();
+        return true;
+    }, [
+        persistSymptomCheckinsLocally,
+        symptomCheckins,
+        touchLastActiveDate,
+        upsertLegacySymptomsForDay,
+        userId,
+    ]);
+
+    const getSymptomInsights = useCallback((rangeDays = 21): SymptomInsightsPayload => {
+        const safeRange = Math.min(Math.max(Math.round(rangeDays), 1), 21);
+        const endDay = progress.currentDay;
+        const startDay = Math.max(endDay - (safeRange - 1), 0);
+        const filtered = symptomCheckins.filter((checkin) => (
+            checkin.dayNumber >= startDay && checkin.dayNumber <= endDay
+        ));
+
+        return buildSymptomInsights(filtered, safeRange);
+    }, [progress.currentDay, symptomCheckins]);
+
+    const getSymptomCoachFollowup = useCallback((checkin: SymptomCheckin) => {
+        return buildSymptomCoachFollowup(checkin, progress.currentDay);
+    }, [progress.currentDay]);
 
     const toggleSymptom = useCallback(async (key: string) => {
         const newSymptoms = symptoms.includes(key)
@@ -1500,8 +2424,11 @@ export function useJournalStore() {
         checklist,
         customItems,
         shoppingOverrides,
+        recipeOverrides,
+        recipes,
         symptoms,
         checkIn,
+        symptomCheckins,
         taskReminders,
         recoveryState,
         maintenanceHandoff,
@@ -1528,6 +2455,8 @@ export function useJournalStore() {
         removeCustomItem,
         addShoppingItem,
         removeShoppingItem,
+        addRecipe,
+        removeRecipe,
         setTaskReminder,
         clearTaskReminder,
         markTaskReminderDelivered,
@@ -1535,5 +2464,11 @@ export function useJournalStore() {
         // Daily Checks
         toggleSymptom,
         saveCheckIn,
+        logSymptomCheckin,
+        updateSymptomCheckin,
+        deleteSymptomCheckin,
+        loadSymptomRange,
+        getSymptomInsights,
+        getSymptomCoachFollowup,
     };
 }
