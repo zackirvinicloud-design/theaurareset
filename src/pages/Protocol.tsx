@@ -25,10 +25,11 @@ import { ProfileSettingsView } from "@/components/journal/ProfileSettingsView";
 import { ProtocolRoadmapExplorer } from "@/components/journal/ProtocolRoadmapExplorer";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
 import { RecipesView } from "@/components/journal/RecipesView";
+import { SymptomCenterView } from "@/components/journal/SymptomCenterView";
 import { MobileProtocolReferenceContent, ProtocolReference } from "@/components/journal/ProtocolReference";
 import { GutBrainLogo } from "@/components/brand/GutBrainLogo";
 
-type ActiveView = 'today' | 'help' | 'shopping' | 'recipes' | 'guide' | 'roadmap' | 'settings';
+type ActiveView = 'today' | 'help' | 'shopping' | 'recipes' | 'guide' | 'roadmap' | 'settings' | 'symptoms';
 
 const dedupeList = (values: Array<string | null | undefined>) => {
   const seen = new Set<string>();
@@ -360,7 +361,7 @@ const Protocol = () => {
         return;
       }
       if (action.view === 'symptoms') {
-        openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
+        setActiveView('symptoms');
         return;
       }
       if (action.view === 'protocol') {
@@ -472,6 +473,10 @@ const Protocol = () => {
 
   const handleOpenRoadmapFromGuide = () => {
     setActiveView('roadmap');
+  };
+
+  const handleOpenSymptomsFromGuide = () => {
+    setActiveView('symptoms');
   };
 
   const handleSaveProfileSettings = useCallback(async (
@@ -844,6 +849,18 @@ const Protocol = () => {
                 onOpenShoppingView={handleOpenShoppingForPhase}
                 onAskCoach={handleAskCoachFromRoadmap}
               />
+            ) : activeView === 'symptoms' ? (
+              <SymptomCenterView
+                currentDay={currentDay}
+                currentPhase={currentPhase}
+                symptoms={store.symptoms}
+                symptomCheckins={store.symptomCheckins}
+                onBack={() => setActiveView('guide')}
+                onAskCoachPrompt={setPendingPrompt}
+                onLogSymptomCheckin={store.logSymptomCheckin}
+                onLoadSymptomRange={store.loadSymptomRange}
+                onGetSymptomCoachFollowup={store.getSymptomCoachFollowup}
+              />
             ) : activeView === 'guide' ? (
               <div className="flex h-full flex-col bg-background">
                 <div className="flex-1 overflow-y-auto px-4 py-3.5 pb-6">
@@ -856,6 +873,7 @@ const Protocol = () => {
                     onOpenShoppingView={handleOpenShoppingFromGuide}
                     onOpenRecipesView={handleOpenRecipesFromGuide}
                     onOpenRoadmapView={handleOpenRoadmapFromGuide}
+                    onOpenSymptomsView={handleOpenSymptomsFromGuide}
                   />
                 </div>
               </div>
@@ -951,6 +969,18 @@ const Protocol = () => {
               onOpenShoppingView={handleOpenShoppingForPhase}
               onAskCoach={handleAskCoachFromRoadmap}
             />
+          ) : activeView === 'symptoms' ? (
+            <SymptomCenterView
+              currentDay={currentDay}
+              currentPhase={currentPhase}
+              symptoms={store.symptoms}
+              symptomCheckins={store.symptomCheckins}
+              onBack={() => setActiveView('help')}
+              onAskCoachPrompt={setPendingPrompt}
+              onLogSymptomCheckin={store.logSymptomCheckin}
+              onLoadSymptomRange={store.loadSymptomRange}
+              onGetSymptomCoachFollowup={store.getSymptomCoachFollowup}
+            />
           ) : (
             <JournalCenter
               userId={store.userId}
@@ -987,6 +1017,7 @@ const Protocol = () => {
             onOpenShoppingView={handleOpenShoppingFromGuide}
             onOpenRecipesView={handleOpenRecipesFromGuide}
             onOpenRoadmapView={handleOpenRoadmapFromGuide}
+            onOpenSymptomsView={handleOpenSymptomsFromGuide}
             isOpen={refOpen}
             onToggle={() => setRefOpen(prev => !prev)}
           />
@@ -1023,7 +1054,7 @@ const Protocol = () => {
               onClick={() => setActiveView('guide')}
               className={cn(
                 "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
-                activeView === 'guide' || activeView === 'shopping' || activeView === 'recipes' || activeView === 'roadmap'
+                activeView === 'guide' || activeView === 'shopping' || activeView === 'recipes' || activeView === 'roadmap' || activeView === 'symptoms'
                   ? "bg-primary/10 text-primary"
                   : "hover:bg-muted/50"
               )}

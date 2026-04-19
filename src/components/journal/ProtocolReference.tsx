@@ -13,6 +13,7 @@ interface ProtocolReferenceProps {
     onOpenShoppingView: () => void;
     onOpenRecipesView?: () => void;
     onOpenRoadmapView: () => void;
+    onOpenSymptomsView: () => void;
     isOpen: boolean;
     onToggle: () => void;
 }
@@ -38,6 +39,7 @@ export const ProtocolReference = ({
     onOpenShoppingView,
     onOpenRecipesView,
     onOpenRoadmapView,
+    onOpenSymptomsView,
     isOpen,
     onToggle,
 }: ProtocolReferenceProps) => {
@@ -89,6 +91,7 @@ export const ProtocolReference = ({
                                     onOpenShoppingView={onOpenShoppingView}
                                     onOpenRecipesView={onOpenRecipesView}
                                     onOpenRoadmapView={onOpenRoadmapView}
+                                    onOpenSymptomsView={onOpenSymptomsView}
                                 />
                             </div>
                         </ScrollArea>
@@ -105,12 +108,14 @@ export function MobileProtocolReferenceContent({
     onOpenShoppingView,
     onOpenRecipesView,
     onOpenRoadmapView,
+    onOpenSymptomsView,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenRecipesView?: () => void;
     onOpenRoadmapView: () => void;
+    onOpenSymptomsView: () => void;
 }) {
     return (
         <GuideContent
@@ -119,6 +124,7 @@ export function MobileProtocolReferenceContent({
             onOpenShoppingView={onOpenShoppingView}
             onOpenRecipesView={onOpenRecipesView}
             onOpenRoadmapView={onOpenRoadmapView}
+            onOpenSymptomsView={onOpenSymptomsView}
         />
     );
 }
@@ -129,12 +135,14 @@ function GuideContent({
     onOpenShoppingView,
     onOpenRecipesView,
     onOpenRoadmapView,
+    onOpenSymptomsView,
 }: {
     currentPhase: number;
     currentDay: number;
     onOpenShoppingView: () => void;
     onOpenRecipesView?: () => void;
     onOpenRoadmapView: () => void;
+    onOpenSymptomsView: () => void;
 }) {
     const [quoteSeed, setQuoteSeed] = useState(() => getGuideQuoteSeed(currentDay));
     const [quoteSeedDay, setQuoteSeedDay] = useState(currentDay);
@@ -181,6 +189,17 @@ function GuideContent({
                     onClick={onOpenRecipesView}
                 />
             )}
+
+            <PrimaryGuideCard
+                actionKey="open-symptoms"
+                eyebrow="Daily monitoring"
+                tone="neutral"
+                title="Symptom center"
+                description="Log your gut state, track specific symptoms, and get GutBrain interpretations of your detox progress."
+                actionLabel="Open symptom tracker"
+                icon={<BookOpen className="h-3.5 w-3.5" />}
+                onClick={onOpenSymptomsView}
+            />
 
             <ProtocolRoadmap
                 currentDay={currentDay}
