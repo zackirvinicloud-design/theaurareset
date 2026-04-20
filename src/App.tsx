@@ -15,6 +15,8 @@ const PaymentRequired = lazy(() => import("./pages/PaymentRequired"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const ProfileOnboarding = lazy(() => import("./pages/ProfileOnboarding"));
 const NotificationSetup = lazy(() => import("./pages/NotificationSetup"));
+const TextReminderSetup = lazy(() => import("./pages/TextReminderSetup"));
+const SmsConsent = lazy(() => import("./pages/SmsConsent"));
 const Protocol = lazy(() => import("./pages/Protocol"));
 const ProtocolCapture = lazy(() => import("./pages/ProtocolCapture"));
 const ProtocolCaptureMobile = lazy(() => import("./pages/ProtocolCaptureMobile"));
@@ -45,7 +47,9 @@ const App = () => (
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/setup/profile" element={<ProfileOnboarding />} />
               <Route path="/setup/notifications" element={<NotificationSetup />} />
-              <Route path="/setup/text-reminders" element={<NotificationSetup />} />
+              <Route path="/setup/text-reminders" element={<TextReminderSetup />} />
+              <Route path="/sms-consent" element={<SmsConsent />} />
+              <Route path="/legal/sms-consent" element={<SmsConsent />} />
               <Route path="/protocol" element={<Protocol />} />
               <Route path="/capture/:scene" element={<ProtocolCapture />} />
               <Route path="/capture-mobile/:scene" element={<ProtocolCaptureMobile />} />
