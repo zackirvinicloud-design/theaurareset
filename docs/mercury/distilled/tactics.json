@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-04-19T00:00:00.000Z",
+  "objective": "paid_conversions",
+  "tactics": [
+    {
+      "tactic_id": "approved-001",
+      "status": "approved",
+      "category": "hook_testing",
+      "summary": "Run high-volume hook variants with strict winner thresholds.",
+      "gutbrain_adaptation": "Use confused-cleanser pain language and protocol specificity.",
+      "risk_level": "low",
+      "source_ids": ["superwall-001", "superwall-002"]
+    },
+    {
+      "tactic_id": "adapted-001",
+      "status": "adapted",
+      "category": "creator_systems",
+      "summary": "Use creator-led UGC loops and rapid iteration.",
+      "gutbrain_adaptation": "Require compliance-safe scripts and no medical claims.",
+      "risk_level": "medium",
+      "source_ids": ["julia-001", "julia-002"]
+    },
+    {
+      "tactic_id": "rejected-001",
+      "status": "rejected",
+      "category": "social_proof_abuse",
+      "summary": "Any fake or unverifiable testimonial strategy.",
+      "gutbrain_adaptation": "Reject and replace with app screenshot proof.",
+      "risk_level": "high",
+      "source_ids": ["superwall-011"]
+    }
+  ]
+}

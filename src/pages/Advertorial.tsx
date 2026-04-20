@@ -160,7 +160,7 @@ const Advertorial = () => {
           {...fadeUp}
           className="mt-6 font-['Lora',serif] text-[2rem] font-bold leading-[1.2] tracking-[-0.02em] text-slate-950 sm:mt-8 sm:text-[2.75rem] sm:leading-[1.15]"
         >
-          I Tried Every Parasite Cleanse on TikTok. Here's What Actually Worked.
+          I Tried Every Gut Reset Shortcut on TikTok. Here's What Actually Helped Me Finish.
         </motion.h1>
 
         {/* ─── Byline ─── */}
@@ -181,7 +181,7 @@ const Advertorial = () => {
             It started at 11:47pm on a Tuesday.
           </p>
           <p className="mt-5 leading-8 text-slate-600">
-            I was supposed to be sleeping, but I was three hours deep into a TikTok spiral about parasite cleanses. You know the ones — the girl showing what came out of her (yeah, THAT video), the guy with the supplement shelf explaining "Phase 1, Phase 2, Phase 3" like it was obvious, the naturopath saying "this is the exact protocol" while holding up 11 different bottles.
+            I was supposed to be sleeping, but I was three hours deep into a TikTok spiral about gut reset routines. You know the ones — the girl showing her supplement lineup, the guy with the shelf explaining "Phase 1, Phase 2, Phase 3" like it was obvious, the creator saying "this is the exact protocol" while holding up 11 different bottles.
           </p>
           <p className="mt-5 leading-8 text-slate-600">
             By midnight, I had 23 saved videos, 6 different supplement brands in my Amazon cart, and <strong className="text-slate-800">absolutely no idea what to take first, what to take together, or what order any of this was supposed to go in.</strong>
@@ -210,15 +210,15 @@ const Advertorial = () => {
             Then Day 3 happened.
           </p>
           <p className="mt-5 leading-8 text-slate-600">
-            Brain fog so thick I couldn't finish a sentence at work. My stomach was making sounds I'd never heard. I got home, curled into a ball on my couch, and did what any rational person would do — <strong className="text-slate-800">I Googled "is die-off supposed to feel like this" at 2am.</strong>
+            Brain fog so thick I couldn't finish a sentence at work. My stomach was making sounds I'd never heard. I got home, curled into a ball on my couch, and did what any rational person would do — <strong className="text-slate-800">I Googled "did I mess this up" at 2am.</strong>
           </p>
           <p className="mt-5 leading-8 text-slate-600">
-            Reddit said it was normal. Reddit also said it could be a sign of something dangerous. Reddit was not helpful.
+            Reddit said to push through. Reddit also said to stop immediately. Reddit was not helpful.
           </p>
         </motion.div>
 
         <Callout variant="warning">
-          <strong>What I didn't know at the time:</strong> The Day 3–5 wall is the #1 reason people quit their gut cleanse. It's called a Herxheimer reaction — your body is processing dead pathogens faster than it can clear them. It's temporary. It's textbook. But when you're alone at 2am with your gut in revolt, it feels like something is very wrong.
+          <strong>What I didn't know at the time:</strong> The Day 3-5 wall is where most people quit, not because they lack discipline, but because the plan suddenly feels confusing. When you do not know what to take next, what to eat, or whether to keep going, the easiest move is to stop.
         </Callout>
 
         <motion.div {...fadeUp} className="prose-article">
@@ -311,7 +311,7 @@ const Advertorial = () => {
             But she said something that stuck: <em>"It doesn't teach you anything new. It just organizes what you already know into a daily checklist."</em>
           </p>
           <p className="mt-5 leading-8 text-slate-600">
-            That's exactly what it does. It's not a new protocol. It's not a course. It's not another person telling you to buy more supplements. <strong className="text-slate-800">It takes a specific 21-day gut cleanse protocol and turns it into a day-by-day system you can actually follow.</strong>
+            That's exactly what it does. It's not a new protocol. It's not a course. It's not another person telling you to buy more supplements. <strong className="text-slate-800">It takes a specific 21-day protocol and turns it into a day-by-day system you can actually follow.</strong>
           </p>
         </motion.div>
 
@@ -327,15 +327,15 @@ const Advertorial = () => {
           {[
             {
               title: 'One screen. Every morning.',
-              body: 'I woke up. Opened the app. Saw: Morning herbs (dose + timing). Afternoon meal window. Evening binder (60 min after herbs). Checked them off. Done. No PDF. No scrolling. No panic.',
+              body: 'I woke up. Opened the app. Saw the morning checklist, the meal window, and the evening reminder. Checked them off. Done. No PDF. No scrolling. No panic.',
             },
             {
               title: 'The $200 Amazon cart became $58.',
               body: 'The journal showed me I needed FOUR things for Phase 1. Four. Not fourteen. I deleted the Amazon cart. Bought what I actually needed. Started the next morning.',
             },
             {
-              title: 'Day 3 die-off didn\'t make me quit.',
-              body: 'When the brain fog hit again, I tapped the step. The app said: "Textbook Herxheimer reaction. Expected on Days 3–5. Do this: [specific guidance]." I exhaled. Drank water. Kept going.',
+              title: 'Day 3 confusion didn\'t make me quit.',
+              body: 'When the brain fog hit again, I tapped the step. The app brought me back to the next practical move: keep meals simple, protect the timing window, and stop improvising. I exhaled. Kept going.',
             },
             {
               title: 'I never lost track of what day I was on.',
@@ -380,10 +380,10 @@ const Advertorial = () => {
             {
               quote: 'Had a $230 Amazon cart from three TikTok creators. The journal said I needed FOUR things. Four. Spent $58. Started the next morning.',
               name: 'David K.',
-              detail: 'Day 17 — gut finally quiet',
+              detail: 'Day 17 - finally consistent',
             },
             {
-              quote: 'Day 3 WRECKED me. Brain fog, headache, stomach making sounds I\'ve never heard. Tapped the step, it said "textbook herxheimer, do this." I kept going. Day 19 now. Different person.',
+              quote: 'Day 3 WRECKED me. Brain fog, headache, zero confidence. I tapped the step, got the next practical move, and kept going. Day 19 now. Completely different experience.',
               name: 'Jessica R.',
               detail: 'Second round — it gets easier',
             },
@@ -420,7 +420,7 @@ const Advertorial = () => {
             If you've been stuck in the loop — this is the exit.
           </h2>
           <p className="mt-5 leading-8 text-slate-600">
-            You've already decided to do the cleanse. You're not researching whether it works. You're stuck on <strong className="text-slate-800">how to actually execute it</strong> without quitting on Day 5.
+            You've already decided to do the protocol. You're not researching whether it works. You're stuck on <strong className="text-slate-800">how to actually execute it</strong> without quitting on Day 5.
           </p>
           <p className="mt-5 leading-8 text-slate-600">
             The Gut Brain Journal starts with a 3-day free trial, then continues at $47/year if you want to keep the daily guidance, reminders, and tracking. No monthly charge. Keep it only if it is helping you finish.
@@ -443,7 +443,7 @@ const Advertorial = () => {
               See the full breakdown of The Gut Brain Journal
             </h3>
             <p className="mt-3 text-[0.94rem] leading-7 text-slate-600">
-              The landing page shows exactly what's inside — the daily checklists, the shopping lists, the protocol Q&A, the symptom tracking — everything that got me (and hundreds of others) to Day 21.
+              The landing page shows exactly what's inside — the daily checklists, the shopping lists, the protocol Q&A, and the daily check-ins that got me (and plenty of other people) to Day 21.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -479,10 +479,10 @@ const Advertorial = () => {
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
             <Download className="mx-auto h-8 w-8 text-slate-400" />
             <h3 className="mt-4 text-lg font-bold text-slate-900 sm:text-xl">
-              Not ready yet? Get the protocol free.
+              Not ready yet? Get the Prep Day starter guide.
             </h3>
             <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-slate-500">
-              Download the full 21-day protocol — the same one the app is built around. Follow it on your own, or come back when you want the daily guidance.
+              Get the setup checklist the app is built around. Follow it on your own, or come back when you want the daily guidance and reminders.
             </p>
 
             {leadSubmitted ? (
@@ -494,7 +494,7 @@ const Advertorial = () => {
                 <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-500" />
                 <p className="mt-3 font-semibold text-emerald-900">Check your inbox</p>
                 <p className="mt-1 text-sm text-emerald-700">
-                  The protocol PDF is on its way to <strong>{leadEmail}</strong>.
+                  The starter guide is on its way to <strong>{leadEmail}</strong>.
                 </p>
               </motion.div>
             ) : (
@@ -525,7 +525,7 @@ const Advertorial = () => {
             )}
 
             <p className="mt-4 text-[11px] text-slate-400">
-              No spam. Just the protocol. Unsubscribe anytime.
+              No spam. Just the starter guide. Unsubscribe anytime.
             </p>
           </div>
         </motion.div>
@@ -552,7 +552,7 @@ const Advertorial = () => {
             The Gut Brain Journal
           </p>
           <p className="mt-2 text-xs text-slate-400">
-            The 21-day gut cleanse companion for people who are done Googling at 2am.
+            The 21-day protocol companion for people who are done Googling at 2am.
           </p>
           <p className="mt-3 text-[10px] text-slate-300">
             &copy; {new Date().getFullYear()} The Gut Brain Journal. All rights reserved.

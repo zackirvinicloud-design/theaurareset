@@ -11,7 +11,7 @@ import { JournalHistory } from './JournalHistory';
 import { InsightsDrawer } from '../insights/InsightsDrawer';
 import { useChatStore } from '@/hooks/useChatStore';
 import { useGutBrainProfile } from '@/hooks/useGutBrainProfile';
-import { streamChat } from '@/utils/streamChat';
+import { requestGutBrainTurn } from '@/utils/streamChat';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { buildProtocolChatContext } from '@/hooks/useProtocolData';
@@ -27,7 +27,7 @@ interface ChatPanelProps {
 }
 
 export const ChatPanel = ({ className, context }: ChatPanelProps) => {
-  const { messages, userProgress, addMessage, updateLastMessage, updateProgress, clearMessages, exportChat } = useChatStore();
+  const { messages, userProgress, addMessage, updateProgress, clearMessages, exportChat } = useChatStore();
   const gutBrain = useGutBrainProfile(null);
   const [isLoading, setIsLoading] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -37,13 +37,16 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
   const dailyMotivationHandledRef = useRef(false);
 
   const handleSend = useCallback(async (content: string) => {
-    addMessage({ role: 'user', content });
+    const trimmedContent = content.trim();
+    if (!trimmedContent) {
+      return;
+    }
+
+    const userMessage = addMessage({ role: 'user', content: trimmedContent });
     setIsLoading(true);
 
-    let assistantContent = '';
     let nextDay = userProgress.currentDay;
     let nextPhase = userProgress.currentPhase;
-    addMessage({ role: 'assistant', content: '' });
 
     // Build enhanced context with user progress
     const phaseNames = ['Preliminary (Prep)', 'Fungal + Foundation', 'Parasites + Foundation', 'Heavy Metals + Foundation'];
@@ -51,84 +54,68 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
     const enhancedContext = [
       `${dayLabel}, Phase ${userProgress.currentPhase}: ${phaseNames[userProgress.currentPhase - 1]}${context ? `. Viewing: ${context}` : ''}`,
       buildProtocolChatContext(userProgress.currentDay),
-    ].join(' ');
+    ].join('\n\n');
 
     try {
-      await streamChat({
-        messages: [...messages, { id: '0', role: 'user', content, timestamp: Date.now() }],
+      const payload = await requestGutBrainTurn({
+        messages: [...messages, userMessage],
         context: enhancedContext,
         brainProfile: gutBrain.profile,
         brainSnapshot: gutBrain.snapshot,
-        onDelta: (chunk) => {
-          assistantContent += chunk;
-          
-          // Check for progress update marker
-          const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
-          if (progressMatch) {
-            const newDay = Math.min(Math.max(parseInt(progressMatch[1]), 0), 21);
-            const newPhase = newDay === 0 ? 1 : (newDay <= 7 ? 2 : (newDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
-            nextDay = newDay;
-            nextPhase = newPhase;
-            updateProgress({ currentDay: newDay, currentPhase: newPhase });
-            
-            // Remove the marker from the displayed content
-            assistantContent = assistantContent.replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/, '');
-          }
-          
-          updateLastMessage(assistantContent);
-        },
-        onDone: () => {
-          const insightEntries: GutBrainConversationEntry[] = [
-            ...messages.map((message) => ({
-              id: message.id,
-              role: message.role,
-              content: message.content,
-              createdAt: new Date(message.timestamp).toISOString(),
-            })),
-            {
-              id: `user-${Date.now()}`,
-              role: 'user',
-              content,
-              createdAt: new Date().toISOString(),
-            },
-            {
-              id: `assistant-${Date.now()}`,
-              role: 'assistant',
-              content: assistantContent,
-              createdAt: new Date().toISOString(),
-            },
-          ];
-
-          void gutBrain.refreshBrain(
-            insightEntries,
-            { currentDay: nextDay, currentPhase: nextPhase },
-            { silent: true },
-          );
-          setIsLoading(false);
-        },
-        onError: (error) => {
-          setIsLoading(false);
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
       });
+
+      if (typeof payload.progressUpdateDay === 'number') {
+        nextDay = Math.min(Math.max(payload.progressUpdateDay, 0), 21);
+        nextPhase = nextDay === 0 ? 1 : (nextDay <= 7 ? 2 : (nextDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
+        updateProgress({ currentDay: nextDay, currentPhase: nextPhase });
+      }
+
+      const assistantMessage = addMessage({
+        role: 'assistant',
+        content: payload.replyText,
+        assistantPayload: payload,
+      });
+
+      const insightEntries: GutBrainConversationEntry[] = [
+        ...messages.map((message) => ({
+          id: message.id,
+          role: message.role,
+          content: message.content,
+          createdAt: new Date(message.timestamp).toISOString(),
+        })),
+        {
+          id: userMessage.id,
+          role: 'user',
+          content: userMessage.content,
+          createdAt: new Date(userMessage.timestamp).toISOString(),
+        },
+        {
+          id: assistantMessage.id,
+          role: 'assistant',
+          content: assistantMessage.content,
+          createdAt: new Date(assistantMessage.timestamp).toISOString(),
+        },
+      ];
+
+      void gutBrain.refreshBrain(
+        insightEntries,
+        { currentDay: nextDay, currentPhase: nextPhase },
+        { silent: true },
+      );
     } catch (error) {
-      setIsLoading(false);
       toast({
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to send message. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   }, [
     addMessage,
     context,
     gutBrain,
     messages,
-    updateLastMessage,
     updateProgress,
     userProgress.currentDay,
     userProgress.currentPhase,
@@ -245,6 +232,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
@@ -261,6 +249,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
@@ -300,12 +289,11 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
           <>
             {messages.map((msg, index) => {
               const isLastMessage = index === messages.length - 1;
-              const isStreamingMessage = isLastMessage && msg.role === 'assistant' && isLoading;
               return (
                 <ChatMessage 
                   key={msg.id} 
-                  {...msg} 
-                  isStreaming={isStreamingMessage}
+                  {...msg}
+                  assistantPayload={msg.assistantPayload}
                   enableChoices={msg.role === 'assistant' && isLastMessage && !isLoading}
                   onChoiceSelect={(choice) => {
                     void handleSend(choice);
@@ -335,6 +323,7 @@ export const ChatPanel = ({ className, context }: ChatPanelProps) => {
         {/* Scroll to bottom button */}
         {showScrollButton && (
           <Button
+            type="button"
             variant="secondary"
             size="icon"
             className="absolute bottom-4 right-4 rounded-full shadow-lg z-10 h-10 w-10"

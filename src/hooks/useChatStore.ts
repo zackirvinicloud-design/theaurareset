@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import type { GutBrainTurnPayload } from '@/lib/gutbrain';
 
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  assistantPayload?: GutBrainTurnPayload | null;
   timestamp: number;
 }
 

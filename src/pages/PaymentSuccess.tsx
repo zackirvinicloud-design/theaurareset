@@ -6,6 +6,7 @@ import { CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { isEmailVerified, rememberPostAuthDestination } from "@/lib/auth-routing";
+import { SMS_REMINDERS_ENABLED } from "@/lib/sms";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -74,12 +75,21 @@ const PaymentSuccess = () => {
       if (hasCompletedOnboarding) {
         toast({
           title: "Access unlocked",
-          description: "Just one more thing: enable text reminders so you stay on track.",
+          description: SMS_REMINDERS_ENABLED
+            ? "Just one more thing: enable text reminders so you stay on track."
+            : "One more step: add Gut Brain to your phone and enable reminders so this feels like a real app.",
         });
-        const next = new URLSearchParams();
-        next.set("redirect", "/protocol");
-        next.set("source", "payment-success");
-        navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
+        if (SMS_REMINDERS_ENABLED) {
+          const next = new URLSearchParams();
+          next.set("redirect", "/protocol");
+          next.set("source", "payment-success");
+          navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
+        } else {
+          const next = new URLSearchParams();
+          next.set("redirect", "/protocol");
+          next.set("source", "payment-success");
+          navigate(`/setup/notifications?${next.toString()}`, { replace: true });
+        }
       } else {
         toast({
           title: "Access unlocked",

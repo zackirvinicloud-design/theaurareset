@@ -48,18 +48,18 @@ const WEEKS = LANDING_PHASE_IDS.map((phaseId, index) => {
 
 const DESKTOP_SHOWCASE = {
   title: 'The End of the "Wing It" Method.',
-  description: 'Trying to survive a 21-day parasite cleanse with a messy folder of PDFs and saved TikToks is a guaranteed path to failure. The Gut Brain Journal is your ruthless execution engine. No confusion. Just daily directives.',
+  description: 'Trying to follow a 21-day protocol from scattered PDFs and saved TikToks is a guaranteed path to confusion. The Gut Brain Journal turns it into one clean daily workspace: what to do, what to buy, what to prep, and what matters next.',
   mediaBase: '/landing-media/desktop-app-demo',
 } as const;
 
 const DESKTOP_SHOWCASE_POINTS = [
-  'Burn the PDFs. Open "Today" and see exactly what to do, what to take, and when to eat.',
-  'Get a hyper-strict shopping list so you stop panic-buying random useless supplements.',
-  'Push reminders force you to stay on schedule before the day spirals out of control.',
-  '24/7 GutBrain access to pull you back from the ledge when sugar cravings hit hard.',
-  'Instant symptom decoding when die-off makes you panic and wonder if something is "wrong".',
-  'Roadmap tracking so you actually know if you are making progress or just spinning your wheels.',
-  'Drop the mental overhead. Tell us what you took, and we handle the logic for the rest of the day.',
+  'Open "Today" and see your checklist, timing windows, and meals in one place.',
+  'Use the shopping list to buy only what this phase needs instead of panic-buying random extras.',
+  'Set reminders so the day stays on schedule even when life gets noisy.',
+  'Ask GutBrain for help with meals, shopping, missed steps, and schedule friction.',
+  'Keep simple daily check-ins so you can review the pattern later without guessing from memory.',
+  'Use the roadmap to see where you are, what changes next, and what to prep before it sneaks up on you.',
+  'Drop the mental overhead. The app keeps the next step obvious.',
 ] as const;
 
 const MOBILE_DEMO_CARDS = [
@@ -67,7 +67,7 @@ const MOBILE_DEMO_CARDS = [
     id: 'today-mobile',
     label: 'Daily Directives',
     title: 'Wake up. Open the app. Execute.',
-    description: 'Your meals, pill timing, and checklists are dictated clearly. No re-reading the protocol every three hours to figure out your next move.',
+    description: 'Your meals, timing windows, and checklists are laid out clearly. No re-reading the protocol every three hours to figure out your next move.',
     value: 'Zero guesswork. You always know what to do.',
     frames: [
       '/landing-media/mobile-today-seq-1.png',
@@ -78,10 +78,10 @@ const MOBILE_DEMO_CARDS = [
   },
   {
     id: 'gutbrain-mobile',
-    label: 'Crisis Support',
-    title: 'An emergency brake for when you spiral.',
-    description: 'When the die-off hits and you want to quit, GutBrain intercepts. It answers the exact blocker keeping you stuck and forces you forward.',
-    value: 'Hard days stop being an excuse to order takeout.',
+    label: 'On-the-Go Help',
+    title: 'A practical reset when the day gets messy.',
+    description: 'When you miss a step or get overwhelmed, GutBrain helps you simplify the rest of the day around food, timing, shopping, and the next move.',
+    value: 'Hard days stop turning into full restarts.',
     frames: [
       '/landing-media/mobile-coach-seq-1.png',
       '/landing-media/mobile-coach-seq-2.png',
@@ -93,8 +93,8 @@ const MOBILE_DEMO_CARDS = [
     id: 'shopping-mobile',
     label: 'Immediate Action',
     title: 'Stop panic-buying random bottles.',
-    description: 'You get a phase-by-phase shopping directive. Get exactly what you need for Day 1, skip the fluff, and stop wasting money.',
-    value: 'You start armed and dangerous, not overwhelmed.',
+    description: 'You get a phase-by-phase shopping plan. Get exactly what you need for Day 1, skip the fluff, and stop wasting money.',
+    value: 'You start organized, not overwhelmed.',
     frames: [
       '/landing-media/mobile-shopping-seq-1.png',
       '/landing-media/mobile-shopping-seq-2.png',
@@ -106,27 +106,27 @@ const MOBILE_DEMO_CARDS = [
 ] as const;
 
 const OFFER_ITEMS = [
-  'An airtight Prep Day protocol that deletes startup chaos',
-  'Ruthless day-by-day directives (no guessing)',
-  '24/7 GutBrain support for when the cravings hit hard',
+  'A clear Prep Day setup so Day 1 feels obvious',
+  'Day-by-day checklists with meals, timing, and reminders',
+  'GutBrain help for shopping, food swaps, and missed steps',
 ];
 
-const COMMAND_CENTER_SUBTEXT = 'Zero thinking required. Wake up. Open the journal. Execute the checklist. Everything you need to survive today is handed to you on a silver platter.';
+const COMMAND_CENTER_SUBTEXT = 'Wake up. Open the journal. See today\'s checklist, timing windows, meals, and reminders in one place. Everything important for today is easy to find.';
 
 const FIT_ITEMS = [
-  'You already bought supplements but have ZERO schedule',
-  'You quit your last cleanse because of severe "Die-Off" brain fog',
-  'You need someone to tell you exactly what to do',
+  'You already bought supplements but still do not have a clear schedule',
+  'You quit last time because the plan got confusing by Day 3 or 4',
+  'You want structure, not more research',
 ];
 
 const FAQS = [
   {
     q: 'Do I really need this if I already have the PDFs?',
-    a: 'Yes. A PDF will not tap you on the shoulder when it is time to take your binders. It will not talk you down when you are staring at a donut on Day 4. This is an execution engine, not a reading assignment.',
+    a: 'Probably. A PDF will not organize your day, send reminders, keep your shopping clean, or show the next step at a glance. This is a daily workspace, not a reading assignment.',
   },
   {
     q: 'I already bought products from a TikTok creator. Can I use this?',
-    a: 'Absolutely. That is exactly who we built this for. You have the bottles on your counter, but no system. We turn that expensive pile of pills into a ruthless, easy-to-follow daily plan.',
+    a: 'Absolutely. That is exactly who we built this for. You have the bottles on your counter but no system, and the app turns that pile into a simple daily plan.',
   },
   {
     q: 'Is this a monthly subscription?',
@@ -134,7 +134,7 @@ const FAQS = [
   },
   {
     q: 'Will this cure my IBS / SIBO / Gut Issues?',
-    a: 'No. We are not doctors, and this is not medical advice. The Gut Brain Journal is an execution software. You bring the protocol, we provide the daily structure and accountability so you actually finish it.',
+    a: 'No. The Gut Brain Journal is planning software, not medical care. It helps you organize a protocol, follow the daily structure, and keep your progress in one place.',
   },
 ];
 
@@ -265,7 +265,7 @@ const Landing = () => {
       <div className="open-program__inner">
         <div className="open-program__header-row">
           <span className="open-program__heading">21-DAY CLEANSE</span>
-          <span className="open-program__heading-right">FUNGAL • PARASITE • METAL DETOX</span>
+          <span className="open-program__heading-right">SETUP • WEEK 1 • WEEK 2 • WEEK 3</span>
         </div>
 
         <div className="open-program__image-area">
@@ -409,7 +409,7 @@ const Landing = () => {
                 </span>
               </span>
               <span className="open-hero__line-rest">YOUR WAY THROUGH</span>
-              <span className="open-hero__line-rest">A GUT CLEANSE</span>
+              <span className="open-hero__line-rest">A 21-DAY PROTOCOL</span>
             </motion.h1>
           </div>
 
@@ -434,7 +434,7 @@ const Landing = () => {
               You will crack without a system.
             </h2>
             <p className="open-proof__description">
-              When the die-off brain fog hits on Day 3, you are going to slip up. See how we force you to stay on track.
+              When confusion hits on Day 3, most people start freestyling. See how the app keeps the next step obvious.
             </p>
           </div>
 
@@ -534,7 +534,7 @@ const Landing = () => {
             <span className="open-offer__eyebrow">THE BOTTOM LINE</span>
             <h2 className="open-offer__title">Buy execution, not excuses.</h2>
             <p className="open-offer__description">
-              If you are serious about fixing your gut, stop "winging it." Get the daily system that actually gets you across the finish line.
+              If you are serious about finishing a protocol, stop winging it. Get the daily system that gets you from Prep Day to Day 21 without the chaos.
             </p>
 
             <div className="open-offer__lists">
@@ -572,11 +572,11 @@ const Landing = () => {
             </p>
 
             <button type="button" className="open-hero__button open-offer__button" onClick={handleStart}>
-              Take the Free Gut Analysis <ArrowRight size={18} />
+              Start the Free Trial <ArrowRight size={18} />
             </button>
 
             <p className="open-offer__micro">
-              Start your trial, unlock the workspace, and begin from Prep Day.
+              Start your trial, unlock the workspace, and begin from Prep Day. Planning software only. No diagnosis or symptom interpretation.
             </p>
             <button type="button" className="open-offer__login" onClick={handleLogin}>
               Already have an account? Log in
@@ -636,7 +636,7 @@ const Landing = () => {
           className="open-sticky-cta__button"
           onClick={handleStart}
         >
-          Take the Free Gut Analysis <ArrowRight size={18} />
+          Start the Free Trial <ArrowRight size={18} />
         </button>
         <button
           type="button"

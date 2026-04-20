@@ -96,8 +96,8 @@ export const ProblemScene = () => {
           }} />
             <h3 className="text-2xl font-bold mb-2" style={{
             color: '#dc2626'
-          }}>Traditional Medicine</h3>
-            <p className="text-sm text-muted-foreground mb-4 italic">They waste your time AND your money</p>
+          }}>Generic Advice Loops</h3>
+            <p className="text-sm text-muted-foreground mb-4 italic">Lots of appointments, lots of content, not much day-to-day clarity</p>
             <ul className="space-y-4 text-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
@@ -105,23 +105,23 @@ export const ProblemScene = () => {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">Months of appointments</span> that lead nowhere. Each one: time off work, driving, waiting rooms, parking fees. $380 per visit. A prescription for an antidepressant or PPI. Your gut gets worse. You come back in 3 months. Repeat.</span>
+                <span className="leading-tight"><span className="font-bold">Months of appointments</span> that still do not tell you what to do tomorrow morning. Time off work, driving, waiting rooms, parking fees, then you are back home with no clear daily structure.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">They don't get paid to cure you quickly.</span> They get paid per visit, per prescription, per test. A healthy patient is a lost customer. No financial incentive to fix the ROOT cause fast. Your time doesn't matter to them.</span>
+                <span className="leading-tight"><span className="font-bold">The system is not built for daily execution.</span> Appointments, tests, and content can all be useful, but none of them organize your protocol into a simple morning-afternoon-evening plan.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">The gut-brain connection?</span> Not in their medical school curriculum. Not in the insurance playbook. They have 12 minutes per patient. No time to actually understand YOU. Not profitable for pharma companies.</span>
+                <span className="leading-tight"><span className="font-bold">Even good clinicians are not a daily checklist.</span> They do not live in your kitchen at 7am, remind you when the binder window opens, or reorganize the protocol when your day gets messy.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight"><span className="font-bold">"Have you tried therapy?"</span> Translation: "We don't know what's wrong, but we're not going to admit it. Here's a $150/session referral. More time. More money. See you in 6 months when you're worse."</span>
+                <span className="leading-tight"><span className="font-bold">You still end up back at square one.</span> More tabs. More notes. More screenshots. Still no one telling you what to do today in plain English.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-destructive mt-1 font-bold text-lg">•</span>
-                <span className="leading-tight font-semibold text-destructive">You leave feeling dismissed, gaslit, and wondering if it's "all in your head." (It's not. It's in your gut. They just don't get paid—or have TIME—to look there.)</span>
+                <span className="leading-tight font-semibold text-destructive">You leave feeling like you have plenty of inputs and still no operating system.</span>
               </li>
             </ul>
           </motion.div>
@@ -144,7 +144,7 @@ export const ProblemScene = () => {
             You're Not Broken. The System Is.
           </p>
           <p className="text-base sm:text-lg md:text-xl text-foreground mb-4 leading-relaxed">
-            The doctors won't learn about the gut-brain axis AND waste your time with useless visits. The supplements can't keep you accountable AND drain your bank account. The programs don't adapt to YOU AND leave you drowning in research.
+            Appointments cannot organize your protocol for you. Supplements cannot keep you accountable. Generic programs do not adapt to your schedule or keep the next step obvious.
           </p>
           <p className="text-lg sm:text-xl font-bold text-foreground">
             So you keep spending hours. Keep spending money. Keep failing. Keep hating yourself for "not having discipline."

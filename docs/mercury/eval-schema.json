@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MercuryEvalRecord",
+  "type": "object",
+  "required": [
+    "conversion_proxy_score",
+    "compliance_score",
+    "actionability_score",
+    "calibration_score",
+    "mercury_quality_index"
+  ],
+  "properties": {
+    "conversion_proxy_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "compliance_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "actionability_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "calibration_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "mercury_quality_index": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

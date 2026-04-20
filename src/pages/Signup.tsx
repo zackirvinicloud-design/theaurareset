@@ -362,6 +362,12 @@ const Signup = () => {
                           Sign in instead
                         </Link>
                       </div>
+                      <p className="mt-4 text-xs leading-6 text-muted-foreground">
+                        By creating an account, you agree to the{" "}
+                        <Link to="/legal/terms" className="text-primary hover:underline">Terms</Link>
+                        {" "}and{" "}
+                        <Link to="/legal/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+                      </p>
                     </div>
                 </motion.div>
               </CardContent>

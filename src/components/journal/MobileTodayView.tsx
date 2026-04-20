@@ -26,6 +26,7 @@ interface MobileTodayViewProps {
     recoveryState: RecoveryState | null;
     maintenanceHandoff: MaintenanceHandoff | null;
     pushReady?: boolean;
+    smsReady?: boolean;
     focusedItemKey?: string | null;
     reminderComposerTargetKey?: string | null;
     onToggle: (itemKey: string) => void;
@@ -57,6 +58,7 @@ export const MobileTodayView = ({
     recoveryState,
     maintenanceHandoff,
     pushReady = false,
+    smsReady = false,
     focusedItemKey,
     reminderComposerTargetKey,
     onToggle,
@@ -210,6 +212,7 @@ export const MobileTodayView = ({
                                         timeOfDay={nextItem.timeOfDay}
                                         reminder={nextReminder}
                                         pushReady={pushReady}
+                                        smsReady={smsReady}
                                         onSetReminder={onSetReminder}
                                         onClearReminder={onClearReminder}
                                         open={reminderComposerTargetKey === nextItem.key ? true : undefined}
@@ -330,6 +333,7 @@ export const MobileTodayView = ({
                             onSetReminder={onSetReminder}
                             onClearReminder={onClearReminder}
                             pushReady={pushReady}
+                            smsReady={smsReady}
                             variant="inline"
                         />
                         <div className="pt-1">

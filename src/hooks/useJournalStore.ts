@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
-import { buildShopKey, calculatePhase, findDefaultShoppingItem } from './useProtocolData';
+import { buildShopKey, calculatePhase, findDefaultShoppingItem, getShoppingPhaseForDay } from './useProtocolData';
 import { buildProtocolDeepLink, buildReminderSchedulePayload, type ReminderDeliveryChannel } from '@/lib/sms';
 import {
     buildRecipeKey,
     findDefaultRecipe,
+    findRecipeMatch,
     getRecipePhaseForDay,
     normalizeRecipeMealType,
     resolveRecipes,
@@ -25,6 +26,7 @@ import {
     type SymptomInsightsPayload,
     type SymptomTrend,
 } from '@/lib/symptom-center';
+import type { GutBrainTurnPayload } from '@/lib/gutbrain';
 
 // ── Types ──────────────────────────────────────────────
 
@@ -42,6 +44,7 @@ export interface JournalEntry {
     dayNumber: number;
     role: 'user' | 'assistant';
     content: string;
+    assistantPayload?: GutBrainTurnPayload | null;
     createdAt: string;
 }
 
@@ -232,12 +235,17 @@ const LS_TASK_REMINDERS_KEY = 'gbj-task-reminders';
 const LS_SYMPTOM_CHECKINS_KEY = 'gbj-symptom-checkins';
 
 function mapJournalEntryRow(row: Tables<'journal_entries'>): JournalEntry {
+    const assistantPayload = row.role === 'assistant' && row.assistant_payload && typeof row.assistant_payload === 'object'
+        ? row.assistant_payload as GutBrainTurnPayload
+        : null;
+
     return {
         id: row.id,
         threadId: row.thread_id,
         dayNumber: row.day_number,
         role: row.role as 'user' | 'assistant',
         content: row.content,
+        assistantPayload,
         createdAt: row.created_at,
     };
 }
@@ -265,7 +273,7 @@ function mapDailyCheckInRow(row: DailyCheckinRow): DailyCheckIn {
 }
 
 function mapShoppingOverrideRow(row: ShoppingListItemRow): ShoppingListOverride {
-    return {
+    return normalizeShoppingOverrideRecord({
         id: row.id,
         key: row.item_key,
         phase: row.phase_name,
@@ -277,7 +285,7 @@ function mapShoppingOverrideRow(row: ShoppingListItemRow): ShoppingListOverride 
         source: row.source as ShoppingListItemSource,
         isHidden: row.is_hidden,
         createdAt: row.created_at,
-    };
+    });
 }
 
 function normalizeRecipeList(value: unknown) {
@@ -337,8 +345,84 @@ function normalizeShoppingMatch(value: string) {
     return value.trim().toLowerCase();
 }
 
-function normalizeRecipeMatch(value: string) {
-    return value.trim().toLowerCase();
+type ShoppingPhaseBucket = 'foundation' | 'week1' | 'week2' | 'week3' | 'custom';
+
+function getShoppingPhaseBucket(phaseName: string): ShoppingPhaseBucket {
+    const normalized = normalizeShoppingMatch(phaseName);
+    if (normalized.includes('foundation') || normalized.includes('prep')) return 'foundation';
+    if (normalized.includes('week 1') || normalized.includes('fungal')) return 'week1';
+    if (normalized.includes('week 2') || normalized.includes('parasite')) return 'week2';
+    if (normalized.includes('week 3') || normalized.includes('heavy') || normalized.includes('metal')) return 'week3';
+    return 'custom';
+}
+
+function canonicalizeShoppingPhaseName(phaseName: string) {
+    const bucket = getShoppingPhaseBucket(phaseName);
+    if (bucket === 'foundation') return 'Foundation';
+    if (bucket === 'week1') return 'Week 1 Reset';
+    if (bucket === 'week2') return 'Week 2 Support';
+    if (bucket === 'week3') return 'Week 3 Finish';
+    return phaseName.trim();
+}
+
+function canonicalizeShoppingCategoryName(phaseName: string, categoryName: string) {
+    const bucket = getShoppingPhaseBucket(phaseName);
+    const normalizedCategory = normalizeShoppingMatch(categoryName);
+    if (bucket === 'week1' && normalizedCategory === 'fungal support supplements') return 'Week 1 protocol supplements';
+    if (bucket === 'week2' && normalizedCategory === 'parasite-fighting foods') return 'Week 2 produce';
+    if (bucket === 'week2' && normalizedCategory === 'parasite formula supplements') return 'Week 2 protocol supplements';
+    if (bucket === 'week3' && normalizedCategory === 'metal-chelating foods') return 'Week 3 produce';
+    if (bucket === 'week3' && normalizedCategory === 'chelation supplements') return 'Week 3 protocol supplements';
+    return categoryName.trim();
+}
+
+function toShoppingKeyFragment(value: string) {
+    return normalizeShoppingMatch(value).replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+function normalizeShoppingSource(source: string | null | undefined): ShoppingListItemSource {
+    if (source === 'ai' || source === 'protocol') {
+        return source;
+    }
+    return 'manual';
+}
+
+function normalizeShoppingOverrideRecord(item: ShoppingListOverride): ShoppingListOverride {
+    const normalizedName = item.name.trim();
+    const canonicalPhase = canonicalizeShoppingPhaseName(item.phase);
+    const canonicalCategory = canonicalizeShoppingCategoryName(canonicalPhase, item.category);
+    const defaultMatch = findDefaultShoppingItem({
+        phase: canonicalPhase,
+        category: canonicalCategory,
+        name: normalizedName,
+    });
+
+    const fallbackKey = `shop_custom_${toShoppingKeyFragment(canonicalPhase)}_${toShoppingKeyFragment(canonicalCategory)}_${toShoppingKeyFragment(normalizedName)}`;
+    const key = defaultMatch?.key ?? item.key?.trim() ?? fallbackKey;
+    const source = defaultMatch ? 'protocol' : normalizeShoppingSource(item.source);
+
+    return {
+        ...item,
+        key,
+        phase: defaultMatch?.phase ?? canonicalPhase,
+        category: defaultMatch?.category ?? canonicalCategory,
+        name: defaultMatch?.item.name ?? normalizedName,
+        quantity: item.quantity?.trim() || defaultMatch?.item.quantity || undefined,
+        notes: item.notes?.trim() || defaultMatch?.item.notes || undefined,
+        optional: item.optional?.trim() || defaultMatch?.item.optional || undefined,
+        source,
+        createdAt: item.createdAt || new Date().toISOString(),
+    };
+}
+
+function dedupeShoppingOverridesByKey(items: ShoppingListOverride[]) {
+    const byKey = new Map<string, ShoppingListOverride>();
+    items.forEach((item) => {
+        byKey.set(item.key, item);
+    });
+    return [...byKey.values()].sort((a, b) => (
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    ));
 }
 
 function lsGet<T>(key: string, fallback: T): T {
@@ -562,6 +646,7 @@ function normalizeLocalEntries(entries: JournalEntry[], fallbackThreadId: string
     return entries.map((entry) => ({
         ...entry,
         threadId: entry.threadId || fallbackThreadId,
+        assistantPayload: entry.assistantPayload ?? null,
     }));
 }
 
@@ -577,7 +662,63 @@ function mergeThreadEntriesIntoLocalCache(threadId: string, threadEntries: Journ
     const existing = getLocalEntries();
     const normalizedExisting = normalizeLocalEntries(existing, threadId);
     const preserved = normalizedExisting.filter((entry) => entry.threadId !== threadId);
-    setLocalEntries([...preserved, ...threadEntries]);
+    const orderedThreadEntries = [...threadEntries].sort((a, b) => (
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    ));
+    setLocalEntries([...preserved, ...orderedThreadEntries]);
+}
+
+function entriesAreSameMessage(a: JournalEntry, b: JournalEntry) {
+    if (a.id === b.id) {
+        return true;
+    }
+
+    if (
+        a.threadId !== b.threadId
+        || a.role !== b.role
+        || a.dayNumber !== b.dayNumber
+        || a.content.trim() !== b.content.trim()
+    ) {
+        return false;
+    }
+
+    const aTime = new Date(a.createdAt).getTime();
+    const bTime = new Date(b.createdAt).getTime();
+    if (Number.isNaN(aTime) || Number.isNaN(bTime)) {
+        return false;
+    }
+
+    // Treat optimistic temp entries and their persisted copies as the same turn.
+    return Math.abs(aTime - bTime) <= 15_000;
+}
+
+function mergeThreadEntries(
+    threadId: string,
+    localEntries: JournalEntry[],
+    serverEntries: JournalEntry[],
+) {
+    const normalizedLocalEntries = normalizeLocalEntries(localEntries, threadId);
+    const normalizedServerEntries = normalizeLocalEntries(serverEntries, threadId);
+    const merged = [...normalizedServerEntries];
+
+    normalizedLocalEntries.forEach((localEntry) => {
+        if (!merged.some((serverEntry) => entriesAreSameMessage(localEntry, serverEntry))) {
+            merged.push(localEntry);
+        }
+    });
+
+    return merged.sort((a, b) => {
+        const timeDiff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        if (timeDiff !== 0) {
+            return timeDiff;
+        }
+
+        if (a.id === b.id) {
+            return 0;
+        }
+
+        return a.id.localeCompare(b.id);
+    });
 }
 
 // ── Hook ───────────────────────────────────────────────
@@ -653,13 +794,9 @@ export function useJournalStore() {
 
             if (!error) {
                 const mappedEntries = (ents || []).map(mapJournalEntryRow);
-                if (mappedEntries.length > 0 || localThreadEntries.length === 0) {
-                    setEntries(mappedEntries);
-                }
-
-                if (mappedEntries.length > 0) {
-                    mergeThreadEntriesIntoLocalCache(threadId, mappedEntries);
-                }
+                const mergedEntries = mergeThreadEntries(threadId, localThreadEntries, mappedEntries);
+                setEntries(mergedEntries);
+                mergeThreadEntriesIntoLocalCache(threadId, mergedEntries);
                 return;
             }
 
@@ -746,7 +883,12 @@ export function useJournalStore() {
             }
             setChecklist(lsGet(LS_CHECKLIST_KEY, {}));
             setCustomItems(lsGet(LS_CUSTOM_ITEMS_KEY, []));
-            setShoppingOverrides(lsGet(LS_SHOPPING_OVERRIDES_KEY, []));
+            const offlineShoppingOverrides = dedupeShoppingOverridesByKey(
+                lsGet<ShoppingListOverride[]>(LS_SHOPPING_OVERRIDES_KEY, [])
+                    .map(normalizeShoppingOverrideRecord),
+            );
+            setShoppingOverrides(offlineShoppingOverrides);
+            lsSet(LS_SHOPPING_OVERRIDES_KEY, offlineShoppingOverrides);
             setRecipeOverrides(lsGet(LS_RECIPE_OVERRIDES_KEY, []));
             const offlineSymptomCheckins = sortSymptomCheckinsDesc(getLocalSymptomCheckins(null));
             setSymptomCheckins(offlineSymptomCheckins);
@@ -761,6 +903,15 @@ export function useJournalStore() {
 
         const load = async () => {
             setIsLoading(true);
+            const savedThreads = lsGet<ChatThread[]>(LS_THREADS_KEY, []);
+            const localEntries = getLocalEntries();
+            const localThreadIds = new Set(
+                localEntries
+                    .filter((entry) => entry.role === 'user' && entry.content.trim().length > 0)
+                    .map((entry) => entry.threadId)
+                    .filter((threadId): threadId is string => Boolean(threadId))
+            );
+            const localThreads = savedThreads.filter((thread) => localThreadIds.has(thread.id));
 
             // Load progress
             const { data: prog } = await supabase
@@ -795,8 +946,11 @@ export function useJournalStore() {
                 .order('updated_at', { ascending: false });
 
             let loadedThreads = threadLoadError
-                ? lsGet<ChatThread[]>(LS_THREADS_KEY, [])
+                ? savedThreads
                 : (threadRows || []).map(mapChatThreadRow);
+            loadedThreads = [...loadedThreads, ...localThreads.filter((thread) => (
+                !loadedThreads.some((existing) => existing.id === thread.id)
+            ))];
 
             const { data: entryThreadRows, error: entryThreadError } = await supabase
                 .from('journal_entries')
@@ -804,22 +958,20 @@ export function useJournalStore() {
                 .eq('user_id', userId);
 
             if (!entryThreadError) {
-                const nonEmptyThreadIds = new Set(
+                const serverNonEmptyThreadIds = new Set(
                     (entryThreadRows || [])
                         .filter((row) => row.role === 'user' && (row.content || '').trim().length > 0)
                         .map((row) => row.thread_id)
                         .filter((threadId): threadId is string => Boolean(threadId))
                 );
+                const nonEmptyThreadIds = new Set([...serverNonEmptyThreadIds, ...localThreadIds]);
                 loadedThreads = loadedThreads.filter((thread) => nonEmptyThreadIds.has(thread.id));
             } else {
-                const localThreadIds = new Set(
-                    getLocalEntries()
-                        .filter((entry) => entry.role === 'user' && entry.content.trim().length > 0)
-                        .map((entry) => entry.threadId)
-                        .filter((threadId): threadId is string => Boolean(threadId))
-                );
                 loadedThreads = loadedThreads.filter((thread) => localThreadIds.has(thread.id));
             }
+            loadedThreads = [...loadedThreads].sort((a, b) => (
+                new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+            ));
 
             const savedActiveThreadId = lsGet<string | null>(LS_ACTIVE_THREAD_KEY, null);
             const initialThreadId = savedActiveThreadId && loadedThreads.some((thread) => thread.id === savedActiveThreadId)
@@ -852,7 +1004,9 @@ export function useJournalStore() {
                 .eq('user_id', userId)
                 .order('created_at', { ascending: true });
 
-            const loadedShoppingOverrides = (shoppingRows || []).map(mapShoppingOverrideRow);
+            const loadedShoppingOverrides = dedupeShoppingOverridesByKey(
+                (shoppingRows || []).map(mapShoppingOverrideRow),
+            );
             setShoppingOverrides(loadedShoppingOverrides);
             lsSet(LS_SHOPPING_OVERRIDES_KEY, loadedShoppingOverrides);
 
@@ -1180,7 +1334,11 @@ export function useJournalStore() {
 
     // ── Journal Entries ────────────────────────────────
 
-    const addJournalEntry = useCallback(async (role: 'user' | 'assistant', content: string): Promise<JournalEntry> => {
+    const addJournalEntry = useCallback(async (
+        role: 'user' | 'assistant',
+        content: string,
+        assistantPayload: GutBrainTurnPayload | null = null,
+    ): Promise<JournalEntry> => {
         let threadId = activeThreadIdRef.current;
 
         if (!threadId) {
@@ -1195,6 +1353,7 @@ export function useJournalStore() {
             dayNumber: progress.currentDay,
             role,
             content,
+            assistantPayload,
             createdAt: new Date().toISOString(),
         };
 
@@ -1212,6 +1371,7 @@ export function useJournalStore() {
                 day_number: progress.currentDay,
                 role,
                 content,
+                assistant_payload: role === 'assistant' ? assistantPayload : null,
             }).select('id, created_at').single();
 
             if (data) {
@@ -1286,10 +1446,10 @@ export function useJournalStore() {
         return returnEntry;
     }, [createThread, progress.currentDay, touchLastActiveDate, userId]);
 
-    const updateJournalEntry = useCallback((entryId: string, content: string) => {
+    const updateJournalEntry = useCallback((entryId: string, content: string, assistantPayload: GutBrainTurnPayload | null = null) => {
         setEntries(prev => {
             const updated = prev.map((entry) =>
-                entry.id === entryId ? { ...entry, content } : entry,
+                entry.id === entryId ? { ...entry, content, assistantPayload } : entry,
             );
             const updatedEntry = updated.find((entry) => entry.id === entryId);
             const threadIdForUpdate = updatedEntry?.threadId ?? activeThreadIdRef.current ?? updated[0]?.threadId ?? null;
@@ -1301,7 +1461,11 @@ export function useJournalStore() {
         });
     }, []);
 
-    const finalizeJournalEntry = useCallback(async (entryId: string, content: string) => {
+    const finalizeJournalEntry = useCallback(async (
+        entryId: string,
+        content: string,
+        assistantPayload: GutBrainTurnPayload | null = null,
+    ) => {
         let persistedId: string | null = null;
 
         setEntries(prev => {
@@ -1314,7 +1478,7 @@ export function useJournalStore() {
                     persistedId = entry.id;
                 }
 
-                return { ...entry, content };
+                return { ...entry, content, assistantPayload };
             });
 
             const updatedEntry = updated.find((entry) => entry.id === entryId);
@@ -1329,7 +1493,7 @@ export function useJournalStore() {
         if (userId && persistedId) {
             await supabase
                 .from('journal_entries')
-                .update({ content })
+                .update({ content, assistant_payload: assistantPayload })
                 .eq('id', persistedId);
         }
     }, [userId]);
@@ -1350,6 +1514,68 @@ export function useJournalStore() {
                 .eq('thread_id', activeThreadId);
         }
     }, [activeThreadId, userId]);
+
+    const resetCleanse = useCallback(async () => {
+        const resetProgress = {
+            ...DEFAULT_PROGRESS,
+            startDate: new Date().toISOString(),
+        };
+
+        setProgress(resetProgress);
+        lsSet(LS_PROGRESS_KEY, resetProgress);
+
+        setThreads([]);
+        lsSet(LS_THREADS_KEY, []);
+        setActiveThreadId(null);
+        activeThreadIdRef.current = null;
+        lsSet(LS_ACTIVE_THREAD_KEY, null);
+        setEntries([]);
+        setLocalEntries([]);
+
+        setChecklist({});
+        lsSet(LS_CHECKLIST_KEY, {});
+        setCustomItems([]);
+        lsSet(LS_CUSTOM_ITEMS_KEY, []);
+
+        setShoppingOverrides([]);
+        lsSet(LS_SHOPPING_OVERRIDES_KEY, []);
+
+        setRecipeOverrides([]);
+        lsSet(LS_RECIPE_OVERRIDES_KEY, []);
+
+        setSymptoms([]);
+        lsSet(LS_SYMPTOMS_KEY, []);
+        setCheckIn(null);
+        lsSet(LS_CHECKIN_KEY, null);
+        setSymptomCheckins([]);
+        setLocalSymptomCheckins(userId, []);
+        setTaskReminders([]);
+        setLocalTaskReminders(userId, []);
+
+        if (userId) {
+            await Promise.all([
+                supabase.from('user_progress').upsert({
+                    user_id: userId,
+                    current_day: resetProgress.currentDay,
+                    current_phase: resetProgress.currentPhase,
+                    streak_count: resetProgress.streakCount,
+                    last_active_date: resetProgress.lastActiveDate,
+                    start_date: resetProgress.startDate,
+                }),
+                supabase.from('chat_threads').delete().eq('user_id', userId),
+                supabase.from('journal_entries').delete().eq('user_id', userId),
+                supabase.from('daily_checklists').delete().eq('user_id', userId),
+                supabase.from('daily_symptoms').delete().eq('user_id', userId),
+                supabase.from('daily_checkins').delete().eq('user_id', userId),
+                supabase.from('symptom_checkin_factors').delete().eq('user_id', userId),
+                supabase.from('symptom_checkin_items').delete().eq('user_id', userId),
+                supabase.from('symptom_checkins').delete().eq('user_id', userId),
+                supabase.from('shopping_list_items').delete().eq('user_id', userId),
+                supabase.from('recipe_items').delete().eq('user_id', userId),
+                supabase.from('task_reminders').delete().eq('user_id', userId),
+            ]);
+        }
+    }, [userId]);
 
     // ── Checklist ──────────────────────────────────────
 
@@ -1417,12 +1643,14 @@ export function useJournalStore() {
 
     const upsertShoppingOverrideLocally = useCallback((nextItem: ShoppingListOverride) => {
         setShoppingOverrides((prev) => {
-            const existingIndex = prev.findIndex((item) => item.key === nextItem.key);
+            const normalizedNextItem = normalizeShoppingOverrideRecord(nextItem);
+            const existingIndex = prev.findIndex((item) => item.key === normalizedNextItem.key);
             const next = existingIndex === -1
-                ? [...prev, nextItem]
-                : prev.map((item) => (item.key === nextItem.key ? nextItem : item));
-            lsSet(LS_SHOPPING_OVERRIDES_KEY, next);
-            return next;
+                ? [...prev, normalizedNextItem]
+                : prev.map((item) => (item.key === normalizedNextItem.key ? normalizedNextItem : item));
+            const deduped = dedupeShoppingOverridesByKey(next.map(normalizeShoppingOverrideRecord));
+            lsSet(LS_SHOPPING_OVERRIDES_KEY, deduped);
+            return deduped;
         });
     }, []);
 
@@ -1451,8 +1679,10 @@ export function useJournalStore() {
             return null;
         }
 
-        const normalizedPhase = normalizeShoppingMatch(phase);
-        const normalizedCategory = normalizeShoppingMatch(category);
+        const canonicalPhase = canonicalizeShoppingPhaseName(phase);
+        const canonicalCategory = canonicalizeShoppingCategoryName(canonicalPhase, category);
+        const normalizedPhase = normalizeShoppingMatch(canonicalPhase);
+        const normalizedCategory = normalizeShoppingMatch(canonicalCategory);
         const normalizedName = normalizeShoppingMatch(trimmedName);
 
         const existing = shoppingOverrides.find((item) =>
@@ -1460,7 +1690,11 @@ export function useJournalStore() {
             && normalizeShoppingMatch(item.category) === normalizedCategory
             && normalizeShoppingMatch(item.name) === normalizedName,
         );
-        const defaultMatch = findDefaultShoppingItem({ phase, category, name: trimmedName });
+        const defaultMatch = findDefaultShoppingItem({
+            phase: canonicalPhase,
+            category: canonicalCategory,
+            name: trimmedName,
+        });
 
         if (defaultMatch && !existing?.isHidden) {
             return {
@@ -1472,11 +1706,11 @@ export function useJournalStore() {
         }
 
         const key = existing?.key ?? defaultMatch?.key ?? `shop_custom_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-        const nextItem: ShoppingListOverride = {
+        const nextItem = normalizeShoppingOverrideRecord({
             id: existing?.id ?? key,
             key,
-            phase: defaultMatch?.phase ?? phase.trim(),
-            category: defaultMatch?.category ?? category.trim(),
+            phase: defaultMatch?.phase ?? canonicalPhase,
+            category: defaultMatch?.category ?? canonicalCategory,
             name: defaultMatch?.item.name ?? trimmedName,
             quantity: quantity?.trim() || defaultMatch?.item.quantity || undefined,
             notes: notes?.trim() || defaultMatch?.item.notes || undefined,
@@ -1484,7 +1718,7 @@ export function useJournalStore() {
             source: defaultMatch ? 'protocol' : source,
             isHidden: false,
             createdAt: existing?.createdAt ?? new Date().toISOString(),
-        };
+        });
 
         upsertShoppingOverrideLocally(nextItem);
 
@@ -1526,24 +1760,28 @@ export function useJournalStore() {
         optional?: string;
         source?: ShoppingListItemSource;
     }) => {
+        const canonicalPhase = item.phase ? canonicalizeShoppingPhaseName(item.phase) : null;
+        const canonicalCategory = canonicalizeShoppingCategoryName(canonicalPhase ?? getShoppingPhaseForDay(progress.currentDay), item.category);
+        const canonicalName = item.name.trim();
+
         const existing = item.key
             ? shoppingOverrides.find((entry) => entry.key === item.key)
             : shoppingOverrides.find((entry) =>
-                normalizeShoppingMatch(entry.category) === normalizeShoppingMatch(item.category)
-                && normalizeShoppingMatch(entry.name) === normalizeShoppingMatch(item.name)
-                && (!item.phase || normalizeShoppingMatch(entry.phase) === normalizeShoppingMatch(item.phase)),
+                normalizeShoppingMatch(entry.category) === normalizeShoppingMatch(canonicalCategory)
+                && normalizeShoppingMatch(entry.name) === normalizeShoppingMatch(canonicalName)
+                && (!canonicalPhase || normalizeShoppingMatch(entry.phase) === normalizeShoppingMatch(canonicalPhase)),
             );
 
         const defaultMatch = findDefaultShoppingItem({
-            phase: item.phase,
-            category: item.category,
-            name: item.name,
+            phase: canonicalPhase ?? undefined,
+            category: canonicalCategory,
+            name: canonicalName,
         });
 
         const nextItem: ShoppingListOverride | null = existing
-            ? { ...existing, isHidden: true }
+            ? normalizeShoppingOverrideRecord({ ...existing, isHidden: true })
             : defaultMatch
-                ? {
+                ? normalizeShoppingOverrideRecord({
                     id: defaultMatch.key,
                     key: defaultMatch.key,
                     phase: defaultMatch.phase,
@@ -1555,21 +1793,21 @@ export function useJournalStore() {
                     source: 'protocol',
                     isHidden: true,
                     createdAt: new Date().toISOString(),
-                }
-                : item.phase
-                    ? {
+                })
+                : canonicalPhase
+                    ? normalizeShoppingOverrideRecord({
                         id: item.key ?? `shop_hidden_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-                        key: item.key ?? buildShopKey(item.phase, item.category, 0),
-                        phase: item.phase,
-                        category: item.category,
-                        name: item.name,
+                        key: item.key ?? buildShopKey(canonicalPhase, canonicalCategory, 0),
+                        phase: canonicalPhase,
+                        category: canonicalCategory,
+                        name: canonicalName,
                         quantity: item.quantity,
                         notes: item.notes,
                         optional: item.optional,
                         source: item.source ?? 'manual',
                         isHidden: true,
                         createdAt: new Date().toISOString(),
-                    }
+                    })
                     : null;
 
         if (!nextItem) {
@@ -1604,7 +1842,7 @@ export function useJournalStore() {
         }
 
         return nextItem;
-    }, [shoppingOverrides, upsertShoppingOverrideLocally, userId]);
+    }, [progress.currentDay, shoppingOverrides, upsertShoppingOverrideLocally, userId]);
 
     const addRecipe = useCallback(async ({
         title,
@@ -1630,10 +1868,10 @@ export function useJournalStore() {
             .map((item) => item.trim())
             .filter(Boolean);
 
-        const existing = recipeOverrides.find((entry) =>
-            normalizeRecipeMatch(entry.title) === normalizeRecipeMatch(trimmedTitle)
-            && normalizeRecipeMatch(entry.phase) === normalizeRecipeMatch(normalizedPhase),
-        );
+        const existing = findRecipeMatch(recipeOverrides, {
+            title: trimmedTitle,
+            phase: normalizedPhase,
+        });
         const defaultMatch = findDefaultRecipe({ title: trimmedTitle, phase: normalizedPhase });
 
         if (defaultMatch && !existing?.isHidden) {
@@ -1714,10 +1952,10 @@ export function useJournalStore() {
     }) => {
         const existing = item.key
             ? recipeOverrides.find((entry) => entry.key === item.key)
-            : recipeOverrides.find((entry) => (
-                normalizeRecipeMatch(entry.title) === normalizeRecipeMatch(item.title)
-                && (!item.phase || normalizeRecipeMatch(entry.phase) === normalizeRecipeMatch(item.phase))
-            ));
+            : findRecipeMatch(recipeOverrides, {
+                title: item.title,
+                phase: item.phase ?? null,
+            });
 
         const defaultMatch = findDefaultRecipe({
             title: item.title,
@@ -2446,6 +2684,7 @@ export function useJournalStore() {
         updateJournalEntry,
         finalizeJournalEntry,
         clearEntries,
+        resetCleanse,
         exportChat,
 
         // Checklist

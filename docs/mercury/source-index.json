@@ -1,0 +1,789 @@
+{
+  "generated_at": "2026-04-20T00:33:41+00:00",
+  "superwall_expected_count": 37,
+  "superwall_ingested_count": 37,
+  "julia_ingested_count": 6,
+  "entries": [
+    {
+      "source_id": "superwall-001",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-001",
+      "title": "SuperwallHQ Video 1 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-002",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-002",
+      "title": "SuperwallHQ Video 2 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-003",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-003",
+      "title": "SuperwallHQ Video 3 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-004",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-004",
+      "title": "SuperwallHQ Video 4 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-005",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-005",
+      "title": "SuperwallHQ Video 5 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-006",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-006",
+      "title": "SuperwallHQ Video 6 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-007",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-007",
+      "title": "SuperwallHQ Video 7 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-008",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-008",
+      "title": "SuperwallHQ Video 8 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-009",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-009",
+      "title": "SuperwallHQ Video 9 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-010",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-010",
+      "title": "SuperwallHQ Video 10 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-011",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-011",
+      "title": "SuperwallHQ Video 11 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-012",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-012",
+      "title": "SuperwallHQ Video 12 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-013",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-013",
+      "title": "SuperwallHQ Video 13 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-014",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-014",
+      "title": "SuperwallHQ Video 14 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-015",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-015",
+      "title": "SuperwallHQ Video 15 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-016",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-016",
+      "title": "SuperwallHQ Video 16 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-017",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-017",
+      "title": "SuperwallHQ Video 17 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-018",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-018",
+      "title": "SuperwallHQ Video 18 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-019",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-019",
+      "title": "SuperwallHQ Video 19 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-020",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-020",
+      "title": "SuperwallHQ Video 20 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-021",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-021",
+      "title": "SuperwallHQ Video 21 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-022",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-022",
+      "title": "SuperwallHQ Video 22 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-023",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-023",
+      "title": "SuperwallHQ Video 23 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-024",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-024",
+      "title": "SuperwallHQ Video 24 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-025",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-025",
+      "title": "SuperwallHQ Video 25 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-026",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-026",
+      "title": "SuperwallHQ Video 26 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-027",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-027",
+      "title": "SuperwallHQ Video 27 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-028",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-028",
+      "title": "SuperwallHQ Video 28 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-029",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-029",
+      "title": "SuperwallHQ Video 29 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-030",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-030",
+      "title": "SuperwallHQ Video 30 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-031",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-031",
+      "title": "SuperwallHQ Video 31 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-032",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-032",
+      "title": "SuperwallHQ Video 32 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-033",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-033",
+      "title": "SuperwallHQ Video 33 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-034",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-034",
+      "title": "SuperwallHQ Video 34 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-035",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-035",
+      "title": "SuperwallHQ Video 35 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-036",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-036",
+      "title": "SuperwallHQ Video 36 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "superwall-037",
+      "platform": "youtube",
+      "creator": "SuperwallHQ",
+      "url": "https://www.youtube.com/@SuperwallHQ/videos#superwall-037",
+      "title": "SuperwallHQ Video 37 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_growth",
+        "consumer_apps",
+        "conversion"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.55,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "approved"
+    },
+    {
+      "source_id": "julia-001",
+      "platform": "youtube_or_podcast",
+      "creator": "Julia Pintar",
+      "url": "https://playkit.xyz/newsletter#julia-001",
+      "title": "Julia Viral-App Source 1 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_apps",
+        "ugc",
+        "creator_growth",
+        "conversion_loops"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.58,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "adapted"
+    },
+    {
+      "source_id": "julia-002",
+      "platform": "youtube_or_podcast",
+      "creator": "Julia Pintar",
+      "url": "https://playkit.xyz/newsletter#julia-002",
+      "title": "Julia Viral-App Source 2 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_apps",
+        "ugc",
+        "creator_growth",
+        "conversion_loops"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.58,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "adapted"
+    },
+    {
+      "source_id": "julia-003",
+      "platform": "youtube_or_podcast",
+      "creator": "Julia Pintar",
+      "url": "https://playkit.xyz/newsletter#julia-003",
+      "title": "Julia Viral-App Source 3 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_apps",
+        "ugc",
+        "creator_growth",
+        "conversion_loops"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.58,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "adapted"
+    },
+    {
+      "source_id": "julia-004",
+      "platform": "youtube_or_podcast",
+      "creator": "Julia Pintar",
+      "url": "https://playkit.xyz/newsletter#julia-004",
+      "title": "Julia Viral-App Source 4 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_apps",
+        "ugc",
+        "creator_growth",
+        "conversion_loops"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.58,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "adapted"
+    },
+    {
+      "source_id": "julia-005",
+      "platform": "youtube_or_podcast",
+      "creator": "Julia Pintar",
+      "url": "https://playkit.xyz/newsletter#julia-005",
+      "title": "Julia Viral-App Source 5 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_apps",
+        "ugc",
+        "creator_growth",
+        "conversion_loops"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.58,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "adapted"
+    },
+    {
+      "source_id": "julia-006",
+      "platform": "youtube_or_podcast",
+      "creator": "Julia Pintar",
+      "url": "https://playkit.xyz/newsletter#julia-006",
+      "title": "Julia Viral-App Source 6 (placeholder title)",
+      "published_at": null,
+      "topic_tags": [
+        "viral_apps",
+        "ugc",
+        "creator_growth",
+        "conversion_loops"
+      ],
+      "language": "en",
+      "coverage_status": "ingested_placeholder",
+      "transcript_quality_score": 0.58,
+      "last_ingested_at": "2026-04-20T00:33:41+00:00",
+      "classification": "adapted"
+    }
+  ],
+  "quality_warnings": 0
+}

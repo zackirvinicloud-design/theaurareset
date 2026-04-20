@@ -27,64 +27,64 @@ function getWhyNowDescription(phase: ProtocolRoadmapPhase) {
 function getTargetPoints(phase: ProtocolRoadmapPhase): string[] {
     if (phase.id === 'prep') {
         return [
-            'Reduce high-sugar, high-trigger inputs that feed microbial overgrowth.',
-            'Set bowel, hydration, and binder rhythm before active elimination starts.',
+            'Reduce setup friction before Day 1 arrives.',
+            'Get hydration, meals, and supplement layout into a usable rhythm.',
             'Convert the protocol from theory into a repeatable daily system.',
         ];
     }
 
     if (phase.id === 'week-1') {
         return [
-            'Lower fungal overgrowth and biofilm-like terrain in the gut.',
-            'Reduce fuel sources that keep fungal colonies active.',
-            'Prepare cleaner terrain before parasite-focused pressure starts.',
+            'Make the daily routine predictable enough to repeat.',
+            'Reduce food and timing decisions that create midweek chaos.',
+            'Prepare the system for the next stack change.',
         ];
     }
 
     if (phase.id === 'week-2') {
         return [
-            'Apply parasite-focused pressure after Week 1 terrain cleanup.',
-            'Disrupt active parasite burden and reduce cycle persistence.',
-            'Keep debris clearance high so the phase is tolerable and controlled.',
+            'Add the next layer without losing the Week 1 foundation.',
+            'Keep the day organized as the stack becomes busier.',
+            'Use the app to prevent research spirals and random changes.',
         ];
     }
 
     return [
-        'Bind and clear remaining toxic burden with tighter control.',
-        'Support liver-bile-gut clearance while reducing system stress.',
-        'Stabilize the body before maintenance instead of forcing intensity.',
+        'Finish the protocol without letting the final week get messy.',
+        'Protect hydration, sleep, and timing while the stack changes again.',
+        'Stabilize the handoff into maintenance instead of forcing intensity.',
     ];
 }
 
 function getScienceOutlinePoints(phase: ProtocolRoadmapPhase): string[] {
     if (phase.id === 'prep') {
         return [
-            'Detox output has to leave through bowel, bile, urine, and sweat; Prep protects those exits first.',
-            'Meal timing and hydration stabilize glucose and cortisol swings that amplify symptom noise.',
-            'A stable baseline makes later phase signals easier to interpret.',
+            'Prep reduces friction before the daily stack starts.',
+            'Meal timing and hydration make later days easier to execute.',
+            'A stable baseline makes later choices easier to keep consistent.',
         ];
     }
 
     if (phase.id === 'week-1') {
         return [
-            'Fungal organisms can form protective biofilm communities that are harder to clear when fed by sugar.',
-            'Protocol logic: weaken fungal terrain first so downstream parasite targeting is cleaner.',
-            'Week 1 focuses on terrain + elimination, not brute force intensity.',
+            'Week 1 is mostly about rhythm, not heroics.',
+            'Simple meals and clean timing remove a lot of avoidable noise.',
+            'The less you improvise now, the easier later weeks become.',
         ];
     }
 
     if (phase.id === 'week-2') {
         return [
-            'Parasite-focused compounds are introduced after terrain pressure is reduced.',
-            'Protocol premise: once fungal terrain is lower, parasite load and egg-cycle persistence are easier to disrupt.',
-            'The same clearance tools stay in place to remove mobilized debris and inflammatory byproducts.',
+            'Week 2 works best as an adjustment to the routine, not a total reset.',
+            'The same structure tools still matter: meals, timing, reminders, and shopping clarity.',
+            'Daily check-ins are for recordkeeping, not for interpreting every sensation in real time.',
         ];
     }
 
     return [
-        'Heavy-metal burden is associated with microbiome disruption and oxidative stress in toxicology literature.',
-        'Week 3 uses a bind-and-clear approach to lower residual burden without destabilizing the nervous system.',
-        'The finish is designed for controlled clearance and recovery, not escalation.',
+        'Final-week success depends more on consistency than intensity.',
+        'Hydration, sleep, and timing keep the finish cleaner.',
+        'The finish is designed for control and follow-through, not escalation.',
     ];
 }
 
@@ -94,11 +94,11 @@ function getCommonTrap(phase: ProtocolRoadmapPhase): string {
     }
 
     if (phase.id === 'week-1') {
-        return 'Adding random hacks or quitting timing when symptoms hit.';
+        return 'Adding random hacks or quitting timing when the week gets annoying.';
     }
 
     if (phase.id === 'week-2') {
-        return 'Research spirals and overinterpreting every symptom.';
+        return 'Research spirals and changing the whole plan midweek.';
     }
 
     return 'Trying to force a dramatic finish instead of finishing calm.';
@@ -178,11 +178,11 @@ export function ProtocolRoadmapExplorer({
                         <div className="flex items-center gap-2">
                             <BookOpen className="w-5 h-5 text-primary" />
                             <h2 className="text-[20px] font-semibold tracking-[-0.03em] text-foreground sm:text-[24px]">
-                                Cleanse roadmap
+                                Protocol roadmap
                             </h2>
                         </div>
                         <p className="mt-1 text-[13px] leading-6 text-muted-foreground sm:text-[15px]">
-                            Tap a phase for protocol logic: what it targets, why the order matters, and how to navigate the journey clearly.
+                            Tap a phase for planning logic: what changes, why the order matters, and how to stay organized through the handoff.
                         </p>
                     </div>
                 </div>
@@ -257,11 +257,11 @@ export function ProtocolRoadmapExplorer({
                                                         </div>
 
                                                         <div className="grid gap-2 sm:grid-cols-2">
-                                                            <RoadmapMiniCard title="What this phase targets" points={getTargetPoints(phase)} />
+                                                            <RoadmapMiniCard title="What this phase focuses on" points={getTargetPoints(phase)} />
                                                             <RoadmapMiniCard title="How to navigate this phase" points={getNavigationPoints(phase)} />
                                                         </div>
 
-                                                        <RoadmapMiniCard title="Science outline" points={getScienceOutlinePoints(phase)} />
+                                                        <RoadmapMiniCard title="Planning notes" points={getScienceOutlinePoints(phase)} />
 
                                                         <p className="text-[12px] leading-6 text-muted-foreground">
                                                             <span className="font-medium text-foreground">Common trap:</span> {getCommonTrap(phase)}

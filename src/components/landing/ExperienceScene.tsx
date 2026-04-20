@@ -9,7 +9,7 @@ const comparisons = [
     us: true
   },
   {
-    feature: "GutBrain answers ANY granular question instantly",
+    feature: "GutBrain helps with practical planning questions",
     others: false,
     us: true
   },
@@ -24,12 +24,12 @@ const comparisons = [
     us: true
   },
   {
-    feature: "Built-in accountability that prevents quitting",
+    feature: "Built-in accountability that supports follow-through",
     others: false,
     us: true
   },
   {
-    feature: "87% completion rate (vs 12% DIY)",
+    feature: "Built to improve completion by keeping the next step obvious",
     others: false,
     us: true
   }
@@ -96,7 +96,7 @@ export const ExperienceScene = () => {
           <div className="bg-card border border-primary/20 rounded-xl p-4 sm:p-6 max-w-2xl mx-auto">
             <p className="text-xl sm:text-2xl font-bold text-primary mb-2">The Science</p>
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
-              90% of serotonin is produced in your gut. Your gut-brain axis controls mood, energy, immunity, and inflammation. We're not selling supplements—we're providing the structured path to optimize this connection.
+              The product stays focused on the real job: turn a protocol into daily follow-through. That means fewer research spirals, clearer timing, and a much better shot at finishing what you started.
             </p>
           </div>
         </motion.div>

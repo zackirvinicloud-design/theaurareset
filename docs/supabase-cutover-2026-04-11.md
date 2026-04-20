@@ -12,6 +12,7 @@
   - `protocol-chat`
   - `analyze-insights`
   - `brainiac-ceo`
+  - `mercury-cmo`
   - `activate-subscription`
   - `send-sms-reminders`
   - `send-push-reminders`
@@ -22,6 +23,10 @@
   - `GEMINI_API_KEY` (preferred), or
   - `GOOGLE_API_KEY`
 - Shared resolver lives at `supabase/functions/_shared/ai-provider.ts`.
+- `mercury-cmo` uses OpenAI separately via:
+  - `OPENAI_API_KEY`
+  - optional `MERCURY_MODEL`
+  - `MERCURY_API_KEY` request gate
 
 ## Push reminder setup completed
 - Added + migrated push tables/events:
@@ -55,3 +60,8 @@ Without this, `protocol-chat` returns:
 1. Add alerting/log checks on edge-function failures.
 2. Rotate and store operational secrets in a team-owned secure vault.
 3. Remove SMS pathway if product direction remains push-only.
+4. Add weekly MERCURY refresh automation:
+   - `python3 scripts/mercury/refresh_sources.py`
+   - `python3 scripts/mercury/build_training_dataset.py`
+   - `python3 scripts/mercury/build_eval_set.py`
+   - `python3 scripts/mercury/build_weekly_report.py`

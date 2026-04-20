@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ChefHat, MessageSquare, Plus, Search, Utensils, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,8 @@ interface RecipesViewProps {
     onAskAI?: (prompt: string) => void;
     onAddRecipe?: (recipe: RecipeInput) => Promise<unknown> | unknown;
     onRemoveRecipe?: (recipe: RecipeItem) => Promise<unknown> | unknown;
+    focusRecipeKey?: string | null;
+    focusNonce?: number;
 }
 
 const splitList = (value: string) => {
@@ -40,8 +42,11 @@ export function RecipesView({
     onAskAI,
     onAddRecipe,
     onRemoveRecipe,
+    focusRecipeKey = null,
+    focusNonce = 0,
 }: RecipesViewProps) {
     const recipes = useMemo(() => resolveRecipes(recipeOverrides), [recipeOverrides]);
+    const scrollContentRef = useRef<HTMLDivElement>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -65,6 +70,19 @@ export function RecipesView({
             recipes: visibleRecipes.filter((recipe) => recipe.phase === phaseName),
         })).filter((entry) => entry.recipes.length > 0);
     }, [visibleRecipes]);
+
+    useEffect(() => {
+        if (!focusRecipeKey) {
+            return;
+        }
+
+        setSearchQuery('');
+        window.requestAnimationFrame(() => {
+            const selector = `[data-recipe-key="${focusRecipeKey}"]`;
+            const target = scrollContentRef.current?.querySelector<HTMLElement>(selector);
+            target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }, [focusNonce, focusRecipeKey]);
 
     const resetForm = () => {
         setTitle('');
@@ -118,7 +136,7 @@ export function RecipesView({
             `Give me clarity on this recipe: ${recipe.title}. ` +
             `Phase: ${recipe.phase}. Meal type: ${getRecipeMealTypeLabel(recipe.mealType)}. ` +
             `Ingredients: ${ingredientPreview}. ` +
-            'Explain the practical benefits someone in this protocol would care about (bloating, energy, cravings, die-off support), ' +
+            'Explain the practical benefits someone in this protocol would care about (energy, cravings, simplicity, schedule fit), ' +
             'then give 1-2 easy swaps based on what I might already have. If I cannot cook, also give one compliant order/delivery version.',
         );
     };
@@ -195,7 +213,7 @@ export function RecipesView({
             </div>
 
             <ScrollArea className="flex-1">
-                <div className="space-y-4 px-4 py-4">
+                <div ref={scrollContentRef} className="space-y-4 px-4 py-4">
                     {showForm && (
                         <section className="rounded-2xl border border-border/60 bg-card/70 p-3">
                             <div className="grid gap-2">
@@ -303,7 +321,11 @@ export function RecipesView({
                                     {phaseGroup.recipes.map((recipe) => (
                                         <article
                                             key={recipe.key}
-                                            className="rounded-2xl border border-border/60 bg-card/72 px-3 py-3"
+                                            data-recipe-key={recipe.key}
+                                            className={cn(
+                                                'rounded-2xl border border-border/60 bg-card/72 px-3 py-3 scroll-mt-24 transition-all',
+                                                focusRecipeKey === recipe.key && 'border-primary/30 bg-primary/5 shadow-[0_0_0_1px_rgba(16,185,129,0.08)]',
+                                            )}
                                         >
                                             <div className="flex items-start gap-2">
                                                 <div className="mt-0.5 rounded-full bg-primary/10 p-1.5 text-primary">

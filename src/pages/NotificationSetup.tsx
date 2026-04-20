@@ -213,9 +213,9 @@ const NotificationSetup = () => {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-primary/25 bg-primary/15">
             <BellRing className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold">Turn on push reminders</CardTitle>
+          <CardTitle className="text-3xl font-bold">Make Gut Brain feel like a real app</CardTitle>
           <CardDescription className="mx-auto max-w-md text-base leading-7">
-            This makes reminders feel like a real app. You get closed-app pings on this device when reminders are due.
+            Add Gut Brain to your Home Screen and turn on reminders so today&apos;s protocol stays one tap away.
           </CardDescription>
         </CardHeader>
 
@@ -226,7 +226,7 @@ const NotificationSetup = () => {
                 iPhone setup (one time)
               </p>
               <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                1) Tap Share in Safari. 2) Tap Add to Home Screen. 3) Open the app from your Home Screen, then come back here to enable notifications.
+                1) Tap Share in Safari. 2) Tap Add to Home Screen. 3) Open Gut Brain from your Home Screen, then come back here to enable reminders.
               </p>
               <Button variant="outline" className="mt-3 w-full" onClick={refresh}>
                 I added it to Home Screen
@@ -255,9 +255,9 @@ const NotificationSetup = () => {
           )}
 
           <div className="rounded-2xl border border-primary/25 bg-primary/8 px-4 py-4 text-left">
-            <p className="text-sm font-medium text-foreground">Skipping means more friction later.</p>
+              <p className="text-sm font-medium text-foreground">Skipping means more friction later.</p>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              If this stays off, you will need to remember timing yourself and you will miss one of the strongest parts of the app.
+              If this stays off, Gut Brain falls back to a website you have to remember to reopen on your own.
             </p>
           </div>
         </CardContent>
@@ -276,7 +276,7 @@ const NotificationSetup = () => {
             ) : (
               <>
                 <Smartphone className="mr-2 h-4 w-4" />
-                Enable push reminders
+                Enable app reminders
               </>
             )}
           </Button>

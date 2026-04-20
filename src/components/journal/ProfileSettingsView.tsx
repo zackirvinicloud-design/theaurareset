@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BellRing, Loader2, Settings2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, BellRing, Loader2, Settings2, ShieldAlert, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -28,6 +39,10 @@ interface ProfileSettingsViewProps {
   pushReady?: boolean;
   onSaveProfile: (updates: Partial<UserOnboardingProfile>, options?: { markComplete?: boolean; entrySource?: string }) => Promise<void> | void;
   onOpenNotificationsSetup: () => void;
+  onDeleteAccount: () => Promise<void> | void;
+  isDeletingAccount?: boolean;
+  onResetCleanse: () => Promise<void> | void;
+  isResettingCleanse?: boolean;
   onBack: () => void;
 }
 
@@ -40,6 +55,10 @@ export const ProfileSettingsView = ({
   pushReady = false,
   onSaveProfile,
   onOpenNotificationsSetup,
+  onDeleteAccount,
+  isDeletingAccount = false,
+  onResetCleanse,
+  isResettingCleanse = false,
   onBack,
 }: ProfileSettingsViewProps) => {
   const [firstName, setFirstName] = useState('');
@@ -51,6 +70,8 @@ export const ProfileSettingsView = ({
   const [routineType, setRoutineType] = useState('');
   const [supportStyle, setSupportStyle] = useState('');
   const [healthFocusText, setHealthFocusText] = useState('');
+  const [resetDialogStage, setResetDialogStage] = useState<1 | 2 | null>(null);
+  const [resetConfirmationText, setResetConfirmationText] = useState('');
 
   useEffect(() => {
     setFirstName(profile.firstName ?? '');
@@ -103,6 +124,22 @@ export const ProfileSettingsView = ({
       markComplete: isOnboardingProfileComplete(completionPreview),
       entrySource: 'settings',
     });
+  };
+
+  const closeResetFlow = () => {
+    setResetDialogStage(null);
+    setResetConfirmationText('');
+  };
+
+  const resetReady = resetConfirmationText.trim().toLowerCase() === 'reset';
+
+  const handleResetConfirm = async () => {
+    if (!resetReady || isResettingCleanse) {
+      return;
+    }
+
+    await onResetCleanse();
+    closeResetFlow();
   };
 
   return (
@@ -336,8 +373,119 @@ export const ProfileSettingsView = ({
               </Button>
             </CardContent>
           </Card>
+
+          <Card className="border-border/70 bg-card/80">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Legal and privacy</CardTitle>
+              <CardDescription>
+                These pages explain what data is stored, how reminders work, and how to remove your account.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-3 text-sm">
+                <Link to="/legal/privacy" className="text-primary hover:underline">Privacy policy</Link>
+                <Link to="/legal/terms" className="text-primary hover:underline">Terms of service</Link>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3 text-xs leading-5 text-muted-foreground">
+                Delete account permanently removes your saved profile, checklist progress, reminders, journal history, and logged check-ins.
+              </div>
+              <Button
+                variant="outline"
+                className="w-full justify-center border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive sm:w-auto"
+                onClick={() => void onDeleteAccount()}
+                disabled={isDeletingAccount}
+              >
+                {isDeletingAccount ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting account
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete account
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-center border-amber-300/50 text-amber-700 hover:bg-amber-50 hover:text-amber-900 sm:w-auto"
+                onClick={() => setResetDialogStage(1)}
+                disabled={isResettingCleanse}
+              >
+                {isResettingCleanse ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Resetting cleanse...
+                  </>
+                ) : (
+                  <>
+                    <ShieldAlert className="mr-2 h-4 w-4" />
+                    Reset cleanse to Day 1
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
+
+      <AlertDialog open={resetDialogStage === 1} onOpenChange={(open) => {
+        if (!open) {
+          closeResetFlow();
+        }
+      }}>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset cleanse?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will return your protocol to Day 0 and remove saved progress, checks, reminders, check-ins, shopping changes,
+              recipes, and chat history.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={closeResetFlow}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setResetDialogStage(2)}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={resetDialogStage === 2} onOpenChange={(open) => {
+        if (!open) {
+          closeResetFlow();
+        }
+      }}>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Final confirmation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Type <span className="font-medium">RESET</span> to remove all progress and start Day 1 from scratch.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="px-1 pb-1">
+            <Input
+              autoFocus
+              value={resetConfirmationText}
+              onChange={(event) => setResetConfirmationText(event.target.value)}
+              placeholder="Type RESET"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={closeResetFlow}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={!resetReady || isResettingCleanse}
+              onClick={() => void handleResetConfirm()}
+            >
+              {isResettingCleanse ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting...
+                </>
+              ) : 'Reset cleanse'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

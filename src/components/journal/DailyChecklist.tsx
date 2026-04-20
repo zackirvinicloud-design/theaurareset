@@ -33,6 +33,7 @@ interface DailyChecklistProps {
     }) => Promise<void> | void;
     onClearReminder?: (checklistKey: string, dayNumber: number) => void;
     pushReady?: boolean;
+    smsReady?: boolean;
 }
 
 type ChecklistTimeOfDay = ChecklistItem['timeOfDay'];
@@ -77,6 +78,7 @@ interface ChecklistSectionsProps {
     }) => Promise<void> | void;
     onClearReminder?: (checklistKey: string, dayNumber: number) => void;
     pushReady?: boolean;
+    smsReady?: boolean;
 }
 
 const createEmptyGroups = (): Record<ChecklistTimeOfDay, ChecklistDisplayItem[]> => ({
@@ -150,6 +152,7 @@ export function ChecklistSections({
     onSetReminder,
     onClearReminder,
     pushReady = false,
+    smsReady = false,
 }: ChecklistSectionsProps) {
     const { grouped, followUps } = buildChecklistViewModel(currentDay, checklist, customItems);
     const remindersByKey = Object.fromEntries(
@@ -195,6 +198,7 @@ export function ChecklistSections({
                                     onSetReminder={onSetReminder}
                                     onClearReminder={onClearReminder}
                                     pushReady={pushReady}
+                                    smsReady={smsReady}
                                     variant={variant}
                                 />
                             ))}
@@ -242,6 +246,7 @@ export function ChecklistSections({
                                         onSetReminder={onSetReminder}
                                         onClearReminder={onClearReminder}
                                         pushReady={pushReady}
+                                        smsReady={smsReady}
                                         variant={variant}
                                     />
                                 </motion.div>
@@ -264,6 +269,7 @@ export const DailyChecklist = ({
     onSetReminder,
     onClearReminder,
     pushReady = false,
+    smsReady = false,
 }: DailyChecklistProps) => {
     const [newItemText, setNewItemText] = useState('');
     const [showAddInput, setShowAddInput] = useState(false);
@@ -330,6 +336,7 @@ export const DailyChecklist = ({
                         onSetReminder={onSetReminder}
                         onClearReminder={onClearReminder}
                         pushReady={pushReady}
+                        smsReady={smsReady}
                     />
                 </div>
             </ScrollArea>
@@ -389,6 +396,7 @@ function ChecklistRow({
     onSetReminder,
     onClearReminder,
     pushReady,
+    smsReady,
     variant,
 }: {
     item: ChecklistDisplayItem;
@@ -411,6 +419,7 @@ function ChecklistRow({
     }) => Promise<void> | void;
     onClearReminder?: (checklistKey: string, dayNumber: number) => void;
     pushReady?: boolean;
+    smsReady?: boolean;
     variant: 'panel' | 'inline';
 }) {
     const rowRef = useRef<HTMLDivElement | null>(null);
@@ -518,6 +527,7 @@ function ChecklistRow({
                         timeOfDay={item.timeOfDay}
                         reminder={reminder}
                         pushReady={pushReady}
+                        smsReady={smsReady}
                         onSetReminder={onSetReminder}
                         onClearReminder={onClearReminder}
                         variant="icon"

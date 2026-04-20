@@ -35,7 +35,7 @@ type ActiveView = 'today' | 'help' | 'shopping' | 'guide' | 'roadmap';
 const PREP_EXPANDED_CATEGORIES = [
   'Foundation_Morning Ritual Essentials',
   'Foundation_Liver Support Supplements',
-  'Fungal Elimination_Fungal Support Supplements',
+  'Week 1 Reset_Week 1 protocol supplements',
 ];
 
 function normalizeScene(value?: string): CaptureScene {
@@ -146,19 +146,19 @@ function buildCoachDemoSequence(day: number, label: string): JournalEntry[] {
     makeEntry(
       day,
       'user',
-      `I am trying to do "${label}" but I feel bloated, tired, and kind of wired. Did I mess this cleanse up?`,
+      `I am trying to do "${label}" but I feel bloated, tired, and kind of wired. Did I mess today's plan up?`,
       2,
     ),
     makeEntry(
       day,
       'assistant',
-      `Probably not. Day 4-6 is one of the most common wobble windows. In Week 1 you are breaking up fungal colonies first, so bloat, fatigue, brain fog, and weird cravings can all spike while the body clears waste.
+      `Probably not. Day 4-6 is one of the most common wobble windows. The best move is to stop improvising and get back to meals, timing, hydration, and the next step.
 
 [CLARIFY]
 question: What kind of help do you want first?
-option: Is this normal?
+option: What do I do now?
 option: What do I do today?
-option: Why does this happen?
+option: Why does Week 1 matter?
 [/CLARIFY]`,
       3,
     ),
@@ -171,33 +171,32 @@ option: Why does this happen?
     makeEntry(
       day,
       'assistant',
-      `Keep today boring. Do not stack extra detox tricks. Protect the binder window, stay on clean meals, drink real water, and rest more than your ego wants. The win is drainage and consistency, not intensity.
+      `Keep today boring. Do not stack extra fixes. Protect the binder window, stay on clean meals, drink real water, and rest more than your ego wants. The win is consistency, not intensity.
 
 [CLARIFY]
 question: Where do you want help next?
 option: What can I eat tonight?
-option: How do I calm it?
-option: Why fungal first?
+option: Simplify tonight
+option: Why does Week 1 matter?
 [/CLARIFY]`,
       5,
     ),
     makeEntry(
       day,
       'user',
-      'Why fungal first?',
+      'Why does Week 1 matter?',
       6,
     ),
     makeEntry(
       day,
       'assistant',
-      `They panic and start changing everything at once. The order matters here: parasites like to hide and lay eggs in fungal colonies, so Week 1 goes after that home base first. If you skip the fungal layer, you can leave the environment that keeps feeding the bigger problem.
+      `They panic and start changing everything at once. Week 1 matters because it gives the protocol a stable base. If meals, timing, and reminders are still messy, the next phase just feels louder and harder than it needs to.
 
 [CLARIFY]
 question: What do you want help with next?
-option: Tell me the red flags
 option: What can I eat tonight?
-option: How do I calm die-off?
-option: Why fungal first?
+option: Simplify tonight
+option: Open shopping
 [/CLARIFY]`,
       7,
     ),

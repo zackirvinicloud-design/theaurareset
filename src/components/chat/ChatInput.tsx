@@ -36,33 +36,47 @@ export const ChatInput = ({
 
   return (
     <div className={cn(
-      "flex gap-2 border-t border-border bg-background pb-safe",
-      compact ? "p-3" : "p-4"
+      "border-t border-border/50 bg-background/95 backdrop-blur-md",
+      compact ? "px-2 py-2" : "p-4"
     )}>
-      <Textarea
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={cn(
-          compact
-            ? "min-h-[52px] max-h-[112px] resize-none text-[15px]"
-            : "min-h-[60px] max-h-[120px] resize-none text-base md:text-sm",
-          disabled && "opacity-50 cursor-not-allowed"
-        )}
-      />
-      <Button
-        onClick={handleSend}
-        disabled={disabled || !input.trim()}
-        size="icon"
-        className={cn(
-          "flex-shrink-0",
-          compact ? "h-[52px] w-11" : "h-[60px] w-12"
-        )}
-      >
-        <Send className="w-4 h-4" />
-      </Button>
+      <div className={cn(
+        "flex w-full items-end gap-2 rounded-[1.4rem] border border-border/60 bg-card/80 p-2 shadow-sm",
+        compact && "rounded-[1.2rem] p-1.5"
+      )}>
+        <div className="min-w-0 flex-1">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            disabled={disabled}
+            className={cn(
+              "border-0 bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0",
+              compact
+                ? "min-h-[40px] max-h-[96px] resize-none px-2 py-1 text-sm"
+                : "min-h-[62px] max-h-[120px] resize-none px-2 py-2 text-base md:text-sm",
+              disabled && "opacity-50 cursor-not-allowed"
+            )}
+          />
+          {!compact && (
+            <p className="px-2 pb-1 text-[11px] text-muted-foreground">
+              Keep it conversational. Press Enter to send.
+            </p>
+          )}
+        </div>
+        <Button
+          type="button"
+          onClick={handleSend}
+          disabled={disabled || !input.trim()}
+          size="icon"
+          className={cn(
+            "flex-shrink-0 rounded-full shadow-sm",
+            compact ? "h-10 w-10" : "h-11 w-11"
+          )}
+        >
+          <Send className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 };

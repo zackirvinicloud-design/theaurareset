@@ -15,38 +15,49 @@ import { ChatMessage } from '@/components/chat/ChatMessage';
 import { ChatInput } from '@/components/chat/ChatInput';
 import { CoachHistory } from '@/components/chat/CoachHistory';
 import { ChatThread, JournalEntry, UserProgress } from '@/hooks/useJournalStore';
-import { streamChat } from '@/utils/streamChat';
+import { requestGutBrainTurn } from '@/utils/streamChat';
 import { buildProtocolChatContext, getDayLabel } from '@/hooks/useProtocolData';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
 import {
+    EMPTY_GUT_BRAIN_PROFILE,
     GUT_BRAIN_AI_NAME,
-    getGutBrainDisplayText,
     getGutBrainStarterState,
     type CoachAction,
     type GutBrainConversationEntry,
     type GutBrainProfile,
-    type GutBrainRecipeAction,
+    type GutBrainRecipeCard,
+    type GutBrainRecipeLibraryEntry,
     type GutBrainShoppingAction,
     type GutBrainSnapshot,
     type GutBrainStarterState,
+    type GutBrainTurnPayload,
 } from '@/lib/gutbrain';
 
 interface JournalCenterProps {
     userId: string | null;
     progress: UserProgress;
     entries: JournalEntry[];
-    onAddEntry: (role: 'user' | 'assistant', content: string) => Promise<JournalEntry>;
-    onUpdateEntry: (entryId: string, content: string) => void;
-    onFinalizeEntry: (entryId: string, content: string) => Promise<void> | void;
+    onAddEntry: (
+        role: 'user' | 'assistant',
+        content: string,
+        assistantPayload?: GutBrainTurnPayload | null,
+    ) => Promise<JournalEntry>;
+    onUpdateEntry: (entryId: string, content: string, assistantPayload?: GutBrainTurnPayload | null) => void;
+    onFinalizeEntry: (
+        entryId: string,
+        content: string,
+        assistantPayload?: GutBrainTurnPayload | null,
+    ) => Promise<void> | void;
     onApplyShoppingActions?: (actions: GutBrainShoppingAction[]) => Promise<void> | void;
-    onApplyRecipeActions?: (actions: GutBrainRecipeAction[]) => Promise<void> | void;
+    onApplyRecipeActions?: (actions: GutBrainRecipeCard[]) => Promise<void> | void;
+    onOpenRecipeCard?: (recipe: GutBrainRecipeCard) => void;
     onCoachAction?: (action: CoachAction) => void;
-    brainProfile: GutBrainProfile;
-    brainSnapshot: GutBrainSnapshot | null;
+    brainProfile?: GutBrainProfile;
+    brainSnapshot?: GutBrainSnapshot | null;
     symptoms?: string[];
-    onRefreshBrain: (
+    onRefreshBrain?: (
         entries: GutBrainConversationEntry[],
         progress: { currentDay: number; currentPhase: 1 | 2 | 3 | 4 },
         options?: { force?: boolean; silent?: boolean; memoryProfile?: GutBrainProfile | null },
@@ -59,6 +70,7 @@ interface JournalCenterProps {
     pendingPrompt?: string | null;
     onPendingPromptConsumed?: () => void;
     recipeContext?: string;
+    recipeLibrary?: GutBrainRecipeLibraryEntry[];
     isMobile?: boolean;
     mobileVariant?: 'default' | 'help';
 }
@@ -68,12 +80,13 @@ export const JournalCenter = ({
     progress,
     entries,
     onAddEntry,
-    onUpdateEntry,
-    onFinalizeEntry,
+    onUpdateEntry: _onUpdateEntry,
+    onFinalizeEntry: _onFinalizeEntry,
     onApplyShoppingActions,
     onApplyRecipeActions,
+    onOpenRecipeCard,
     onCoachAction,
-    brainProfile,
+    brainProfile = EMPTY_GUT_BRAIN_PROFILE,
     brainSnapshot,
     symptoms = [],
     onRefreshBrain,
@@ -85,6 +98,7 @@ export const JournalCenter = ({
     pendingPrompt,
     onPendingPromptConsumed,
     recipeContext,
+    recipeLibrary = [],
     isMobile = false,
     mobileVariant = 'default',
 }: JournalCenterProps) => {
@@ -95,33 +109,8 @@ export const JournalCenter = ({
     const starterState = getGutBrainStarterState(progress, brainProfile, brainSnapshot, { mobile: isMobile });
     const isMobileHelpMode = isMobile && mobileVariant === 'help';
     const inputPlaceholder = progress.currentDay === 0
-        ? 'Ask what to buy, what to do first, or what could trip you up...'
-        : 'Ask what matters today, what to eat, or what to simplify...';
-
-    const sanitizeAssistantText = useCallback((value: string) => {
-        return value
-            .replace(/\[PROGRESS_UPDATE:day=\d+\]\s*/g, '')
-            .replace(/[‘’]/g, "'")
-            .replace(/[“”]/g, '"')
-            .replace(/[–—]/g, '-')
-            .replace(/…/g, '...')
-            .replace(/•/g, '-')
-            .replace(/→/g, '->')
-            .replace(/¼/g, '1/4')
-            .replace(/½/g, '1/2')
-            .replace(/¾/g, '3/4')
-            .replace(/⅓/g, '1/3')
-            .replace(/⅔/g, '2/3')
-            .replace(/⅛/g, '1/8')
-            .replace(/⅜/g, '3/8')
-            .replace(/⅝/g, '5/8')
-            .replace(/⅞/g, '7/8')
-            .replace(/\u00A0/g, ' ')
-            .replace(new RegExp('[^\\t\\n\\r -~]', 'g'), '')
-            .replace(/[ \t]{2,}/g, ' ')
-            .replace(/\n{3,}/g, '\n\n')
-            .trimStart();
-    }, []);
+        ? 'Ask what to buy, what to do first, or why a step matters...'
+        : 'Ask what matters today, what to eat, or why an ingredient helps...';
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -130,30 +119,26 @@ export const JournalCenter = ({
     }, [entries, isLoading]);
 
     const handleSend = useCallback(async (content: string) => {
-        const userEntry = await onAddEntry('user', content);
+        const trimmedContent = content.trim();
+        if (!trimmedContent) {
+            return;
+        }
+
+        const userEntry = await onAddEntry('user', trimmedContent);
         setIsLoading(true);
 
-        let assistantContent = '';
         let nextDay = progress.currentDay;
         let nextPhase = progress.currentPhase;
-        const assistantEntry = await onAddEntry('assistant', '');
 
         const phaseNames = ['Prep & Foundation', 'Fungal Elimination', 'Parasite Cleanse', 'Heavy Metal Detox'];
         const dayLabel = getDayLabel(progress.currentDay);
         const enhancedContext = [
             `${dayLabel}, Phase ${progress.currentPhase}: ${phaseNames[progress.currentPhase - 1]}`,
-            'Reply in a natural, conversational tone.',
-            'Use plain English and make the next step feel simple.',
-            'Default to redirect-first behavior when the app already has the answer.',
-            'Use English only.',
-            'Use only standard ASCII keyboard characters. No non-English words, accented text, curly quotes, emoji, or non-Latin scripts.',
-            'Keep the morning elixir simple by default. Do not list every variation unless the user asks for the differences.',
-            'Never show internal markers or hidden tags.',
             ...(recipeContext ? [recipeContext] : []),
             buildProtocolChatContext(progress.currentDay),
-        ].join(' ');
+        ].join('\n\n');
 
-        const mappedMsgs = [...entries, userEntry].map((entry) => ({
+        const mappedMessages = [...entries, userEntry].map((entry) => ({
             id: entry.id,
             role: entry.role,
             content: entry.content,
@@ -161,80 +146,58 @@ export const JournalCenter = ({
         }));
 
         try {
-            await streamChat({
-                messages: [...mappedMsgs, { id: 'new', role: 'user' as const, content, timestamp: Date.now() }],
+            const payload = await requestGutBrainTurn({
+                messages: mappedMessages,
                 context: enhancedContext,
                 brainProfile,
                 brainSnapshot,
                 symptoms,
-                onDelta: (chunk) => {
-                    assistantContent += chunk;
-                    const progressMatch = assistantContent.match(/\[PROGRESS_UPDATE:day=(\d+)\]/);
-                    if (progressMatch) {
-                        const newDay = Math.min(Math.max(parseInt(progressMatch[1], 10), 0), 21);
-                        nextDay = newDay;
-                        nextPhase = newDay === 0 ? 1 : (newDay <= 7 ? 2 : (newDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
-                    }
-                    assistantContent = sanitizeAssistantText(assistantContent);
-                    onUpdateEntry(assistantEntry.id, assistantContent);
-                },
-                onDone: () => {
-                    void (async () => {
-                        try {
-                            assistantContent = sanitizeAssistantText(assistantContent).trim();
-                            await onFinalizeEntry(assistantEntry.id, assistantContent);
-
-                            await onRefreshBrain(
-                                [
-                                    ...entries,
-                                    userEntry,
-                                    {
-                                        ...assistantEntry,
-                                        content: getGutBrainDisplayText(assistantContent),
-                                    },
-                                ],
-                                { currentDay: nextDay, currentPhase: nextPhase },
-                                { silent: true, memoryProfile: brainProfile },
-                            );
-                        } finally {
-                            setIsLoading(false);
-                        }
-                    })();
-                },
-                onError: (error) => {
-                    setIsLoading(false);
-                    toast({
-                        title: "Error",
-                        description: error.message,
-                        variant: "destructive",
-                    });
-                },
+                recipeLibrary,
             });
-        } catch {
-            setIsLoading(false);
+
+            if (typeof payload.progressUpdateDay === 'number') {
+                nextDay = Math.min(Math.max(payload.progressUpdateDay, 0), 21);
+                nextPhase = nextDay === 0 ? 1 : (nextDay <= 7 ? 2 : (nextDay <= 14 ? 3 : 4)) as 1 | 2 | 3 | 4;
+            }
+
+            const assistantEntry = await onAddEntry('assistant', payload.replyText, payload);
+
+            await onRefreshBrain?.(
+                [
+                    ...entries,
+                    userEntry,
+                    {
+                        ...assistantEntry,
+                        content: payload.replyText,
+                    },
+                ],
+                { currentDay: nextDay, currentPhase: nextPhase },
+                { silent: true, memoryProfile: brainProfile },
+            );
+        } catch (error) {
             toast({
                 title: "Error",
-                description: "Failed to send message. Please try again.",
+                description: error instanceof Error ? error.message : "Failed to send message. Please try again.",
                 variant: "destructive",
             });
+        } finally {
+            setIsLoading(false);
         }
     }, [
         entries,
         onAddEntry,
-        onFinalizeEntry,
-        onUpdateEntry,
         progress.currentDay,
         progress.currentPhase,
         brainProfile,
         brainSnapshot,
         symptoms,
         recipeContext,
+        recipeLibrary,
         onRefreshBrain,
-        sanitizeAssistantText,
     ]);
 
-    const handleRecipeActionSelect = useCallback(async (action: GutBrainRecipeAction) => {
-        if (!onApplyRecipeActions) {
+    const handleRecipeActionSelect = useCallback(async (action: GutBrainRecipeCard) => {
+        if (!onApplyRecipeActions || action.status !== 'addable') {
             return;
         }
 
@@ -249,8 +212,8 @@ export const JournalCenter = ({
         await onApplyShoppingActions([action]);
     }, [onApplyShoppingActions]);
 
-    const handleRecipeIngredientsToShoppingSelect = useCallback(async (action: GutBrainRecipeAction) => {
-        if (!onApplyShoppingActions || action.type !== 'add' || !action.ingredients.length) {
+    const handleRecipeIngredientsToShoppingSelect = useCallback(async (action: GutBrainRecipeCard) => {
+        if (!onApplyShoppingActions || action.type !== 'add' || action.status !== 'addable' || !action.ingredients.length) {
             return;
         }
 
@@ -269,7 +232,7 @@ export const JournalCenter = ({
 
     useEffect(() => {
         if (pendingPrompt && !isLoading) {
-            handleSend(pendingPrompt);
+            void handleSend(pendingPrompt);
             onPendingPromptConsumed?.();
         }
     }, [pendingPrompt, isLoading, handleSend, onPendingPromptConsumed]);
@@ -302,6 +265,7 @@ export const JournalCenter = ({
                         </div>
                         <div className="flex items-center gap-1">
                             <Button
+                                type="button"
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
@@ -335,6 +299,7 @@ export const JournalCenter = ({
                     </div>
                     <div className="flex items-center gap-1">
                         <Button
+                            type="button"
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
@@ -390,26 +355,26 @@ export const JournalCenter = ({
                         <>
                             {entries.map((entry, index) => {
                                 const isLast = index === entries.length - 1;
-                                const isStreaming = isLast && entry.role === 'assistant' && isLoading;
                                 return (
                                     <ChatMessage
                                         key={entry.id}
                                         role={entry.role}
-                                        content={entry.role === 'assistant' ? sanitizeAssistantText(entry.content) : entry.content}
+                                        content={entry.content}
+                                        assistantPayload={entry.assistantPayload}
                                         timestamp={new Date(entry.createdAt).getTime()}
-                                        isStreaming={isStreaming}
                                         enableChoices={entry.role === 'assistant' && isLast && !isLoading}
                                         onChoiceSelect={(choice) => {
                                             void handleSend(choice);
                                         }}
                                         onActionSelect={onCoachAction}
                                         onRecipeActionSelect={handleRecipeActionSelect}
+                                        onRecipeOpenSelect={onOpenRecipeCard}
                                         onShoppingActionSelect={handleShoppingActionSelect}
                                         onRecipeIngredientsToShoppingSelect={handleRecipeIngredientsToShoppingSelect}
                                     />
                                 );
                             })}
-                            {isLoading && entries[entries.length - 1]?.role !== 'assistant' && (
+                            {isLoading && (
                                 <div className="mb-4 flex gap-3">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/30 ring-1 ring-emerald-500/20">
                                         <GutBrainLogo className="h-4 w-4 rounded-sm" />
@@ -429,6 +394,7 @@ export const JournalCenter = ({
 
                 {showScrollButton && (
                     <Button
+                        type="button"
                         variant="secondary"
                         size="icon"
                         className="absolute bottom-4 right-4 z-10 h-10 w-10 rounded-full shadow-lg"
@@ -439,7 +405,7 @@ export const JournalCenter = ({
                 )}
             </div>
 
-            <div data-tour="today-actions" className={cn(isMobile ? "pb-1" : "")}>
+            <div data-tour="today-actions" className={cn(isMobile ? "pb-0" : "")}>
                 <ChatInput
                     onSend={handleSend}
                     disabled={isLoading}

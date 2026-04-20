@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { TaskReminder } from '@/hooks/useJournalStore';
 import { formatReminderTime, toLocalDateTimeInputValue } from '@/lib/taskReminders';
-import { buildProtocolDeepLink, formatReminderDeliveryLabel, type ReminderDeliveryChannel } from '@/lib/sms';
+import { buildProtocolDeepLink, formatReminderDeliveryLabel, SMS_REMINDERS_ENABLED, type ReminderDeliveryChannel } from '@/lib/sms';
 import { cn } from '@/lib/utils';
 
 interface TaskReminderPickerProps {
@@ -17,6 +17,7 @@ interface TaskReminderPickerProps {
     timeOfDay: 'morning' | 'afternoon' | 'evening' | 'anytime';
     reminder?: TaskReminder;
     pushReady?: boolean;
+    smsReady?: boolean;
     onSetReminder: (input: {
         checklistKey: string;
         dayNumber: number;
@@ -54,12 +55,14 @@ export function TaskReminderPicker({
     timeOfDay,
     reminder,
     pushReady = false,
+    smsReady = false,
     onSetReminder,
     onClearReminder,
     variant = 'button',
     open,
     onOpenChange,
 }: TaskReminderPickerProps) {
+    const smsAvailable = SMS_REMINDERS_ENABLED && smsReady;
     const [internalOpen, setInternalOpen] = useState(false);
     const [customValue, setCustomValue] = useState(() => reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
     const [selectedQuickValue, setSelectedQuickValue] = useState<string | undefined>(undefined);
@@ -73,7 +76,7 @@ export function TaskReminderPicker({
     useEffect(() => {
         setCustomValue(reminder?.scheduledLocalTime ?? toLocalDateTimeInputValue(new Date(Date.now() + 15 * 60 * 1000)));
         setSelectedQuickValue(undefined);
-    }, [reminder?.scheduledLocalTime, reminder?.deliveryChannel, pushReady]);
+    }, [reminder?.scheduledLocalTime, reminder?.deliveryChannel, pushReady, smsAvailable]);
 
     useEffect(() => {
         if (!resolvedOpen) {
@@ -97,7 +100,7 @@ export function TaskReminderPicker({
             dayNumber,
             label,
             scheduledLocalTime,
-            deliveryChannel: pushReady ? 'push' : 'local',
+            deliveryChannel: smsAvailable ? 'sms' : pushReady ? 'push' : 'local',
             deepLinkTarget: buildProtocolDeepLink({
                 view: 'today',
                 dayNumber,
@@ -155,17 +158,20 @@ export function TaskReminderPicker({
                         </p>
                     )}
                     <div className="rounded-xl border border-border/60 bg-background/70 px-3 py-3 text-xs leading-5 text-muted-foreground">
-                        Reminder channel: {pushReady ? 'push notification' : 'in-app reminder'}.
-                        {!pushReady && (
+                        Reminder channel: {smsAvailable ? 'text reminder' : pushReady ? 'push notification' : 'in-app reminder'}.
+                        {!smsAvailable && !pushReady && (
                             <div className="mt-2 flex items-center gap-2">
-                                <span className="text-[11px] text-muted-foreground">
-                                    If notifications are off, you will miss phone pings.
-                                </span>
-                                <Button asChild variant="ghost" size="sm" className="h-8 rounded-full px-3 text-xs text-primary hover:bg-primary/8 hover:text-primary">
-                                    <Link to={`/setup/notifications?redirect=${encodeURIComponent('/protocol')}&source=reminder-picker`}>
-                                        Enable push
-                                    </Link>
-                                </Button>
+                                {SMS_REMINDERS_ENABLED ? (
+                                    <Button asChild variant="ghost" size="sm" className="h-8 rounded-full px-3 text-xs text-primary hover:bg-primary/8 hover:text-primary">
+                                        <Link to={`/setup/text-reminders?redirect=${encodeURIComponent('/protocol')}&source=reminder-picker`}>
+                                            Enable texts
+                                        </Link>
+                                    </Button>
+                                ) : (
+                                    <span className="text-[11px] text-muted-foreground">
+                                        Add Gut Brain to your Home Screen and enable push reminders if you want closed-app nudges while SMS is pending.
+                                    </span>
+                                )}
                             </div>
                         )}
                     </div>

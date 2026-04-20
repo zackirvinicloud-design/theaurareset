@@ -9,19 +9,30 @@ import { useJournalStore } from "@/hooks/useJournalStore";
 import { useNotificationSetup } from "@/hooks/useNotificationSetup";
 import { useOnboardingProfile } from "@/hooks/useOnboardingProfile";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
+import { useSmsSubscription } from "@/hooks/useSmsSubscription";
 import { toast } from "@/hooks/use-toast";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
-import type { ReminderDeliveryChannel } from "@/lib/sms";
+import { SMS_REMINDERS_ENABLED, type ReminderDeliveryChannel } from "@/lib/sms";
 import { cn } from "@/lib/utils";
 import { parseLocalDateTime } from "@/lib/taskReminders";
 import { buildRecipeChatContext } from "@/lib/recipes";
-import type { CoachAction, GutBrainRecipeAction, GutBrainShoppingAction } from "@/lib/gutbrain";
+import type { CoachAction, GutBrainRecipeCard, GutBrainRecipeLibraryEntry, GutBrainShoppingAction } from "@/lib/gutbrain";
 
 import { TopBar } from "@/components/journal/TopBar";
 import { DailyChecklist, buildChecklistViewModel } from "@/components/journal/DailyChecklist";
 import { JournalCenter } from "@/components/journal/JournalCenter";
 import { MobileTodayView } from "@/components/journal/MobileTodayView";
 import { ProfileSettingsView } from "@/components/journal/ProfileSettingsView";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ProtocolRoadmapExplorer } from "@/components/journal/ProtocolRoadmapExplorer";
 import { ShoppingListView } from "@/components/journal/ShoppingListView";
 import { RecipesView } from "@/components/journal/RecipesView";
@@ -61,11 +72,16 @@ const Protocol = () => {
 
   // Pending prompt for auto-sending from checklist tap
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
+  const [pendingDayNavigation, setPendingDayNavigation] = useState<{ targetDay: number } | null>(null);
   const [activeView, setActiveView] = useState<ActiveView>('today');
   const [settingsReturnView, setSettingsReturnView] = useState<Exclude<ActiveView, 'settings'>>('today');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isResettingCleanse, setIsResettingCleanse] = useState(false);
   const [focusedChecklistKey, setFocusedChecklistKey] = useState<string | null>(null);
   const [reminderComposerTargetKey, setReminderComposerTargetKey] = useState<string | null>(null);
   const [shoppingDefaultExpandedCategories, setShoppingDefaultExpandedCategories] = useState<string[]>([]);
+  const [shoppingFocusRequest, setShoppingFocusRequest] = useState<{ itemKey: string | null; nonce: number } | null>(null);
+  const [recipeFocusRequest, setRecipeFocusRequest] = useState<{ recipeKey: string | null; nonce: number } | null>(null);
   const appliedDeepLinkRef = useRef<string | null>(null);
   const backfillPromptShownRef = useRef(false);
 
@@ -82,7 +98,9 @@ const Protocol = () => {
   const onboarding = useOnboardingProfile(store.userId);
   const notifications = useNotificationSetup();
   const pushSubscription = usePushSubscription(store.userId);
+  const smsSubscription = useSmsSubscription(store.userId);
   const pushReady = notifications.isEnabled && pushSubscription.pushReady;
+  const smsReady = smsSubscription.smsReady;
   const checklistViewModel = useMemo(
     () => buildChecklistViewModel(currentDay, store.checklist, store.customItems),
     [currentDay, store.checklist, store.customItems],
@@ -117,6 +135,15 @@ const Protocol = () => {
   const recipeChatContext = useMemo(
     () => buildRecipeChatContext(store.recipes, store.progress.currentDay),
     [store.progress.currentDay, store.recipes],
+  );
+  const recipeLibrary = useMemo<GutBrainRecipeLibraryEntry[]>(
+    () => store.recipes.map((recipe) => ({
+      key: recipe.key,
+      title: recipe.title,
+      phase: recipe.phase,
+      mealType: recipe.mealType,
+    })),
+    [store.recipes],
   );
 
   // Persist ref panel state
@@ -178,6 +205,70 @@ const Protocol = () => {
     navigate("/");
   };
 
+  const handleResetCleanse = useCallback(async () => {
+    if (isResettingCleanse) {
+      return;
+    }
+
+    setIsResettingCleanse(true);
+    try {
+      await store.resetCleanse();
+      setActiveView('today');
+      toast({
+        title: "Cleanse reset",
+        description: "Progress, check-ins, reminders, shopping, recipes, and chat history reset to Day 0.",
+      });
+    } catch (error) {
+      console.error("Failed to reset cleanse", error);
+      toast({
+        title: "Reset failed",
+        description: "Your reset request could not be completed. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResettingCleanse(false);
+    }
+  }, [isResettingCleanse, store]);
+
+  const handleDeleteAccount = useCallback(async () => {
+    if (isDeletingAccount) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Delete your account permanently? This removes your profile, journal, check-ins, reminders, and saved progress.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeletingAccount(true);
+
+    try {
+      const { error } = await supabase.functions.invoke("delete-account");
+      if (error) {
+        throw error;
+      }
+
+      await supabase.auth.signOut();
+      toast({
+        title: "Account deleted",
+        description: "Your Gut Brain Journal account and saved data were removed.",
+      });
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Failed to delete account", error);
+      toast({
+        title: "Delete failed",
+        description: "We could not delete your account right now. Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  }, [isDeletingAccount, navigate]);
+
   const openSettingsView = useCallback(() => {
     if (activeView !== 'settings') {
       setSettingsReturnView(activeView);
@@ -195,6 +286,10 @@ const Protocol = () => {
       setPendingPrompt(prompt);
     }
   }, []);
+
+  const openSymptomHelpFromSymptoms = useCallback((prompt?: string) => {
+    openSymptomHelp(prompt);
+  }, [openSymptomHelp]);
 
   const resolveChecklistTargetKey = useCallback((preferredKey?: string | null) => {
     if (preferredKey && checklistViewModel.allItems.some((item) => item.key === preferredKey)) {
@@ -216,11 +311,11 @@ const Protocol = () => {
     let phaseName: string | null = null;
 
     if (normalizedPhase.includes("week 1") || normalizedPhase.includes("fungal")) {
-      phaseName = "Fungal Elimination";
+      phaseName = "Week 1 Reset";
     } else if (normalizedPhase.includes("week 2") || normalizedPhase.includes("parasite")) {
-      phaseName = "Parasite Elimination";
+      phaseName = "Week 2 Support";
     } else if (normalizedPhase.includes("week 3") || normalizedPhase.includes("metal")) {
-      phaseName = "Heavy Metal Detox";
+      phaseName = "Week 3 Finish";
     } else if (normalizedPhase.includes("prep") || normalizedPhase.includes("foundation")) {
       phaseName = "Foundation";
     } else if (phaseHint) {
@@ -244,9 +339,12 @@ const Protocol = () => {
     return `${phaseName}_${firstCategory.category}`;
   }, [currentDay]);
 
-  const openShoppingWithFocus = useCallback((phaseHint?: string | null, categoryHint?: string | null) => {
+  const openShoppingWithFocus = useCallback((phaseHint?: string | null, categoryHint?: string | null, itemKey?: string | null) => {
     const focusedKey = resolveShoppingCategoryKey(phaseHint, categoryHint);
     setShoppingDefaultExpandedCategories(focusedKey ? [focusedKey] : []);
+    if (itemKey) {
+      setShoppingFocusRequest({ itemKey, nonce: Date.now() });
+    }
     setActiveView("shopping");
   }, [resolveShoppingCategoryKey]);
 
@@ -311,9 +409,13 @@ const Protocol = () => {
 
     toast({
       title: "Reminder set",
-      description: (input.deliveryChannel ?? 'local') === 'push'
-        ? `${input.label} will ping this phone even when the app is closed.`
-        : `${input.label} is saved in-app. Turn on push reminders for closed-app pings.`,
+      description: (input.deliveryChannel ?? 'local') === 'sms'
+        ? `${input.label} will text you with a direct link back to this step.`
+        : (input.deliveryChannel ?? 'local') === 'push'
+          ? `${input.label} will ping this phone even when the app is closed.`
+          : SMS_REMINDERS_ENABLED
+            ? `${input.label} is saved in-app. Turn on text reminders if you want closed-app nudges.`
+            : `${input.label} is saved in-app. Add Gut Brain to your Home Screen and enable push reminders if you want closed-app nudges.`,
     });
   }, [setTaskReminder]);
 
@@ -342,7 +444,12 @@ const Protocol = () => {
 
   const handleCoachAction = useCallback((action: CoachAction) => {
     if (action.type === 'open_normal_today') {
-      openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
+      const targetKey = resolveChecklistTargetKey();
+      if (targetKey) {
+        focusChecklistItem(targetKey);
+      } else if (isMobile) {
+        setActiveView('today');
+      }
       return;
     }
 
@@ -390,7 +497,8 @@ const Protocol = () => {
         const targetKey = resolveChecklistTargetKey();
         if (targetKey) {
           focusChecklistItem(targetKey);
-        } else if (isMobile) {
+        }
+        if (isMobile) {
           setActiveView('today');
         }
       }
@@ -416,24 +524,39 @@ const Protocol = () => {
   const handlePreviousDay = async () => {
     const targetDay = Math.max(store.progress.currentDay - 1, 0);
     if (targetDay === store.progress.currentDay) return;
-
-    await store.setCurrentDay(targetDay);
-    toast({
-      title: "Day updated",
-      description: `Now on ${getDayLabel(targetDay)}`,
-    });
+    setPendingDayNavigation({ targetDay });
   };
 
   const handleNextDay = async () => {
     const targetDay = Math.min(store.progress.currentDay + 1, 21);
     if (targetDay === store.progress.currentDay) return;
+    setPendingDayNavigation({ targetDay });
+  };
 
+  const handleConfirmDayChange = useCallback(async () => {
+    if (!pendingDayNavigation) {
+      return;
+    }
+
+    const targetDay = pendingDayNavigation.targetDay;
+    setPendingDayNavigation(null);
     await store.setCurrentDay(targetDay);
     toast({
       title: "Day updated",
       description: `Now on ${getDayLabel(targetDay)}`,
     });
-  };
+  }, [pendingDayNavigation, store]);
+
+  const handleCancelDayChange = useCallback(() => {
+    setPendingDayNavigation(null);
+  }, []);
+
+  const pendingDayChangeLabel = pendingDayNavigation
+    ? {
+        sourceLabel: getDayLabel(store.progress.currentDay),
+        targetLabel: getDayLabel(pendingDayNavigation.targetDay),
+      }
+    : null;
 
   const handleAskAbout = (label: string) => {
     setActiveView('help');
@@ -502,9 +625,12 @@ const Protocol = () => {
     setPendingPrompt(prompt);
   };
 
-  const handleApplyShoppingActions = async (actions: GutBrainShoppingAction[]) => {
+  const handleApplyShoppingActions = useCallback(async (actions: GutBrainShoppingAction[]) => {
     const added: string[] = [];
     const removed: string[] = [];
+    let focusPhase: string | null = null;
+    let focusCategory: string | null = null;
+    let focusItemKey: string | null = null;
 
     for (const action of actions) {
       const categoryMatch = findShoppingCategoryMatch(action.category);
@@ -522,6 +648,9 @@ const Protocol = () => {
 
         if (result) {
           added.push(result.name ?? action.itemName);
+          focusPhase = result.phase;
+          focusCategory = result.category;
+          focusItemKey = result.key;
         }
         continue;
       }
@@ -534,7 +663,13 @@ const Protocol = () => {
 
       if (result) {
         removed.push(result.name);
+        focusPhase = result.phase;
+        focusCategory = result.category;
       }
+    }
+
+    if (focusPhase && focusCategory) {
+      openShoppingWithFocus(focusPhase, focusCategory, focusItemKey);
     }
 
     if (added.length || removed.length) {
@@ -548,13 +683,22 @@ const Protocol = () => {
         description,
       });
     }
-  };
+  }, [openShoppingWithFocus, store.addShoppingItem, store.progress.currentDay, store.removeShoppingItem]);
 
-  const handleApplyRecipeActions = async (actions: GutBrainRecipeAction[]) => {
+  const handleOpenRecipeFromChat = useCallback((recipe: GutBrainRecipeCard) => {
+    setRecipeFocusRequest({
+      recipeKey: recipe.existingRecipeKey ?? recipe.title,
+      nonce: Date.now(),
+    });
+    setActiveView('recipes');
+  }, []);
+
+  const handleApplyRecipeActions = useCallback(async (actions: GutBrainRecipeCard[]) => {
     const savedRecipes: string[] = [];
+    let focusRecipeKey: string | null = null;
 
     for (const action of actions) {
-      if (action.type !== 'add') {
+      if (action.type !== 'add' || action.status !== 'addable') {
         continue;
       }
 
@@ -571,7 +715,16 @@ const Protocol = () => {
 
       if (result) {
         savedRecipes.push(result.title);
+        focusRecipeKey = result.key;
       }
+    }
+
+    if (focusRecipeKey) {
+      setRecipeFocusRequest({
+        recipeKey: focusRecipeKey,
+        nonce: Date.now(),
+      });
+      setActiveView('recipes');
     }
 
     if (savedRecipes.length) {
@@ -580,7 +733,7 @@ const Protocol = () => {
         description: savedRecipes.join(', '),
       });
     }
-  };
+  }, [store.addRecipe]);
 
   useEffect(() => {
     if (!focusedChecklistKey) {
@@ -700,12 +853,18 @@ const Protocol = () => {
       }
 
       if (view === 'normal') {
-        openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
+        const targetKey = resolveChecklistTargetKey();
+        if (targetKey) {
+          focusChecklistItem(targetKey);
+        }
+        if (isMobile) {
+          setActiveView('today');
+        }
         return;
       }
 
       if (view === 'symptoms') {
-        openSymptomHelp('I feel off today. Help me understand what is expected and what to do next.');
+        setActiveView('symptoms');
         return;
       }
 
@@ -736,6 +895,9 @@ const Protocol = () => {
         const targetKey = resolveChecklistTargetKey();
         if (targetKey) {
           focusChecklistItem(targetKey);
+        }
+        if (isMobile) {
+          setActiveView('today');
         }
       }
     };
@@ -770,7 +932,7 @@ const Protocol = () => {
   if (!hasAccess) return null;
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       {/* Top Bar */}
         <TopBar
           progress={store.progress}
@@ -803,10 +965,14 @@ const Protocol = () => {
             onSetReminder={handleSetReminder}
             onClearReminder={store.clearTaskReminder}
             pushReady={pushReady}
+            smsReady={smsReady}
           />
         </aside>
 
-        <main className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${!isMobile && refOpen && activeView !== 'settings' ? 'lg:mr-80' : ''} ${isMobile ? 'pb-14' : ''}`}>
+        <main
+          className={`flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 ${!isMobile && refOpen && activeView !== 'settings' ? 'lg:mr-80' : ''}`}
+            style={isMobile ? { paddingBottom: "4.5rem" } : undefined}
+          >
           {isMobile ? (
             activeView === 'settings' ? (
               <ProfileSettingsView
@@ -818,6 +984,10 @@ const Protocol = () => {
                 pushReady={pushReady}
                 onSaveProfile={handleSaveProfileSettings}
                 onOpenNotificationsSetup={handleOpenNotificationsSetup}
+                onDeleteAccount={handleDeleteAccount}
+                isDeletingAccount={isDeletingAccount}
+                onResetCleanse={handleResetCleanse}
+                isResettingCleanse={isResettingCleanse}
                 onBack={handleCloseSettings}
               />
             ) : activeView === 'shopping' ? (
@@ -827,20 +997,24 @@ const Protocol = () => {
                 shoppingOverrides={store.shoppingOverrides}
                 onToggle={store.toggleChecklistItem}
                 onAddItem={store.addShoppingItem}
-                onRemoveItem={store.removeShoppingItem}
-                onBack={() => setActiveView('guide')}
-                onAskAI={handleShoppingAskAI}
-                defaultExpandedCategories={shoppingDefaultExpandedCategories}
-              />
-            ) : activeView === 'recipes' ? (
-              <RecipesView
-                currentDay={currentDay}
-                recipeOverrides={store.recipeOverrides}
+              onRemoveItem={store.removeShoppingItem}
+              onBack={() => setActiveView('guide')}
+              onAskAI={handleShoppingAskAI}
+              defaultExpandedCategories={shoppingDefaultExpandedCategories}
+              focusItemKey={shoppingFocusRequest?.itemKey ?? null}
+              focusNonce={shoppingFocusRequest?.nonce ?? 0}
+            />
+          ) : activeView === 'recipes' ? (
+            <RecipesView
+              currentDay={currentDay}
+              recipeOverrides={store.recipeOverrides}
                 onAddRecipe={store.addRecipe}
-                onRemoveRecipe={store.removeRecipe}
-                onAskAI={handleRecipeAskAI}
-                onBack={() => setActiveView('guide')}
-              />
+              onRemoveRecipe={store.removeRecipe}
+              onAskAI={handleRecipeAskAI}
+              onBack={() => setActiveView('guide')}
+              focusRecipeKey={recipeFocusRequest?.recipeKey ?? null}
+              focusNonce={recipeFocusRequest?.nonce ?? 0}
+            />
             ) : activeView === 'roadmap' ? (
               <ProtocolRoadmapExplorer
                 currentDay={currentDay}
@@ -856,10 +1030,9 @@ const Protocol = () => {
                 symptoms={store.symptoms}
                 symptomCheckins={store.symptomCheckins}
                 onBack={() => setActiveView('guide')}
-                onAskCoachPrompt={setPendingPrompt}
+                onAskCoachPrompt={openSymptomHelpFromSymptoms}
                 onLogSymptomCheckin={store.logSymptomCheckin}
                 onLoadSymptomRange={store.loadSymptomRange}
-                onGetSymptomCoachFollowup={store.getSymptomCoachFollowup}
               />
             ) : activeView === 'guide' ? (
               <div className="flex h-full flex-col bg-background">
@@ -900,6 +1073,7 @@ const Protocol = () => {
                 onSetReminder={handleSetReminder}
                 onClearReminder={store.clearTaskReminder}
                 pushReady={pushReady}
+                smsReady={smsReady}
               />
             ) : (
               <JournalCenter
@@ -920,8 +1094,10 @@ const Protocol = () => {
                 onFinalizeEntry={store.finalizeJournalEntry}
                 onApplyShoppingActions={handleApplyShoppingActions}
                 onApplyRecipeActions={handleApplyRecipeActions}
+                onOpenRecipeCard={handleOpenRecipeFromChat}
                 onCoachAction={handleCoachAction}
                 recipeContext={recipeChatContext}
+                recipeLibrary={recipeLibrary}
                 pendingPrompt={pendingPrompt}
                 onPendingPromptConsumed={() => setPendingPrompt(null)}
                 isMobile={true}
@@ -937,10 +1113,14 @@ const Protocol = () => {
               notificationNeedsInstall={notifications.needsIosInstall}
               pushReady={pushReady}
               onSaveProfile={handleSaveProfileSettings}
-              onOpenNotificationsSetup={handleOpenNotificationsSetup}
-              onBack={handleCloseSettings}
-            />
-          ) : activeView === 'shopping' ? (
+                onOpenNotificationsSetup={handleOpenNotificationsSetup}
+                onDeleteAccount={handleDeleteAccount}
+                isDeletingAccount={isDeletingAccount}
+                onResetCleanse={handleResetCleanse}
+                isResettingCleanse={isResettingCleanse}
+                onBack={handleCloseSettings}
+              />
+            ) : activeView === 'shopping' ? (
             <ShoppingListView
               currentDay={currentDay}
               checklist={store.checklist}
@@ -951,6 +1131,8 @@ const Protocol = () => {
               onBack={() => setActiveView('help')}
               onAskAI={handleShoppingAskAI}
               defaultExpandedCategories={shoppingDefaultExpandedCategories}
+              focusItemKey={shoppingFocusRequest?.itemKey ?? null}
+              focusNonce={shoppingFocusRequest?.nonce ?? 0}
             />
           ) : activeView === 'recipes' ? (
             <RecipesView
@@ -960,6 +1142,8 @@ const Protocol = () => {
               onRemoveRecipe={store.removeRecipe}
               onAskAI={handleRecipeAskAI}
               onBack={() => setActiveView('help')}
+              focusRecipeKey={recipeFocusRequest?.recipeKey ?? null}
+              focusNonce={recipeFocusRequest?.nonce ?? 0}
             />
           ) : activeView === 'roadmap' ? (
             <ProtocolRoadmapExplorer
@@ -969,19 +1153,18 @@ const Protocol = () => {
               onOpenShoppingView={handleOpenShoppingForPhase}
               onAskCoach={handleAskCoachFromRoadmap}
             />
-          ) : activeView === 'symptoms' ? (
-            <SymptomCenterView
-              currentDay={currentDay}
-              currentPhase={currentPhase}
-              symptoms={store.symptoms}
-              symptomCheckins={store.symptomCheckins}
-              onBack={() => setActiveView('help')}
-              onAskCoachPrompt={setPendingPrompt}
-              onLogSymptomCheckin={store.logSymptomCheckin}
-              onLoadSymptomRange={store.loadSymptomRange}
-              onGetSymptomCoachFollowup={store.getSymptomCoachFollowup}
-            />
-          ) : (
+            ) : activeView === 'symptoms' ? (
+              <SymptomCenterView
+                currentDay={currentDay}
+                currentPhase={currentPhase}
+                symptoms={store.symptoms}
+                symptomCheckins={store.symptomCheckins}
+                onBack={() => setActiveView('help')}
+                onAskCoachPrompt={openSymptomHelpFromSymptoms}
+                onLogSymptomCheckin={store.logSymptomCheckin}
+                onLoadSymptomRange={store.loadSymptomRange}
+              />
+            ) : (
             <JournalCenter
               userId={store.userId}
               progress={store.progress}
@@ -1000,8 +1183,10 @@ const Protocol = () => {
               onFinalizeEntry={store.finalizeJournalEntry}
               onApplyShoppingActions={handleApplyShoppingActions}
               onApplyRecipeActions={handleApplyRecipeActions}
+              onOpenRecipeCard={handleOpenRecipeFromChat}
               onCoachAction={handleCoachAction}
               recipeContext={recipeChatContext}
+              recipeLibrary={recipeLibrary}
               pendingPrompt={pendingPrompt}
               onPendingPromptConsumed={() => setPendingPrompt(null)}
               isMobile={false}
@@ -1025,46 +1210,68 @@ const Protocol = () => {
       </div>
 
       {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 safe-area-bottom">
-          <div data-tour="mobile-resource-nav" className="grid grid-cols-3 gap-1 px-2 py-1.5">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border/50 pb-2">
+          <div data-tour="mobile-resource-nav" className="h-16 grid grid-cols-3 gap-1 px-2 pt-1">
             <button
               data-tour="mobile-plan-nav"
               onClick={() => setActiveView('today')}
               className={cn(
-                "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                "flex h-full w-full flex-col items-center justify-center gap-0.5 px-2 rounded-lg transition-colors",
                 activeView === 'today' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
               )}
             >
               <ClipboardList className="w-5 h-5" />
-              <span className="text-[10px] font-medium">Plan</span>
+              <span className="text-[11px] font-medium">Plan</span>
             </button>
 
             <button
               onClick={() => setActiveView('help')}
               className={cn(
-                "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                "flex h-full w-full flex-col items-center justify-center gap-0.5 px-2 rounded-lg transition-colors",
                 activeView === 'help' ? "bg-primary/10 text-primary" : "hover:bg-muted/50"
               )}
             >
               <GutBrainLogo className="h-5 w-5 rounded-sm" />
-              <span className="text-[10px] font-medium">GutBrain</span>
+              <span className="text-[11px] font-medium">GutBrain</span>
             </button>
 
             <button
               onClick={() => setActiveView('guide')}
               className={cn(
-                "flex w-full flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors",
+                "flex h-full w-full flex-col items-center justify-center gap-0.5 px-2 rounded-lg transition-colors",
                 activeView === 'guide' || activeView === 'shopping' || activeView === 'recipes' || activeView === 'roadmap' || activeView === 'symptoms'
                   ? "bg-primary/10 text-primary"
                   : "hover:bg-muted/50"
               )}
             >
               <BookOpen className="w-5 h-5" />
-              <span className="text-[10px] font-medium">Guide</span>
+              <span className="text-[11px] font-medium">Guide</span>
             </button>
           </div>
         </div>
       )}
+
+      <AlertDialog open={Boolean(pendingDayChangeLabel)} onOpenChange={(open) => {
+        if (!open) {
+          handleCancelDayChange();
+        }
+      }}>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Move day?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDayChangeLabel
+                ? `You're on ${pendingDayChangeLabel.sourceLabel}.`
+                : 'Ready to move to the new day?'}
+              {pendingDayChangeLabel ? ` Go to ${pendingDayChangeLabel.targetLabel}.` : ''}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelDayChange}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDayChange}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );

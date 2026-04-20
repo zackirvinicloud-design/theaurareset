@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Lock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { getDefaultPostAuthDestination, isEmailVerified } from "@/lib/auth-routing";
 import { getWhopCheckoutUrl, PRODUCT_PRIMARY_CTA } from "@/lib/product";
 import { useOnboardingProfile, type UserOnboardingProfile } from "@/hooks/useOnboardingProfile";
-import { calculateGutScore, getGutScoreExplanation, getScoreLabel, getScoreColor } from "@/lib/gut-score";
 import { motion } from "framer-motion";
 
 const PaymentRequired = () => {
@@ -93,39 +92,36 @@ const PaymentRequired = () => {
     navigate("/");
   };
 
-  // Personalization Logic — computed before any conditional returns to obey hooks rules
-  const healthFlagsList = useMemo(() => profile?.healthFlags ?? [], [profile?.healthFlags]);
-  const symptomsText = healthFlagsList.length > 0
-    ? healthFlagsList.slice(0, 3).map(s => s.toLowerCase()).join(", ")
-    : "general symptoms";
+  const profileHighlights = useMemo(() => {
+    const highlights = [
+      profile?.protocolGoal
+        ? { label: "Main focus", value: profile.protocolGoal }
+        : null,
+      profile?.primaryBlocker
+        ? { label: "Biggest blocker", value: profile.primaryBlocker }
+        : null,
+      profile?.dietPattern
+        ? { label: "Eating style", value: profile.dietPattern }
+        : null,
+      profile?.routineType
+        ? { label: "Routine", value: profile.routineType }
+        : null,
+    ].filter(Boolean) as Array<{ label: string; value: string }>;
 
-  const gutScore = useMemo(() => calculateGutScore({
-    healthFlags: healthFlagsList,
-    whyNow: profile?.whyNow ?? null,
-    protocolGoal: profile?.protocolGoal ?? null,
-    primaryBlocker: profile?.primaryBlocker ?? null,
-    dietPattern: profile?.dietPattern ?? null,
-    foodPreferences: profile?.foodPreferences ?? [],
-  }), [healthFlagsList, profile?.whyNow, profile?.protocolGoal, profile?.primaryBlocker, profile?.dietPattern, profile?.foodPreferences]);
+    return highlights.slice(0, 3);
+  }, [profile?.dietPattern, profile?.primaryBlocker, profile?.protocolGoal, profile?.routineType]);
 
-  const scoreExplanation = useMemo(() => getGutScoreExplanation({
-    healthFlags: healthFlagsList,
-    whyNow: profile?.whyNow ?? null,
-    protocolGoal: profile?.protocolGoal ?? null,
-    primaryBlocker: profile?.primaryBlocker ?? null,
-    dietPattern: profile?.dietPattern ?? null,
-    foodPreferences: profile?.foodPreferences ?? [],
-  }), [healthFlagsList, profile?.whyNow, profile?.protocolGoal, profile?.primaryBlocker, profile?.dietPattern, profile?.foodPreferences]);
+  const profileSummary = useMemo(() => {
+    if (profile?.whyNow) {
+      return profile.whyNow;
+    }
 
-  const scoreLabel = getScoreLabel(gutScore);
-  const scoreColor = getScoreColor(gutScore);
+    if (profile?.healthFlags?.length) {
+      return `You already know why you want structure. We will help you turn that intent into a cleaner day-by-day plan.`;
+    }
 
-  // SVG arc math for the score gauge
-  const RADIUS = 54;
-  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-  const arcLength = CIRCUMFERENCE * 0.75; // 270° arc
-  const filledLength = arcLength * (gutScore / 10);
-  const gapLength = arcLength - filledLength;
+    return "We organize the next 21 days so you spend less time rereading a protocol and more time following it.";
+  }, [profile?.healthFlags, profile?.whyNow]);
 
   if (isLoading) {
     return (
@@ -138,63 +134,41 @@ const PaymentRequired = () => {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30 pb-36">
 
-      {/* Score Hero */}
+      {/* Setup Hero */}
       <div className="bg-gradient-to-b from-[#080808] to-black border-b border-zinc-800/40">
         <div className="max-w-md mx-auto px-5 pt-8 pb-6">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500 text-center mb-5">Gut Health Audit — Results</p>
-
-          {/* Circular Score Gauge */}
-          <div className="flex flex-col items-center mb-5">
-            <div className="relative w-36 h-36">
-              <svg viewBox="0 0 120 120" className="w-full h-full -rotate-[135deg]">
-                {/* Background track */}
-                <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="#1a1a1a" strokeWidth="10"
-                  strokeDasharray={`${arcLength} ${CIRCUMFERENCE - arcLength}`}
-                  strokeLinecap="round"
-                />
-                {/* Filled arc */}
-                <motion.circle
-                  cx="60" cy="60" r={RADIUS} fill="none" stroke={scoreColor} strokeWidth="10"
-                  strokeDasharray={`${filledLength} ${gapLength + (CIRCUMFERENCE - arcLength)}`}
-                  strokeLinecap="round"
-                  initial={{ strokeDasharray: `0 ${CIRCUMFERENCE}` }}
-                  animate={{ strokeDasharray: `${filledLength} ${gapLength + (CIRCUMFERENCE - arcLength)}` }}
-                  transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                />
-              </svg>
-              {/* Score number centered */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <motion.span
-                  className="text-5xl font-black tracking-tight"
-                  style={{ color: scoreColor }}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                >
-                  {gutScore}
-                </motion.span>
-                <span className="text-[11px] font-semibold text-zinc-500 -mt-0.5">out of 10</span>
-              </div>
-            </div>
-
-            <motion.div
-              className="mt-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest border"
-              style={{ color: scoreColor, borderColor: `${scoreColor}33`, backgroundColor: `${scoreColor}0d` }}
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500 text-center mb-5">
+            Setup Snapshot
+          </p>
+          <div className="rounded-3xl border border-zinc-800/70 bg-zinc-950/60 p-5 text-center">
+            <motion.h1
+              className="text-3xl font-black tracking-tight text-white"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
+              transition={{ duration: 0.35 }}
             >
-              {scoreLabel}
-            </motion.div>
+              {profile?.firstName ? `${profile.firstName}, your workspace is ready.` : "Your workspace is ready."}
+            </motion.h1>
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              {profileSummary}
+            </p>
           </div>
 
-          {/* Compact flags */}
-          <div className="text-center text-[13px] text-zinc-400 leading-relaxed">
-            <span className="capitalize">{symptomsText}</span>
-          </div>
-          <p className="mt-4 text-center text-xs leading-relaxed text-zinc-500">
-            {scoreExplanation}
-          </p>
+          {profileHighlights.length > 0 && (
+            <div className="mt-4 grid gap-2">
+              {profileHighlights.map((highlight) => (
+                <div
+                  key={highlight.label}
+                  className="rounded-2xl border border-zinc-800/70 bg-zinc-950/50 px-4 py-3 text-left"
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                    {highlight.label}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-zinc-200">{highlight.value}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -205,19 +179,15 @@ const PaymentRequired = () => {
           <div className="space-y-3.5 mb-8">
             <h2 className="text-xl font-bold tracking-tight mb-4 text-center text-balance">Stop researching. Start executing.</h2>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Know exactly what to take, when to take it, and why — <span className="text-white font-medium">without Googling dosages at midnight or cross-referencing 6 different TikToks</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">See your day broken into clear steps and timing windows — <span className="text-white font-medium">without juggling a PDF, notes app, and saved videos</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get a complete personalized shopping list before Day 1 — <span className="text-white font-medium">without overspending on supplements you don't actually need yet</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get a cleaner shopping list before Day 1 — <span className="text-white font-medium">without overbuying or forgetting the basics</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Survive die-off symptoms with SOS protocols that activate automatically — <span className="text-white font-medium">without panicking and quitting because you think something is wrong</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Keep reminders, meals, notes, and checklist progress in one workspace — <span className="text-white font-medium">without rebuilding your system every morning</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get 24/7 GutBrain support that already knows your score, your diet, and your biggest blocker — <span className="text-white font-medium">without paying $300/hr for a functional medicine practitioner to tell you the same thing</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Use GutBrain for practical help with food swaps, schedule friction, and staying consistent — <span className="text-white font-medium">without opening another search tab</span></span></div>
 
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get on-demand GutBrain support when symptoms spike — <span className="text-white font-medium">without second-guessing whether it's working or panicking yourself off-plan</span></span></div>
-
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Know the correct full-moon parasite timing and exact herbal dosing schedule — <span className="text-white font-medium">without a $200 lab test or a 6-week wait for a naturopath appointment</span></span></div>
-
-            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Move through fungal, parasite, and heavy metal phases in the right order — <span className="text-white font-medium">without accidentally chelating metals before breaking down the biofilm that's protecting them</span></span></div>
+            <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Track daily check-ins so you keep a useful record of how the plan is going — <span className="text-white font-medium">without losing your thread halfway through</span></span></div>
 
             <div className="flex items-start gap-3 text-sm"><span className="text-primary mt-0.5 shrink-0">✦</span><span className="text-zinc-300">Get real meal plans and food swaps for your specific diet — <span className="text-white font-medium">without eating boiled chicken and broccoli for 21 days straight</span></span></div>
 
@@ -231,6 +201,14 @@ const PaymentRequired = () => {
             You already own the supplements.&nbsp;
             <span className="text-white font-semibold">This is the operating system that makes sure you actually finish what you started.</span>
           </p>
+          <p className="text-center text-xs leading-relaxed text-zinc-600">
+            The Gut Brain Journal is planning and adherence software. It does not diagnose conditions, interpret symptoms, or replace medical care.
+          </p>
+          <div className="mt-3 flex items-center justify-center gap-3 text-xs text-zinc-500">
+            <Link to="/legal/privacy" className="hover:text-zinc-300">Privacy</Link>
+            <span>•</span>
+            <Link to="/legal/terms" className="hover:text-zinc-300">Terms</Link>
+          </div>
 
           {userId && (
             <div className="text-center pb-4">

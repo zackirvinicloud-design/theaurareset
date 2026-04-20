@@ -194,9 +194,9 @@ function GuideContent({
                 actionKey="open-symptoms"
                 eyebrow="Daily monitoring"
                 tone="neutral"
-                title="Symptom center"
-                description="Log your gut state, track specific symptoms, and get GutBrain interpretations of your detox progress."
-                actionLabel="Open symptom tracker"
+                title="Daily check-ins"
+                description="Log what showed up today, keep a simple record, and review the pattern later without turning the app into a diagnosis tool."
+                actionLabel="Open daily check-ins"
                 icon={<BookOpen className="h-3.5 w-3.5" />}
                 onClick={onOpenSymptomsView}
             />

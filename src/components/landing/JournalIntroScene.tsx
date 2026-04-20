@@ -20,7 +20,7 @@ export const JournalIntroScene = () => {
             Step-by-step guidance that saves you both time and money
           </p>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
-            No more wasted hours researching. No more expensive trial-and-error. GutBrain gives you instant answers to ANY question, adapting to YOUR unique situation in real-time.
+            No more wasted hours researching. No more expensive trial-and-error. GutBrain helps with practical questions about food, timing, shopping, and missed steps in the moment.
           </p>
         </motion.div>
 
@@ -35,10 +35,10 @@ export const JournalIntroScene = () => {
             <Calendar className="w-10 h-10 sm:w-12 sm:h-12 mb-4 text-primary" />
             <h3 className="text-xl sm:text-2xl font-bold mb-3">21-Day Step-by-Step Program</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Not random advice. Exact daily instructions telling you what to do, when to do it, and how. Phase 1-4 progression with play-by-play guidance. Saves hours of confusion and costly mistakes.
+              Not random advice. Clear daily instructions telling you what to do and when to do it. A phase-by-phase structure that saves hours of confusion and costly mistakes.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
-              87% complete the full program vs 12% for DIY approaches
+              Built to improve completion by making the day obvious
             </div>
           </motion.div>
 
@@ -50,12 +50,12 @@ export const JournalIntroScene = () => {
             transition={{ delay: 0.2 }}
           >
             <GutBrainLogo className="w-10 h-10 sm:w-12 sm:h-12 mb-4 rounded-lg" />
-            <h3 className="text-xl sm:text-2xl font-bold mb-3">GutBrain - Granular Answers Instantly</h3>
+            <h3 className="text-xl sm:text-2xl font-bold mb-3">GutBrain - Practical Answers Fast</h3>
             <p className="text-sm sm:text-base text-muted-foreground mb-4">
-              Ask ANY question, get specific answers immediately. "Can I substitute this?" "Why am I dizzy?" "What if I can't find organic?" GutBrain adapts to YOUR situation, saving hours of research and preventing expensive mistakes.
+              Ask practical questions and get specific answers quickly. "Can I substitute this?" "What should I eat tonight?" "What if I missed a step?" GutBrain adapts to your situation without turning the app into a diagnosis tool.
             </p>
             <div className="text-xs sm:text-sm text-primary font-semibold">
-              Instant guidance doctors can't provide, available 24/7
+              Available whenever you need help with the plan
             </div>
           </motion.div>
 
@@ -85,10 +85,10 @@ export const JournalIntroScene = () => {
           transition={{ delay: 0.4 }}
         >
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground italic mb-2">
-            "The gut health market is worth $270 billion, but completion rates for traditional approaches are under 15%."
+            "Most people do not need more information. They need a system they can actually follow."
           </p>
           <p className="text-base sm:text-lg font-semibold text-primary">
-            Step-by-Step Guidance + Instant Answers + Structured Accountability = Save Time, Money, and Confusion
+            Step-by-step guidance + practical answers + structured accountability = less confusion and better follow-through
           </p>
         </motion.div>
       </div>

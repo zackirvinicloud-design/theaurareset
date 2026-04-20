@@ -54,6 +54,8 @@ const slugify = (value: string) => value
   .replace(/[^a-z0-9]+/g, '_')
   .replace(/^_+|_+$/g, '');
 
+export const normalizeRecipeIdentity = (value: string) => slugify(value || '');
+
 export function getRecipePhaseForDay(day: number) {
   if (day <= 0) return 'Foundation';
   if (day <= 7) return 'Fungal Elimination';
@@ -90,6 +92,37 @@ export function buildRecipeKey(phase: string, title: string) {
   return `recipe_${phaseSlug}_${titleSlug}`;
 }
 
+export function buildRecipeMatchKey(params: { title: string; phase?: string | null }) {
+  const normalizedTitle = normalizeRecipeIdentity(params.title);
+  if (!normalizedTitle) {
+    return '';
+  }
+
+  const normalizedPhase = normalizeRecipeIdentity(params.phase || '');
+  return normalizedPhase ? `${normalizedPhase}:${normalizedTitle}` : normalizedTitle;
+}
+
+export function matchesRecipeIdentity(
+  recipe: Pick<RecipeItem, 'title' | 'phase'>,
+  params: { title: string; phase?: string | null },
+) {
+  const targetKey = buildRecipeMatchKey(params);
+  if (!targetKey) {
+    return false;
+  }
+
+  const recipeKey = buildRecipeMatchKey(recipe);
+  if (recipeKey === targetKey) {
+    return true;
+  }
+
+  if (!params.phase) {
+    return normalizeRecipeIdentity(recipe.title) === normalizeRecipeIdentity(params.title);
+  }
+
+  return false;
+}
+
 export const DEFAULT_PROTOCOL_RECIPES: RecipeItem[] = [
   {
     key: 'recipe_foundation_sole_water',
@@ -115,7 +148,7 @@ export const DEFAULT_PROTOCOL_RECIPES: RecipeItem[] = [
     title: 'Baking Soda Alkalizer',
     phase: 'Foundation',
     mealType: 'morning_elixir',
-    summary: 'Simple die-off support option from the protocol.',
+    summary: 'Simple morning support option from the protocol.',
     ingredients: [
       '8-16 oz filtered water',
       '1/4-1/2 tsp aluminum-free baking soda',
@@ -126,7 +159,7 @@ export const DEFAULT_PROTOCOL_RECIPES: RecipeItem[] = [
       'Stir until dissolved.',
       'Sip slowly in the morning.',
     ],
-    notes: 'Useful when die-off symptoms feel heavier than usual.',
+    notes: 'Useful when you want a gentler-feeling morning routine.',
     source: 'protocol',
   },
   {
@@ -442,13 +475,14 @@ export const DEFAULT_PROTOCOL_RECIPES: RecipeItem[] = [
 ];
 
 export function findDefaultRecipe(params: { title: string; phase?: string | null }) {
-  const normalizedTitle = normalizeText(params.title);
-  const normalizedPhase = params.phase ? normalizeText(params.phase) : null;
+  return DEFAULT_PROTOCOL_RECIPES.find((recipe) => matchesRecipeIdentity(recipe, params)) ?? null;
+}
 
-  return DEFAULT_PROTOCOL_RECIPES.find((recipe) => (
-    normalizeText(recipe.title) === normalizedTitle
-    && (!normalizedPhase || normalizeText(recipe.phase) === normalizedPhase)
-  )) ?? null;
+export function findRecipeMatch(
+  recipes: Pick<RecipeItem, 'key' | 'title' | 'phase'>[],
+  params: { title: string; phase?: string | null },
+) {
+  return recipes.find((recipe) => matchesRecipeIdentity(recipe, params)) ?? null;
 }
 
 export function resolveRecipes(overrides: RecipeItem[] = []) {

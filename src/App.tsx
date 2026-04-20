@@ -21,6 +21,8 @@ const Protocol = lazy(() => import("./pages/Protocol"));
 const ProtocolCapture = lazy(() => import("./pages/ProtocolCapture"));
 const ProtocolCaptureMobile = lazy(() => import("./pages/ProtocolCaptureMobile"));
 const Advertorial = lazy(() => import("./pages/Advertorial"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
 
 const queryClient = new QueryClient();
 
@@ -55,6 +57,8 @@ const App = () => (
               <Route path="/capture-mobile/:scene" element={<ProtocolCaptureMobile />} />
               <Route path="/article" element={<Advertorial />} />
               <Route path="/a/:slug" element={<Advertorial />} />
+              <Route path="/legal/privacy" element={<Privacy />} />
+              <Route path="/legal/terms" element={<Terms />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

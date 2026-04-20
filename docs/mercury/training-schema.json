@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MercuryTrainingExample",
+  "type": "object",
+  "required": [
+    "input_context",
+    "target_decision",
+    "rationale",
+    "rejected_alternatives",
+    "policy_labels",
+    "outcome_labels"
+  ],
+  "properties": {
+    "input_context": {
+      "type": "object",
+      "required": ["objective", "kpis", "signals", "citations"],
+      "properties": {
+        "objective": {
+          "type": "string",
+          "enum": ["paid_conversions"]
+        },
+        "kpis": {
+          "type": "object"
+        },
+        "signals": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "citations": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "target_decision": {
+      "type": "object"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "rejected_alternatives": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "policy_labels": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "outcome_labels": {
+      "type": "object",
+      "required": ["result", "confidence_calibration"],
+      "properties": {
+        "result": { "type": "string" },
+        "confidence_calibration": { "type": "number" }
+      }
+    }
+  }
+}

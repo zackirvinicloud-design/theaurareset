@@ -21,7 +21,7 @@ const steps = [
 
 const goodFit = [
   'People who want a clear daily plan instead of more research.',
-  'People willing to follow a structured 21-day cleanse.',
+  'People willing to follow a structured 21-day protocol.',
   'People who want guidance without hiring a coach.',
 ];
 
@@ -49,7 +49,7 @@ export const TransformationProof = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            The cleanse gets easier when the product stays focused on the job: prep, follow, and keep moving.
+            The protocol gets easier when the product stays focused on the job: prep, follow, and keep moving.
           </p>
         </motion.div>
 

@@ -28,7 +28,7 @@ export const PricingSection = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Pay for a 21-day cleanse execution system that works in your browser and can ping you back into the right step.
+            Pay for a 21-day protocol workspace that works in your browser and can ping you back into the right step.
           </p>
         </motion.div>
 
@@ -64,10 +64,10 @@ export const PricingSection = () => {
               <div className="space-y-4 mb-8">
                 <h3 className="text-xl font-bold text-center mb-6">What You Get:</h3>
                 {[
-                  'A 21-day cleanse command center built around what to do today',
+                  'A 21-day protocol command center built around what to do today',
                   'Prep Day setup and shopping guidance',
                   'A daily plan grouped by morning, afternoon, and evening',
-                  'Protocol-specific help for questions, symptoms, and troubleshooting',
+                  'Protocol-specific help for questions, missed steps, and schedule friction',
                   'Optional push reminders that reopen the exact step you need',
                   'No app download required for the core experience',
                   'Budget protection so you know what to buy first',

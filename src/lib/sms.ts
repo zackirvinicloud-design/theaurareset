@@ -1,6 +1,7 @@
 import { parseLocalDateTime } from '@/lib/taskReminders';
 
 export type ReminderDeliveryChannel = 'local' | 'push' | 'sms';
+export const SMS_REMINDERS_ENABLED = false;
 
 interface ProtocolDeepLinkOptions {
   view?: 'today' | 'shopping' | 'normal' | 'guide' | 'roadmap' | 'help';

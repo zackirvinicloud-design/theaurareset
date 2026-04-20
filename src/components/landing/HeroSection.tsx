@@ -62,7 +62,7 @@ export const HeroSection = () => {
           className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
         >
           <span className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-            A 21-day gut health cleanse
+            A 21-day protocol workspace
           </span>
           <br />
           <span className="bg-gradient-to-r from-primary via-primary to-primary/60 bg-clip-text text-transparent">

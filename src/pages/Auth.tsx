@@ -272,6 +272,12 @@ const Auth = () => {
               Create account
             </Link>
           </div>
+          <div className="text-center text-xs text-muted-foreground">
+            By continuing, you agree to the{" "}
+            <Link to="/legal/terms" className="text-primary hover:underline">Terms</Link>
+            {" "}and{" "}
+            <Link to="/legal/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+          </div>
           <Button variant="link" onClick={() => navigate("/")}>
             Back to Home
           </Button>

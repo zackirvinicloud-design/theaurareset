@@ -9,9 +9,9 @@ import { toast } from '@/hooks/use-toast';
 import { getFriendlyAuthErrorMessage } from '@/lib/auth-errors';
 import { isEmailVerified, mergeRedirectParams, sanitizeRedirectPath } from '@/lib/auth-routing';
 import { DIET_PATTERN_OPTIONS, useOnboardingProfile } from '@/hooks/useOnboardingProfile';
-import { useSmsSubscription } from '@/hooks/useSmsSubscription';
 import { calculateGutScore } from '@/lib/gut-score';
 import { GutBrainLogo } from '@/components/brand/GutBrainLogo';
+import { SMS_REMINDERS_ENABLED } from '@/lib/sms';
 
 const TOTAL_STEPS = 7;
 const ALL_HEALTH_FLAG_VALUE = '__all__';
@@ -104,7 +104,6 @@ const ProfileOnboarding = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const { profile, isLoading, saveProfile, hasCompletedOnboarding } = useOnboardingProfile(userId);
-  const { smsReady, isLoading: isSmsLoading } = useSmsSubscription(userId);
 
   const [healthFlags, setHealthFlags] = useState<string[]>([]);
   const [whyNow, setWhyNow] = useState('');
@@ -142,21 +141,19 @@ const ProfileOnboarding = () => {
   }, [profile]);
 
   useEffect(() => {
-    if (isBootstrapping || isLoading || isSmsLoading || !userId) {
+    if (isBootstrapping || isLoading || !userId) {
       return;
     }
 
     if (hasCompletedOnboarding && !isAnalyzing) {
-      if (smsReady) {
-        navigate(redirectDestination, { replace: true });
-        return;
-      }
       const next = new URLSearchParams();
       next.set('redirect', redirectDestination);
-      next.set('source', 'profile-onboarding');
-      navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
+      next.set('source', SMS_REMINDERS_ENABLED ? 'profile-onboarding-sms' : 'profile-onboarding-push');
+      navigate(SMS_REMINDERS_ENABLED
+        ? `/setup/text-reminders?${next.toString()}`
+        : `/setup/notifications?${next.toString()}`, { replace: true });
     }
-  }, [hasCompletedOnboarding, isAnalyzing, isBootstrapping, isLoading, isSmsLoading, navigate, redirectDestination, smsReady, userId]);
+  }, [hasCompletedOnboarding, isAnalyzing, isBootstrapping, isLoading, navigate, redirectDestination, userId]);
 
   const handleNext = () => {
     if (step === TOTAL_STEPS) {
@@ -236,15 +233,12 @@ const ProfileOnboarding = () => {
           description: 'Your account setup is saved.',
         });
 
-        if (smsReady) {
-          navigate(redirectDestination, { replace: true });
-          return;
-        }
-
         const next = new URLSearchParams();
         next.set('redirect', redirectDestination);
-        next.set('source', 'profile-onboarding');
-        navigate(`/setup/text-reminders?${next.toString()}`, { replace: true });
+        next.set('source', SMS_REMINDERS_ENABLED ? 'profile-onboarding-sms' : 'profile-onboarding-push');
+        navigate(SMS_REMINDERS_ENABLED
+          ? `/setup/text-reminders?${next.toString()}`
+          : `/setup/notifications?${next.toString()}`, { replace: true });
       } else {
         localStorage.setItem('pending_onboarding_profile', JSON.stringify({
           firstName: '',
@@ -286,7 +280,7 @@ const ProfileOnboarding = () => {
     }
   };
 
-  if (isBootstrapping || isLoading || isSmsLoading) {
+  if (isBootstrapping || isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

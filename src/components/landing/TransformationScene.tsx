@@ -13,7 +13,7 @@ const testimonials = [
   {
     name: "Sarah M., Austin",
     result: "$380 doctor visit vs $47 for the year",
-    quote: "My doctor charged me $380 for a 15-minute appointment that told me nothing. This app gave me answers in the first 48 hours that 3 specialists couldn't figure out in 2 years."
+    quote: "My doctor charged me $380 for a 15-minute appointment that gave me no practical next step. This app gave me a daily system in the first 48 hours that finally made the protocol feel doable."
   },
   {
     name: "Maria K., San Diego",
@@ -48,7 +48,7 @@ export const TransformationScene = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
         >
-          Real people. Real dollar amounts. Real transformations.
+          Real people. Real dollar amounts. Real follow-through.
         </motion.p>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-20 px-4">
@@ -91,16 +91,16 @@ export const TransformationScene = () => {
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold text-base sm:text-lg">Complete 21-Day Gut-Brain Reset System <span className="text-primary">($297 Value)</span></p>
-                  <p className="text-sm text-muted-foreground">The exact day-by-day program used by 2,400+ people</p>
+                  <p className="font-bold text-base sm:text-lg">Complete 21-Day Protocol Workspace <span className="text-primary">($297 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">A day-by-day system built around what to do today</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold text-base sm:text-lg">GutBrain - Instant Granular Guidance <span className="text-primary">($497 Value)</span></p>
-                  <p className="text-sm text-muted-foreground">Answer ANY question instantly, save hours of research and costly mistakes</p>
+                  <p className="font-bold text-base sm:text-lg">GutBrain - Practical Guidance <span className="text-primary">($497 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Get help with meals, shopping, missed steps, and schedule friction</p>
                 </div>
               </div>
 
@@ -115,8 +115,8 @@ export const TransformationScene = () => {
               <div className="flex items-start gap-3">
                 <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-bold text-base sm:text-lg">Symptom Tracker + Insights Dashboard <span className="text-primary">($97 Value)</span></p>
-                  <p className="text-sm text-muted-foreground">See your transformation in real-time data</p>
+                  <p className="font-bold text-base sm:text-lg">Daily Check-ins + Progress Dashboard <span className="text-primary">($97 Value)</span></p>
+                  <p className="text-sm text-muted-foreground">Keep a clear record of the plan as you go</p>
                 </div>
               </div>
 
@@ -170,7 +170,7 @@ export const TransformationScene = () => {
             </p>
 
             <p className="text-base sm:text-lg text-foreground mb-4 leading-relaxed">
-              But I remember being where you are—drowning in contradictory advice, spending hundreds on supplements that did nothing, feeling like my own body was betraying me.
+              But I remember being where you are: drowning in contradictory advice, spending hundreds on supplements, and still not having a clear schedule.
             </p>
 
             <p className="text-base sm:text-lg text-foreground mb-6 leading-relaxed">

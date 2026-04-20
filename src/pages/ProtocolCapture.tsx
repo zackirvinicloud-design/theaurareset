@@ -192,11 +192,11 @@ function buildEntries(scene: CaptureScene, day: number): JournalEntry[] {
 
   if (day >= 15) {
     return [
-      makeEntry(day, 'user', 'What changes now that I am in the heavy metal phase?', 1),
+      makeEntry(day, 'user', 'What changes now that I am in the final week?', 1),
       makeEntry(
         day,
         'assistant',
-        'The workflow stays the same, but the support stack changes. Keep the day calm: heavy metal smoothie, chelators at the right times, hydration, and clean sleep.',
+        'The workflow stays the same, but the support stack changes. Keep the day calm: follow the morning plan, protect the timing windows, stay hydrated, and keep sleep clean.',
         2,
       ),
     ];
@@ -204,11 +204,11 @@ function buildEntries(scene: CaptureScene, day: number): JournalEntry[] {
 
   if (day >= 8) {
     return [
-      makeEntry(day, 'user', 'What matters most as I move into the parasite phase?', 1),
+      makeEntry(day, 'user', 'What matters most as I move into Week 2?', 1),
       makeEntry(
         day,
         'assistant',
-        'Do not reinvent the routine. Keep the foundation habits steady, add the parasite stack on schedule, and log how your body responds instead of guessing.',
+        'Do not reinvent the routine. Keep the foundation habits steady, add the Week 2 stack on schedule, and log the day instead of guessing from memory.',
         2,
       ),
     ];
@@ -281,19 +281,19 @@ function buildDesktopTourSequence(day: number): JournalEntry[] {
     makeEntry(
       day,
       'user',
-      "I am on Day 5 and feel bloated, foggy, and weirdly tired after lunch. Did I mess this cleanse up?",
+      "I am on Day 5 and feel bloated, foggy, and weirdly tired after lunch. Did I mess today's plan up?",
       2,
     ),
     makeEntry(
       day,
       'assistant',
-      `Probably not. Days 4-6 are where fungal die-off usually gets loud. As colonies break apart, they dump waste and stir up inflammation, so bloat, brain fog, fatigue, and sudden crashes can spike even when you are still on track.
+      `Probably not. Day 5 is where a lot of people start overthinking. The smarter move is to stop improvising and get back to meals, timing, hydration, and the next step.
 
 [CLARIFY]
 question: What kind of help do you want first?
-option: Is this normal?
+option: What do I do now?
 option: What do I do today?
-option: Why fungal first?
+option: Why does Week 1 matter?
 [/CLARIFY]`,
       3,
     ),
@@ -306,39 +306,38 @@ option: Why fungal first?
     makeEntry(
       day,
       'assistant',
-      `Keep today boring. Protect the binder window, stay on clean meals, hydrate hard, and do not stack extra detox tricks. Today is a drainage day, not a hero day. The win is moving waste out cleanly, not doing more.
+      `Keep today boring. Protect the binder window, stay on clean meals, hydrate steadily, and do not stack extra fixes. Today is a consistency day, not a hero day.
 
 [CLARIFY]
 question: Where do you want help next?
 option: What can I eat tonight?
-option: How do I calm it?
-option: What are the red flags?
+option: Simplify tonight
+option: Open shopping
 [/CLARIFY]`,
       5,
     ),
     makeEntry(
       day,
       'user',
-      'Why fungal first?',
+      'Why does Week 1 matter?',
       6,
     ),
     makeEntry(
       day,
       'assistant',
-      `Because parasites like to hide, feed, and lay eggs in fungal colonies. That colony acts like cover, fuel, and a home base. Week 1 breaks up that environment first so Week 2 is not trying to clear parasites inside the place that protects them.
+      `Because Week 1 is where the routine gets stable. If meals, timing, and reminders are still messy, the next phase just feels harder and noisier than it needs to.
 
 [COACH_ACTION]
 type: open_shopping
 label: Open shopping list
-phase: Fungal Elimination
-category: Fungal Support Supplements
+phase: Week 1 Reset
+category: Week 1 protocol supplements
 [/COACH_ACTION]
 
 [CLARIFY]
 question: What do you want help with next?
-option: Tell me the red flags
 option: What can I eat tonight?
-option: How do I calm die-off?
+option: Simplify tonight
 option: Open the shopping list
 [/CLARIFY]`,
       7,
@@ -457,11 +456,11 @@ export default function ProtocolCapture() {
               'At least 2 hours apart. Take your binder on an empty stomach, then wait 2 hours before food, supplements, or your probiotic. Binders absorb everything nearby — including the good stuff.',
               3,
             ),
-            makeEntry(5, 'user', 'I\'m bloated and exhausted on Day 5 — is this normal?', 4),
+            makeEntry(5, 'user', 'I\'m bloated and exhausted on Day 5. What should I do with the rest of today?', 4),
             makeEntry(
               5,
               'assistant',
-              'Completely normal. Days 4–6 are peak die-off. Your body is clearing faster than it can drain. Stay hydrated, take your binders on schedule, and rest. Most people notice a clear shift by Day 7–8.',
+              'Keep the rest of today simple: stay hydrated, take your binder on schedule, keep meals plain, and stop adding extra variables.',
               5,
             ),
           ]);
@@ -566,11 +565,11 @@ export default function ProtocolCapture() {
       const startOffset = prev.length + 11;
       return [
         ...prev,
-        makeEntry(progress.currentDay, 'user', 'I feel off today. Can you help me understand what is normal and what to do next?', startOffset),
+        makeEntry(progress.currentDay, 'user', 'I feel off today. Can you help me simplify the rest of today?', startOffset),
         makeEntry(
           progress.currentDay,
           'assistant',
-          'Yes. Tell me your top physical symptom and your current energy level (0-10), and I will separate what is expected vs caution and give you one next step for today.',
+          'Yes. Tell me the biggest thing getting in your way right now, and I will simplify meals, timing, and the next step for today.',
           startOffset + 1,
         ),
       ];

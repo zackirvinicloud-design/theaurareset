@@ -75,7 +75,7 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
                 emoji: '🥬',
                 items: [
                     { name: 'Lemons (organic)', quantity: '15/week', notes: '45+ total for 21 days' },
-                    { name: 'Beets (medium)', quantity: '6/week', notes: 'For liver detox juices' },
+                    { name: 'Beets (medium)', quantity: '6/week', notes: 'For optional support juices' },
                     { name: 'Carrots (organic)', quantity: '10/week', notes: 'For juicing' },
                     { name: 'Green Apples', quantity: '10/week', notes: 'Granny Smith preferred' },
                     { name: 'Celery', quantity: '2 bunches/week', notes: '6 bunches total' },
@@ -125,7 +125,7 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
                 guidance: 'Tongue scraper and Epsom salt are the most practical buys here. The rest are optional support tools from the full written protocol.',
                 items: [
                     { name: 'Tongue Scraper', quantity: '1', notes: 'Copper or stainless steel.' },
-                    { name: 'Epsom Salt', quantity: '2-4 lbs', notes: 'For baths during tougher detox days.' },
+                    { name: 'Epsom Salt', quantity: '2-4 lbs', notes: 'For baths during tougher protocol days.' },
                     { name: 'Dry Brush', quantity: '1', notes: 'Optional lymphatic support tool.', optional: 'optional' },
                     { name: 'Castor Oil + Cloth', quantity: '1 set', notes: 'Optional for liver pack support.', optional: 'optional' },
                     { name: 'Enema Kit', quantity: '1', notes: 'Optional. Only if this is already part of your practice.', optional: 'optional' },
@@ -134,7 +134,7 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
         ],
     },
     {
-        phase: 'Fungal Elimination',
+        phase: 'Week 1 Reset',
         emoji: '🍄',
         buyBefore: 'Before starting',
         categories: [
@@ -166,7 +166,7 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
                 ],
             },
             {
-                category: 'Fungal Support Supplements',
+                category: 'Week 1 protocol supplements',
                 emoji: '💊',
                 guidance: 'Oregano oil and caprylic acid are the core buys here. Pau d\'Arco is optional if you want to keep this phase simpler.',
                 items: [
@@ -180,12 +180,12 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
         ],
     },
     {
-        phase: 'Parasite Elimination',
+        phase: 'Week 2 Support',
         emoji: '🎯',
         buyBefore: 'Before Day 8',
         categories: [
             {
-                category: 'Parasite-Fighting Foods',
+                category: 'Week 2 produce',
                 emoji: '🥬',
                 items: [
                     { name: 'Papaya', quantity: '3 whole', notes: 'For the seeds!' },
@@ -196,7 +196,7 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
                 ],
             },
             {
-                category: 'Parasite Formula Supplements',
+                category: 'Week 2 protocol supplements',
                 emoji: '💊',
                 items: [
                     { name: 'Black Walnut Hull Extract', quantity: '7-day supply', notes: '1000mg, 2x daily' },
@@ -210,12 +210,12 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
         ],
     },
     {
-        phase: 'Heavy Metal Detox',
+        phase: 'Week 3 Finish',
         emoji: '⚡',
         buyBefore: 'Before Day 15',
         categories: [
             {
-                category: 'Metal-Chelating Foods',
+                category: 'Week 3 produce',
                 emoji: '🥬',
                 items: [
                     { name: 'Cilantro', quantity: '4 large bunches', notes: 'Massive amounts needed' },
@@ -226,7 +226,7 @@ export const SHOPPING_LIST: ShoppingPhase[] = [
                 ],
             },
             {
-                category: 'Chelation Supplements',
+                category: 'Week 3 protocol supplements',
                 emoji: '💊',
                 guidance: 'Spirulina is optional if you want to keep this phase leaner. The rest are your main heavy metal support items.',
                 items: [
@@ -250,9 +250,9 @@ export function buildShopKey(phase: string, category: string, index: number) {
 
 export function getShoppingPhaseForDay(day: number): string {
   if (day <= 0) return 'Foundation';
-  if (day <= 7) return 'Fungal Elimination';
-  if (day <= 14) return 'Parasite Elimination';
-  return 'Heavy Metal Detox';
+  if (day <= 7) return 'Week 1 Reset';
+  if (day <= 14) return 'Week 2 Support';
+  return 'Week 3 Finish';
 }
 
 export function getJourneyWeek(day: number): 1 | 2 | 3 | null {
@@ -349,35 +349,35 @@ const PHASE_SPECIFIC_ITEMS: Record<number, ChecklistItem[]> = {
     ],
     2: [
         // Phase 2 = Days 1-7 (Fungal)
-        { key: 'oregano_oil', label: 'Breakfast antifungals: oregano oil + caprylic acid', timeOfDay: 'morning', emoji: '🌿' },
-        { key: 'caprylic_acid', label: 'Breakfast gut support: probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '🦠' },
-        { key: 'liver_juice_support', label: 'Support drink later in the day: liver juice (beet-based if choosing one)', timeOfDay: 'afternoon', emoji: '🥤' },
-        { key: 'garlic_supplement', label: 'Dinner antifungals: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🧄' },
+        { key: 'oregano_oil', label: 'Week 1 breakfast stack: oregano oil + caprylic acid', timeOfDay: 'morning', emoji: '🌿' },
+        { key: 'caprylic_acid', label: 'Breakfast support: probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '🦠' },
+        { key: 'liver_juice_support', label: 'Optional support drink later in the day', timeOfDay: 'afternoon', emoji: '🥤' },
+        { key: 'garlic_supplement', label: 'Dinner support: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🧄' },
         { key: 'no_sugar', label: 'Zero sugar / sweeteners today', timeOfDay: 'anytime', emoji: '🚫' },
-        { key: 'herx_check', label: 'Note any die-off changes (mention them in chat)', timeOfDay: 'evening', emoji: '📝' },
+        { key: 'herx_check', label: 'Log a quick end-of-day note', timeOfDay: 'evening', emoji: '📝' },
         // Shopping reminder for Phase 3 — appears Day 5+
         { key: 'shop_phase3', label: 'Get Week 2 supplies ready', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 5 },
     ],
     3: [
-        // Phase 3 = Days 8-14 (Parasites)
-        { key: 'mimosa_pudica', label: 'Breakfast parasite stack: black walnut + wormwood + clove', timeOfDay: 'morning', emoji: '🌱' },
+        // Phase 3 = Days 8-14 (Week 2 support)
+        { key: 'mimosa_pudica', label: 'Week 2 breakfast stack: black walnut + wormwood + clove', timeOfDay: 'morning', emoji: '🌱' },
         { key: 'wormwood', label: 'Continue breakfast support: oregano oil + caprylic acid + probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '🌿' },
-        { key: 'parasite_juice_support', label: 'Support drink later in the morning: parasite juice', timeOfDay: 'morning', emoji: '🍍' },
-        { key: 'black_walnut', label: 'Lunch parasite support: berberine + grapefruit seed extract', timeOfDay: 'afternoon', emoji: '🥜' },
-        { key: 'clove', label: 'Dinner parasite stack: black walnut + wormwood + clove', timeOfDay: 'evening', emoji: '🫚' },
+        { key: 'parasite_juice_support', label: 'Optional support drink later in the morning', timeOfDay: 'morning', emoji: '🍍' },
+        { key: 'black_walnut', label: 'Week 2 lunch stack: berberine + grapefruit seed extract', timeOfDay: 'afternoon', emoji: '🥜' },
+        { key: 'clove', label: 'Week 2 dinner stack: black walnut + wormwood + clove', timeOfDay: 'evening', emoji: '🫚' },
         { key: 'moon_cycle', label: 'Afternoon binder support: diatomaceous earth (2hrs away from food/supplements)', timeOfDay: 'afternoon', emoji: '🌕' },
         { key: 'parasite_dinner_support', label: 'Dinner support: oregano oil + digestive enzyme', timeOfDay: 'evening', emoji: '🍽️' },
         // Shopping reminder for Phase 4 — appears Day 12+
         { key: 'shop_phase4', label: 'Get Week 3 supplies ready', timeOfDay: 'anytime', emoji: '🛒', showFromDay: 12 },
     ],
     4: [
-        // Phase 4 = Days 15-21 (Heavy Metals)
-        { key: 'chlorella', label: 'Breakfast support drink: heavy metal smoothie', timeOfDay: 'morning', emoji: '🟢' },
-        { key: 'cilantro_detox', label: 'Support drink later in the morning: Cilantro Detox', timeOfDay: 'morning', emoji: '🌿' },
-        { key: 'cilantro', label: 'Breakfast chelators: chlorella + spirulina + modified citrus pectin', timeOfDay: 'morning', emoji: '🌿' },
+        // Phase 4 = Days 15-21 (Week 3 finish)
+        { key: 'chlorella', label: 'Week 3 morning smoothie', timeOfDay: 'morning', emoji: '🟢' },
+        { key: 'cilantro_detox', label: 'Optional support drink later in the morning', timeOfDay: 'morning', emoji: '🌿' },
+        { key: 'cilantro', label: 'Week 3 breakfast stack: chlorella + spirulina + modified citrus pectin', timeOfDay: 'morning', emoji: '🌿' },
         { key: 'zeolite', label: 'Continue breakfast support: milk thistle + NAC + alpha-lipoic acid + reduced oregano oil + probiotic + digestive enzyme', timeOfDay: 'morning', emoji: '⚡' },
-        { key: 'selenium', label: 'Lunch chelators: chlorella + zeolite + modified citrus pectin + vitamin C + selenium + B-complex', timeOfDay: 'afternoon', emoji: '💎' },
-        { key: 'heavy_metal_dinner', label: 'Dinner chelators: chlorella + spirulina + modified citrus pectin + glutathione', timeOfDay: 'evening', emoji: '🌌' },
+        { key: 'selenium', label: 'Week 3 lunch stack: chlorella + zeolite + modified citrus pectin + vitamin C + selenium + B-complex', timeOfDay: 'afternoon', emoji: '💎' },
+        { key: 'heavy_metal_dinner', label: 'Week 3 dinner stack: chlorella + spirulina + modified citrus pectin + glutathione', timeOfDay: 'evening', emoji: '🌌' },
         { key: 'sauna_sweat', label: 'Sweat session (sauna/exercise)', timeOfDay: 'anytime', emoji: '🔥' },
     ],
 };
@@ -394,34 +394,34 @@ export const PHASE_INFO: Record<number, PhaseInfo> = {
         tips: ['Remove sugar, gluten, dairy, and processed foods', 'Stock your kitchen with compliant foods', 'Set up a supplement organizer'],
     },
     2: {
-        name: 'Fungal Elimination',
-        shortName: 'Fungal',
+        name: 'Week 1 Reset',
+        shortName: 'Week 1',
         color: 'text-amber-600',
         bgColor: 'bg-amber-50',
         borderColor: 'border-amber-200',
-        description: 'Target candida and fungal overgrowth with antifungal herbs and strict dietary control.',
+        description: 'Settle into the daily rhythm with tighter food structure, clear timing, and steady compliance.',
         supplements: ['Oregano oil', 'Caprylic acid', 'Probiotic', 'Digestive enzyme', 'Pau d\'arco'],
-        tips: ['Die-off symptoms are normal — headaches, fatigue, brain fog', 'Drink extra water to flush toxins', 'Take binders 2 hours away from other supplements'],
+        tips: ['Keep meals simple and repeatable', 'Drink extra water across the day', 'Take binders 2 hours away from other supplements'],
     },
     3: {
-        name: 'Parasite Cleanse',
-        shortName: 'Parasites',
+        name: 'Week 2 Support',
+        shortName: 'Week 2',
         color: 'text-rose-600',
         bgColor: 'bg-rose-50',
         borderColor: 'border-rose-200',
-        description: 'Eliminate parasites with targeted anti-parasitic herbs. Full moon cycle enhances effectiveness.',
+        description: 'Keep the routine steady as the Week 2 stack is added and the checklist changes shape.',
         supplements: ['Black walnut hull', 'Wormwood', 'Clove', 'Berberine', 'Grapefruit seed extract', 'Diatomaceous earth'],
-        tips: ['Full moon can intensify symptoms', 'Strange bowel movements are normal', 'Keep up with binders to manage detox reactions'],
+        tips: ['Stay consistent with the timing windows', 'Keep meals predictable while the stack changes', 'Use check-ins instead of guessing from memory'],
     },
     4: {
-        name: 'Heavy Metal Detox',
-        shortName: 'Metals',
+        name: 'Week 3 Finish',
+        shortName: 'Week 3',
         color: 'text-violet-600',
         bgColor: 'bg-violet-50',
         borderColor: 'border-violet-200',
-        description: 'Chelate and remove heavy metals accumulated in tissues. Go slow and support your liver.',
+        description: 'Finish the protocol with a calmer final-week routine, consistent support, and strong follow-through.',
         supplements: ['Chlorella', 'Spirulina', 'Modified citrus pectin', 'Zeolite', 'Vitamin C', 'Glutathione'],
-        tips: ['Start chlorella at a low dose and increase gradually', 'Sweating helps mobilize metals — sauna or exercise', 'Support liver with milk thistle or NAC'],
+        tips: ['Keep the final week steady instead of dramatic', 'Use movement or sauna only if it already fits your routine', 'Protect sleep and hydration'],
     },
 };
 
@@ -460,14 +460,14 @@ const CHECKLIST_SUPPORT: Partial<Record<string, ChecklistSupport>> = {
         why: 'This is your base liver support. It keeps the rest of the protocol from feeling heavier than it needs to.',
     },
     hydration_goal: {
-        why: 'Hydration is what helps your body move waste out instead of letting detox symptoms pile up.',
+        why: 'Hydration helps the whole routine feel steadier and keeps the day from getting harder than it needs to.',
         timingHint: 'Spread it across the day instead of chugging all at once.',
     },
     lunch_compliant: {
         why: 'A steady lunch keeps energy and cravings from crashing in the afternoon.',
     },
     supplements_pm: {
-        why: 'This midday support keeps detox pathways open while the active phase compounds do their work.',
+        why: 'This midday support keeps the routine balanced instead of front-loading everything into the morning.',
     },
     dinner_compliant: {
         why: 'A simple compliant dinner protects the evening and makes the next morning easier.',
@@ -476,78 +476,78 @@ const CHECKLIST_SUPPORT: Partial<Record<string, ChecklistSupport>> = {
         why: 'Dinner support helps you finish the day without asking your liver to do all the cleanup overnight alone.',
     },
     binder_evening: {
-        why: 'The second binder window helps clean up what built up through the day so symptoms do not stack overnight.',
+        why: 'The second binder window helps the day end cleanly instead of getting crowded at night.',
         timingHint: 'Give it the same 2-hour buffer away from food and supplements.',
     },
     sleep_routine: {
         why: 'This protocol goes better when recovery is steady. Sleep is part of the protocol, not a bonus.',
     },
     oregano_oil: {
-        why: 'This is one of your main fungal elimination levers. Missing it weakens the whole first week.',
+        why: 'This is one of the main Week 1 anchors. Missing it weakens the whole first week.',
     },
     caprylic_acid: {
-        why: 'This keeps the gut-support side of the plan steady so the antifungal phase does not feel as rough.',
+        why: 'This keeps the support side of the plan steady so Week 1 does not feel as rough.',
     },
     liver_juice_support: {
-        why: 'The support drink is optional help, but it can make the day feel smoother when detox symptoms are louder.',
+        why: 'The support drink is optional, but it can make the day feel smoother when you want a little extra structure.',
     },
     garlic_supplement: {
-        why: 'This keeps fungal pressure on through the evening instead of letting the day trail off early.',
+        why: 'This keeps the evening structured instead of letting the day trail off early.',
     },
     no_sugar: {
-        why: 'Sugar is the fastest way to feed the exact thing this phase is trying to starve out.',
+        why: 'Keeping sugar at zero protects the structure of this week and makes meals easier to repeat.',
     },
     herx_check: {
-        why: 'A quick note helps you separate normal die-off from spiraling and gives GutBrain something real to work with.',
+        why: 'A quick note helps you capture the day clearly instead of trying to remember it later.',
     },
     shop_phase3: {
         why: 'Buying Week 2 supplies early prevents the phase change from turning into a scramble.',
     },
     mimosa_pudica: {
-        why: 'This is part of the parasite stack that makes Week 2 meaningfully different from Week 1.',
+        why: 'This is part of the Week 2 stack that makes this section meaningfully different from Week 1.',
     },
     wormwood: {
-        why: 'Keeping the breakfast support steady protects the foundation while the parasite phase ramps up.',
+        why: 'Keeping breakfast support steady protects the foundation while the Week 2 stack ramps up.',
     },
     parasite_juice_support: {
-        why: 'This is optional support, but it can make the parasite phase feel less harsh if mornings are rough.',
+        why: 'This is optional support, but it can make the morning feel easier when you want a simpler flow.',
     },
     black_walnut: {
-        why: 'This lunch support keeps parasite pressure up instead of letting the middle of the day go soft.',
+        why: 'This lunch support keeps the middle of the day structured instead of letting it go soft.',
     },
     clove: {
-        why: 'The dinner parasite stack helps you finish the day with the full phase intent still intact.',
+        why: 'The dinner stack helps you finish the day with the full Week 2 structure still intact.',
     },
     moon_cycle: {
-        why: 'This binder-style support helps absorb some of the extra mess this phase can stir up.',
+        why: 'This binder-style support helps keep the phase tidy when the middle of the day starts feeling crowded.',
         timingHint: 'Keep it clearly separated from food and supplements.',
     },
     parasite_dinner_support: {
-        why: 'Dinner support keeps the parasite phase consistent instead of making it breakfast-heavy only.',
+        why: 'Dinner support keeps Week 2 consistent instead of making it breakfast-heavy only.',
     },
     shop_phase4: {
         why: 'Getting Week 3 supplies ready now protects your finish. Do not wait until Day 15 to start hunting for them.',
     },
     chlorella: {
-        why: 'The heavy metal smoothie is the soft entry into the final phase and keeps the morning structured.',
+        why: 'The morning smoothie is the soft entry into the final week and keeps the morning structured.',
     },
     cilantro_detox: {
-        why: 'This extra support can help the metals phase feel steadier without changing the backbone of the plan.',
+        why: 'This extra support can help the final week feel steadier without changing the backbone of the plan.',
     },
     cilantro: {
-        why: 'These breakfast chelators are core Week 3 work. They are not a nice-to-have add-on.',
+        why: 'This breakfast stack is core Week 3 work. It is not a nice-to-have add-on.',
     },
     zeolite: {
-        why: 'This keeps the morning support broad enough to mobilize and bind instead of only stirring things up.',
+        why: 'This keeps the morning support broad enough to make the final week feel complete instead of scattered.',
     },
     selenium: {
-        why: 'The lunch chelators keep the heavy metal phase active through the middle of the day, not just at breakfast.',
+        why: 'The lunch stack keeps the final week active through the middle of the day, not just at breakfast.',
     },
     heavy_metal_dinner: {
         why: 'This closes the day with the full Week 3 intent and helps the final stretch feel complete.',
     },
     sauna_sweat: {
-        why: 'Sweating is a simple way to support elimination in the final phase without adding more pills.',
+        why: 'Sweating is one optional way to support the final week without adding more pills.',
     },
 };
 
@@ -608,15 +608,15 @@ const CHAT_TIME_LABELS: Record<ChecklistItem['timeOfDay'], string> = {
 
 export const FULL_PROTOCOL_CHAT_REFERENCE = [
     'AUTHORITATIVE FULL PROTOCOL REFERENCE: If any older shorthand conflicts with this, follow this reference.',
-    'Day 0 is prep only. No active detox on Day 0.',
+    'Day 0 is prep only. No active stack on Day 0.',
     'Binder timing rule: take binders in a clean 2-hour window before or after food and supplements. Do not assume they have to be taken immediately after waking if that timing does not fit the day.',
     'Morning ritual choice for every active day: keep this simple by default. Treat sole water, baking soda alkalizer, and the complete elixir as minor variations on the same morning elixir, not three separate required tasks. Only break down the differences if the user asks.',
     'Foundation schedule for EVERY active day (Days 1-21): Breakfast liver support = milk thistle + dandelion root. Lunch liver support = NAC + alpha-lipoic acid + selenium + B-complex. Dinner liver support = milk thistle + artichoke extract.',
     'Drink and formula support from the written protocol exists, but it is optional support rather than the main checklist. Do not surface juice rotations unless the user asks specifically about drinks, juices, or formulas.',
-    'Phase 2 (Days 1-7): Breakfast antifungals = oregano oil + caprylic acid. Breakfast gut support = probiotic + digestive enzyme. Support drink later in the day = liver juice, with the afternoon beet-based option as the simplest default if they only want one. Dinner antifungals = oregano oil + digestive enzyme. Keep sugar at zero. Pau d\'arco is optional support.',
-    'Phase 3 (Days 8-14): Breakfast parasite stack = black walnut + wormwood + clove. Continue oregano oil + caprylic acid + probiotic + digestive enzyme at breakfast. Support drink later in the morning = parasite juice after breakfast. Lunch parasite support = berberine + grapefruit seed extract. Afternoon binder support = diatomaceous earth 2 hours away from food and supplements. Dinner parasite stack = black walnut + wormwood + clove, plus oregano oil + digestive enzyme.',
-    'Phase 4 (Days 15-21): Breakfast support drink = heavy metal smoothie. Support drink later in the morning = Cilantro Detox. Breakfast chelators = chlorella + spirulina + modified citrus pectin. Continue milk thistle + NAC + alpha-lipoic acid + reduced oregano oil + probiotic + digestive enzyme in the morning. Lunch chelators = chlorella + zeolite + modified citrus pectin + vitamin C + selenium + B-complex. Dinner chelators = chlorella + spirulina + modified citrus pectin + glutathione, plus milk thistle + artichoke extract.',
-    'Day-specific notes from the full protocol: Day 2 adds artichoke extract at breakfast. Day 3 increases oregano oil and caprylic acid. Day 9 adds diatomaceous earth directly to the morning water. Days 10-14 increase black walnut, wormwood, clove, oregano oil, and probiotics. Day 15 starts the heavy metal phase.',
+    'Week 1 Reset (Days 1-7): Breakfast stack = oregano oil + caprylic acid. Breakfast support = probiotic + digestive enzyme. Optional support drink later in the day = liver juice, with the afternoon beet-based option as the simplest default if they only want one. Dinner support = oregano oil + digestive enzyme. Keep sugar at zero. Pau d\'arco is optional support.',
+    'Week 2 Support (Days 8-14): Breakfast stack = black walnut + wormwood + clove. Continue oregano oil + caprylic acid + probiotic + digestive enzyme at breakfast. Optional support drink later in the morning = the Week 2 support drink after breakfast. Lunch stack = berberine + grapefruit seed extract. Afternoon binder support = diatomaceous earth 2 hours away from food and supplements. Dinner stack = black walnut + wormwood + clove, plus oregano oil + digestive enzyme.',
+    'Week 3 Finish (Days 15-21): Breakfast support drink = heavy metal smoothie. Optional support drink later in the morning = Cilantro Detox. Breakfast stack = chlorella + spirulina + modified citrus pectin. Continue milk thistle + NAC + alpha-lipoic acid + reduced oregano oil + probiotic + digestive enzyme in the morning. Lunch stack = chlorella + zeolite + modified citrus pectin + vitamin C + selenium + B-complex. Dinner stack = chlorella + spirulina + modified citrus pectin + glutathione, plus milk thistle + artichoke extract.',
+    'Day-specific notes from the full protocol: Day 2 adds artichoke extract at breakfast. Day 3 increases oregano oil and caprylic acid. Day 9 adds diatomaceous earth directly to the morning water. Days 10-14 increase black walnut, wormwood, clove, oregano oil, and probiotics. Day 15 starts the final-week stack.',
 ].join('\n');
 
 export function buildProtocolChatContext(day: number): string {
